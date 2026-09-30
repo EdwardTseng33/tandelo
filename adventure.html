@@ -469,6 +469,35 @@ h4{font-size:16px;margin:22px 0 8px}
 .screen .rank b{font-family:var(--font-num)}
 .screen .rank .mine{outline:2px solid var(--brand);outline-offset:-2px}
 
+/* ---------- 敘事 ---------- */
+.lore{background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-soft);padding:20px 22px;display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start}
+.lore .mon{width:64px;height:64px}
+.lore h4{margin:0 0 4px;font-size:19px}
+.lore .tag{margin-bottom:8px}
+.lore dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.lore dt{font-weight:700;color:var(--text-mute);white-space:nowrap}
+.lore dd{margin:0;line-height:1.6}
+.lore dd q{quotes:"「" "」";font-weight:700;color:var(--stuck-text)}
+.lore dd q.ok{color:var(--brand)}
+.beats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}
+@media (max-width:900px){.beats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.beats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beats>div{background:var(--surface);border-radius:var(--r-sm);padding:12px;box-shadow:var(--shadow-soft)}
+.beats b{display:block;font-size:14.5px;margin-bottom:4px}
+.beats .line{font-size:12.5px;color:var(--text);background:var(--surface-2);border-radius:8px;padding:6px 8px;margin:6px 0;line-height:1.5}
+.beats p{font-size:12px;color:var(--text-mute);line-height:1.5}
+.panels{display:grid;grid-template-columns:1fr;gap:8px}
+.panel{border-radius:14px;background:var(--surface);padding:12px;box-shadow:var(--shadow-soft);display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;min-height:64px}
+.panel .mon{width:44px;height:44px}
+.panel p{font-size:12.5px;line-height:1.5}
+.panel p b{display:block;font-size:11px;color:var(--text-mute);font-weight:700;letter-spacing:.04em}
+.panel.dark{background:var(--band);color:var(--on-band)}
+.panel.dark p{color:var(--on-band)} .panel.dark p b{color:var(--on-band-mute)}
+.taunt{display:flex;gap:10px;align-items:flex-start;background:var(--stuck-bg);border-radius:14px;padding:10px 12px}
+.taunt .mon{width:36px;height:36px}
+.taunt p{font-size:13px;line-height:1.5}
+.taunt p b{color:var(--stuck-text)}
+
 /* ---------- 頁尾 ---------- */
 footer{padding:48px 0 64px;color:var(--text-mute);font-size:13.5px}
 footer .sig{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:700;margin-bottom:10px}
@@ -516,9 +545,10 @@ footer .sig svg{width:38px;height:24px}
       <a href="#c6"><span class="n">06</span>PvP 對戰</a>
       <a href="#c7"><span class="n">07</span>公會與徽章</a>
       <a href="#c8"><span class="n">08</span>世界地圖</a>
-      <a href="#c9"><span class="n">09</span>畫面</a>
-      <a href="#c10"><span class="n">10</span>護欄</a>
-      <a href="#c11"><span class="n">11</span>分期</a>
+      <a href="#c9"><span class="n">09</span>故事</a>
+      <a href="#c10"><span class="n">10</span>畫面</a>
+      <a href="#c11"><span class="n">11</span>護欄</a>
+      <a href="#c12"><span class="n">12</span>分期</a>
     </nav>
   </div>
 </header>
@@ -562,8 +592,8 @@ footer .sig svg{width:38px;height:24px}
       <div class="card">
         <div class="ico coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 14l4-8 4 6 3-4 5 6z"/><path d="M4 18h16"/></svg></div>
         <div class="who">有趣</div>
-        <p class="say">卡點是有名字的怪，每週一個副本，每天一張任務卡。</p>
-        <p class="small">任務內容仍是那一格練習，只是有名字、有理由、有變化。嚮導可以丟隱藏任務。</p>
+        <p class="say">卡點是有名字、有故事的怪，每季一章主線，每週一個副本。</p>
+        <p class="small">怪的騙術就是孩子的誤解，牠出場的台詞就是錯的推理。故事長在教學裡，見第 09 章。</p>
       </div>
       <div class="card">
         <div class="ico honey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></div>
@@ -654,7 +684,7 @@ footer .sig svg{width:38px;height:24px}
       <div class="card"><div class="who">國文 · 字林</div><p class="say">音近字妖、之乎迷霧、修辭變臉怪</p><p class="small">再和在、做和作寫混；文言的「之」分不清用法；譬喻和轉化分不清。</p></div>
       <div class="card"><div class="who">社會 · 時光古道</div><p class="say">年代錯置怪、因果顛倒獸、經緯迷航</p><p class="small">把事件順序排錯；把結果當成原因；經度和緯度讀反。</p></div>
     </div>
-    <p class="note">真人小隊課仍然數學先行。其他三片大陸先以副本與對戰開放，要不要也開真人課，列在第 11 章待決。</p>
+    <p class="note">真人小隊課仍然數學先行。其他三片大陸先以副本與對戰開放，要不要也開真人課，列在第 12 章待決。</p>
   </div>
 </section>
 
@@ -1051,7 +1081,7 @@ footer .sig svg{width:38px;height:24px}
       <div>
         <div class="callout pine" style="margin-top:0">
           <p><b>判讀：為什麼是出題戰，不是搶答戰。</b>搶答比的是速度，速度會把最慢的那個孩子曝光。出題比的是理解：要出一題能騙到人的題，得先想清楚那隻怪在哪一步騙人，這和北極星是同一個方向。</p>
-          <p>對戰的作答算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 11 章有這條驗證。</p>
+          <p>對戰的作答算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 12 章有這條驗證。</p>
         </div>
         <div class="callout gov">
           <p><b>沙利曼：對戰多出三條線。</b>一、跨隊的互動只有題目和「這題出得好」，題目一律經內容團隊與嚮導審過；隊內只有候選答案和固定句。二、對戰報告不離開兩隊和兩位嚮導，公會牆只會出現「四葉小隊打了一場對戰」，不出現勝負，不出現對手。三、真人對戰用匿名投票決定，13 歲以下另需家長在 LINE 端同意。</p>
@@ -1289,10 +1319,185 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 09 畫面 ============ -->
+<!-- ============ 09 故事 ============ -->
 <section class="ch" id="c9">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no pine">09</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
+    <div class="ch-head"><div class="ch-no honey">09</div><div><div class="kicker">故事與敘事</div><h2>故事長在教學裡：怪的騙術就是誤解，識破牠就是學會</h2></div></div>
+    <p class="lead">敘事是第四個引擎。前面三個是關卡、隊伍、地圖，它們回答「做什麼」，故事回答<b>「為什麼要往前走」</b>。原則只有一條：故事不貼在教學外面，故事就是教學的形狀。怪的傳說是誤解的成因，怪的台詞是錯的推理，識破牠的那一刻就是概念變對的那一刻。</p>
+
+    <div class="callout honey">
+      <p><b>誠實說：故事有一種會害學習。</b>學習科學裡有一條很穩的發現：和內容無關的趣味細節會拉低理解，因為它搶走注意力。所以這一章的每一個故事元素都要通過同一個檢查：拿掉它，孩子會不會少學到一件事。拿掉沒差的，就不放。</p>
+    </div>
+
+    <h3>世界的前提：迷霧、怪與燈塔</h3>
+    <p class="prose">內海升起迷霧，蓋住四片大陸的路線，燈塔一座一座熄了。怪不是壞蛋，是從迷霧裡長出來的<b>錯誤的化身</b>：每一隻怪都有一套騙術，讓路過的人在某一步走錯。冒險小隊的工作是拓荒：識破怪的騙術，把牠收服成影子，燈就亮一格。魔王不是怪，是季末那一場考驗，證明這一季走過的路真的走通了。</p>
+    <p class="note">這個前提刻意把「錯」寫成外面的東西。孩子不是笨，是被騙了；學會不是變聰明，是識破。這和「珊瑚色不代表錯」是同一個立場。</p>
+
+    <h3>怪的傳說卡：一隻怪有五個欄位，每一個都是教學</h3>
+    <div class="grid g2">
+      <div class="lore">
+        <div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div>
+        <div>
+          <h4>負號幽靈</h4>
+          <span class="tag pos">多項式林</span>
+          <dl>
+            <dt>出身</dt><dd>住在括號前面。很多人第一次學減法時，只把負號給了第一個數，牠就從那個習慣裡長出來。</dd>
+            <dt>騙術</dt><dd>讓你以為負號只碰括號裡的第一項，後面的都放過。</dd>
+            <dt>口頭禪</dt><dd><q>第一個歸我，後面的我不管。</q>孩子一聽到這句，就知道自己剛剛在想什麼。</dd>
+            <dt>弱點</dt><dd><q class="ok">負號要發給括號裡每一個人。</q>這句就是影子站在你身後時說的話。</dd>
+            <dt>被識破時</dt><dd>牠會嘟囔<q>連第三項都被你看到了</q>，然後變成影子。</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="lore">
+        <div class="mon"><svg aria-hidden="true"><use href="#m-tri"/></svg></div>
+        <div>
+          <h4>斜邊迷霧</h4>
+          <span class="tag pos">畢氏山</span>
+          <dl>
+            <dt>出身</dt><dd>課本裡的直角三角形總是直角在左下、斜邊在右上。牠就躲在那個習慣裡，只要三角形一轉，你就認錯邊。</dd>
+            <dt>騙術</dt><dd>把三角形轉個方向，讓你把最長的邊當成股。</dd>
+            <dt>口頭禪</dt><dd><q>右上那條就是斜邊，看都不用看。</q></dd>
+            <dt>弱點</dt><dd><q class="ok">斜邊永遠對著直角，先找直角再找斜邊。</q></dd>
+            <dt>被識破時</dt><dd><q>你居然先找直角。</q></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <p class="note">五個欄位裡，出身是誤解的成因，騙術是誤解本身，口頭禪是錯的推理說出口，弱點是正確概念，被識破時是回饋。這張卡由學科老師寫，AI 只幫忙潤稿，因為口頭禪寫錯就等於教錯。</p>
+
+    <h3>怪會說話：答錯不叫答錯，叫被騙到</h3>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="taunt"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>負號幽靈</b>：你看，只有第一項變號。我就說後面的我不管。</p></div>
+        <p class="small" style="margin-top:10px">孩子犯了這隻怪的特定錯法時，出現的不是紅色的「錯」，是怪的一句台詞。台詞把錯的推理講出來，孩子當場聽見自己剛才的想法。這是回饋，也是這個世界最常出現的娛樂。</p>
+      </div>
+      <div>
+        <div class="taunt" style="background:var(--learned-bg)"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>影子 · 負號幽靈</b>：負號要發給每一個人。這句是你教我的。</p></div>
+        <p class="small" style="margin-top:10px">收服之後，影子站在身後，偶爾說一句弱點。孩子收集的不是怪，是一句一句自己識破過的規則。影子牆同時是知識卡牆。</p>
+      </div>
+    </div>
+
+    <h3>一季一章：主線用嚮導的信推進</h3>
+    <div class="grid g4">
+      <div class="card"><div class="who">第 1 到 2 週 · 啟程</div><p class="say">燈塔熄了，小隊出發。</p><p class="small">開季診斷變成「偵察報告」：你們這隊被哪三隻怪打倒過。第一封信介紹這三隻怪的傳說。</p></div>
+      <div class="card"><div class="who">第 3 到 4 週 · 遭遇</div><p class="say">第一支對手隊伍出現，中途營地。</p><p class="small">出題戰的信寫成「對面的小隊也在追同一隻怪」。結業點的信是：走到這裡，可以停，也可以續。</p></div>
+      <div class="card"><div class="who">第 5 到 7 週 · 深入</div><p class="say">迷霧最深的一區，魔王的影子出現。</p><p class="small">信裡開始預告魔王：牠會用你們這季遇過的所有怪的騙術。這就是段考範圍的敘事版。</p></div>
+      <div class="card honey"><div class="who">第 8 週 · 魔王戰與歸來</div><p class="say">段考之後，回到營地攤開日誌。</p><p class="small">戰報寫成「這一季你們識破了哪幾隻怪」。季末 AI 把隊伍日誌串成一頁故事，家長也看得懂。</p></div>
+    </div>
+    <p class="note">主線一季八封信，由嚮導的聲音講，每封 60 秒以內，遠征前播、任務卡裡可重聽。純 AI 與巡查模式由巡查員或小陪讀。信由內容團隊寫、AI 起草，一季一次，成本很低。</p>
+
+    <h3>遠征六幕是劇本：嚮導的課前一頁多一欄台詞</h3>
+    <div class="beats">
+      <div><b>整隊</b><div class="line">「上週的拆根蟲，還有人記得牠的口頭禪嗎？」</div><p>用怪的台詞回顧，不用「複習」兩個字。</p></div>
+      <div><b>偵察弱點</b><div class="line">「今天的怪是負號幽靈。牠說：第一個歸我，後面的我不管。牠在騙什麼？」</div><p>老師唸口頭禪，讓學生找騙術。這一幕是全堂最好玩的。</p></div>
+      <div><b>各自出手</b><div class="line">「每個人打一次，被騙到沒關係，偵察就是這樣。」</div><p>錯法回來會變成怪的台詞。</p></div>
+      <div><b>嚮導示範一擊</b><div class="line">「我只示範牠最會騙的那一步。」</div><p>老師只做一步，維持原則。</p></div>
+      <div><b>合擊</b><div class="line">「兩兩一組，把牠的弱點講給隊友聽。講得出來才算識破。」</div><p>講給隊友聽，變成識破的儀式。</p></div>
+      <div><b>清點戰利品</b><div class="line">「每人一句：你今天識破了什麼？」</div><p>書記寫進冒險日誌。</p></div>
+    </div>
+    <p class="note">台詞是選用的，老師可以照唸、改寫或不用。試點要量的是：用了台詞的隊伍，開口次數有沒有比較多。</p>
+
+    <h3>題目裡的故事：只在數學就是故事的時候</h3>
+    <div class="grid g3">
+      <div class="card mint"><div class="who">放</div><p class="say">畢氏山：要架一座橋跨過峽谷，橋要多長？</p><p class="small">情境就是題目本身，拿掉故事題就不成立。</p></div>
+      <div class="card coral"><div class="who">不放</div><p class="say">「勇者小明在森林裡遇到 (2x+3)²，請化簡。」</p><p class="small">故事和數學無關，只是加了閱讀量。這種一律不出。</p></div>
+      <div class="card"><div class="who">Boss 接力</div><p class="say">一題多步驟，陷阱藏在中間一棒。</p><p class="small">故事是「怪躲在第三棒」，題目本身還是乾淨的數學。</p></div>
+    </div>
+    <p class="note">規則寫死：題幹的故事最多兩行；閱讀弱的孩子可以按語音；每一題都要能在拿掉故事之後仍然成立。國文和社會例外，因為文本本來就是內容。</p>
+
+    <h3>孩子是作者：三個地方讓他們寫故事</h3>
+    <ol class="steps">
+      <li><b>出題戰就是寫怪的騙術。</b>選一隻怪、選牠的陷阱、填一個情境。孩子出的好題進題庫，署名是隊名，下個月的試煉副本可能出現「四葉小隊設計的陷阱」。</li>
+      <li><b>冒險日誌是隊伍的連載。</b>書記每週寫的「我們識破了什麼」，季末由 AI 串成一頁「四葉小隊第三季」，放上隊伍牆，也寄到家長的 LINE。家長第一次看到孩子的學習被寫成故事，而不是分數。</li>
+      <li><b>隊名、隊旗、塔上的話。</b>守塔隊刻在塔上的那一句，是他們對這一區的怪的理解。這是孩子寫給後來者的攻略，也是最短的教學。</li>
+    </ol>
+
+    <div class="phones three" style="margin-top:26px">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>19:58</span><span>第 3 週 · 遠征前</span></div>
+          <span class="t">嚮導的信 · 第三封</span>
+          <div class="panels">
+            <div class="panel"><div class="mon fog"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>多項式林深處</b>迷霧比上週更濃。你們上週打中的拆根蟲，這週會回來一次。</p></div>
+            <div class="panel"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>今天的怪</b>負號幽靈。牠只有一句話：「第一個歸我，後面的我不管。」</p></div>
+            <div class="panel dark"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-bug"/></svg></div><p><b>林老師</b>今晚先別急著算。先想牠在騙什麼。八點見。</p></div>
+          </div>
+          <div class="grow"></div>
+          <span class="btn ghost">跳過</span>
+          <span class="btn">聽林老師唸（0:48）</span>
+        </div></div>
+        <p class="phone-cap"><b>嚮導的信</b>三格、每格不到 40 字、可以跳過、可以用聽的。示意畫面、資料為虛構。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:44</span><span>補刀 · 第 2 題</span></div>
+          <div class="c"><span class="fine">你的答案</span><p class="mx">2x² + x − 3 − x² − 4x − 1</p></div>
+          <div class="taunt"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>負號幽靈</b>：你看，只有第一項變號。我就說後面的我不管。</p></div>
+          <div class="coach"><span class="dot">陪</span><p>牠剛剛講出你的想法了。括號裡有三項，負號要發給幾個？</p></div>
+          <div class="grow"></div>
+          <span class="btn">再寫一次</span>
+          <p class="fine" style="text-align:center">被騙到不扣分。識破牠才算數。</p>
+        </div></div>
+        <p class="phone-cap"><b>被騙到</b>錯法觸發怪的台詞，小陪接著問。回饋本身就是故事。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen" style="background:var(--mastered-bg)">
+          <div class="sb"><span>21:40</span><span>第 8 週</span></div>
+          <span class="title" style="font-size:11.5px;font-weight:700;color:var(--mastered-text);letter-spacing:.08em">四葉小隊 · 第三季</span>
+          <h5>迷霧散了六格，<br>影子站了六隻。</h5>
+          <div class="c">
+            <p style="font-size:13px;line-height:1.7">第一週，四個人在乘法平原被漏項獸打倒。第三週，小隊識破了負號幽靈，書記寫下「負號要發給每一個人」。第六週，斜邊迷霧在畢氏山被小晴先找直角識破。第八週，魔王用了六隻怪的騙術，小隊識破了五隻。</p>
+          </div>
+          <div class="c"><div class="kv"><span>這一季收服</span><b>6 隻</b></div><div class="kv"><span>睡著等叫醒</span><b>1 隻</b></div></div>
+          <div class="grow"></div>
+          <span class="btn dark">傳到營地（家人）</span>
+        </div></div>
+        <p class="phone-cap"><b>季末故事</b>AI 把八週的日誌串成一頁，只寫識破了什麼，不寫分數。家長的段考對照有了敘事版。</p>
+      </div>
+    </div>
+
+    <h3>敘事的六條護欄</h3>
+    <div class="dodont">
+      <div class="card">
+        <ul class="do">
+          <h4>做</h4>
+          <li>每一個故事元素都要通過「拿掉它會少學一件事」的檢查。</li>
+          <li>任何敘事都可以一鍵跳過，練習永遠不被故事擋住。</li>
+          <li>信和格漫每格不超過 40 字，都有語音版。</li>
+          <li>語氣短、乾、帶一點幽默，嘲笑的是怪，永遠不是孩子。</li>
+          <li>調性先給二十位國二國三的孩子看過再定，他們說「尷尬」就改。</li>
+          <li>怪的傳說卡由學科老師寫，因為口頭禪寫錯就是教錯。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <ul class="dont">
+          <h4>不做</h4>
+          <li>和數學無關的情境題、裝飾用的角色對話。</li>
+          <li>用「怪要逃走了」「燈快熄了」這類焦慮句推進主線。</li>
+          <li>把段考寫成審判。魔王是考驗，不是懲罰。</li>
+          <li>裝可愛、賣萌、說教式的旁白。</li>
+          <li>需要看完才能練習的過場動畫。</li>
+          <li>22:30 之後推送任何故事。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:18px;align-items:start">
+      <div class="callout pine" style="margin-top:0">
+        <p><b>霍爾：敘事是最便宜的引擎。</b>一隻怪的傳說卡五個欄位，四十隻怪就是一季的內容量，由學科老師寫、AI 潤稿。一季八封信，一封 60 秒。格漫用品牌的圓形怪拼，不用手繪。收服時刻和季末故事全自動。整個敘事層的成本，比一科的題庫還低，但它決定孩子明天會不會再打開。</p>
+      </div>
+      <div class="callout" style="margin-top:0">
+        <p><b>蕪菁頭：這群孩子對「尷尬」的雷達很靈。</b>國二國三的孩子會把太熱血的旁白截圖去笑。所以語氣要像林老師本人會講的話，不像遊戲客服。試點第一件事不是量留存，是把嚮導的信和怪的口頭禪拿給二十個孩子看，問他們哪一句會想截圖。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 畫面 ============ -->
+<section class="ch" id="c10">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">10</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
     <p class="lead">色彩用品牌既有的珊瑚、松綠、蜂蜜金，怪用品牌的圓做出來，不用任何既有 IP 的視覺。<b>示意畫面、資料為虛構</b>。</p>
 
     <div class="phones">
@@ -1393,10 +1598,10 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 10 護欄 ============ -->
-<section class="ch" id="c10">
+<!-- ============ 11 護欄 ============ -->
+<section class="ch" id="c11">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no honey">10</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
+    <div class="ch-head"><div class="ch-no pine">11</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
     <p class="lead">規劃書的三條護欄與八條原則全部沿用。下面是遊戲化這一層額外加的界線，每一條都對應一個已知會出事的地方。</p>
 
     <div class="dodont">
@@ -1416,6 +1621,7 @@ footer .sig svg{width:38px;height:24px}
           <li>副本難度用「七成隊伍第一次就過關」校準，撤退不扣分。</li>
           <li>公開賽採達標制：徽章牆只列拿到的隊名，隨機排序、不寫分數，小隊可以選擇不上牆。</li>
           <li>隊伍榜只顯示前後各三隊、季末重置；守塔月結算、不衰減，歷代守塔隊永久留名。</li>
+          <li>怪的口頭禪就是錯的推理，由學科老師寫；所有敘事可跳過、有語音、每格不超過 40 字。</li>
           <li>實體獎品寄給家長，收件資料寄出後 30 天刪除。</li>
           <li>分享由孩子主動按，卡上沒有臉、真名、分數、隊友狀態。</li>
           <li>任務卡每天最多三張，22:30 後不發、不亮、不推播，段考週不加量。</li>
@@ -1435,6 +1641,7 @@ footer .sig svg{width:38px;height:24px}
           <li>用「銅、銀、金」這類金屬名做等級，或把路線掛在隊伍牆、分享卡上。</li>
           <li>把真實縣市、學校放上地圖或榜；聯賽區只到北中南東。</li>
           <li>會衰減、要防守、每天要巡的領土機制；預設開啟的個人排行榜。</li>
+          <li>和內容無關的情境題、需要看完才能練習的過場、焦慮句推進的主線。</li>
           <li>未成年之間的自由文字聊天。</li>
           <li>晚上發任務、用「怪要逃走了」之類的焦慮句催練習。</li>
           <li>直接使用《我獨自升級》或任何作品的名稱、角色、視覺。</li>
@@ -1449,10 +1656,10 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 11 分期 ============ -->
-<section class="ch" id="c11">
+<!-- ============ 12 分期 ============ -->
+<section class="ch" id="c12">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no honey">11</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
+    <div class="ch-head"><div class="ch-no honey">12</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
     <p class="lead">第一輪在現有 POC 原型上做個人的冒險與副本主循環，隊友先用示範資料。第二輪在試點用真的小隊打副本與對戰。第三輪開英文大陸與公會，國文和社會等題庫與版本備好再上。</p>
 
     <div class="phase">
@@ -1460,7 +1667,8 @@ footer .sig svg{width:38px;height:24px}
         <span class="no">第一輪 · POC 原型</span>
         <h4>個人的冒險</h4>
         <ul>
-          <li>八隻怪的命名與圖</li>
+          <li>八隻怪的命名、圖與傳說卡：出身、騙術、口頭禪、弱點</li>
+          <li>怪會說話：錯法觸發台詞，接小陪的第一句</li>
           <li>任務卡：補刀、偵察、叫醒影子</li>
           <li>收服時刻全螢幕</li>
           <li>影子牆與稱號</li>
@@ -1468,7 +1676,7 @@ footer .sig svg{width:38px;height:24px}
           <li>營地來信的「我見證了」與隔天回饋</li>
           <li>數學副本：三層加 Boss 接力、小隊解題率結算，隊友用示範資料</li>
         </ul>
-        <div class="kpi"><b>驗證：</b>第三週仍每週練習三天以上的比例 ≥ 50%；家長「我見證了」點擊率 ≥ 60%；試玩者能不看說明講出「怎樣算過關」</div>
+        <div class="kpi"><b>驗證：</b>第三週仍每週練習三天以上的比例 ≥ 50%；家長「我見證了」點擊率 ≥ 60%；試玩者能不看說明講出「怎樣算過關」；二十位孩子試讀怪的台詞，說「尷尬」的不超過三位</div>
       </div>
       <div class="card">
         <span class="no">第二輪 · 試點</span>
@@ -1478,7 +1686,8 @@ footer .sig svg{width:38px;height:24px}
           <li>整備條與「等你」</li>
           <li>四個角色每週輪替，進老師的課前一頁</li>
           <li>隊名、隊伍牆</li>
-          <li>遠征六幕進老師端課堂流程</li>
+          <li>遠征六幕進老師端課堂流程，課前一頁多一欄台詞</li>
+          <li>嚮導的信一季八封、季末故事自動生成</li>
           <li>真小隊打數學副本：匿名求援、非同步接力、路線與缺席申報</li>
           <li>小隊對戰：鏡像賽、出題戰、匿名投票與幽靈隊</li>
         </ul>
@@ -1501,7 +1710,7 @@ footer .sig svg{width:38px;height:24px}
       </div>
     </div>
 
-    <h3>九件要愛德華拍板的事</h3>
+    <h3>十件要愛德華拍板的事</h3>
     <div class="ask">
       <div><span class="q">1</span><div><b>怪與地區的命名調性</b><p>目前是「帥一點的可愛」，例：漏項獸、負號幽靈、根號谷。往帥調會更像動畫，往可愛調家長更放心。<em>蘇菲建議：維持現在這一格，試點看孩子怎麼叫牠們再修。</em></p></div></div>
       <div><span class="q">2</span><div><b>美術方向</b><p>用品牌的圓做出來的幾何怪（本稿），或手繪紙地圖風格。前者和現有品牌一致、成本低；後者更有冒險感，但要另開一套視覺系統。<em>蘇菲建議：第一輪用幾何怪，第二輪地圖再評估紙地圖。</em></p></div></div>
@@ -1512,6 +1721,7 @@ footer .sig svg{width:38px;height:24px}
       <div><span class="q">7</span><div><b>公開賽用達標制還是名額制</b><p>你說的是「勝利的小隊拿到真的獎品」。名額制最熱血，但會變成排行榜，也最容易引來代答。<em>蘇菲建議：達標制，加上「全服目標」和「出題賞」補熱血感。先辦兩個月，看參賽率和複核退件率再決定。</em></p></div></div>
       <div><span class="q">8</span><div><b>地圖用幻想大陸，還是台北市真實地圖</b><p>真實地圖認同感最強，但區域對不到章節、會暴露孩子住哪、明星學區會壓過其他區、換縣市要重畫。<em>蘇菲建議：主地圖用幻想大陸，真實地理只用來分北中南東四個聯賽區。</em></p></div></div>
       <div><span class="q">9</span><div><b>個人排行榜要不要開</b><p>你提的「戰績越多排越前面」在隊伍榜和公會榜都做了。個人榜的證據是對前 20% 有用、對其他人反效果。<em>蘇菲建議：個人榜預設關、孩子自己開，只顯示稱號與隊名。試點看開榜比例再決定要不要放大。</em></p></div></div>
+      <div><span class="q">10</span><div><b>敘事的調性與主線題材</b><p>目前是「迷霧、怪、燈塔」的拓荒故事，語氣走林老師本人會講的話，不走熱血旁白。另一個方向是更動漫化的世界觀與角色，認同感更強，但尷尬風險與美術成本都高。<em>蘇菲建議：維持拓荒故事與老師的聲音，先拿給二十個孩子試讀，再決定要不要往動漫化走一格。</em></p></div></div>
     </div>
   </div>
 </section>
