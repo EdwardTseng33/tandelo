@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>老師招募｜Tandelo</title>
+  <meta name="description" content="Tandelo 在找國中數學老師：一堂帶 3–6 人的固定小隊，學費分潤 45–60%、每堂保底 600 取高；課前看卡點卡 10 分鐘、課後 30 秒語音，湊隊與排課交給系統。">
+  <meta name="theme-color" content="#F6F4EE" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0C1412" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:site_name" content="Tandelo">
+  <meta property="og:title" content="教一次，讓一整隊都懂｜Tandelo 老師招募">
+  <meta property="og:description" content="一堂帶 3–6 個卡在同一步的孩子，收入比一對一高，備課更輕。附收入試算器。">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@500;600;700&family=STIX+Two+Text:ital,wght@1,500&display=swap">
+  <link rel="stylesheet" href="assets/brand.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>
+    /* 在畫面出現前決定深淺色：手動選過就照選的；沒選過且在 22:30–06:00 之間自動轉暗 */
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      try {
+        var t = localStorage.getItem('tandelo.theme');
+        if (!t) {
+          var d = new Date(), m = d.getHours() * 60 + d.getMinutes();
+          if (m >= 1350 || m < 360) { t = 'dark'; root.setAttribute('data-night', ''); }
+        }
+        if (t === 'dark' || t === 'light') root.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <script src="assets/site.js" defer></script>
+  <script src="assets/teachers.js" defer></script>
+</head>
+<body class="page-teachers">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><circle cx="17" cy="10" r="2.6"/><path d="M3 19c.6-3.4 3-5 6-5s5.4 1.6 6 5M15.5 14.4c2.8 0 4.8 1.4 5.5 4.6"/></symbol>
+      <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.5-.9-1.5-1.4-2.5-1.4-1.5 0-2.6.8-2.6 2s1.1 1.7 2.6 2 2.6.8 2.6 2-1.1 2-2.6 2c-1.1 0-2.1-.5-2.6-1.4M12 6.5v1.3M12 16.2v1.3"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z"/><path d="M14 3.5v4h4M8.5 12.5h7M8.5 16h5"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header class="site-nav">
+    <div class="wrap nav-inner">
+      <a class="brand-lockup" href="./" aria-label="Tandelo 首頁">
+        <svg class="brand-mark" viewBox="0 0 64 40" aria-hidden="true"><circle class="c-a" cx="21" cy="20" r="18"/><circle class="c-b" cx="43" cy="20" r="18"/><path class="c-ov" d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z"/></svg>
+        <span class="wordmark">Tandelo</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="主要導覽">
+        <a href="./">產品</a>
+        <a href="teachers.html" aria-current="page">老師招募</a>
+        <button class="nav-theme-row" type="button" data-theme-toggle>
+          <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <span data-theme-label>切換深色模式</span>
+        </button>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="切換深色模式">
+          <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm nav-app" href="app/">開啟 App（POC）</a>
+        <button class="icon-btn nav-menu" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="開啟選單">
+          <svg class="ico ico-open" aria-hidden="true"><use href="#i-menu"/></svg>
+          <svg class="ico ico-close" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- 主張 -->
+    <section class="hero t-hero" aria-labelledby="t-hero-title">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">老師招募　國二・國三數學</p>
+          <h1 id="t-hero-title" class="display hero-title"><span class="nb">教一次，</span><br><span class="nb">讓一整隊都懂。</span></h1>
+          <p class="lede">一堂帶 3–6 個卡在同一步的孩子，收入比一對一高。湊隊、排課、備題交給系統，你把 50 分鐘花在教學上。</p>
+          <div class="hero-cta">
+            <a class="btn btn-lg" href="#apply">填寫報名表<svg class="ico ico-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="link-arrow" href="#calc">先試算收入<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></a>
+          </div>
+        </div>
+
+        <div class="t-hero-visual">
+          <div class="takecard" data-takecard>
+            <div class="tc-top">
+              <span class="chip chip-plain chip-learned">新的接班卡</span>
+              <span class="tc-time"><span class="num">週三 19:30</span>・8 週</span>
+            </div>
+            <p class="tc-title">國二數學・不等式小隊</p>
+            <div class="tc-mates" aria-label="5 位隊友">
+              <span class="mate">睿</span><span class="mate">晴</span><span class="mate">安</span><span class="mate">宇</span><span class="mate">恩</span>
+            </div>
+            <div class="tc-stuck">
+              <p class="tc-k">這一隊卡在</p>
+              <p><span class="chip chip-stuck">不等號反向</span> <span class="chip chip-stuck">分數係數</span></p>
+            </div>
+            <div class="tc-pay">
+              <p class="tc-k">這一隊的收入（黃金老師）</p>
+              <ul>
+                <li><span>4 人</span><b class="num">NT$777</b></li>
+                <li class="is-now"><span>5 人</span><b class="num">NT$972</b></li>
+                <li><span>6 人</span><b class="num">NT$1,166</b></li>
+              </ul>
+              <p class="tc-fine">每堂；和保底 600 取高</p>
+            </div>
+            <button class="tc-take" type="button" data-take aria-pressed="false">
+              <span class="tc-take-idle">接這一隊</span>
+              <span class="tc-take-done"><span class="duo duo-sm"><i></i><i></i></span>成班了，週三見</span>
+            </button>
+            <div class="confetti" data-confetti aria-hidden="true"></div>
+          </div>
+          <p class="viz-caption">接班卡示意・點點看</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 三個主張 -->
+    <section class="section t-claims" aria-labelledby="claims-title">
+      <div class="wrap">
+        <h2 id="claims-title" class="sr-only">為什麼來帶小隊</h2>
+        <ul class="claims">
+          <li class="claim reveal">
+            <svg class="ico claim-ico" aria-hidden="true"><use href="#i-users"/></svg>
+            <p class="claim-num"><b class="num">3–6</b><span>人</span></p>
+            <h3 class="h-card">一堂帶一整隊</h3>
+            <p>固定小隊、同一個時段。8 週看著同一群孩子，一個一個把卡點翻過去。</p>
+          </li>
+          <li class="claim reveal d1">
+            <svg class="ico claim-ico" aria-hidden="true"><use href="#i-coin"/></svg>
+            <p class="claim-num"><b class="num">45–60</b><span>%</span></p>
+            <h3 class="h-card">學費分潤，每堂保底 600</h3>
+            <p>依等級分潤，和保底取高。各種人數下的收入寫在接班卡上，接之前就知道。</p>
+          </li>
+          <li class="claim reveal d2">
+            <svg class="ico claim-ico" aria-hidden="true"><use href="#i-clock"/></svg>
+            <p class="claim-num"><b class="num">10</b><span>分＋</span><b class="num">30</b><span>秒</span></p>
+            <h3 class="h-card">備課很輕</h3>
+            <p>課前看卡點卡約 10 分鐘，課後留 30 秒語音；家長週報由 AI 整理，你確認就好。</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 收入試算器 -->
+    <section class="section calc-sec" id="calc" aria-labelledby="calc-title">
+      <div class="wrap">
+        <header class="sec-head sec-head-split">
+          <div>
+            <p class="eyebrow">收入試算</p>
+            <h2 id="calc-title" class="h-section">人數越多收入越多，<br>人少也有保底。</h2>
+          </div>
+          <p class="lede">每堂收入＝這一堂的學費合計 × 你的等級分潤，和每堂保底 NT$600 取高。調調看你的一個月。</p>
+        </header>
+
+        <div class="calc" data-calc>
+          <form class="calc-controls" onsubmit="return false" aria-label="試算條件">
+            <fieldset class="field-group">
+              <legend>你的等級</legend>
+              <div class="levels">
+                <label class="level">
+                  <input type="radio" name="level" value="0.45">
+                  <span class="level-box"><b>新手</b><span class="num">45%</span></span>
+                </label>
+                <label class="level">
+                  <input type="radio" name="level" value="0.52" checked>
+                  <span class="level-box"><b>黃金</b><span class="num">52%</span></span>
+                </label>
+                <label class="level">
+                  <input type="radio" name="level" value="0.60">
+                  <span class="level-box"><b>鑽石</b><span class="num">60%</span></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="field-group">
+              <div class="range-head">
+                <label for="teams">每週帶幾團</label>
+                <output class="num range-out" for="teams" id="teams-out">6 團</output>
+              </div>
+              <input class="range" type="range" id="teams" name="teams" min="1" max="20" step="1" value="6" aria-describedby="teams-hint">
+              <div class="range-ticks" aria-hidden="true"><span class="num">1 團</span><span class="num">20 團</span></div>
+              <p class="fine" id="teams-hint">一團＝一堂 50 分鐘的小隊課。</p>
+            </div>
+
+            <div class="field-group">
+              <div class="range-head">
+                <label for="size">平均每團人數</label>
+                <output class="num range-out" for="size" id="size-out">5 人</output>
+              </div>
+              <input class="range" type="range" id="size" name="size" min="3" max="6" step="1" value="5">
+              <div class="range-ticks range-ticks-4" aria-hidden="true"><span class="num">3</span><span class="num">4</span><span class="num">5</span><span class="num">6</span></div>
+            </div>
+          </form>
+
+          <div class="calc-result" aria-live="polite">
+            <p class="cr-label">每月估算</p>
+            <p class="cr-total"><span class="cur">NT$</span><b class="num" data-out="month">25,080</b></p>
+            <p class="cr-sub"><span data-out="hours">每週上課 5 小時</span></p>
+
+            <dl class="cr-rows">
+              <div><dt>每堂學費合計</dt><dd class="num" data-out="tuition">NT$1,869</dd></div>
+              <div><dt>你的分潤</dt><dd class="num" data-out="share">NT$972</dd></div>
+              <div class="cr-strong"><dt>每堂實拿 <span class="chip chip-plain chip-stuck cr-floor" data-out="floor" hidden>適用保底</span></dt><dd class="num" data-out="per">NT$972</dd></div>
+            </dl>
+
+            <figure class="cr-bars">
+              <figcaption>同樣等級與團數，不同人數的每月估算</figcaption>
+              <div class="bars" data-bars>
+                <div class="bar" data-n="3"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">3 人</span></div>
+                <div class="bar" data-n="4"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">4 人</span></div>
+                <div class="bar is-on" data-n="5"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">5 人</span></div>
+                <div class="bar" data-n="6"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">6 人</span></div>
+              </div>
+            </figure>
+          </div>
+        </div>
+        <p class="fine calc-note"><b>試算，非保證。</b>以 8 團 NT$2,990 換算，每位學生每堂學費約 NT$374；一個月以 4.3 週計。未含學會獎金、續走獎金與代課加給；實際收入依成班人數與出席而定。</p>
+      </div>
+    </section>
+
+    <!-- 老師的一週 -->
+    <section class="section week-sec" aria-labelledby="week-title">
+      <div class="wrap">
+        <header class="sec-head">
+          <p class="eyebrow">老師的一週</p>
+          <h2 id="week-title" class="h-section">行政交給系統，<br>你只要教。</h2>
+        </header>
+        <ol class="week">
+          <li class="wk reveal">
+            <p class="wk-when">有新小隊時</p>
+            <h3 class="wk-title">接班卡</h3>
+            <p>系統依卡點、段考和時段湊好隊。看過人數、時段、收入，按「接這一隊」才成班。</p>
+            <div class="wk-mock"><span class="mk-row"><b class="num">5</b> 人・<span class="num">週三 19:30</span></span><span class="mk-btn">接這一隊</span></div>
+          </li>
+          <li class="wk reveal d1">
+            <p class="wk-when">上課前一晚</p>
+            <h3 class="wk-title">課前一頁</h3>
+            <p>這一隊這週要解的 3 題，依他們自己的錯排好。你看過、確認才用，也可以換題。</p>
+            <div class="wk-mock"><span class="mk-line"><i class="mk-dot"></i>第 1 題　除以負數</span><span class="mk-line"><i class="mk-dot"></i>第 2 題　分數係數</span><span class="mk-line"><i class="mk-dot"></i>第 3 題　變化題</span></div>
+          </li>
+          <li class="wk reveal d2">
+            <p class="wk-when">上課 50 分鐘</p>
+            <h3 class="wk-title">教室</h3>
+            <p>照六段走：暖身、大家常錯的、自己試試、再帶一次、講給隊友聽、我搞懂的。提示在旁，你決定。</p>
+            <div class="wk-mock"><span class="mk-bar" aria-hidden="true"><i style="--w:5"></i><i style="--w:10"></i><i style="--w:10"></i><i style="--w:5"></i><i style="--w:15"></i><i style="--w:5"></i></span></div>
+          </li>
+          <li class="wk reveal d3">
+            <p class="wk-when">下課後</p>
+            <h3 class="wk-title">課後紀錄</h3>
+            <p>留 30 秒語音，說說今天誰卡住、誰翻過去。AI 整理成家長週報和下週的課前一頁。</p>
+            <div class="wk-mock"><span class="mk-rec"><svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="num">0:30</span></span></div>
+          </li>
+          <li class="wk reveal">
+            <p class="wk-when">每月 1 日</p>
+            <h3 class="wk-title">自動出帳</h3>
+            <p>每一堂的人數、分潤與保底都列在明細裡。不用自己對帳，也不用追款。</p>
+            <div class="wk-mock"><span class="mk-row">本月明細</span><span class="mk-sum num">24 堂</span></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 我們要找什麼樣的老師 -->
+    <section class="section want-sec" aria-labelledby="want-title">
+      <div class="wrap want-grid">
+        <header class="sec-head">
+          <p class="eyebrow">我們在找</p>
+          <h2 id="want-title" class="h-section">願意讓孩子<br>多開口的老師。</h2>
+        </header>
+        <div class="want-cols">
+          <div class="want-col">
+            <h3 class="want-h">我們要找</h3>
+            <ul class="ticks">
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>教得會國中數學，熟悉國二、國三的課本與段考</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>願意讓孩子多講：一堂課裡，孩子開口的時間比你多</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>每週能固定一個時段，帶滿一期 8 週</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>願意看卡點卡和再測結果調整教法，不只看答對率</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>有安靜的空間、耳機麥克風，和可以手寫的平板或繪圖板</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>溫和、不急——卡住很正常，不是錯</span></li>
+            </ul>
+          </div>
+          <div class="want-col want-col-no">
+            <h3 class="want-h">你不用做</h3>
+            <ul class="ticks ticks-no">
+              <li><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg><span>招生、打電話推銷</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg><span>排課、湊人、喬時間</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg><span>每週從零出題、做講義</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg><span>一個一個回報家長</span></li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg><span>月底自己對帳</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 申請流程 -->
+    <section class="section process-sec" aria-labelledby="process-title">
+      <div class="wrap">
+        <header class="sec-head">
+          <p class="eyebrow">申請流程</p>
+          <h2 id="process-title" class="h-section">四步，<span class="nb">帶到你的第一隊。</span></h2>
+        </header>
+        <ol class="process">
+          <li class="pr reveal">
+            <span class="pr-no num">01</span>
+            <h3 class="h-card">線上報名</h3>
+            <p>填下面的表單：能教什麼、什麼時段有空。約 3 分鐘。</p>
+          </li>
+          <li class="pr reveal d1">
+            <span class="pr-no num">02</span>
+            <h3 class="h-card"><span class="num">20</span> 分鐘試教</h3>
+            <p>拿一個真實的卡點，試帶一段「大家常錯的」。</p>
+          </li>
+          <li class="pr reveal d2">
+            <span class="pr-no num">03</span>
+            <h3 class="h-card">兩小時工作坊</h3>
+            <p>六段式小隊課怎麼帶、怎麼讓孩子開口、怎麼用課前一頁。</p>
+          </li>
+          <li class="pr reveal d3">
+            <span class="pr-no num">04</span>
+            <h3 class="h-card">帶你的第一隊</h3>
+            <p>接班卡出現時，按「接這一隊」，第一堂就開始。</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 報名表單 -->
+    <section class="section apply-sec" id="apply" aria-labelledby="apply-title">
+      <div class="wrap apply-grid">
+        <div class="apply-intro">
+          <p class="eyebrow">報名</p>
+          <h2 id="apply-title" class="h-section">留下你的<br>教學時段。</h2>
+          <p class="lede">這是概念驗證的示範表單。按下送出後，資料只存在你這台裝置，不會寄出。</p>
+
+          <div class="privacy" id="privacy">
+            <h3 class="privacy-h"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>個資用途說明</h3>
+            <dl>
+              <div><dt>蒐集什麼</dt><dd>姓名、聯絡方式、可教科目與年級、可上課時段、教學經驗，以及你自願填寫的補充。</dd></div>
+              <div><dt>用在哪裡</dt><dd>只用來在這個頁面示範報名流程。</dd></div>
+              <div><dt>存在哪裡</dt><dd>只存在你這台裝置的瀏覽器（localStorage），不會傳到任何伺服器；網站也沒有追蹤碼。</dd></div>
+              <div><dt>怎麼刪除</dt><dd>送出後按「清除我的資料」，或清除瀏覽器裡這個網站的資料。</dd></div>
+            </dl>
+            <p class="fine">正式招募開始時，會另外提供完整的個資告知與同意。</p>
+          </div>
+        </div>
+
+        <div class="apply-card">
+          <div class="saved-note" data-saved-note hidden>
+            <p>這台裝置上有一份你之前留下的報名資料。</p>
+            <button class="btn btn-ghost btn-sm" type="button" data-clear>清除我的資料</button>
+          </div>
+
+          <form class="apply-form" data-apply novalidate>
+            <div class="form-error-summary" data-error-summary role="alert" tabindex="-1" hidden></div>
+
+            <div class="field">
+              <label for="f-name">姓名 <span class="req">必填</span></label>
+              <input id="f-name" name="name" type="text" autocomplete="name" maxlength="40" required aria-describedby="f-name-err">
+              <p class="field-err" id="f-name-err" data-err-for="name"></p>
+            </div>
+
+            <div class="field">
+              <label for="f-contact">聯絡方式 <span class="req">必填</span></label>
+              <input id="f-contact" name="contact" type="text" inputmode="email" autocomplete="email" maxlength="80" placeholder="Email 或手機號碼" required aria-describedby="f-contact-hint f-contact-err">
+              <p class="fine" id="f-contact-hint">例如 name@example.com 或 0912-345-678。</p>
+              <p class="field-err" id="f-contact-err" data-err-for="contact"></p>
+            </div>
+
+            <fieldset class="field" id="f-subjects" aria-describedby="f-subjects-err">
+              <legend>可教科目與年級 <span class="req">至少選一項</span></legend>
+              <div class="choice-row">
+                <label class="choice"><input type="checkbox" name="subjects" value="國二數學"><span>國二數學</span></label>
+                <label class="choice"><input type="checkbox" name="subjects" value="國三數學"><span>國三數學</span></label>
+                <label class="choice"><input type="checkbox" name="subjects" value="國二理化"><span>國二理化<small>之後開</small></span></label>
+                <label class="choice"><input type="checkbox" name="subjects" value="國三理化"><span>國三理化<small>之後開</small></span></label>
+              </div>
+              <p class="field-err" id="f-subjects-err" data-err-for="subjects"></p>
+            </fieldset>
+
+            <fieldset class="field" id="f-slots" aria-describedby="f-slots-hint f-slots-err">
+              <legend>可上課時段 <span class="req">至少選一項</span></legend>
+              <div class="choice-row">
+                <label class="choice"><input type="checkbox" name="slots" value="平日 18:30–19:20"><span>平日 <span class="num">18:30</span></span></label>
+                <label class="choice"><input type="checkbox" name="slots" value="平日 19:30–20:20"><span>平日 <span class="num">19:30</span></span></label>
+                <label class="choice"><input type="checkbox" name="slots" value="平日 20:30–21:20"><span>平日 <span class="num">20:30</span></span></label>
+                <label class="choice"><input type="checkbox" name="slots" value="週六上午"><span>週六上午</span></label>
+                <label class="choice"><input type="checkbox" name="slots" value="週六下午"><span>週六下午</span></label>
+                <label class="choice"><input type="checkbox" name="slots" value="週日上午"><span>週日上午</span></label>
+                <label class="choice"><input type="checkbox" name="slots" value="週日下午"><span>週日下午</span></label>
+              </div>
+              <p class="fine" id="f-slots-hint">每堂 50 分鐘；最晚一堂在 21:20 前結束，孩子 22:30 要休息。</p>
+              <p class="field-err" id="f-slots-err" data-err-for="slots"></p>
+            </fieldset>
+
+            <div class="field">
+              <label for="f-exp">教學經驗 <span class="req">必填</span></label>
+              <div class="select-wrap">
+                <select id="f-exp" name="experience" required aria-describedby="f-exp-err">
+                  <option value="">請選擇</option>
+                  <option>還沒有正式教過</option>
+                  <option>未滿 1 年</option>
+                  <option>1–3 年</option>
+                  <option>3–5 年</option>
+                  <option>5 年以上</option>
+                </select>
+                <svg class="ico" aria-hidden="true"><use href="#i-down"/></svg>
+              </div>
+              <p class="field-err" id="f-exp-err" data-err-for="experience"></p>
+            </div>
+
+            <div class="field">
+              <label for="f-note">想讓我們知道的 <span class="opt">選填</span></label>
+              <textarea id="f-note" name="note" rows="3" maxlength="300" placeholder="例如：帶過小班嗎？最拿手的單元？"></textarea>
+            </div>
+
+            <div class="field">
+              <label class="consent">
+                <input id="f-consent" type="checkbox" name="consent" required aria-describedby="f-consent-err">
+                <span>我已閱讀<a href="#privacy">個資用途說明</a>，了解這份資料只存在這台裝置。</span>
+              </label>
+              <p class="field-err" id="f-consent-err" data-err-for="consent"></p>
+            </div>
+
+            <button class="btn btn-lg btn-block" type="submit">送出報名（示範）</button>
+            <p class="fine form-foot">這是概念驗證，資料只留在你的裝置，不會寄出。</p>
+          </form>
+
+          <div class="apply-done" data-done role="status" tabindex="-1" hidden>
+            <span class="duo duo-lg" data-done-duo aria-hidden="true"><i></i><i></i></span>
+            <h3 class="h-card done-title">已收到，只存在你的裝置。</h3>
+            <p>這是概念驗證，資料只留在你的裝置，不會寄出。正式招募開始時，請以正式公告為準。</p>
+            <dl class="done-list" data-done-list></dl>
+            <div class="done-actions">
+              <button class="btn btn-ghost btn-sm" type="button" data-clear>清除我的資料</button>
+              <button class="link-arrow" type="button" data-again>再填一次</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 常見問題 -->
+    <section class="section faq" aria-labelledby="t-faq-title">
+      <div class="wrap faq-grid">
+        <header class="sec-head">
+          <p class="eyebrow">常見問題</p>
+          <h2 id="t-faq-title" class="h-section">老師最常問的。</h2>
+        </header>
+        <div class="faq-list">
+          <details>
+            <summary>我需要自己招生嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>不用。系統依卡點、段考和時段湊好隊，你按「接這一隊」才成班；中間沒有排課行政這一層。</p>
+          </details>
+          <details>
+            <summary>人數不滿，收入怎麼算？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>每堂收入是學費合計 × 等級分潤，和每堂保底 NT$600 取高。接班卡會寫明各種人數下的收入，接之前就知道。</p>
+          </details>
+          <details>
+            <summary>課前一頁是 AI 排的題，我可以改嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>可以。AI 依全隊這週的錯排好 3 題，你看過、確認才用；可以換題、改順序，也可以整頁不用。</p>
+          </details>
+          <details>
+            <summary>一定要帶很多團嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>不用。一週帶一團也可以，重點是同一個時段固定帶滿 8 週，讓孩子每週見到同一位老師。</p>
+          </details>
+          <details>
+            <summary>上課會錄影嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>只錄白板與你的講解，剪成 3 段重點回放給這一隊與家人看。孩子的影像與發言不錄、不能下載，一期結束 30 天後刪除。</p>
+          </details>
+          <details>
+            <summary>什麼時候出帳？還有其他收入嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>每月 1 日自動出帳，明細列出每一堂的人數與金額。另有學會獎金、續走獎金與代課加給，不在試算器裡。</p>
+          </details>
+          <details>
+            <summary>現在真的在招募嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
+            <p>這是 Tandelo 的概念驗證網站。報名表只示範流程，資料只留在你的裝置，不會寄出；收入數字都是試算。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap foot-grid">
+      <div class="foot-brand">
+        <a class="brand-lockup" href="./" aria-label="Tandelo 首頁">
+          <svg class="brand-mark" viewBox="0 0 64 40" aria-hidden="true"><circle class="c-a" cx="21" cy="20" r="18"/><circle class="c-b" cx="43" cy="20" r="18"/><path class="c-ov" d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z"/></svg>
+          <span class="wordmark">Tandelo</span>
+        </a>
+        <p>兩個圓，靠在一起。<br>一個是你，一個是陪你的人。</p>
+      </div>
+      <nav class="foot-nav" aria-label="頁尾導覽">
+        <a href="./">產品</a>
+        <a href="teachers.html">老師招募</a>
+        <a href="app/">開啟 App（POC）</a>
+      </nav>
+      <div class="poc-note">
+        <h2>POC 說明</h2>
+        <p>這個網站是 Tandelo 的產品概念驗證，不是正式營運的服務。頁面上的價格、規則與老師收入都是試算；示範人物與資料皆為虛構；報名表不會寄出任何資料，網站也不使用追蹤碼。</p>
+      </div>
+    </div>
+    <div class="wrap foot-base">
+      <p>Tandelo 概念驗證（POC）· Edward Tseng · 2026</p>
+    </div>
+  </footer>
+</body>
+</html>

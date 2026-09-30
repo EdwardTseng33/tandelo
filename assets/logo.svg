@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" width="64" height="40" role="img" aria-labelledby="t">
+  <title id="t">Tandelo</title>
+  <!-- 兩個圓靠在一起：珊瑚在左（你）、松綠在右（陪你的人）；重疊處為兩色 multiply 的結果 -->
+  <circle cx="21" cy="20" r="18" fill="#F26B54"/>
+  <circle cx="43" cy="20" r="18" fill="#0E5F52"/>
+  <path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/>
+</svg>
