@@ -386,6 +386,57 @@ h4{font-size:16px;margin:22px 0 8px}
 .ask p{font-size:14px;color:var(--text-mute)}
 .ask p em{font-style:normal;color:var(--brand);font-weight:700}
 
+
+/* ---------- 段位、解題率、賽季 ---------- */
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:6px 0 18px;align-items:end}
+@media (max-width:560px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ladder>div{border-radius:var(--r-sm);padding:12px 14px;background:var(--surface);box-shadow:var(--shadow-soft)}
+.ladder>div:nth-child(2){padding-top:24px}.ladder>div:nth-child(3){padding-top:36px}.ladder>div:nth-child(4){padding-top:48px}
+.ladder .rk{display:inline-block;font-weight:900;font-size:17px;padding:2px 14px;border-radius:var(--r-pill)}
+.rk.b{background:var(--stuck-bg);color:var(--stuck-text)}
+.rk.s{background:var(--bg-alt);color:var(--text)}
+.rk.g{background:var(--mastered-bg);color:var(--mastered-text)}
+.rk.p{background:var(--learned-bg);color:var(--brand)}
+.ladder small{display:block;font-size:12.5px;color:var(--text-mute);margin-top:8px;line-height:1.5}
+.formula{background:var(--surface);border-radius:var(--r-card);padding:22px 24px;box-shadow:var(--shadow-soft)}
+.formula .eq{font-weight:900;font-size:clamp(17px,2.2vw,20px);margin-bottom:14px;line-height:1.4}
+.formula ul{list-style:none;padding:0;display:grid;gap:8px;font-size:14.5px}
+.formula li{margin:0;display:flex;gap:14px;align-items:baseline}
+.formula li b{font-family:var(--font-num);min-width:58px;color:var(--brand)}
+.formula .small{margin-top:14px}
+.worked{background:var(--surface-2);border-radius:var(--r-sm);padding:14px 18px;font-size:14px;margin-top:16px;max-width:var(--measure);line-height:1.7}
+.worked b{color:var(--brand)}
+.season{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin:14px 0 8px}
+@media (max-width:900px){.season{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:480px){.season{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.season>div{background:var(--surface);border-radius:var(--r-sm);padding:12px;box-shadow:var(--shadow-soft);min-height:100px}
+.season .w{font-family:var(--font-num);font-weight:700;font-size:12.5px;color:var(--text-mute);letter-spacing:.06em}
+.season b{display:block;font-size:14.5px;margin:6px 0 2px}
+.season p{font-size:12px;color:var(--text-mute);line-height:1.5}
+.season .pvp{background:var(--mastered-bg)} .season .pvp b{color:var(--mastered-text)}
+.season .boss{background:var(--stuck-bg)} .season .boss b{color:var(--stuck-text)}
+.phones.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:960px){.phones.three{grid-template-columns:1fr}}
+.screen .rate{text-align:center;padding:8px 0 0}
+.screen .rate .n{font-size:56px;line-height:1;color:var(--mastered-text);display:block;letter-spacing:-.03em}
+.screen .rate small{font-size:11.5px;color:var(--text-mute)}
+.screen .stars{text-align:center;font-size:22px;letter-spacing:6px;color:var(--mastered);line-height:1}
+.screen .stars .off{color:var(--rule)}
+.screen .stars small{display:block;font-size:12px;letter-spacing:0;color:var(--mastered-text);font-weight:700;margin-top:4px}
+.screen .kv{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0}
+.screen .kv span{color:var(--text-mute)}
+.screen .kv b{font-family:var(--font-num);white-space:nowrap}
+.screen .mx{font-family:var(--font-math);font-size:15px}
+.screen .relay{display:grid;gap:6px;font-size:12px}
+.screen .relay>div{display:grid;grid-template-columns:18px 30px 1fr 16px;gap:6px;align-items:center;padding:7px 8px;border-radius:10px;background:var(--surface-2)}
+.screen .relay .no{font-family:var(--font-num);font-weight:700;color:var(--text-mute)}
+.screen .relay .who{font-weight:700;font-size:11px}
+.screen .relay .st{font-weight:900;text-align:center;color:var(--brand)}
+.screen .relay .flag{background:var(--stuck-bg)}
+.screen .relay .flag .st{color:var(--stuck-text)}
+.screen .relay .me{background:var(--surface);outline:2px dashed var(--brand);outline-offset:-2px}
+.screen .btn.warn{background:transparent;color:var(--stuck-text);border:1.5px solid var(--stuck)}
+
 /* ---------- 頁尾 ---------- */
 footer{padding:48px 0 64px;color:var(--text-mute);font-size:13.5px}
 footer .sig{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:700;margin-bottom:10px}
@@ -428,10 +479,11 @@ footer .sig svg{width:38px;height:24px}
       <a href="#c2"><span class="n">02</span>一趟遠征</a>
       <a href="#c3"><span class="n">03</span>小隊角色</a>
       <a href="#c4"><span class="n">04</span>成就與分享</a>
-      <a href="#c5"><span class="n">05</span>小隊對戰</a>
-      <a href="#c6"><span class="n">06</span>畫面</a>
-      <a href="#c7"><span class="n">07</span>護欄</a>
-      <a href="#c8"><span class="n">08</span>分期</a>
+      <a href="#c5"><span class="n">05</span>PvE 副本</a>
+      <a href="#c6"><span class="n">06</span>PvP 對戰</a>
+      <a href="#c7"><span class="n">07</span>畫面</a>
+      <a href="#c8"><span class="n">08</span>護欄</a>
+      <a href="#c9"><span class="n">09</span>分期</a>
     </nav>
   </div>
 </header>
@@ -446,7 +498,7 @@ footer .sig svg{width:38px;height:24px}
       <div>
         <p class="eyebrow"><svg class="duo" aria-hidden="true" style="width:34px;height:22px"><use href="#logo"/></svg>遊戲化體驗概念稿 · 版本 0.1 · 2026-09-30</p>
         <h1>被同一隻怪打倒過的人，<br><span class="accent">組隊回去打牠。</span></h1>
-        <p class="sub">小隊不是一起上課的四個人，是一支冒險小隊。八週是一趟遠征，段考是魔王，卡點是怪，老師是嚮導，小陪是隨行的系統，家人在營地等你回來。學會的定義一個字不改：講得出來、隔幾天不給提示還會。</p>
+        <p class="sub">小隊不是一起上課的四個人，是一支冒險小隊。八週是一個賽季，段考是魔王，卡點是怪，老師是嚮導，小陪是隨行的系統，家人在營地等你回來。每週全隊打一個副本，用小隊解題率決定過關；同段位的小隊還能對戰。國英數社四片大陸都能拓荒，學會的定義一個字不改：講得出來、隔幾天不給提示還會。</p>
         <div class="meta"><span>建立在 <b>產品規劃書 1.0</b> 的八條設計原則之上</span><span>怪與地區名稱為提案，調性可調</span><span>示範人物一律虛構</span></div>
       </div>
       <div>
@@ -470,12 +522,12 @@ footer .sig svg{width:38px;height:24px}
 <section class="ch" id="c0">
   <div class="wrap">
     <div class="ch-head"><div class="ch-no">00</div><div><div class="kicker">一句話與四根柱子</div><h2>有趣、有成就感、能分享、能一起</h2></div></div>
-    <p class="lead">Tandelo 的遊戲化不是「學習 App 加積分」，是<b>小隊打段考魔王的養成遊戲</b>。個人有變強的感覺，小隊一起整備，公會給歸屬感，家人是見證者。所有成就都用「真的學會」當貨幣，所以家長看到不會皺眉。</p>
+    <p class="lead">Tandelo 的遊戲化不是「學習 App 加積分」，是<b>小隊打段考魔王的養成遊戲</b>。個人有變強的感覺，小隊一起打副本、和同段位的小隊對戰，公會給歸屬感，家人是見證者。所有成就都用「真的學會」當貨幣，所以家長看到不會皺眉。</p>
     <div class="grid g4">
       <div class="card">
         <div class="ico coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 14l4-8 4 6 3-4 5 6z"/><path d="M4 18h16"/></svg></div>
         <div class="who">有趣</div>
-        <p class="say">卡點是有名字的怪，每天的練習是一張任務卡。</p>
+        <p class="say">卡點是有名字的怪，每週一個副本，每天一張任務卡。</p>
         <p class="small">任務內容仍是那一格練習，只是有名字、有理由、有變化。嚮導可以丟隱藏任務。</p>
       </div>
       <div class="card">
@@ -493,8 +545,8 @@ footer .sig svg{width:38px;height:24px}
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M12 20c0-3 3-5 6-5"/></svg></div>
         <div class="who">能一起</div>
-        <p class="say">家人見證、小隊整備、小隊對戰、公會共同倒數。</p>
-        <p class="small">全部是合作與見證。對戰只在隊伍之間，沒有排名、沒有個人對戰。</p>
+        <p class="say">PvE 一起打副本，PvP 和同段位的小隊對戰。</p>
+        <p class="small">過關看小隊解題率。家人見證、公會共同倒數。對戰只在隊伍之間，沒有排名、沒有個人對戰。</p>
       </div>
     </div>
 
@@ -524,12 +576,13 @@ footer .sig svg{width:38px;height:24px}
           <tr><th>小陪</th><td data-l="冒險小隊的說法">隨行系統：只問你寫到哪一步</td><td data-l="為什麼可以這樣講">系統是介面語法，不是人格。第一句永遠是「你寫到哪一步？」</td></tr>
           <tr><th>每週 50 分鐘小隊課</th><td data-l="冒險小隊的說法">遠征，六幕走完</td><td data-l="為什麼可以這樣講">六段課程結構一段不改，只換名字，見第 02 章</td></tr>
           <tr><th>每天 10 到 20 分鐘陪練</th><td data-l="冒險小隊的說法">任務卡：補刀、偵察、叫醒影子</td><td data-l="為什麼可以這樣講">每天上限三件、22:30 關燈照舊。任務卡只是把「為什麼是今天這一格」寫出來</td></tr>
+          <tr class="hi"><th>一週的練習題組</th><td data-l="冒險小隊的說法">副本：三層加一隻 Boss，用小隊解題率決定過關</td><td data-l="為什麼可以這樣講">副本就是一週的任務卡排成一條路線，不另外加量，見第 05 章</td></tr>
           <tr><th>說給我聽 30 秒</th><td data-l="冒險小隊的說法">冒險日誌</td><td data-l="為什麼可以這樣講">用自己的話講一遍，本來就是留紀錄</td></tr>
-          <tr><th>隔 7 到 12 天不給提示再測</th><td data-l="冒險小隊的說法">怪會回來，這次沒有嚮導在旁邊</td><td data-l="為什麼可以這樣講">再測不給任何幫助，正好是「自己一個人面對牠」</td></tr>
+          <tr><th>隔 7 到 12 天不給提示再測</th><td data-l="冒險小隊的說法">怪會回來，這次沒有嚮導在旁邊</td><td data-l="為什麼可以這樣講">再測不給任何幫助，正好是「自己一個人面對牠」。副本的伏擊層就是再測發生的地方</td></tr>
           <tr class="hi"><th>已掌握（金色）</th><td data-l="冒險小隊的說法">收服：怪變成站在你身後的影子</td><td data-l="為什麼可以這樣講">收服是驗證過的事件，影子牆就是證據牆</td></tr>
           <tr class="hi"><th>之後又錯，回到練習清單</th><td data-l="冒險小隊的說法">影子睡著了，等你叫醒</td><td data-l="為什麼可以這樣講">不扣分、不消失，只是換一種狀態。這句話守住「金色不是永久等級」</td></tr>
           <tr><th>家長 LINE 週報</th><td data-l="冒險小隊的說法">營地來信</td><td data-l="為什麼可以這樣講">家長端內容不變：他學會了什麼、下週做什麼、今晚可以問他一句</td></tr>
-          <tr><th>第 4 週結業點前、第 7 週段考前</th><td data-l="冒險小隊的說法">小隊對戰：兩支同段位的隊伍互相出題</td><td data-l="為什麼可以這樣講">出題是「講給隊友聽」的進階版，只能拿自己收服過的怪出題，見第 05 章</td></tr>
+          <tr><th>第 4 週結業點前、第 7 週段考前</th><td data-l="冒險小隊的說法">小隊對戰：鏡像賽與出題戰，只和同段位的隊伍打</td><td data-l="為什麼可以這樣講">出題是「講給隊友聽」的進階版，只能拿自己收服過的怪出題，見第 06 章</td></tr>
           <tr><th>段考與段考對照</th><td data-l="冒險小隊的說法">魔王戰與戰報</td><td data-l="為什麼可以這樣講">段考本來就是八週的終點，前後對照就是戰報</td></tr>
           <tr><th>第 4 週結業點</th><td data-l="冒險小隊的說法">中途營地，可停可續</td><td data-l="為什麼可以這樣講">停止和續走一樣容易，是規劃書第七條原則</td></tr>
         </tbody>
@@ -557,6 +610,16 @@ footer .sig svg{width:38px;height:24px}
       <div><div class="mon asleep"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>睡著了</b><span>之後又錯，等你叫醒，不扣分</span></div></div>
     </div>
     <p class="note">四種狀態就是原型裡 stuck、green、gold 加上「又錯回到清單」，資料模型一個欄位都不用動。</p>
+
+    <h3>四片大陸，一科一片</h3>
+    <p class="prose small" style="margin-bottom:16px">每一科是一片大陸，每個卡點是一隻怪，命名規則都一樣：用牠讓你犯的錯來取。下面是國文、英文、社會的第一批提案。</p>
+    <div class="grid g4">
+      <div class="card"><div class="who">數學 · 數理大陸</div><p class="say">漏項獸、負號幽靈、零的隱者</p><p class="small">乘法平原、根號谷、分解洞窟等六區，已對到原型的八個卡點。</p></div>
+      <div class="card"><div class="who">英文 · 西風港</div><p class="say">時光獸、失蹤的 s、介係詞迷路怪</p><p class="small">過去式和現在完成式混用；第三人稱單數忘了加 s；in、on、at 放錯時間。</p></div>
+      <div class="card"><div class="who">國文 · 字林</div><p class="say">音近字妖、之乎迷霧、修辭變臉怪</p><p class="small">再和在、做和作寫混；文言的「之」分不清用法；譬喻和轉化分不清。</p></div>
+      <div class="card"><div class="who">社會 · 時光古道</div><p class="say">年代錯置怪、因果顛倒獸、經緯迷航</p><p class="small">把事件順序排錯；把結果當成原因；經度和緯度讀反。</p></div>
+    </div>
+    <p class="note">真人小隊課仍然數學先行。其他三片大陸先以副本與對戰開放，要不要也開真人課，列在第 09 章待決。</p>
   </div>
 </section>
 
@@ -569,14 +632,14 @@ footer .sig svg{width:38px;height:24px}
     <h3>一週的節奏（以週四上課為例）</h3>
     <div class="week">
       <div class="exp"><span class="d">週四</span><b>遠征</b><p>50 分鐘、六幕。嚮導帶隊打這週的怪。</p></div>
-      <div><span class="d">週五</span><b>補刀任務</b><p>嚮導昨晚 30 秒語音講的那隻怪，今天第一題就是牠。</p></div>
-      <div class="rest"><span class="d">週六</span><b>自由</b><p>想練可以，不練不會斷什麼。</p></div>
+      <div><span class="d">週五</span><b>補刀＋副本開門</b><p>嚮導昨晚語音講的那隻怪是今天第一題。晚上本週副本開門。</p></div>
+      <div><span class="d">週六</span><b>副本 · 巡邏層</b><p>每人 2 題，可以問小陪、可以求援。週一再打也行。</p></div>
       <div class="rest"><span class="d">週日</span><b>營地來信</b><p>家長收到這週的 LINE。孩子不用做事。</p></div>
       <div><span class="d">週一</span><b>偵察任務</b><p>先鋒先試下一隻怪一題，回報卡在哪一步。</p></div>
-      <div class="gold"><span class="d">週二</span><b>叫醒影子</b><p>上週打中的怪回來了，這次沒提示。過了就收服。</p></div>
+      <div class="gold"><span class="d">週二</span><b>伏擊層＋Boss 接力</b><p>伏擊層沒有提示，到期的影子在這裡叫醒。晚上接力打 Boss，22:00 結算。</p></div>
       <div><span class="d">週三</span><b>整備</b><p>整備官看全隊任務卡亮了幾張。嚮導收到課前一頁。</p></div>
     </div>
-    <p class="note">任務卡每天最多三張，22:30 之後不發、不亮、不推播。段考週不加量。哪天沒開，隔天卡上寫「回來了就好」。</p>
+    <p class="note">副本的每一層都算在任務卡裡。任務卡每天最多三張，22:30 之後不發、不亮、不推播。段考週不加量。哪天沒開，隔天卡上寫「回來了就好」。</p>
 
     <h3>遠征六幕，就是原本的六段課</h3>
     <div class="acts">
@@ -693,25 +756,213 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 05 小隊對戰 ============ -->
+<!-- ============ 05 PvE 副本 ============ -->
 <section class="ch" id="c5">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no honey">05</div><div><div class="kicker">小隊對戰</div><h2>隊伍對隊伍，出題對出題，個人不上擂台</h2></div></div>
-    <p class="lead">動畫裡最熱血的一幕是兩支隊伍對上。Tandelo 可以有，條件是<b>對戰的單位永遠是小隊，比的是出題和合作，不是誰算得快</b>。這一章把它設計成一期兩場的「模擬戰」，放在中途營地前和魔王戰前。</p>
+    <div class="ch-head"><div class="ch-no">05</div><div><div class="kicker">PvE · 副本與段位</div><h2>每週一個副本，用小隊解題率決定過關</h2></div></div>
+    <p class="lead">全隊一起打，過不過關看<b>小隊解題率</b>，不看誰最快、誰最強。副本就是一週的任務卡排成一條路線，不另外加量。它的第二層還負責叫醒影子，所以收服的證據也在副本裡產生。</p>
+
+    <h3>段位與賽季</h3>
+    <div class="ladder" aria-label="四階段位，由低到高">
+      <div><span class="rk b">銅</span><small>開季依全隊診斷定段</small></div>
+      <div><span class="rk s">銀</span><small>同段副本連兩週 75% 以上就升段</small></div>
+      <div><span class="rk g">金</span><small>段位以科為單位，數學金、英文銅都可以</small></div>
+      <div><span class="rk p">白金</span><small>最高段，副本會混入跨章節的怪</small></div>
+    </div>
+    <div class="grid g3">
+      <div class="card soft"><div class="who">一季就是一期</div><p class="say">8 週一季，開季重新定段。</p><p class="small">段位是這一季的拓荒進度，不是永久等級。和「金色不是獎盃」是同一個精神。</p></div>
+      <div class="card soft"><div class="who">只升不降</div><p class="say">打不過就停在原段。</p><p class="small">季中不會掉段，撤退也不會。孩子不需要擔心「這週沒打好，全隊掉級」。</p></div>
+      <div class="card soft"><div class="who">對戰不影響段位</div><p class="say">段位只看副本。</p><p class="small">PvP 的輸贏不進段位計算，所以對戰永遠是加分的事，不會變成壓力來源。</p></div>
+    </div>
+
+    <h3>一個副本：三層加一隻 Boss</h3>
+    <div class="grid g3">
+      <div class="card">
+        <div class="who">第 1 層 · 巡邏 · 每人 2 題</div>
+        <p class="say">本週遠征那隻怪，換個樣子出現。</p>
+        <p class="small">可以問小陪、可以向隊友求援。用了幫助之後答對，算半分。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">第 2 層 · 伏擊 · 每人 2 題</div>
+        <p class="say">上週以前收服的怪回來偷襲。</p>
+        <p class="small">沒有提示、不能求援。剛好到了再測日期的那隻，在這裡答對就算再測通過，影子就站穩了。</p>
+      </div>
+      <div class="card coral">
+        <div class="who">第 3 層 · Boss 接力 · 每人 1 棒</div>
+        <p class="say">一題多步驟的大題，全隊一人跑一棒。</p>
+        <p class="small">下一棒發現上一步不對，可以按「這步怪怪的」退回。抓到怪不扣分，改對的那一棒算半分。每一棒要在 12 小時內接手。</p>
+      </div>
+    </div>
+    <p class="note">國文、英文、社會的 Boss 接力改成長題組：一篇閱讀或一張史料，每人負責一個小題，後面的小題會用到前面的答案。</p>
+
+    <h3>小隊解題率怎麼算</h3>
+    <div class="grid g2" style="align-items:start">
+      <div class="formula">
+        <p class="eq">小隊解題率 ＝ 全隊得分 ÷ 全隊題數</p>
+        <ul>
+          <li><b>1 分</b><span>自己答對</span></li>
+          <li><b>0.5 分</b><span>用了小陪提示，或隊友求援之後答對</span></li>
+          <li><b>0 分</b><span>答錯，或那一棒沒有接</span></li>
+        </ul>
+        <p class="small">每人配額一樣：巡邏 2 題、伏擊 2 題、接力 1 棒。五人隊的題數就是 25。強的人不能多答，慢的人也不會少算。</p>
+      </div>
+      <div class="tbl-wrap" style="margin:0">
+        <table class="tbl">
+          <thead><tr><th>小隊解題率</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><th class="n">未滿 60%</th><td>撤退，不扣分。24 小時後可以換一套題重打一次</td></tr>
+            <tr><th class="n">60% 以上</th><td>過關，一顆星</td></tr>
+            <tr class="hi"><th class="n">75% 以上</th><td>過關，兩顆星，算一次升段進度</td></tr>
+            <tr><th class="n">90% 以上</th><td>過關，三顆星，需要全員出手</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="worked"><b>例：五人隊。</b>巡邏 10 題，自己答對 7 題、求援後答對 2 題，得 8 分。伏擊 10 題答對 7 題，得 7 分。接力 5 棒對 4 棒，得 4 分。合計 19 ÷ 25 ＝ 76%，兩星過關。</p>
+
+    <h3>讓解題率公平、不傷人的七條細節</h3>
+    <ol class="steps">
+      <li><b>只顯示全隊的數字。</b>個人答對幾題，只有自己和嚮導看得到。隊友看到的是「5 人出手、解題率 76%」，看不到誰拉低了它。</li>
+      <li><b>求援讓幫忙被看見。</b>卡住時按求援，已經過了這層的隊友錄 30 秒講給你聽，你再答一題新的變體。答對算半分，講解的隊友記一筆「講解」，稱號會算到。</li>
+      <li><b>不能互抄。</b>每人拿到同一隻怪的不同變體。每層隨機一題要附一句「為什麼」，用說的也可以。嚮導每週抽查。</li>
+      <li><b>缺席有彈性。</b>過關只需要「除了一個人，全員出手」，缺席者的配額從題數裡拿掉。三顆星才要全員。生病、段考週可以凍結。</li>
+      <li><b>撤退不是失敗。</b>未滿 60% 叫撤退，沒有任何扣分。絆倒全隊的那隻怪，自動送進嚮導的課前一頁，下一次遠征就打牠。</li>
+      <li><b>難度用第一次過關率校準。</b>目標是七成的隊伍第一次就過關。太多隊伍撤退，代表題太難，不代表孩子不夠努力。</li>
+      <li><b>時間跟著每日上限走。</b>副本週五晚上開、週二 22:00 結算。每人分三次坐下就打完，每次都算在當天三張任務卡裡。22:30 之後關門。</li>
+    </ol>
+
+    <div class="phones three" style="margin-top:26px">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:38</span><span>今天 0 / 3</span></div>
+          <span class="t">本週副本 · 數學 · 銀段</span>
+          <h5>多項式林深處，<br>全隊已出手 4 / 5。</h5>
+          <div class="c">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><div><b>第 1 層 · 巡邏</b><small>負號幽靈 · 你 2 / 2 完成</small></div></div>
+          </div>
+          <div class="c">
+            <div class="row"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>第 2 層 · 伏擊</b><small>今晚開打 · 沒有提示</small></div></div>
+          </div>
+          <div class="c fogc">
+            <div class="row"><div class="mon fog"><svg aria-hidden="true"><use href="#m-cross"/></svg></div><div><b style="color:var(--fog-text)">第 3 層 · Boss 接力</b><small style="color:var(--fog-text)">週二 20:00 開跑 · 你是第 4 棒</small></div></div>
+          </div>
+          <div class="c">
+            <div class="kv"><span>目前小隊解題率</span><b>72%</b></div>
+            <div class="bar"><i style="width:72%"></i></div>
+          </div>
+          <div class="c coral">
+            <b style="font-size:13px">小晴求援 · 負號幽靈第 2 題</b>
+            <p class="fine" style="margin-top:4px">你已經過了這層，可以錄 30 秒講給她聽。</p>
+          </div>
+          <div class="grow"></div>
+          <span class="btn">進入伏擊層</span>
+        </div></div>
+        <p class="phone-cap"><b>副本路線</b>三層的進度、全隊解題率、隊友的求援都在同一頁。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:24</span><span>接力 · 第 4 棒</span></div>
+          <span class="t">Boss 接力 · 多項式林的守衛</span>
+          <h5>小安跑完第 3 棒，<br>輪到你了。</h5>
+          <div class="c"><span class="fine">化簡</span><p class="mx">(2x + 3)² − (x − 1)(x + 1)</p></div>
+          <div class="relay">
+            <div><span class="no">1</span><span class="who">小晴</span><span class="mx">4x² + 12x + 9</span><span class="st">✓</span></div>
+            <div><span class="no">2</span><span class="who">阿哲</span><span class="mx">x² − 1</span><span class="st">✓</span></div>
+            <div class="flag"><span class="no">3</span><span class="who">小安</span><span class="mx">4x² + 12x + 9 − x² − 1</span><span class="st">?</span></div>
+            <div class="me"><span class="no">4</span><span class="who">你</span><span class="fine">合併同類項</span><span class="st"></span></div>
+            <div><span class="no">5</span><span class="who">小恩</span><span class="fine">檢查並交出答案</span><span class="st"></span></div>
+          </div>
+          <div class="grow"></div>
+          <span class="btn warn">這步怪怪的，退回給小安</span>
+          <span class="btn ghost">沒問題，接著做第 4 棒</span>
+          <p class="fine" style="text-align:center">抓到怪不扣分。小安改對，那一棒算半分。</p>
+        </div></div>
+        <p class="phone-cap"><b>Boss 接力</b>第 3 棒被負號幽靈動了手腳。抓到它的人，就是這一幕的主角。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen" style="background:var(--mastered-bg)">
+          <div class="sb"><span>22:00</span><span></span></div>
+          <span class="t">副本結算 · 多項式林深處</span>
+          <div class="rate"><span class="n num">76%</span><small>小隊解題率 · 5 人全員出手</small></div>
+          <div class="stars">★★<span class="off">★</span><small>兩星過關</small></div>
+          <div class="c">
+            <div class="kv"><span>巡邏（含求援後答對 2 題）</span><b>8 / 10</b></div>
+            <div class="kv"><span>伏擊</span><b>7 / 10</b></div>
+            <div class="kv"><span>Boss 接力（抓到負號幽靈 1 次）</span><b>4 / 5</b></div>
+          </div>
+          <div class="c"><b style="font-size:13px">伏擊層叫醒了 2 隻影子</b><p class="fine" style="margin-top:2px">你收服了漏項獸。這一行只有你看得到。</p></div>
+          <div class="c"><div class="kv"><span>升段進度</span><b>1 / 2</b></div><div class="bar gold"><i style="width:50%"></i></div><p class="fine" style="margin-top:4px">下週再一次 75% 以上，升金段。</p></div>
+          <div class="grow"></div>
+          <span class="btn dark">放上隊伍牆</span>
+          <p class="fine" style="text-align:center">負號幽靈絆倒全隊 6 次，已送到林老師的課前一頁。</p>
+        </div></div>
+        <p class="phone-cap"><b>副本結算</b>全隊的數字、升段進度、個人的收服只給自己看。示意畫面、資料為虛構。</p>
+      </div>
+    </div>
+
+    <h3>一季八週的行事曆</h3>
+    <div class="season">
+      <div><span class="w">W1</span><b>定段 · 副本</b><p>開季診斷，第一個副本。</p></div>
+      <div><span class="w">W2</span><b>副本</b><p>補洞期。</p></div>
+      <div class="pvp"><span class="w">W3</span><b>鏡像賽</b><p>當週副本多一個對手。</p></div>
+      <div class="pvp"><span class="w">W4</span><b>出題戰</b><p>中途營地前，這週不開副本。</p></div>
+      <div><span class="w">W5</span><b>副本</b><p>跟上學校進度。</p></div>
+      <div class="pvp"><span class="w">W6</span><b>鏡像賽</b><p>避開 W3 打過的隊伍。</p></div>
+      <div class="pvp"><span class="w">W7</span><b>出題戰</b><p>魔王前的模擬戰，這週不開副本。</p></div>
+      <div class="boss"><span class="w">W8</span><b>魔王戰</b><p>段考週，不開副本、不加量。</p></div>
+    </div>
+    <p class="note">鏡像賽就是當週的副本多了一個對手，出題戰那一週不開副本。所以每週的量都一樣，不會因為對戰多出一分。</p>
+
+    <div class="grid g2" style="align-items:start">
+      <div class="callout pine" style="margin-top:18px">
+        <p><b>霍爾：解題率不是北極星。</b>解題率回答的是「這週全隊打得怎樣」，給孩子遊戲的節奏感。北極星仍然是驗證過的收服。兩者只在伏擊層交會：到期的怪在沒有提示的伏擊層被答對，才算收服。副本因此成為產生證據的地方，孩子不用另外做一次再測。</p>
+      </div>
+      <div class="callout honey" style="margin-top:18px">
+        <p><b>卡西法：副本吃題庫。</b>每隻怪至少要 8 個變體，才夠巡邏、伏擊、重打和鏡像賽輪著用。數學可以用確定性引擎換數字；英文可以用句型模板；國文和社會要人工出題、AI 擴寫、內容團隊審。一科一學期約 40 隻怪，估計 320 題上下，國文和社會還要乘上教科書版本數。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 PvP 小隊對戰 ============ -->
+<section class="ch" id="c6">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no honey">06</div><div><div class="kicker">PvP · 小隊對戰</div><h2>兩種對戰：鏡像賽比解題率，出題戰比誰更懂怪</h2></div></div>
+    <p class="lead">動畫裡最熱血的一幕是兩支隊伍對上。Tandelo 可以有，條件是<b>對戰的單位永遠是小隊，比的是解題率和出題，不是誰算得快</b>。一季四場，全部排在原本就有的副本週裡，不另外加量。</p>
 
     <div class="callout">
       <p><b>蕪菁頭先把數據擺出來。</b>國中生有 38.9% 怕因成績被看不起、42% 怕說錯話被截圖、19.2% 重度學習疲勞。這些數字反對的不是競爭，是「個人被看見輸」。所以規則只有一個方向：讓孩子被看見的是隊伍，隊伍被看見的是出的題有多好，而不是誰拖累了誰。</p>
     </div>
 
-    <h3>一場對戰怎麼打</h3>
+    <h3>兩種對戰</h3>
+    <div class="grid g2">
+      <div class="card honey">
+        <div class="who">鏡像賽 · 比小隊解題率</div>
+        <p class="say">兩隊打同一個副本，看誰的解題率高。</p>
+        <p class="small">同一套變體池、同一個結算時間。平手先看全員出手，再看 Boss 接力，永遠不看速度。鏡像賽就是當週的副本多了一個對手。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">出題戰 · 比誰更懂怪</div>
+        <p class="say">兩隊互相出題，只能拿自己收服過的怪出題。</p>
+        <p class="small">要先懂一隻怪怎麼騙人，才出得了好題。七分制，出題和作答一樣重。</p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card soft"><div class="who">配對</div><p class="say">同科、同段位、同年級、不同嚮導。</p><p class="small">國文和社會另外要同一個教科書版本，因為範文和單元順序不同。</p></div>
+      <div class="card soft"><div class="who">開關</div><p class="say">全隊同意才打真人對戰。</p><p class="small">有人不想，對手就換成「幽靈隊」：同段位隊伍的歷史平均。一樣有對手可以贏，但沒有另一群真人在看。</p></div>
+      <div class="card soft"><div class="who">勝負的意義</div><p class="say">勝場換一枚隊旗徽記。</p><p class="small">純外觀，掛在隊伍牆上。不影響段位、不上任何榜、沒有連勝紀錄。</p></div>
+    </div>
+
+
+    <h3>出題戰怎麼打</h3>
     <ol class="steps">
-      <li><b>配對：同段位、同進度、不同嚮導的兩支隊伍。</b>段位看這一期全隊都收服的怪有幾隻：銅 1 到 2 隻、銀 3 到 4 隻、金 5 隻以上。段位是這一期的拓荒進度，期末歸零，不是永久等級。<span class="was">對應：<b>依卡點與段考日期湊隊</b>的同一套配對邏輯</span></li>
-      <li><b>出題：各隊從自己收服過的怪裡挑三隻，每隻出一題。</b>只能拿收服過的怪出題，因為出題要先懂牠怎麼騙人。全隊在遠征的合擊那一幕討論，書記寫下，嚮導審過才送出。<span class="was">對應：<b>講給隊友聽</b>的進階版，出題是最深的學會</span></li>
+      <li><b>配對：照上面的規則，系統配好兩支隊伍。</b>段位見第 05 章。出題戰和鏡像賽用同一套配對，一季內不會重複遇到同一隊。<span class="was">對應：<b>依卡點與段考日期湊隊</b>的同一套配對邏輯</span></li>
+      <li><b>出題：各隊從自己收服過的怪裡挑三隻，每隻出一題。</b>只能拿收服過的怪出題，因為出題要先懂牠怎麼騙人。全隊在遠征的合擊那一幕討論，書記寫下，嚮導審過才送出。國英社用「陷阱模板」出題：選一隻怪、選牠的陷阱、填入句子或數字，系統先驗證，再由嚮導或內容團隊審。<span class="was">對應：<b>講給隊友聽</b>的進階版，出題是最深的學會</span></li>
       <li><b>作答：對方三題，全隊討論後交一個答案。</b>三天內完成，算在當天任務卡的一張裡，不加量。交的是隊伍的答案，沒有個人答案，所以沒有人「害全隊輸」。<span class="was">對應：<b>每日任務卡</b>與每天上限三張</span></li>
       <li><b>結果：遠征日的整隊那一幕揭曉。</b>嚮導帶大家看對方出的題是哪隻怪、我們為什麼中招。兩隊各得一份對戰報告，只有兩隊和兩位嚮導看得到。<span class="was">對應：<b>整隊 5 分鐘</b>與嚮導的課前一頁</span></li>
     </ol>
 
-    <h3>合作成績怎麼算</h3>
+    <h3>出題戰的七分制</h3>
     <div class="grid g3">
       <div class="card honey">
         <div class="who">答題分 · 三題</div>
@@ -731,25 +982,19 @@ footer .sig svg{width:38px;height:24px}
     </div>
     <p class="note">七分制，出題和作答一樣重。贏的隊伍在對戰報告上多一行「勝」，沒有積分榜、沒有連勝紀錄、沒有跨隊伍的排名。隊伍的戰績頁只列自己打過的每一場。</p>
 
-    <h3>一期兩場，都是魔王戰前的模擬戰</h3>
-    <div class="grid g2">
-      <div class="card">
-        <div class="who">第 4 週 · 中途營地前</div>
-        <p class="say">補洞期打完，先跟另一支隊伍對一場。</p>
-        <p class="small">用來檢查前三週收服的怪是不是真的收服了。對戰報告和結業點的「續走或先停」一起看。</p>
-      </div>
-      <div class="card">
-        <div class="who">第 7 週 · 魔王戰前</div>
-        <p class="say">段考前一週的對戰，題目全部對準這次段考範圍。</p>
-        <p class="small">段考週不加量的原則不變，所以作答放在第 7 週，第 8 週只做整隊與回顧。</p>
-      </div>
+    <h3>一季四場，放在原本的副本週裡</h3>
+    <div class="grid g4">
+      <div class="card"><div class="who">第 3 週 · 鏡像賽</div><p class="say">補洞期的第一場。</p><p class="small">看前兩週收服的怪站不站得住。</p></div>
+      <div class="card"><div class="who">第 4 週 · 出題戰</div><p class="say">中途營地前互相出題。</p><p class="small">對戰報告和結業點的「續走或先停」一起看。</p></div>
+      <div class="card"><div class="who">第 6 週 · 鏡像賽</div><p class="say">跟上學校進度後的第二場。</p><p class="small">配對會避開第 3 週打過的隊伍。</p></div>
+      <div class="card"><div class="who">第 7 週 · 出題戰</div><p class="say">魔王前的模擬戰。</p><p class="small">題目對準段考範圍。第 8 週段考週不加量。</p></div>
     </div>
 
     <div class="grid g2" style="margin-top:22px;align-items:start">
       <div>
         <div class="phone"><div class="screen">
           <div class="sb"><span>20:43</span><span>今天 2 / 3</span></div>
-          <span class="t">小隊對戰 · 第 4 週 · 銀段位</span>
+          <span class="t">出題戰 · 第 4 週 · 數學 · 銀段</span>
           <h5>星期三小隊出了三題，<br>我們一起答。</h5>
           <div class="c">
             <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-drop"/></svg></div><div><b>第 2 題 · 分解洞窟</b><small>對方拿平方差雙子出題</small></div></div>
@@ -769,20 +1014,20 @@ footer .sig svg{width:38px;height:24px}
       <div>
         <div class="callout pine" style="margin-top:0">
           <p><b>判讀：為什麼是出題戰，不是搶答戰。</b>搶答比的是速度，速度會把最慢的那個孩子曝光。出題比的是理解，而且只能拿收服過的怪出題，等於逼隊伍先把自己的影子叫醒一遍。研究上「學生自己出題」對理解的效果一直比多寫題穩定，這剛好和北極星同方向。</p>
-          <p>對戰的三天算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 08 章有這條驗證。</p>
+          <p>對戰的三天算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 09 章有這條驗證。</p>
         </div>
         <div class="callout gov">
-          <p><b>沙利曼：對戰多出兩條線。</b>一、跨隊的互動只有題目和「這題出得好」，題目一律經嚮導審過，隊伍討論只在隊內、每人一句。二、對戰報告不離開兩隊和兩位嚮導，公會牆只會出現「四葉小隊打了一場對戰」，不出現勝負，不出現對手。</p>
+          <p><b>沙利曼：對戰多出三條線。</b>一、跨隊的互動只有題目和「這題出得好」，題目一律經嚮導或內容團隊審過，隊伍討論只在隊內、每人一句。二、對戰報告不離開兩隊和兩位嚮導，公會牆只會出現「四葉小隊打了一場對戰」，不出現勝負，不出現對手。三、真人對戰預設要全隊同意，13 歲以下另需家長在 LINE 端同意。</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ 06 畫面 ============ -->
-<section class="ch" id="c6">
+<!-- ============ 07 畫面 ============ -->
+<section class="ch" id="c7">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no">06</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
+    <div class="ch-head"><div class="ch-no pine">07</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
     <p class="lead">色彩用品牌既有的珊瑚、松綠、蜂蜜金，怪用品牌的圓做出來，不用任何既有 IP 的視覺。<b>示意畫面、資料為虛構</b>。</p>
 
     <div class="phones">
@@ -883,10 +1128,10 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 07 護欄 ============ -->
-<section class="ch" id="c7">
+<!-- ============ 08 護欄 ============ -->
+<section class="ch" id="c8">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no pine">07</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
+    <div class="ch-head"><div class="ch-no">08</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
     <p class="lead">規劃書的三條護欄與八條原則全部沿用。下面是遊戲化這一層額外加的界線，每一條都對應一個已知會出事的地方。</p>
 
     <div class="dodont">
@@ -898,7 +1143,10 @@ footer .sig svg{width:38px;height:24px}
           <li>影子睡著不消失、不扣分，叫醒的日期寫在牆上。</li>
           <li>隊伍進度只顯示數量，不顯示誰還沒收服。</li>
           <li>隊友之間只有結構化動作：「等你」「我也卡過這一步」「你講的那次我聽懂了」。</li>
-          <li>對戰以隊伍為單位：出題經嚮導審過才送出、作答是全隊討論後交一個答案、結果只讓兩隊和兩位嚮導看到。</li>
+          <li>對戰以隊伍為單位：出題經審過才送出、作答是全隊討論後交一個答案、結果只讓兩隊和兩位嚮導看到。</li>
+          <li>過關看小隊解題率。每人配額相同，個人解題率只有自己和嚮導看得到。</li>
+          <li>真人對戰要全隊同意，否則對手是幽靈隊。對戰輸贏不影響段位。</li>
+          <li>副本難度用「七成隊伍第一次就過關」校準，撤退不扣分。</li>
           <li>分享由孩子主動按，卡上沒有臉、真名、分數、隊友狀態。</li>
           <li>任務卡每天最多三張，22:30 後不發、不亮、不推播，段考週不加量。</li>
           <li>角色每週輪換，由系統排、嚮導可調，不看程度。</li>
@@ -909,8 +1157,9 @@ footer .sig svg{width:38px;height:24px}
           <h4>不做</h4>
           <li>個人經驗值、等級、能力點：任何和練習量掛勾的數字。</li>
           <li>會斷掉的個人連續天數與懲罰區。</li>
-          <li>排行榜、個人對戰、跨隊伍的積分榜。小隊對戰只在第 05 章的四條規則下做。</li>
+          <li>排行榜、個人對戰、跨隊伍的積分榜與連勝紀錄。</li>
           <li>轉蛋、戰利品箱、隨機獎勵。</li>
+          <li>比速度的搶答、限時倒數，或任何會掉段的懲罰。</li>
           <li>未成年之間的自由文字聊天。</li>
           <li>晚上發任務、用「怪要逃走了」之類的焦慮句催練習。</li>
           <li>直接使用《我獨自升級》或任何作品的名稱、角色、視覺。</li>
@@ -925,11 +1174,11 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 08 分期 ============ -->
-<section class="ch" id="c8">
+<!-- ============ 09 分期 ============ -->
+<section class="ch" id="c9">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no honey">08</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
-    <p class="lead">第一輪只動學生端與家長 LINE 的一個按鈕，在現有 POC 原型上就能做。第二輪要動小隊與老師流程，小隊對戰放在這一輪的最後。第三輪的公會等前兩輪的數字出來再說。</p>
+    <div class="ch-head"><div class="ch-no honey">09</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
+    <p class="lead">第一輪在現有 POC 原型上做個人的冒險與副本主循環，隊友先用示範資料。第二輪在試點用真的小隊打副本與對戰。第三輪開英文大陸與公會，國文和社會等題庫與版本備好再上。</p>
 
     <div class="phase">
       <div class="card">
@@ -942,8 +1191,9 @@ footer .sig svg{width:38px;height:24px}
           <li>影子牆與稱號</li>
           <li>分享卡產生器</li>
           <li>營地來信的「我見證了」與隔天回饋</li>
+          <li>數學副本：三層加 Boss 接力、小隊解題率結算，隊友用示範資料</li>
         </ul>
-        <div class="kpi"><b>驗證：</b>第三週仍每週練習三天以上的比例 ≥ 50%；家長「我見證了」點擊率 ≥ 60%</div>
+        <div class="kpi"><b>驗證：</b>第三週仍每週練習三天以上的比例 ≥ 50%；家長「我見證了」點擊率 ≥ 60%；試玩者能不看說明講出「怎樣算過關」</div>
       </div>
       <div class="card">
         <span class="no">第二輪 · 試點</span>
@@ -954,29 +1204,32 @@ footer .sig svg{width:38px;height:24px}
           <li>四個角色每週輪替，進老師的課前一頁</li>
           <li>隊名、隊伍牆</li>
           <li>遠征六幕進老師端課堂流程</li>
-          <li>小隊對戰：第 4 週、第 7 週各一場，先用兩支隊伍試</li>
+          <li>真小隊打數學副本：求援、接力、段位與升段</li>
+          <li>小隊對戰：鏡像賽、出題戰與幽靈隊開關</li>
         </ul>
-        <div class="kpi"><b>驗證：</b>每團實際人數平均 ≥ 4.5；5 人隊每人每堂開口次數；對戰週的練習天數不低於非對戰週；對戰後一週再測通過率不掉</div>
+        <div class="kpi"><b>驗證：</b>副本第一次過關率接近 70%；伏擊層產生的收服數；對戰週的練習天數不低於非對戰週；對戰後一週再測通過率不掉</div>
       </div>
       <div class="card">
         <span class="no">第三輪 · 續走</span>
-        <h4>嚮導的公會</h4>
+        <h4>四科與公會</h4>
         <ul>
+          <li>英文西風港上線，接著社會、國文，依教科書版本備題</li>
           <li>一位老師名下所有小隊組成一個公會，老師是公會長</li>
           <li>魔王戰共同倒數、公會牆</li>
           <li>公會總戰績只顯示「這個月一共收服幾隻」</li>
           <li>續走的理由從「再報一期」變成「我還在這個公會」</li>
         </ul>
-        <div class="kpi"><b>驗證：</b>8 週續購率 ≥ 50%；老師願意續帶 ≥ 6/8 位</div>
+        <div class="kpi"><b>驗證：</b>8 週續購率 ≥ 50%；老師願意續帶 ≥ 6/8 位；英文副本的三週留存不低於數學</div>
       </div>
     </div>
 
-    <h3>四件要愛德華拍板的事</h3>
+    <h3>五件要愛德華拍板的事</h3>
     <div class="ask">
       <div><span class="q">1</span><div><b>怪與地區的命名調性</b><p>目前是「帥一點的可愛」，例：漏項獸、負號幽靈、根號谷。往帥調會更像動畫，往可愛調家長更放心。<em>蘇菲建議：維持現在這一格，試點看孩子怎麼叫牠們再修。</em></p></div></div>
       <div><span class="q">2</span><div><b>美術方向</b><p>用品牌的圓做出來的幾何怪（本稿），或手繪紙地圖風格。前者和現有品牌一致、成本低；後者更有冒險感，但要另開一套視覺系統。<em>蘇菲建議：第一輪用幾何怪，第二輪地圖再評估紙地圖。</em></p></div></div>
       <div><span class="q">3</span><div><b>角色輪替要不要進第一輪</b><p>角色是小隊感的核心，但要動老師流程。<em>蘇菲建議：第一輪先在任務卡上「預告」角色（例：你這週是先鋒），真正輪替第二輪再上。</em></p></div></div>
-      <div><span class="q">4</span><div><b>小隊對戰的節奏與規模</b><p>一期兩場、每場只對一支隊伍，還是開放隊伍自己挑戰。前者可控、嚮導審題負擔小；後者熱鬧，但審題量與比較壓力都會上來。<em>蘇菲建議：試點只做一期兩場、系統配對，數字對了再開放挑戰。</em></p></div></div>
+      <div><span class="q">4</span><div><b>真人對戰預設開還是關</b><p>預設開，對戰氣氛最熱；預設關、全隊同意才開，最安全，但可能很多隊一直打幽靈隊。<em>蘇菲建議：預設關，開季第一週由嚮導帶全隊投票。看得出大家敢打，再改預設。</em></p></div></div>
+      <div><span class="q">5</span><div><b>國英社要不要開真人小隊課</b><p>只做遊戲層的話，國英社的小隊沒有真人嚮導，由小陪帶隊、內容團隊審題、出題戰只用陷阱模板，可以放進 Plus 方案當留存。開真人課就要招三科老師、備三科版本，規模完全不同。<em>蘇菲建議：先只做遊戲層、放進 Plus，數學試點的續購率過了 50% 再決定。</em></p></div></div>
     </div>
   </div>
 </section>
