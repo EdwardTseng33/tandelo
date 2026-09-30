@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Tandelo 產品規劃書：對準段考的 8 週小隊課。市場、定位、用戶、產品、商業模式、競爭、前瞻、驗證計畫、風險與法規，附來源清單。概念驗證用。">
+<meta name="color-scheme" content="light dark">
+<title>Tandelo 產品規劃書</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Ccircle cx='21' cy='20' r='18' fill='%23F26B54'/%3E%3Ccircle cx='43' cy='20' r='18' fill='%230E5F52'/%3E%3Cpath d='M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z' fill='%230D281B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<script>
+/* 主題：手動選擇 > 22:30–06:00 自動轉暗 > 系統設定。放在最前面避免閃爍。 */
+(function(){
+  try{
+    var saved=localStorage.getItem('tandelo-plan-theme');
+    if(saved==='light'||saved==='dark'){document.documentElement.setAttribute('data-theme',saved);return;}
+    var h=new Date().getHours(), m=new Date().getMinutes();
+    if(h>22||(h===22&&m>=30)||h<6){document.documentElement.setAttribute('data-theme','dark');}
+  }catch(e){}
+})();
+</script>
+<style>
+/* ---------- Token（Tandelo 品牌視覺規範 v1.0） ---------- */
+:root{
+  --pine:#0E5F52; --pine-deep:#0A463D; --ink:#0D2B26;
+  --coral:#F26B54; --coral-deep:#D9523C; --coral-soft:#FDE7E1;
+  --honey:#F4C24D; --honey-soft:#FBEBC0;
+  --oat:#F6F4EE; --mint:#DCEFE8; --sand:#ECE9E1; --line:#D9D5CA; --mute:#5E6B67; --white:#FFFFFF;
+  --overlap:#0D281B;
+  --av-1:#DCEFE8; --av-2:#F9D3C9; --av-3:#FBE7B2; --av-4:#C9DDF8; --av-5:#DDD2F6; --av-6:#CFEBDD;
+
+  --bg:var(--oat); --bg-alt:var(--sand); --surface:var(--white); --surface-2:#FBFAF7;
+  --text:var(--ink); --text-mute:var(--mute); --rule:var(--line);
+  --brand:var(--pine); --brand-fill:var(--pine); --on-brand:var(--white);
+  --stuck:var(--coral); --stuck-text:#B8412D; --stuck-bg:var(--coral-soft);
+  --learned-bg:var(--mint); --mastered:var(--honey); --mastered-text:#7A5A08; --mastered-bg:var(--honey-soft);
+  --band:var(--pine-deep); --on-band:var(--oat); --on-band-mute:#B9D3CB;
+  --chart-ink:var(--ink); --chart-mute:#7C8884; --chart-grid:#E3DFD3;
+  --focus:#0E5F52;
+  --shadow-soft:0 1px 2px rgba(13,43,38,.04),0 12px 32px -12px rgba(13,43,38,.14);
+  --shadow-lift:0 2px 4px rgba(13,43,38,.05),0 24px 48px -20px rgba(13,43,38,.22);
+
+  --font-sans:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-num:"Outfit","Noto Sans TC",system-ui,sans-serif;
+  --fs-body:15.5px; --lh-body:1.75;
+  --r-sm:12px; --r-btn:18px; --r-card:22px; --r-lg:26px; --r-pill:999px;
+  --ease:cubic-bezier(.2,.8,.2,1); --dur:.45s;
+  --gutter:clamp(16px,5vw,48px); --wrap:1120px; --measure:72ch;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1412; --bg-alt:#0F1917; --surface:#131D1A; --surface-2:#111A18;
+    --text:#EAF1EE; --text-mute:#9FB0AA; --rule:#1F2C28;
+    --brand:#7ED3C0; --brand-fill:#7ED3C0; --on-brand:#0C1412;
+    --stuck-text:#FF9A86; --stuck-bg:#3A1E18; --learned-bg:#16302A;
+    --mastered-text:#F4C24D; --mastered-bg:#332A12;
+    --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
+    --chart-ink:#EAF1EE; --chart-mute:#9FB0AA; --chart-grid:#243430;
+    --focus:#7ED3C0;
+    --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1412; --bg-alt:#0F1917; --surface:#131D1A; --surface-2:#111A18;
+  --text:#EAF1EE; --text-mute:#9FB0AA; --rule:#1F2C28;
+  --brand:#7ED3C0; --brand-fill:#7ED3C0; --on-brand:#0C1412;
+  --stuck-text:#FF9A86; --stuck-bg:#3A1E18; --learned-bg:#16302A;
+  --mastered-text:#F4C24D; --mastered-bg:#332A12;
+  --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
+  --chart-ink:#EAF1EE; --chart-mute:#9FB0AA; --chart-grid:#243430;
+  --focus:#7ED3C0;
+  --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+/* ---------- 基礎 ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:120px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *,*::before,*::after{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+@supports (overflow-x:clip){body{overflow-x:clip}}
+img,svg{display:block;max-width:100%}
+a{color:var(--brand);text-decoration:none;text-underline-offset:.2em}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{margin:0;color:var(--text);font-weight:900;letter-spacing:-.01em;line-height:1.25}
+h1,h2,.quote,.lead{text-wrap:balance}
+p{margin:0}
+ul,ol{margin:0;padding-left:1.4em}
+li+li{margin-top:.35em}
+strong{font-weight:700}
+.num,.n{font-family:var(--font-num);font-weight:600;font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:10px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:16px;top:-60px;background:var(--brand-fill);color:var(--on-brand);padding:10px 18px;border-radius:var(--r-btn);z-index:100;font-weight:700}
+.skip-link:focus{top:12px}
+.wrap{width:min(100% - 2*var(--gutter),var(--wrap));margin-inline:auto}
+
+/* ---------- 頂欄與目錄 ---------- */
+.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.top-row{display:flex;align-items:center;gap:14px;padding:12px 0 8px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--text);font-family:var(--font-num);font-weight:700;font-size:20px;letter-spacing:-.03em}
+.logo svg{width:38px;height:24px}
+.top-kicker{font-size:13px;color:var(--text-mute);margin-left:2px;font-weight:500}
+.spacer{flex:1}
+.theme-btn{border:0;background:var(--surface);color:var(--text);border-radius:var(--r-pill);padding:8px 14px;font-size:13px;font-weight:700;box-shadow:var(--shadow-soft);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.theme-btn .dot{width:12px;height:12px;border-radius:50%;background:var(--brand)}
+.toc{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;-ms-overflow-style:none;mask-image:linear-gradient(90deg,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent)}
+.toc::-webkit-scrollbar{display:none}
+.toc a{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--r-pill);font-size:13px;font-weight:700;color:var(--text-mute);background:transparent;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);white-space:nowrap}
+.toc a .n{font-size:12px;opacity:.75}
+.toc a:hover{background:var(--surface);text-decoration:none;color:var(--text)}
+.toc a.is-active{background:var(--brand-fill);color:var(--on-brand)}
+.toc a.is-active .n{opacity:1}
+
+/* ---------- Hero ---------- */
+.hero{padding:clamp(40px,8vw,96px) 0 clamp(32px,6vw,64px)}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.04em}
+.hero h1{font-size:clamp(32px,6.2vw,72px);line-height:1.1;margin:18px 0 22px;letter-spacing:-.02em;max-width:22ch}
+.hero h1 .accent{color:var(--stuck)}
+.hero .sub{font-size:clamp(17px,2.2vw,21px);color:var(--text-mute);max-width:40ch;line-height:1.6}
+.hero .meta{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--text-mute)}
+.hero .meta b{color:var(--text)}
+.duo{display:inline-block;width:56px;height:36px;vertical-align:middle}
+.howto{margin-top:34px;background:var(--surface);border-radius:var(--r-card);padding:20px 24px;box-shadow:var(--shadow-soft);max-width:70ch;font-size:14.5px;color:var(--text-mute)}
+.howto b{color:var(--text)}
+.tag{display:inline-block;padding:1px 9px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;margin-right:4px;vertical-align:1px}
+.tag.fact{background:var(--learned-bg);color:var(--brand)}
+.tag.est{background:var(--mastered-bg);color:var(--mastered-text)}
+.tag.pos{background:var(--stuck-bg);color:var(--stuck-text)}
+
+/* ---------- 章節 ---------- */
+.ch{padding:clamp(44px,7vw,88px) 0;position:relative}
+.ch+.ch::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(100% - 2*var(--gutter),var(--wrap));height:1px;background:var(--rule)}
+.ch-head{display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;margin-bottom:clamp(22px,4vw,40px)}
+.ch-no{font-family:var(--font-num);font-weight:700;font-size:clamp(54px,9vw,104px);line-height:.85;color:var(--stuck);letter-spacing:-.04em}
+.ch-no.pine{color:var(--brand)}
+.ch-no.honey{color:var(--mastered)}
+.ch-head h2{font-size:clamp(26px,4.2vw,44px);letter-spacing:-.02em}
+.ch-head .kicker{font-size:13.5px;font-weight:700;color:var(--text-mute);margin-bottom:6px;letter-spacing:.03em}
+@media (max-width:560px){.ch-head{grid-template-columns:1fr;gap:6px}.ch-no{font-size:56px}}
+.lead{font-size:clamp(17px,2vw,20px);line-height:1.6;max-width:var(--measure);color:var(--text);margin-bottom:28px}
+.lead b{color:var(--brand)}
+h3{font-size:clamp(19px,2.4vw,24px);margin:40px 0 14px}
+h3:first-of-type{margin-top:0}
+h4{font-size:16px;margin:22px 0 8px}
+.prose{max-width:var(--measure)}
+.prose p+p{margin-top:.9em}
+.prose ul,.prose ol{margin:.6em 0}
+.small{font-size:13.5px;color:var(--text-mute)}
+.src{display:inline-block;font-family:var(--font-num);font-weight:600;font-size:11.5px;color:var(--brand);background:var(--learned-bg);padding:0 7px;border-radius:var(--r-pill);vertical-align:.15em;margin-left:3px;line-height:1.6;white-space:nowrap}
+.src:hover{text-decoration:none;background:var(--brand-fill);color:var(--on-brand)}
+.note{font-size:13px;color:var(--text-mute);margin-top:12px;max-width:var(--measure)}
+
+/* ---------- 卡片、格線、數字 ---------- */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:900px){.g3,.g4,.g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+.card{background:var(--surface);border-radius:var(--r-card);padding:22px 24px;box-shadow:var(--shadow-soft)}
+.card h4{margin-top:0}
+.card.soft{background:var(--surface-2);box-shadow:none}
+.card.mint{background:var(--learned-bg);box-shadow:none}
+.card.coral{background:var(--stuck-bg);box-shadow:none}
+.card.honey{background:var(--mastered-bg);box-shadow:none}
+.card .who{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--text-mute);margin-bottom:8px}
+.card .say{font-size:17px;font-weight:700;line-height:1.5;margin-bottom:10px}
+.stat{background:var(--surface);border-radius:var(--r-card);padding:20px 22px;box-shadow:var(--shadow-soft)}
+.stat .v{font-family:var(--font-num);font-weight:700;font-size:clamp(30px,4vw,40px);line-height:1;letter-spacing:-.03em;color:var(--brand)}
+.stat .v.coral{color:var(--stuck-text)}
+.stat .v.honey{color:var(--mastered-text)}
+.stat .l{font-size:13.5px;font-weight:700;margin-top:8px}
+.stat .d{font-size:12.5px;color:var(--text-mute);margin-top:4px;line-height:1.5}
+.callout{border-radius:var(--r-lg);padding:24px 28px;margin:26px 0;background:var(--stuck-bg);position:relative;max-width:var(--measure)}
+.callout::before{content:"立場";position:absolute;top:-11px;left:22px;background:var(--stuck);color:#fff;font-size:12px;font-weight:900;padding:2px 12px;border-radius:var(--r-pill);letter-spacing:.06em}
+.callout.pine{background:var(--learned-bg)}
+.callout.pine::before{content:"判讀";background:var(--brand-fill);color:var(--on-brand)}
+.callout.honey{background:var(--mastered-bg)}
+.callout.honey::before{content:"誠實說";background:var(--mastered);color:#3B2A00}
+.callout p+p{margin-top:.7em}
+.quote{font-size:clamp(20px,3vw,30px);font-weight:900;line-height:1.35;letter-spacing:-.015em;max-width:26ch;margin:30px 0;padding-left:22px;border-left:5px solid var(--stuck);border-radius:3px}
+.quote.pine{border-color:var(--brand)}
+.band{background:var(--band);color:var(--on-band);border-radius:var(--r-lg);padding:clamp(24px,4vw,44px);margin:28px 0}
+.band h3,.band h4{color:var(--on-band);margin-top:0}
+.band .m{color:var(--on-band-mute)}
+.band .stat{background:rgba(255,255,255,.06);box-shadow:none}
+.band .stat .v{color:#7ED3C0}
+.band .stat .v.coral{color:#FFB3A3}
+.band .stat .v.honey{color:var(--honey)}
+.band .stat .l{color:var(--on-band)}
+.band .stat .d{color:var(--on-band-mute)}
+.pill{display:inline-block;padding:3px 12px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;background:var(--surface-2);color:var(--text-mute)}
+.pill.ok{background:var(--learned-bg);color:var(--brand)}
+.pill.warn{background:var(--stuck-bg);color:var(--stuck-text)}
+.pill.gold{background:var(--mastered-bg);color:var(--mastered-text)}
+.steps{counter-reset:s;display:grid;gap:12px}
+.steps>li{list-style:none;position:relative;padding:16px 18px 16px 62px;background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-soft);counter-increment:s}
+.steps>li::before{content:counter(s);position:absolute;left:18px;top:16px;width:32px;height:32px;border-radius:50%;background:var(--brand-fill);color:var(--on-brand);font-family:var(--font-num);font-weight:700;display:grid;place-items:center;font-size:15px}
+.steps>li b{display:block;font-size:16px;margin-bottom:3px}
+.steps>li+li{margin-top:0}
+
+/* ---------- 表格（手機轉卡片） ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;background:var(--surface);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--shadow-soft)}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:12px 14px;border-top:1px solid var(--rule)}
+.tbl thead th{border-top:0;background:var(--surface-2);font-size:12.5px;letter-spacing:.04em;color:var(--text-mute);font-weight:700}
+.tbl tbody th{font-weight:700;color:var(--text)}
+.tbl td.n,.tbl th.n{font-family:var(--font-num);font-weight:600;white-space:nowrap}
+.tbl tr.hi td,.tbl tr.hi th{background:var(--learned-bg)}
+.tbl tr.warn td,.tbl tr.warn th{background:var(--stuck-bg)}
+.tbl-wrap{margin:14px 0}
+@media (max-width:760px){
+  .tbl.cards thead{display:none}
+  .tbl.cards,.tbl.cards tbody,.tbl.cards tr,.tbl.cards td,.tbl.cards th{display:block}
+  .tbl.cards tr{padding:10px 16px 14px;border-top:1px solid var(--rule)}
+  .tbl.cards tr:first-child{border-top:0}
+  .tbl.cards td,.tbl.cards th{border:0;padding:5px 0}
+  .tbl.cards tbody th{font-size:16px;padding-bottom:6px}
+  .tbl.cards td::before{content:attr(data-l);display:block;font-size:11.5px;font-weight:700;color:var(--text-mute);letter-spacing:.05em;margin-bottom:1px}
+  .tbl.cards td:not([data-l])::before{content:none}
+  .tbl.cards td.n{white-space:normal}
+}
+
+/* ---------- 圖表 ---------- */
+.fig{background:var(--surface);border-radius:var(--r-lg);padding:clamp(16px,3vw,28px);box-shadow:var(--shadow-soft);margin:18px 0}
+.fig figcaption{font-size:13px;color:var(--text-mute);margin-top:12px;line-height:1.6}
+.fig figcaption b{color:var(--text)}
+.fig svg{width:100%;height:auto;font-family:var(--font-num);font-weight:600}
+.fig svg .lab{font-family:var(--font-sans);font-weight:700}
+.fig svg .t{fill:var(--chart-ink)}
+.fig svg .m{fill:var(--chart-mute)}
+.fig svg .grid{stroke:var(--chart-grid);stroke-width:1.5}
+.fig svg .ax{stroke:var(--chart-mute);stroke-width:2}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px;margin-top:14px;font-size:13.5px}
+.legend li{list-style:none;display:flex;gap:10px;align-items:flex-start;margin:0}
+.legend .k{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-num);font-weight:700;font-size:13px;color:#fff;background:var(--pine)}
+.legend .k.c{background:var(--coral)}
+.legend .k.h{background:var(--honey);color:#3B2A00}
+.legend .k.g{background:#8A9793}
+.legend .k.t{background:var(--ink);color:#fff;outline:3px solid var(--coral);outline-offset:-3px}
+:root[data-theme="dark"] .legend .k.t{background:#EAF1EE;color:#0C1412}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .legend .k.t{background:#EAF1EE;color:#0C1412}}
+.legend b{display:block}
+.legend span{color:var(--text-mute);font-size:12.5px}
+
+/* ---------- 來源 ---------- */
+.srcs{columns:2;column-gap:32px;font-size:13px;line-height:1.55;color:var(--text-mute)}
+@media (max-width:760px){.srcs{columns:1}}
+.srcs h4{column-span:all;margin:22px 0 8px;font-size:14px;color:var(--text)}
+.srcs ol{padding-left:0;list-style:none}
+.srcs li{break-inside:avoid;margin:0 0 9px;padding-left:44px;position:relative}
+.srcs li .no{position:absolute;left:0;top:0;font-family:var(--font-num);font-weight:700;color:var(--brand);background:var(--learned-bg);padding:0 7px;border-radius:var(--r-pill);font-size:11.5px;line-height:1.7}
+.srcs li b{color:var(--text);font-weight:700}
+.srcs a{word-break:break-all;color:var(--brand)}
+.srcs li:target{background:var(--mastered-bg);border-radius:12px;padding:6px 8px 6px 50px}
+.srcs li:target .no{left:8px;top:7px}
+
+/* ---------- 頁尾 ---------- */
+footer{padding:48px 0 64px;color:var(--text-mute);font-size:13.5px}
+footer .sig{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:700;margin-bottom:10px}
+footer .sig svg{width:38px;height:24px}
+.back-top{display:inline-block;margin-top:14px;font-weight:700}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到內容</a>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <a class="logo" href="#top" aria-label="Tandelo 回到最上面">
+        <svg viewBox="0 0 64 40" aria-hidden="true"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></svg>
+        Tandelo <span class="top-kicker">產品規劃書</span>
+      </a>
+      <span class="spacer"></span>
+      <button class="theme-btn" id="themeBtn" type="button" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span id="themeLabel">自動</span></button>
+    </div>
+    <nav class="toc" aria-label="章節目錄" id="toc">
+      <a href="#c0"><span class="n">00</span>摘要</a>
+      <a href="#c1"><span class="n">01</span>市場</a>
+      <a href="#c2"><span class="n">02</span>定位</a>
+      <a href="#c3"><span class="n">03</span>用戶</a>
+      <a href="#c4"><span class="n">04</span>產品</a>
+      <a href="#c5"><span class="n">05</span>商業模式</a>
+      <a href="#c6"><span class="n">06</span>競爭</a>
+      <a href="#c7"><span class="n">07</span>前瞻</a>
+      <a href="#c8"><span class="n">08</span>驗證</a>
+      <a href="#c9"><span class="n">09</span>風險法規</a>
+      <a href="#c10"><span class="n">10</span>來源</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div id="top"></div>
+
+<!-- ============ Hero ============ -->
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><svg class="duo" viewBox="0 0 64 40" aria-hidden="true" style="width:34px;height:22px"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></svg>產品規劃書 · 版本 1.0 · 2026-09-30</p>
+    <h1>對準段考的 8 週小隊課<br><span class="accent">孩子卡在哪，就從哪裡開始。</span></h1>
+    <p class="sub">國二、國三數學先行。3–6 人固定小隊、同一位老師、一期 8 週對準下一次段考；課與課之間有 AI 教練「小陪」陪練；家長只用 LINE。這份規劃書整合四份調研，每一章都有立場，也都可以被 8 週試點的數據推翻。</p>
+    <div class="meta"><span>整合自 <b>台灣市場</b>、<b>國外商模</b>、<b>競品拆解</b>、<b>用戶需求</b> 四份調研（2026-09-30）</span><span>示範資料與人物一律虛構</span></div>
+    <div class="howto">
+      <b>讀法</b>：每個數字後面的 <a class="src" href="#s1">來源 1</a> 對到第 10 章來源清單。
+      <span class="tag fact">事實</span>＝官方統計、法條、財報、官網標價；
+      <span class="tag est">推估</span>＝本書自行換算，會寫出算式與假設；
+      <span class="tag pos">立場</span>＝本書的判斷。查不到的直接寫「查不到」。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 00 摘要 ============ -->
+<section class="ch" id="c0">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">00</div><div><div class="kicker">一頁摘要</div><h2>一句話、三個價值、一個賭注、一顆北極星</h2></div></div>
+
+    <p class="lead">品類不是「AI 家教」也不是「小班」，兩個都有人做過。Tandelo 是<b>歷程驅動的配對</b>：知道誰卡在哪、把對的老師和同伴送到、留下不用 AI 也會的證據。這三件要一起做到才算數。</p>
+
+    <div class="grid g3">
+      <div class="card">
+        <div class="who">學生</div>
+        <p class="say">卡在哪一步，就從那一步開始；有固定的隊友和老師在等你，講錯也沒關係。</p>
+        <p class="small">62.7% 國中生擔心跟不上、38.9% 怕因成績被看不起<a class="src" href="#s9">來源 9</a>；42% 怕說錯話被截圖<a class="src" href="#s13">來源 13</a></p>
+      </div>
+      <div class="card">
+        <div class="who">家長</div>
+        <p class="say">8 週對準下一次段考：每週一則 LINE，告訴您他這週搞懂了什麼、還差什麼，以及今晚可以問他的一句話。</p>
+        <p class="small">79.7% 家長怕孩子落後<a class="src" href="#s10">來源 10</a>；老師每週一句個別化訊息讓未取得學分 15.8%→9.3%<a class="src" href="#s97">來源 97</a></p>
+      </div>
+      <div class="card">
+        <div class="who">老師</div>
+        <p class="say">學生幫你湊好、卡點幫你找好，你只負責把一隊孩子教會；收入規則一眼看得懂，每堂有保底。</p>
+        <p class="small">5 人隊黃金老師每 50 分鐘實拿約 <span class="n">972</span> 元，是國中家教行情（400–700／時）的兩倍<a class="src" href="#s24">來源 24</a></p>
+      </div>
+    </div>
+
+    <blockquote class="quote">我們賭的一件事：真正稀缺的不是內容，是「有人知道你卡在哪，而且有人陪你把它解開」。</blockquote>
+    <p class="prose">講解與解題已經免費：ChatGPT 學習模式、因材網 e度、康軒 AI 會考通都是 0 元；全民只有 <span class="n">8.54%</span> 願意為生成式 AI 付費<a class="src" href="#s15">來源 15</a><a class="src" href="#s36">來源 36</a><a class="src" href="#s37">來源 37</a>。能收費的是「有人盯、有人等你、有人對結果負責」。</p>
+
+    <div class="band">
+      <h3>北極星與三條護欄</h3>
+      <p class="m" style="max-width:66ch;margin-bottom:22px"><b style="color:var(--on-band)">北極星（唯一主指標）：每個孩子每月真的學會的卡點數。</b>定義嚴格：過 7–12 天、不給提示再測通過，而且能用自己的話講出來。賣時數、賣堂數都能灌水，這個不行。</p>
+      <div class="grid g3">
+        <div class="stat"><div class="v coral">22:30</div><div class="l">護欄 ① 睡眠與情緒不能變差</div><div class="d">每日練習有上限、22:30 關燈、段考前不加量。國中生重度學習疲勞 19.2%、19.5% 睡不到 6 小時<a class="src" href="#s9">來源 9</a></div></div>
+        <div class="stat"><div class="v">≤ 3,000</div><div class="l">護欄 ② 每月一科支出不高於同級補習班</div><div class="d">8 團 NT$2,990 折合每月約 1,620，落在實體大班月費 1,600–3,200 的下緣<a class="src" href="#s23">來源 23</a></div></div>
+        <div class="stat"><div class="v honey">≥ 600</div><div class="l">護欄 ③ 老師每堂實拿不低於保底</div><div class="d">收入靠等級分潤與學會獎金，不靠招生抽成</div></div>
+      </div>
+    </div>
+
+    <h3>五個關鍵數字</h3>
+    <div class="grid g5">
+      <div class="stat"><div class="v">42.3<span style="font-size:.5em">萬</span></div><div class="l">115 學年國二＋國三</div><div class="d">推估＝國中 62.1 萬 − 七年級 19.8 萬；到 118 學年都在 41 萬上下<a class="src" href="#s1">來源 1</a></div></div>
+      <div class="stat"><div class="v">232.1<span style="font-size:.5em">億</span></div><div class="l">國中生校外學科支出／年</div><div class="d">占校外學習支出 85.7%<a class="src" href="#s2">來源 2</a></div></div>
+      <div class="stat"><div class="v coral">5–11<span style="font-size:.5em">億</span></div><div class="l">國二國三數學線上可觸及</div><div class="d">推估，見第 1 章；數理合計 6–14 億</div></div>
+      <div class="stat"><div class="v">448</div><div class="l">每小時真人課價格（NT$）</div><div class="d">8 團 2,990 ÷ 6.7 小時；與實體小班、線上 1 對多同一格<a class="src" href="#s23">來源 23</a></div></div>
+      <div class="stat"><div class="v honey">38%</div><div class="l">5 人隊每堂毛利率</div><div class="d">推估，黃金老師分潤 52%；3 人隊老師跌破保底，見第 5 章</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 市場 ============ -->
+<section class="ch" id="c1">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">01</div><div><div class="kicker">市場</div><h2>人數縮、每戶降，但有補的家庭花得更多</h2></div></div>
+    <p class="lead">這不是一個靠人數成長的生意。國二國三是未來三年唯一「人數不扣分」的池子，之後每年縮約 5%；<b>錢在，而且 85.7% 集中在學科</b>。只有證明得出來有效的那一家，能拿到家庭集中後的預算。</p>
+
+    <h3>1.1 學生數：三年窗口</h3>
+    <figure class="fig">
+      <svg viewBox="0 0 640 320" role="img" aria-labelledby="f1t f1d">
+        <title id="f1t">國中學生數預測，114 至 130 學年</title>
+        <desc id="f1d">長條圖：國中總數（淺色）與國二國三（深色，推估）。114 學年 60.5 萬與 39.4 萬；115 學年 62.1 萬與 42.3 萬；116 學年 61.7 萬與 40.8 萬；118 學年 61.0 萬與 41.5 萬；121 學年 51.9 萬與 35.4 萬；130 學年 30.0 萬與約 20 萬。</desc>
+        <line class="grid" x1="50" y1="270" x2="620" y2="270"/>
+        <line class="grid" x1="50" y1="159" x2="620" y2="159" stroke-dasharray="4 6"/>
+        <text class="m" x="620" y="152" font-size="14" text-anchor="end">30 萬</text>
+        <line class="grid" x1="50" y1="48" x2="620" y2="48" stroke-dasharray="4 6"/>
+        <text class="m" x="620" y="41" font-size="14" text-anchor="end">60 萬</text>
+        <!-- 114 -->
+        <rect x="70" y="46" width="60" height="224" rx="10" fill="#0E5F52" opacity=".28"/>
+        <rect x="70" y="124" width="60" height="146" rx="10" fill="#0E5F52"/>
+        <text class="t" x="100" y="36" font-size="19" text-anchor="middle">60.5</text>
+        <text x="100" y="205" font-size="17" text-anchor="middle" fill="#fff">39.4</text>
+        <text class="m lab" x="100" y="296" font-size="16" text-anchor="middle">114（實際）</text>
+        <!-- 115 -->
+        <rect x="165" y="40" width="60" height="230" rx="10" fill="#0E5F52" opacity=".28"/>
+        <rect x="165" y="113" width="60" height="157" rx="10" fill="#0E5F52"/>
+        <text class="t" x="195" y="30" font-size="19" text-anchor="middle">62.1</text>
+        <text x="195" y="200" font-size="17" text-anchor="middle" fill="#fff" font-weight="700">42.3</text>
+        <text class="m lab" x="195" y="296" font-size="16" text-anchor="middle">115</text>
+        <!-- 116 -->
+        <rect x="260" y="42" width="60" height="228" rx="10" fill="#0E5F52" opacity=".28"/>
+        <rect x="260" y="119" width="60" height="151" rx="10" fill="#0E5F52"/>
+        <text class="t" x="290" y="32" font-size="19" text-anchor="middle">61.7</text>
+        <text x="290" y="203" font-size="17" text-anchor="middle" fill="#fff">40.8</text>
+        <text class="m lab" x="290" y="296" font-size="16" text-anchor="middle">116</text>
+        <!-- 118 -->
+        <rect x="355" y="44" width="60" height="226" rx="10" fill="#0E5F52" opacity=".28"/>
+        <rect x="355" y="116" width="60" height="154" rx="10" fill="#0E5F52"/>
+        <text class="t" x="385" y="34" font-size="19" text-anchor="middle">61.0</text>
+        <text x="385" y="202" font-size="17" text-anchor="middle" fill="#fff">41.5</text>
+        <text class="m lab" x="385" y="296" font-size="16" text-anchor="middle">118</text>
+        <!-- 121 -->
+        <rect x="450" y="78" width="60" height="192" rx="10" fill="#F26B54" opacity=".28"/>
+        <rect x="450" y="139" width="60" height="131" rx="10" fill="#F26B54"/>
+        <text class="t" x="480" y="68" font-size="19" text-anchor="middle">51.9</text>
+        <text x="480" y="213" font-size="17" text-anchor="middle" fill="#fff">35.4</text>
+        <text class="m lab" x="480" y="296" font-size="16" text-anchor="middle">121</text>
+        <!-- 130 -->
+        <rect x="545" y="159" width="60" height="111" rx="10" fill="#F26B54" opacity=".28"/>
+        <rect x="545" y="196" width="60" height="74" rx="10" fill="#F26B54"/>
+        <text class="t" x="575" y="149" font-size="19" text-anchor="middle">30.0</text>
+        <text x="575" y="242" font-size="17" text-anchor="middle" fill="#fff">≈20</text>
+        <text class="m lab" x="575" y="296" font-size="16" text-anchor="middle">130</text>
+        <text class="m lab" x="620" y="316" font-size="14" text-anchor="end">學年（單位：萬人）　淺＝國中總數　深＝國二＋國三（推估）</text>
+      </svg>
+      <figcaption><b>國中到 118 學年幾乎持平，121 學年比 115 學年少 16%，130 學年只剩約一半。</b>2025 年出生 107,812 人、年減 20%，這條線不會反轉；教育部一年內把 129 學年國中生預測從 37.7 萬下修到 30.7 萬（−18.7%），規劃要比官方再保守。<a class="src" href="#s1">來源 1</a><a class="src" href="#s22">來源 22</a></figcaption>
+    </figure>
+    <div class="callout"><p>國二國三是未來三年唯一「人數不扣分」的池子。Tandelo 要在 2026–2029 把單位經濟跑通，之後靠提高每戶價值，不靠人數。</p></div>
+
+    <h3>1.2 錢往哪流</h3>
+    <div class="grid g4">
+      <div class="stat"><div class="v">270.8<span style="font-size:.5em">億</span></div><div class="l">國中生校外學習總支出／年</div><div class="d">四年增 47.7 億；學科 232.1 億（85.7%）、藝能 38.6 億<a class="src" href="#s2">來源 2</a></div></div>
+      <div class="stat"><div class="v">7.1<span style="font-size:.5em">萬</span></div><div class="l">有參加者每人每年</div><div class="d">學科 6.4 萬（補習班約 6 萬、家教約 5 萬）<a class="src" href="#s2">來源 2</a></div></div>
+      <div class="stat"><div class="v">63.6%</div><div class="l">國中校外學習參與率</div><div class="d">都會區 73.1%、偏鄉原鄉 41%<a class="src" href="#s2">來源 2</a>；民間調查國高中生補習 59.8%、63.8% 補到晚上 9 點<a class="src" href="#s8">來源 8</a></div></div>
+      <div class="stat"><div class="v coral">−5 年</div><div class="l">每戶教育消費連五年下降</div><div class="d">每戶 23,582 元／年（2020 年 27,471）<a class="src" href="#s6">來源 6</a><a class="src" href="#s7">來源 7</a>；韓國 2025 私教育總額 −5.7%，但有補的學生每人 +2.0%<a class="src" href="#s54">來源 54</a></div></div>
+    </div>
+    <div class="callout pine"><p>人數在縮、每戶平均在降，但有補的家庭花得更多、補習班家數不減。這和日韓「量縮價漲」同一形狀。結論：靠「單一家庭把預算集中在少數幾個真的有用的東西上」，不靠規模。</p></div>
+
+    <h3>1.3 供給：實體不減反增，線上在統計上不可見</h3>
+    <div class="grid g3">
+      <div class="stat"><div class="v">17,765</div><div class="l">全國立案短期補習班</div><div class="d">其中文理類 12,950 家、外語類 2,688 家（2026-09-30 即時）<a class="src" href="#s4">來源 4</a></div></div>
+      <div class="stat"><div class="v">+966</div><div class="l">108 課綱後五年文理類增加家數</div><div class="d">外語類同期減 500 多家<a class="src" href="#s5">來源 5</a>；58% 民眾認同補習能幫上好學校，較 2018 年 +12.6 個百分點<a class="src" href="#s16">來源 16</a></div></div>
+      <div class="stat"><div class="v coral">查不到</div><div class="l">線上補教家數與線上占比</div><div class="d">官方 15 類分類沒有線上／遠距；消費支出調查沒有線上分項<a class="src" href="#s3">來源 3</a><a class="src" href="#s4">來源 4</a></div></div>
+    </div>
+
+    <h3>1.4 可觸及市場：三層漏斗</h3>
+    <figure class="fig">
+      <svg viewBox="0 0 640 330" role="img" aria-labelledby="f2t f2d">
+        <title id="f2t">可觸及市場三層漏斗</title>
+        <desc id="f2d">四層長條，寬度按金額比例：國中學科校外支出 232.1 億；國二國三學科約 155 億；國二國三數學 47 到 54 億；線上可觸及 5 到 11 億。</desc>
+        <rect x="20" y="16" width="600" height="56" rx="16" fill="#0A463D" opacity=".38"/>
+        <text class="t lab" x="36" y="50" font-size="19">國中學科校外支出 <tspan font-family="Outfit" font-weight="700" font-size="24">232.1 億</tspan></text>
+        <text class="m" x="606" y="50" font-size="14" text-anchor="end">事實（109 學年）</text>
+
+        <rect x="20" y="92" width="401" height="56" rx="16" fill="#0E5F52" opacity=".62"/>
+        <text class="t lab" x="36" y="126" font-size="19">國二國三學科 <tspan font-family="Outfit" font-weight="700" font-size="24">約 155 億</tspan></text>
+        <text class="m" x="436" y="126" font-size="15">× 2/3（三年級平均，保守值）</text>
+
+        <rect x="20" y="168" width="131" height="56" rx="16" fill="#0E5F52"/>
+        <text class="t lab" x="166" y="202" font-size="19">國二國三數學 <tspan font-family="Outfit" font-weight="700" font-size="24">47–54 億</tspan><tspan class="m" font-size="15" font-weight="400">　× 30–35%（占比查不到，假設值）</tspan></text>
+
+        <rect x="20" y="244" width="21" height="56" rx="10" fill="#F26B54"/>
+        <text class="t lab" x="56" y="270" font-size="19">線上可觸及 <tspan font-family="Outfit" font-weight="700" font-size="24" fill="var(--stuck-text)">5–11 億</tspan><tspan class="m" font-size="15" font-weight="400">　× 10–20%（願意線上的家庭，兩個情境）</tspan></text>
+        <text class="m lab" x="56" y="292" font-size="15">加理化：數理合計 6–14 億／年</text>
+        <text class="m lab" x="620" y="324" font-size="13" text-anchor="end">長條寬度按金額等比例；價格水準停在 2020</text>
+      </svg>
+      <figcaption>算式：232.1 億<a class="src" href="#s2">來源 2</a> × 2/3 ≈ 155 億（實際九年級偏高，所以保守）× 30–35%（數學占學科支出的比例查不到）× 10–20%（願意線上的家庭比例未知）。<b>三層都是推估，每一層的假設都寫在旁邊。</b></figcaption>
+    </figure>
+    <div class="callout">
+      <p>原提案寫「第一年打得到 20–30 億」，那是「全學科 × 兩成」的量級；只算數理偏樂觀約一倍，本書改為區間並註明假設。</p>
+      <p>連帶影響：原提案「三年 10,000 個家庭、學費總額約 4.3 億／年」等於吃下可觸及市場的三到七成，不成立。<b>本書把三年目標改為 3,000–5,000 個付費家庭（約 1.3–2.2 億／年）</b>；若要維持 4 億以上，前提是擴到國一與理化，而不是在國二國三數學裡搶更大的份額。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 定位 ============ -->
+<section class="ch" id="c2">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">02</div><div><div class="kicker">定位</div><h2>補習班的補強，不是取代</h2></div></div>
+    <p class="lead">價格帶很清楚：0 元（AI／公共平台）、200–600 元（大班／小班／線上 1 對多）、600–2,000 元（一對一）。Tandelo 每小時落在<b>小班與線上 1 對多同一格</b>，每月總額卻落在大班下緣——因為真人時數只有大班的一半不到。家長一定會問：「一個月才 3.6 小時？」</p>
+
+    <h3>2.1 市場定位圖</h3>
+    <figure class="fig">
+      <svg viewBox="0 0 600 470" role="img" aria-labelledby="f3t f3d">
+        <title id="f3t">市場定位圖：每小時價格對每月真人或看管時數</title>
+        <desc id="f3d">散布圖。橫軸每小時價格 0 到 2,000 元；縱軸每月真人或看管時數，對數刻度 1 到 128 小時，另有 0 小時一列。安親班約 80 元、80 小時；實體大班 200 到 400 元、8 小時；實體小班 300 到 600 元、8 小時；線上一對多 438 到 518 元、約 8 小時；個別指導 580 元、6 小時；家教 400 到 700 元、名師 1,000 到 2,000 元、4 到 6 小時；線上一對一 500 到 1,000 元、4 小時；AI App 0 元、0 小時；Tandelo 448 元、3.6 小時真人，加小陪陪練約 11 小時。</desc>
+        <!-- 格線 -->
+        <g class="grid">
+          <line x1="70" y1="65" x2="580" y2="65"/><line x1="70" y1="110" x2="580" y2="110"/><line x1="70" y1="155" x2="580" y2="155"/><line x1="70" y1="200" x2="580" y2="200"/><line x1="70" y1="245" x2="580" y2="245"/><line x1="70" y1="290" x2="580" y2="290"/><line x1="70" y1="335" x2="580" y2="335"/>
+        </g>
+        <line class="ax" x1="70" y1="380" x2="580" y2="380"/>
+        <line class="ax" x1="70" y1="65" x2="70" y2="380"/>
+        <line class="grid" x1="70" y1="425" x2="580" y2="425" stroke-dasharray="3 6"/>
+        <!-- y 刻度 -->
+        <g class="m" font-size="14" text-anchor="end">
+          <text x="60" y="70">128</text><text x="60" y="115">64</text><text x="60" y="160">32</text><text x="60" y="205">16</text><text x="60" y="250">8</text><text x="60" y="295">4</text><text x="60" y="340">2</text><text x="60" y="385">1</text><text x="60" y="430">0</text>
+        </g>
+        <!-- x 刻度 -->
+        <g class="m" font-size="14" text-anchor="middle">
+          <text x="70" y="402">0</text><text x="197.5" y="402">500</text><text x="325" y="402">1,000</text><text x="452.5" y="402">1,500</text><text x="580" y="402">2,000</text>
+        </g>
+        <text class="m lab" x="580" y="456" font-size="14" text-anchor="end">每小時價格（NT$）→</text>
+        <text class="m lab" x="14" y="60" font-size="14" transform="rotate(-90 14 60)" text-anchor="end">每月真人／看管時數（對數刻度）→</text>
+        <!-- 價格範圍線 -->
+        <g stroke-linecap="round" stroke-width="7" opacity=".45" stroke="var(--brand)">
+          <line x1="121" y1="245" x2="172" y2="245"/>
+          <line x1="146.5" y1="262" x2="223" y2="262"/>
+          <line x1="181.7" y1="224" x2="202" y2="224"/>
+          <line x1="172" y1="282" x2="248.5" y2="282"/>
+          <line x1="197.5" y1="290" x2="325" y2="290"/>
+        </g>
+        <line x1="325" y1="282" x2="580" y2="282" stroke="var(--brand)" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round" opacity=".7"/>
+        <text class="m" x="455" y="274" font-size="13" text-anchor="middle">名師家教 1,000–2,000</text>
+        <!-- Tandelo 陪練延伸 -->
+        <line x1="184" y1="297" x2="184" y2="224" stroke="#F26B54" stroke-width="3" stroke-dasharray="2 6" stroke-linecap="round"/>
+        <line x1="172" y1="224" x2="196" y2="224" stroke="#F26B54" stroke-width="3" stroke-linecap="round"/>
+        <text x="176" y="216" font-size="13" text-anchor="end" fill="var(--stuck-text)" class="lab">＋小陪陪練 ≈ 11 小時</text>
+        <!-- 點 -->
+        <g font-size="17" font-weight="700" text-anchor="middle" fill="#fff">
+          <circle cx="90" cy="96" r="16" fill="#8A9793"/><text x="90" y="102">1</text>
+          <circle cx="134" cy="245" r="16" fill="#0E5F52"/><text x="134" y="251">2</text>
+          <circle cx="172" cy="262" r="16" fill="#0E5F52"/><text x="172" y="268">3</text>
+          <circle cx="202" cy="224" r="16" fill="#0E5F52"/><text x="202" y="230">4</text>
+          <circle cx="218" cy="264" r="16" fill="#0E5F52"/><text x="218" y="270">5</text>
+          <circle cx="248.5" cy="282" r="16" fill="#0E5F52"/><text x="248.5" y="288">6</text>
+          <circle cx="299.5" cy="290" r="16" fill="#0E5F52"/><text x="299.5" y="296">7</text>
+          <circle cx="70" cy="425" r="16" fill="#8A9793"/><text x="70" y="431">8</text>
+          <circle cx="184" cy="297" r="21" fill="#F26B54"/><circle cx="184" cy="297" r="15" fill="#0D2B26"/><text x="184" y="303" font-size="16">T</text>
+        </g>
+        <text class="m" x="98" y="431" font-size="13" text-anchor="start">0 小時（無真人）</text>
+      </svg>
+      <ul class="legend">
+        <li><span class="k g">1</span><div><b>安親班（國小為主）</b><span>月費 3,000–10,000 ÷ 約 80 小時 ≈ 80／時；看管 60–100 小時<a class="src" href="#s26">來源 26</a></span></div></li>
+        <li><span class="k">2</span><div><b>實體大班</b><span>200–400／時；每週兩次約 8 小時／月<a class="src" href="#s23">來源 23</a></span></div></li>
+        <li><span class="k">3</span><div><b>實體小班</b><span>300–600／時；約 8 小時／月（與大班相同，圖上錯開）<a class="src" href="#s23">來源 23</a></span></div></li>
+        <li><span class="k">4</span><div><b>線上 1 對多真人（翰林e家教）</b><span>5 堂 10 小時 4,380–5,180 → 438–518／時<a class="src" href="#s30">來源 30</a></span></div></li>
+        <li><span class="k">5</span><div><b>個別指導塾（明光義塾台灣）</b><span>約 580／時（870／90 分，1 師帶 2–3 生）；舊資料，信度低<a class="src" href="#s34">來源 34</a></span></div></li>
+        <li><span class="k">6</span><div><b>家教（到府）</b><span>國中主科 400–700；名師 1,000–2,000；4–8 小時／月<a class="src" href="#s24">來源 24</a><a class="src" href="#s25">來源 25</a></span></div></li>
+        <li><span class="k">7</span><div><b>線上一對一（平台）</b><span>500–1,000／時；約 4 小時／月<a class="src" href="#s23">來源 23</a></span></div></li>
+        <li><span class="k g">8</span><div><b>AI App／公共平台</b><span>因材網 e度、均一、ChatGPT 學習模式：0 元、無真人<a class="src" href="#s35">來源 35</a><a class="src" href="#s36">來源 36</a></span></div></li>
+        <li><span class="k t">T</span><div><b>Tandelo</b><span>448／時；真人 3.6 小時／月，加每天約 15 分鐘有人看的練習 ≈ 11 小時</span></div></li>
+      </ul>
+      <figcaption>縱軸為對數刻度（每格加倍），否則安親班的 80 小時會把其他點壓成一條線。每月時數為推估：週課 × 4.3。</figcaption>
+    </figure>
+
+    <h3>2.2 為什麼是補強、不是取代</h3>
+    <div class="grid g3">
+      <div class="card">
+        <h4>① 看管缺口</h4>
+        <p class="small">63.8% 有補習的國高中生補到晚上 9 點、23.1% 到 10 點後<a class="src" href="#s8">來源 8</a>。實體補習班同時賣「晚上有地方待」；線上課沒有這個功能。Tandelo 要搶的是「不需要被看管、但需要被看見」的家庭——這群有多大查不到，要在試點裡量。</p>
+      </div>
+      <div class="card">
+        <h4>② 真人時數</h4>
+        <p class="small">同價位大班給約 8 小時，Tandelo 給 3.6 小時。對外要講每週總時數（50 分鐘真人課＋每天 15 分鐘練習 ≈ 125 分鐘），再加一句能比的話：「每 1 小時真人課，配 1.5 小時有人看的練習」。</p>
+      </div>
+      <div class="card">
+        <h4>③ 時段衝突</h4>
+        <p class="small">有補習的孩子平日只剩 21:00–22:30 一小段，而 Tandelo 22:30 關燈；週末白天才是全體的最大公約數（推估）。Tandelo 不可能取代平日晚上的補習班，只能補它「來不及講」的那一塊——國中老師自述學生拿補習班考卷來問，因為補習班來不及講、中後段排不到解題<a class="src" href="#s71">來源 71</a>。</p>
+      </div>
+    </div>
+    <div class="callout"><p>對家長只講一件事——8 週後的段考，和一個願意學的孩子。配對是後台的功夫，不當賣點；「有 AI」更不當賣點。</p></div>
+  </div>
+</section>
+
+<!-- ============ 03 用戶 ============ -->
+<section class="ch" id="c3">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">03</div><div><div class="kicker">用戶與核心價值</div><h2>三種人、同一個痛：有人知道我卡在哪，而且我敢問</h2></div></div>
+    <p class="lead">需求是真的，而且很痛。但最大挑戰不是價格，是<b>時間與投入度</b>：孩子平日多半補到九點、睡不到七小時；AI 不給答案時，學生會直接不用。本章誠實列出哪些設計假設有證據撐、哪些是我們最薄的賭注。</p>
+
+    <h3>3.1 三種人的 JTBD 與痛點證據</h3>
+    <div class="grid g3">
+      <div class="card">
+        <div class="who">國中生（使用者）</div>
+        <h4>要完成的工作</h4>
+        <ol class="small"><li>段考前把我不會的那幾步弄懂，別再被老師或爸媽唸</li><li>卡住時有人可以問，而且問了不丟臉</li><li>用最少時間把作業弄完（九年級 69% 用過生成式 AI，用途第一名是寫作業<a class="src" href="#s14">來源 14</a>）</li></ol>
+        <h4>痛點</h4>
+        <p class="small">62.7% 擔心跟不上、38.9% 怕因成績被看不起、41.5% 因常換老師受影響、有壓力時 53.3% 先找同儕<a class="src" href="#s9">來源 9</a>；42% 害怕說錯話被截圖<a class="src" href="#s13">來源 13</a>；補習班人多問不到、中後段排不到解題<a class="src" href="#s71">來源 71</a>；重度學習疲勞 19.2%、九年級 57.8% 睡不到 7 小時<a class="src" href="#s9">來源 9</a><a class="src" href="#s11">來源 11</a>。</p>
+        <h4>會讓他離開的事</h4>
+        <p class="small">被分到程度差太多的隊；小陪只會問問題不給進展；每天練習變成新的作業；隊友不熟、講話被笑。</p>
+      </div>
+      <div class="card">
+        <div class="who">家長（付錢的人）</div>
+        <h4>要完成的工作</h4>
+        <ol class="small"><li>讓孩子段考不要再退步，最好進步</li><li>知道他到底哪裡不會，而不是只看到分數</li><li>錢花得值、不被綁</li></ol>
+        <h4>痛點</h4>
+        <p class="small">79.7% 擔心孩子落後、66.2% 因成績極為擔憂（母體為 12 歲以下孩子的家長，對國中家長是推論）<a class="src" href="#s10">來源 10</a>；家教好但貴且難找、補習班人多問不到；補習申訴長年以退費為主、線上課程退費條款普遍不合範本<a class="src" href="#s20">來源 20</a>；既有線上平台負評集中在電銷、長約、常換老師。</p>
+        <h4>付費動機</h4>
+        <p class="small">看得到卡點被解掉、段考前後對照、比家教便宜、孩子願意去。80.1% 民眾最常用的即時通訊是 LINE<a class="src" href="#s15">來源 15</a>。</p>
+      </div>
+      <div class="card">
+        <div class="who">老師（供給）</div>
+        <h4>要完成的工作</h4>
+        <ol class="small"><li>穩定有學生，不用自己找、不被已讀不回</li><li>每小時賺得比打工多、最好比一對一家教多</li><li>教得有成就感，學生真的會進步</li></ol>
+        <h4>痛點</h4>
+        <p class="small">抽成高、壓價、詐騙；學生上完課不練習；線上看不到學生；多人同時教時個別化與秩序難；備課與回饋時間不算錢<a class="src" href="#s72">來源 72</a>。補習班個別指導一對四只給 450 元／時、向家長收 1,000 以上<a class="src" href="#s72">來源 72</a>。</p>
+        <h4>限制（事實）</h4>
+        <p class="small">公立學校專任教師不得從事補習、家教<a class="src" href="#s53">來源 53</a>；供給池以大學生（家教平均時薪 596 元<a class="src" href="#s28">來源 28</a>）、全職家教、補習班老師為主，他們最好賣的時段與國中生可上課時段幾乎完全重疊。</p>
+      </div>
+    </div>
+
+    <h3>3.2 Persona 摘要（全部虛構）</h3>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>人物</th><th>一句話</th><th>對 Tandelo 的意思</th></tr></thead>
+      <tbody>
+        <tr><th>學生 A｜林宥辰，國二，中段偏後</th><td data-l="一句話">數學 55–65 分，週二四補大班到 21:00，考卷錯很多但老師來不及講，作業拍照丟 AI</td><td data-l="對 Tandelo 的意思">要的是「一次把某一步弄懂」，最怕多一份功課；小陪不給答案時他很可能直接關掉</td></tr>
+        <tr><th>學生 B｜陳語彤，國三，中上但焦慮</th><td data-l="一句話">目標會考 A，每天睡不到 6 小時，內向、不想開鏡頭、怕被截圖</td><td data-l="對 Tandelo 的意思">22:30 關燈、段考前不加量、不錄孩子是加分；「講給隊友聽」若沒有安全感設計，是她離開的理由</td></tr>
+        <tr><th>學生 C｜張睿哲，國二，沒有補習</th><td data-l="一句話">家裡預算有限，數學在待加強邊緣（全國約四分之一在這區<a class="src" href="#s18">來源 18</a>），作業不會就放著</td><td data-l="對 Tandelo 的意思">最需要「有人固定在等你」的結構；紙本拍照、低頻寬路徑有用；也是 AI 最容易變成抄答案工具的人</td></tr>
+        <tr><th>家長 A｜黃怡君，雙薪、兩個孩子</th><td data-l="一句話">補習支出已無餘裕，最困擾「他說不會，我不知道他哪裡不會」，21:00 後才看 LINE</td><td data-l="對 Tandelo 的意思">會被「今晚可以問他這一句」打動；孩子兩週沒練習她想知道</td></tr>
+        <tr><th>家長 B｜吳志明，重成績、戒心高</th><td data-l="一句話">曾被長約、退費卡過，只信段考分數，懷疑 AI 與線上小班</td><td data-l="對 Tandelo 的意思">需要短期、成班才扣、試上不收費；段考前後對照是他續購的唯一理由；週報只講好消息他會覺得是行銷</td></tr>
+        <tr><th>老師 A｜周品妤，理工系大三</th><td data-l="一句話">為生活費接家教，開 500 元／時，被已讀不回、嫌抽成；期中考週要停課</td><td data-l="對 Tandelo 的意思">保底、不用招生、課前一頁是吸引力；擔心一次帶 5 個國中生線上管不住</td></tr>
+        <tr><th>老師 B｜許立翔，全職家教第八年</th><td data-l="一句話">平日 18–24、假日滿檔，想改一對二三擴收入但知道跨程度難</td><td data-l="對 Tandelo 的意思">在意每小時實拿是否高於一對一、規則是否一眼看懂、AI 準備的題目能不能改</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>3.3 價值主張三句</h3>
+    <div class="grid g3">
+      <div class="card mint"><div class="who">對學生</div><p class="say">卡在哪一步，就從那一步開始；有固定的隊友和老師在等你，講錯也沒關係。</p></div>
+      <div class="card mint"><div class="who">對家長</div><p class="say">8 週對準下一次段考：每週一則 LINE，告訴您他這週搞懂了什麼、還差什麼，以及今晚可以問他的一句話。</p></div>
+      <div class="card mint"><div class="who">對老師</div><p class="say">學生幫你湊好、卡點幫你找好，你只負責把一隊孩子教會；收入規則一眼看得懂，每堂有保底。</p></div>
+    </div>
+
+    <h3>3.4 設計假設：被證據支持的、被挑戰的</h3>
+    <h4><span class="pill ok">被支持</span></h4>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>假設</th><th>證據</th></tr></thead>
+      <tbody>
+        <tr><th>22:30 關燈、每日上限、段考前不加量</th><td data-l="證據">睡眠與疲勞數據強<a class="src" href="#s9">來源 9</a><a class="src" href="#s11">來源 11</a><a class="src" href="#s8">來源 8</a>；不只是護欄，也是對家長的賣點</td></tr>
+        <tr><th>小陪不給答案</th><td data-l="證據">高中數學實驗：一般 AI 練習時 +48%，拿掉後比對照組差 17%；只給提示的版本可消除傷害<a class="src" href="#s90">來源 90</a></td></tr>
+        <tr><th>7–12 天再測</th><td data-l="證據">間隔練習最佳間隔約為保留時間的 20%，同樣時數記憶多 64%<a class="src" href="#s96">來源 96</a>；段考約每 7 週一次<a class="src" href="#s101">來源 101</a></td></tr>
+        <tr><th>家長只用 LINE、每週一則</th><td data-l="證據">LINE 80.1%<a class="src" href="#s15">來源 15</a>；每週一句個別化訊息讓未取得學分 15.8%→9.3%，講「還能改進什麼」效果最大<a class="src" href="#s97">來源 97</a>；自動簡訊讓不及格科目 −27%<a class="src" href="#s98">來源 98</a></td></tr>
+        <tr><th>不錄孩子、只錄白板</th><td data-l="證據">42% 怕說錯被截圖<a class="src" href="#s13">來源 13</a>；學生不開鏡頭的原因是外表、家人入鏡、住處<a class="src" href="#s99">來源 99</a></td></tr>
+        <tr><th>同一位老師、固定小隊</th><td data-l="證據">41.5% 學生因常換老師受影響<a class="src" href="#s9">來源 9</a>；家長負評集中在換老師</td></tr>
+      </tbody>
+    </table></div>
+
+    <h4><span class="pill warn">被挑戰</span>　本書視為三個最薄的賭注，排在最前面</h4>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>假設</th><th>挑戰</th><th>本書的調整</th></tr></thead>
+      <tbody>
+        <tr class="warn"><th>每天 10–20 分鐘和小陪練習（最薄）</th><td data-l="挑戰">孩子已經超時學習；AI 拒絕給答案、改用提示後，多數學生就不用了；Khan Academy 自承只有 15% 有權限的學生真的在用<a class="src" href="#s82">來源 82</a>；家教老師說最大瓶頸是學生不練習<a class="src" href="#s72">來源 72</a></td><td data-l="本書的調整">小陪從「每天陪練」改成「課與課之間的隊務」：把練習綁在隊友與老師看得到的節點（課前自己試一題、隔天第一題就是老師課後語音講的卡點）；北極星的前置指標改為「每週 ≥3 天」而非每天</td></tr>
+        <tr class="warn"><th>4–6 人線上小隊（沒有直接證據）</th><td data-l="挑戰">線上輔導實驗證據只到 3 人：1 對 1 仍優於 1 對 3（SGP +8.1）、2 人組與 3 人組無顯著差異；88% 輔導者認為 1 對 1 最有效<a class="src" href="#s91">來源 91</a><a class="src" href="#s92">來源 92</a>；美國高劑量輔導的跨黨派規格是 ≤4 人、每週 3 次</td><td data-l="本書的調整">教學基準 4–5 人、上限 6，超過 4 人課堂一律分兩小組；試點第一個要量的是「每人每堂開口次數」</td></tr>
+        <tr class="warn"><th>時間：平日 21:00 後 vs 22:30 關燈</th><td data-l="挑戰">有補習的孩子平日只剩 21:00–22:30；老師黃金時段也在同一段<a class="src" href="#s8">來源 8</a><a class="src" href="#s72">來源 72</a></td><td data-l="本書的調整">週末白天可能是主力時段，試點兩個時段各排一半來驗證；平日場次 20:30 開始、21:20 結束</td></tr>
+        <tr><th>「講給隊友聽」</th><td data-l="挑戰">同儕互教有效（d≈0.38；實際教 g=0.56<a class="src" href="#s94">來源 94</a><a class="src" href="#s95">來源 95</a>），但怕說錯被截圖</td><td data-l="本書的調整">先對小陪說一次、再對小組說；允許只開麥不開鏡頭；不錄孩子</td></tr>
+        <tr><th>「家長不問分數、問搞懂什麼」</th><td data-l="挑戰">66.2% 家長對成績極度擔憂<a class="src" href="#s10">來源 10</a></td><td data-l="本書的調整">週報同時放段考前後對照與「下一步要補什麼」，不只報喜</td></tr>
+        <tr><th>「老師備課只要 10 分鐘」</th><td data-l="挑戰">線上家教自述線上備課比實體更久<a class="src" href="#s72">來源 72</a></td><td data-l="本書的調整">試點實測課外工時，換算時薪要高於一對一家教才成立</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout honey"><p>「每天 AI 陪練」是整份規劃裡證據最薄的一條；「4–6 人線上小隊」沒有任何直接實驗證據；而學生可上課的時間正好撞上 22:30 關燈。我們不把這三條藏起來，而是把它們排成試點第一批要量的東西（第 8 章）。</p></div>
+  </div>
+</section>
+
+<!-- ============ 04 產品 ============ -->
+<section class="ch" id="c4">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">04</div><div><div class="kicker">產品</div><h2>一個迴圈、八個關鍵功能、九件競品沒有的事</h2></div></div>
+    <p class="lead">左邊四件事孩子完全不用填，系統自己知道；中間是找出卡在哪一步、湊隊、排 8 週課表、決定今天做多少；右邊是孩子、老師、家長真的會碰到的三個東西。上課和練習的結果回到左邊，<b>用越久排得越準</b>。</p>
+
+    <h3>4.1 核心迴圈</h3>
+    <figure class="fig">
+      <svg viewBox="0 0 560 560" role="img" aria-labelledby="f4t f4d">
+        <title id="f4t">Tandelo 核心迴圈</title>
+        <desc id="f4d">八個節點繞成一圈，順時針：診斷、湊隊、每週小隊課、每天陪練、再測、家長週報、段考對照、續走，再回到診斷。圓心是北極星：每月真的學會的卡點數。</desc>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8A9793"/></marker></defs>
+        <circle cx="280" cy="280" r="195" fill="none" stroke="var(--chart-grid)" stroke-width="2" stroke-dasharray="2 8"/>
+        <g fill="none" stroke="#8A9793" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ah)">
+          <path d="M337 93.5A195 195 0 0 1 371.6 107.8"/>
+          <path d="M452.2 188.4A195 195 0 0 1 466.5 223"/>
+          <path d="M466.5 337A195 195 0 0 1 452.2 371.6"/>
+          <path d="M371.6 452.2A195 195 0 0 1 337 466.5"/>
+          <path d="M223 466.5A195 195 0 0 1 188.4 452.2"/>
+          <path d="M107.8 371.6A195 195 0 0 1 93.5 337"/>
+          <path d="M93.5 223A195 195 0 0 1 107.8 188.4"/>
+          <path d="M188.4 107.8A195 195 0 0 1 223 93.5"/>
+        </g>
+        <!-- 中心 -->
+        <circle cx="280" cy="280" r="104" fill="var(--learned-bg)"/>
+        <text class="m lab" x="280" y="262" font-size="15" text-anchor="middle" letter-spacing="2">北極星</text>
+        <text class="t lab" x="280" y="290" font-size="20" text-anchor="middle">每月真的學會</text>
+        <text class="t lab" x="280" y="316" font-size="20" text-anchor="middle">的卡點數</text>
+        <!-- 節點 -->
+        <g class="lab" font-size="19" text-anchor="middle">
+          <circle cx="280" cy="85" r="46" fill="#F26B54"/><text x="280" y="92" fill="#fff">診斷</text>
+          <circle cx="417.9" cy="142.1" r="46" fill="#0E5F52"/><text x="417.9" y="149" fill="#fff">湊隊</text>
+          <circle cx="475" cy="280" r="46" fill="#F26B54"/><text x="475" y="275" fill="#fff">每週</text><text x="475" y="298" fill="#fff">小隊課</text>
+          <circle cx="417.9" cy="417.9" r="46" fill="#DCEFE8"/><text x="417.9" y="413" fill="#0E5F52">每天</text><text x="417.9" y="436" fill="#0E5F52">陪練</text>
+          <circle cx="280" cy="475" r="46" fill="#F4C24D"/><text x="280" y="482" fill="#3B2A00">再測</text>
+          <circle cx="142.1" cy="417.9" r="46" fill="#0A463D"/><text x="142.1" y="413" fill="#fff">家長</text><text x="142.1" y="436" fill="#fff">週報</text>
+          <circle cx="85" cy="280" r="46" fill="#0E5F52"/><text x="85" y="275" fill="#fff">段考</text><text x="85" y="298" fill="#fff">對照</text>
+          <circle cx="142.1" cy="142.1" r="46" fill="#0E5F52"/><text x="142.1" y="149" fill="#fff">續走</text>
+        </g>
+      </svg>
+      <figcaption>珊瑚＝卡點與小隊課；松綠＝學會；蜂蜜金只給「隔幾天還在」的已掌握。順時針走一圈是 8 週，第 4 週有一個結業點。</figcaption>
+    </figure>
+    <ol class="steps">
+      <li><b>診斷</b>兩分鐘開始：拍一張考卷、看三題、或直接用說的，找到第一個卡點；往回追到前面年級的先備單元。結果當場做成家長看得懂的一頁，可轉 LINE。借鏡 atama+ 10–15 分鐘診斷、當場給紙本報告<a class="src" href="#s83">來源 83</a>。</li>
+      <li><b>湊隊</b>依學校進度、要準備的段考、相近程度與可上課時段組隊；老師按「接這一隊」才成班。開課前 48 小時截止，滿 4 人成班、3 人改 1 對 3、2 人以下不開全額退。</li>
+      <li><b>每週小隊課</b>50 分鐘六段式：暖身 5／大家常錯的 10／自己試試 10／再帶一次 5／講給隊友聽 15／我搞懂的 5。課前一晚老師收到「課前一頁」：這一隊這週要解的 3 題，老師確認才用。</li>
+      <li><b>每天陪練</b>拍題問小陪，第一句永遠是「你寫到哪一步？」，不給答案，最多示範一步；「說給我聽」30 秒可無限重錄。每天有上限、22:30 關燈。</li>
+      <li><b>再測</b>過 7–12 天、不給提示再測；通過標成金色（可以少練），之後又錯會自動回到練習清單——是證據紀錄，不是只升不降的等級。</li>
+      <li><b>家長週報</b>LINE 一則：他學會什麼、下週做什麼、今晚可以問他這一句。第一堂當晚一定送——Outschool 的教訓是一批家庭 7 天就走<a class="src" href="#s68">來源 68</a>。</li>
+      <li><b>段考對照</b>段考後上傳考卷，對照兩次成績與錯題，讓家長看見這 8 週解決了什麼。</li>
+      <li><b>續走</b>第 4 週結業點可停可續；每期結束可換程度、換時段、換老師。「學完先停」與「不滿意流失」分開計。</li>
+    </ol>
+
+    <h3>4.2 關鍵功能與設計原則（15 條裡最重要的 8 條）</h3>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>原則</th><th>具體做法</th><th>出處</th></tr></thead>
+      <tbody>
+        <tr><th>① 兩分鐘內到第一個「啊哈」</th><td data-l="具體做法">開場只問 3 件事（目標、學校、段考日），第 2 分鐘就看到「你只卡在一步」</td><td data-l="出處">Photomath 開啟即相機；atama+ 10–15 分鐘出診斷<a class="src" href="#s83">來源 83</a><a class="src" href="#s86">來源 86</a></td></tr>
+        <tr><th>② AI 只針對孩子已經寫的那一步說話</th><td data-l="具體做法">小陪不替孩子寫剩下的步驟；計算交給確定性引擎，不讓語言模型心算</td><td data-l="出處">Khanmigo：只談學生做過的步驟，洩漏答案減少 50%<a class="src" href="#s82">來源 82</a></td></tr>
+        <tr><th>③ AI 的成效用「下一題自己做對」量</th><td data-l="具體做法">儀表板列：洩漏答案率、問完後下一題自己做對率；不用滿意度</td><td data-l="出處">Khanmigo 內部 A/B（下一題答對率 +6.1%）<a class="src" href="#s82">來源 82</a></td></tr>
+        <tr><th>④ 連續天數要寬容；社交用「一起負責」不用排名</th><td data-l="具體做法">小隊連續天數（全隊當天都練過才亮一格）；段考週、生病自動凍結；不做個人排行</td><td data-l="出處">Duolingo 好友連續天數讓完成率 +22%、既有用戶留存 84%<a class="src" href="#s81">來源 81</a>；PaGamO 合作打 Boss<a class="src" href="#s38">來源 38</a></td></tr>
+        <tr><th>⑤ 課與課之間要有人接住</th><td data-l="具體做法">老師課後 30 秒語音 → 隔天小陪的第一題就是那個卡點</td><td data-l="出處">Preply 課後洞察 → 每日練習<a class="src" href="#s67">來源 67</a>；Varsity Tutors Live+AI<a class="src" href="#s88">來源 88</a></td></tr>
+        <tr><th>⑥ 第一堂課後一定要給家長回饋</th><td data-l="具體做法">第一堂當晚自動產生草稿，老師確認後送 LINE</td><td data-l="出處">Outschool 留存手冊：一批家庭只待 7 天<a class="src" href="#s68">來源 68</a></td></tr>
+        <tr><th>⑦ 停止和續約一樣容易</th><td data-l="具體做法">第 4 週結業點有明顯的「停在這裡」按鈕，退費規則寫在付款前</td><td data-l="出處">GoStudent 負評集中在 12 個月合約取消不了（Trustpilot 1 星占 11%）<a class="src" href="#s66">來源 66</a></td></tr>
+        <tr><th>⑧ 保護老師的時間與收入可預期</th><td data-l="具體做法">勿擾 22:00–08:00；收入頁顯示保底與下一級差多少；家長訊息只送老師確認過的</td><td data-l="出處">ClassDojo 安靜時段<a class="src" href="#s85">來源 85</a>；Preply 分潤隨時數遞減<a class="src" href="#s67">來源 67</a></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>4.3 應該有、而競品沒有</h3>
+    <div class="grid g3">
+      <div class="card"><h4>1 「學會」有明確定義並回報給家長</h4><p class="small">競品回報的是時數、完成度、星等；Duolingo 有效度研究但不是個人證據</p></div>
+      <div class="card"><h4>2 固定小隊依「卡在同一步」組成</h4><p class="small">Outschool 依課程主題、Varsity 可隨時加入，都不是依卡點</p></div>
+      <div class="card"><h4>3 8 週對準學校下一次段考</h4><p class="small">スタディサプリ有段考預測題但沒有真人；真人平台沒有段考日概念</p></div>
+      <div class="card"><h4>4 課前替老師備好「這一隊這週的 3 題」</h4><p class="small">Khanmigo／Preply 給的是通用備課工具，不是依特定一群學生的錯</p></div>
+      <div class="card"><h4>5 家長只用 LINE、不裝 App</h4><p class="small">週報附「今晚可以問他的一句話」；競品都要家長下載 App 或看 email</p></div>
+      <div class="card"><h4>6 段考考卷前後對照</h4><p class="small">查不到競品有</p></div>
+      <div class="card"><h4>7 護欄寫進產品</h4><p class="small">每天上限、22:30 關燈、段考前不加量、不錄孩子；Duolingo 反而鼓勵多練、TutorJr 錄全程</p></div>
+      <div class="card"><h4>8 成班規則全自動且對家長有利</h4><p class="small">48 小時截止、不足全額退；Outschool 由老師手動決定、沒有自動取消；GoStudent 長約</p></div>
+      <div class="card"><h4>9 老師試上照拿保底</h4><p class="small">Preply 試上抽 100%、老師試上不拿錢</p></div>
+    </div>
+    <p class="note"><b>競品都有、Tandelo 不能少（基本門檻）</b>：免費或不滿意不收費的試上；拍照就能問；連續感與寬容機制；每堂課後給家長摘要；對應學校教科書版本；可換老師換隊；老師收入透明按時出帳；家長看得到 AI 安全警示；老師勿擾時段；診斷後當場一份看得懂的報告。<a class="src" href="#s66">來源 66</a><a class="src" href="#s67">來源 67</a><a class="src" href="#s68">來源 68</a><a class="src" href="#s81">來源 81</a><a class="src" href="#s82">來源 82</a><a class="src" href="#s83">來源 83</a><a class="src" href="#s85">來源 85</a></p>
+    <div class="callout"><p>沒有一家同時做到「小隊真人＋每天 AI 陪練＋對準段考＋學會的證據給家長看」。這是空位——但空位不是護城河，第 6 章會講為什麼。</p></div>
+  </div>
+</section>
+
+<!-- ============ 05 商業模式 ============ -->
+<section class="ch" id="c5">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no honey">05</div><div><div class="kicker">商業模式</div><h2>期別制小隊課、分潤制老師、用服務補償的承諾</h2></div></div>
+    <p class="lead">主線是期別制固定小隊課，預收不超過一期；輔助是 AI 陪練的低價留存方案；老師按等級分潤加每堂保底；不走電銷；成效承諾用服務補償、不退現金。<b>分潤制下毛利率跟人數幾乎無關，人數風險落在保底與每隊固定成本</b>——這是本章最重要的發現。</p>
+
+    <h3>5.1 定價與方案（依市場調研修正）</h3>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>方案</th><th>價格</th><th>換算</th><th>本書判斷</th></tr></thead>
+      <tbody>
+        <tr><th>4 團</th><td class="n" data-l="價格">NT$1,790</td><td data-l="換算">每堂 448</td><td data-l="本書判斷">入門；對應第 4 週結業點</td></tr>
+        <tr class="hi"><th>8 團（主力）</th><td class="n" data-l="價格">NT$2,990</td><td data-l="換算">每堂 374、每小時真人 448、每月約 1,620</td><td data-l="本書判斷">站得住：在大班月費下緣、護欄 ≤3,000 以內<a class="src" href="#s23">來源 23</a>。問題不是價格是真人時數，對外講每週 125 分鐘</td></tr>
+        <tr><th>8 團＋一對一</th><td class="n" data-l="價格">原 NT$5,990 → <b>改 NT$4,490</b></td><td data-l="換算">原方案多付 3,000 換 2 小時＝一對一每小時 1,500，是國中主科家教行情（400–700）的兩倍以上<a class="src" href="#s24">來源 24</a>，家長算得出來</td><td data-l="本書判斷">改為一對一 2 次×50 分、由黃金以上老師上、每小時約 900，貼近家教上緣；待試點驗證</td></tr>
+        <tr><th>Plus 月訂</th><td class="n" data-l="價格">NT$299</td><td data-l="換算">不上課也能用小陪，有用量上限</td><td data-l="本書判斷"><b>改為留存方案</b>：只賣給上完一期的家庭、期與期之間使用；不當獲客產品、不進營收假設主線。理由：直接對上免費的因材網 e度、康軒 AI 會考通、ChatGPT，全民只 8.54% 願意為 AI 付費<a class="src" href="#s15">來源 15</a><a class="src" href="#s36">來源 36</a><a class="src" href="#s37">來源 37</a></td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">規則：第一堂試上不滿意不收費；成班才扣次數、沒成班退回；24 小時前可取消；隨時退出退次數；<b>預收不超過一期</b>。</p>
+
+    <h3>5.2 單位經濟：每堂毛利（推估）</h3>
+    <figure class="fig">
+      <svg viewBox="0 0 640 330" role="img" aria-labelledby="f5t f5d">
+        <title id="f5t">每堂毛利依隊人數</title>
+        <desc id="f5d">長條圖：3 人隊每堂毛利 409 元（36.5%）、4 人 568 元（38%）、5 人 710 元（38%）、6 人 852 元（38%）。虛線為每隊每堂固定成本假設 500 元。</desc>
+        <g class="grid"><line x1="40" y1="211" x2="620" y2="211" stroke-dasharray="4 6"/><line x1="40" y1="94" x2="620" y2="94" stroke-dasharray="4 6"/></g>
+        <g class="m" font-size="13" text-anchor="end"><text x="638" y="206">250</text><text x="638" y="89">750</text></g>
+        <line class="ax" x1="40" y1="270" x2="620" y2="270"/>
+        <!-- 固定成本線 -->
+        <line x1="40" y1="153" x2="620" y2="153" stroke="var(--stuck-text)" stroke-width="3" stroke-dasharray="8 8" stroke-linecap="round"/>
+        <text x="40" y="136" font-size="13" fill="var(--stuck-text)" class="lab">每隊每堂固定成本</text>
+        <text x="40" y="176" font-size="13" fill="var(--stuck-text)" class="lab">假設 NT$500</text>
+        <!-- bars -->
+        <rect x="190" y="174" width="80" height="96" rx="14" fill="#F26B54"/>
+        <text class="t" x="230" y="164" font-size="21" text-anchor="middle">409</text>
+        <text x="230" y="230" font-size="15" text-anchor="middle" fill="#fff">36.5%</text>
+        <text class="t lab" x="230" y="296" font-size="17" text-anchor="middle">3 人</text>
+        <text class="m lab" x="230" y="316" font-size="13" text-anchor="middle">老師跌破保底</text>
+
+        <rect x="300" y="137" width="80" height="133" rx="14" fill="#F4C24D"/>
+        <text class="t" x="340" y="127" font-size="21" text-anchor="middle">568</text>
+        <text x="340" y="212" font-size="15" text-anchor="middle" fill="#3B2A00">38%</text>
+        <text class="t lab" x="340" y="296" font-size="17" text-anchor="middle">4 人</text>
+        <text class="m lab" x="340" y="316" font-size="13" text-anchor="middle">勉強過線</text>
+
+        <rect x="410" y="103" width="80" height="167" rx="14" fill="#0E5F52"/>
+        <text class="t" x="450" y="93" font-size="21" text-anchor="middle">710</text>
+        <text x="450" y="195" font-size="15" text-anchor="middle" fill="#fff">38%</text>
+        <text class="t lab" x="450" y="296" font-size="17" text-anchor="middle">5 人</text>
+        <text class="m lab" x="450" y="316" font-size="13" text-anchor="middle">財務基準</text>
+
+        <rect x="520" y="70" width="80" height="200" rx="14" fill="#0E5F52"/>
+        <text class="t" x="560" y="60" font-size="21" text-anchor="middle">852</text>
+        <text x="560" y="178" font-size="15" text-anchor="middle" fill="#fff">38%</text>
+        <text class="t lab" x="560" y="296" font-size="17" text-anchor="middle">6 人</text>
+        <text class="m lab" x="560" y="316" font-size="13" text-anchor="middle">上限</text>
+      </svg>
+      <figcaption>每堂毛利（NT$，長條高度按比例）與毛利率。假設：每人每堂學費 373.75（2,990÷8）；老師拿「學費 × 52%（黃金）」與「保底 600」取高；其他變動成本 10%（金流 2.5%、AI／LINE／雲端 2.5%、準備金 5%）。<b>全部是估的，要用試點實際數字替換。</b></figcaption>
+    </figure>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>隊人數</th><th class="n">每堂收入</th><th class="n">老師（黃金 52%）</th><th class="n">其他 10%</th><th class="n">每堂毛利</th><th class="n">毛利率</th></tr></thead>
+      <tbody>
+        <tr class="warn"><th>3 人</th><td class="n" data-l="每堂收入">1,121</td><td class="n" data-l="老師（黃金 52%）">600（保底；52% 只有 583）</td><td class="n" data-l="其他 10%">112</td><td class="n" data-l="每堂毛利">409</td><td class="n" data-l="毛利率">36.5%</td></tr>
+        <tr><th>4 人</th><td class="n" data-l="每堂收入">1,495</td><td class="n" data-l="老師（黃金 52%）">777</td><td class="n" data-l="其他 10%">150</td><td class="n" data-l="每堂毛利">568</td><td class="n" data-l="毛利率">38.0%</td></tr>
+        <tr class="hi"><th>5 人（財務基準）</th><td class="n" data-l="每堂收入">1,869</td><td class="n" data-l="老師（黃金 52%）">972</td><td class="n" data-l="其他 10%">187</td><td class="n" data-l="每堂毛利">710</td><td class="n" data-l="毛利率">38.0%</td></tr>
+        <tr><th>6 人</th><td class="n" data-l="每堂收入">2,243</td><td class="n" data-l="老師（黃金 52%）">1,166</td><td class="n" data-l="其他 10%">224</td><td class="n" data-l="每堂毛利">852</td><td class="n" data-l="毛利率">38.0%</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">等級敏感度（5 人）：新手 45% → 毛利 45%；鑽石 60% → 30%。三種等級都過試點門檻「五人團毛利 ≥25%」。</p>
+    <div class="callout">
+      <p>在分潤制下，每堂<b>毛利率跟人數幾乎無關（都是 38%）</b>，人數風險落在兩個地方：①老師收入——3 人隊時 45% 與 52% 兩級都跌破保底 600（505／583），差額由公司吸收，鑽石級才不會；②每隊固定成本——客戶成功、教研課表攤提、課前一頁覆核，本書假設每隊每堂約 NT$500。用這條線看：3 人隊（409）虧、4 人（568）勉強、5 人（710）與 6 人（852）才有意義。</p>
+      <p>所以<b>「成班下限 4 人」是財務線、「基準 4–5 人、超過 4 人分兩組」是教學線</b>，兩條線剛好重疊在 4–5 人。3 人隊的比例是第一個要量的數字：若超過四分之一的隊是 3 人，成班規則要改。</p>
+    </div>
+
+    <h3>5.3 老師薪酬</h3>
+    <div class="grid g4">
+      <div class="stat"><div class="v">45／52／60<span style="font-size:.5em">%</span></div><div class="l">新手／黃金／鑽石分潤</div><div class="d">學費 × 等級分潤與每堂保底 600 取高；另有學會獎金（一隊 8 週再測通過率過七成）、續走獎金、代課加給</div></div>
+      <div class="stat"><div class="v">972</div><div class="l">5 人隊黃金老師每 50 分鐘</div><div class="d">時薪約 1,166：國中家教行情（400–700）的兩倍<a class="src" href="#s24">來源 24</a>、補習班一對四（450）的 2.6 倍<a class="src" href="#s72">來源 72</a>、大學生家教平均（596）的兩倍<a class="src" href="#s28">來源 28</a></div></div>
+      <div class="stat"><div class="v honey">保底</div><div class="l">試上照拿保底、每月 1 日出帳</div><div class="d">Preply 試上抽 100%、老師不拿錢<a class="src" href="#s67">來源 67</a>；AmazingTalker 抽成不透明是老師端痛點</div></div>
+      <div class="stat"><div class="v coral">10 分鐘</div><div class="l">備課假設（被挑戰）</div><div class="d">課前看卡點卡約 10 分鐘、課後 30 秒語音；線上家教自述線上備課比實體久<a class="src" href="#s72">來源 72</a>，試點要實測</div></div>
+    </div>
+    <p class="note">接班卡要寫明各種人數下的收入：人數少收入就少，這是分潤制對老師誠實的代價。這其實是把美國「按成效付費」的邏輯放進老師薪酬（學會獎金），而不是放進對家長的價格。</p>
+
+    <h3>5.4 獲客、承諾、預收</h3>
+    <div class="grid g3">
+      <div class="card">
+        <h4>獲客不走電銷</h4>
+        <p class="small">管道：20 分鐘免費診斷入口、舊生轉介、家人迴路口碑（家長把「他學會解釋浮力」轉給另一位家長）。目標每家獲客 ≤ NT$2,500。</p>
+        <p class="small" style="margin-top:8px">為什麼不電銷：家長負評集中在電銷騷擾與長約；Byju's 靠高壓電銷與分期貸款賣課，2024 年進入破產重整<a class="src" href="#s75">來源 75</a>。信任要在付款前建立：家長 LINE 先收到診斷摘要＋小隊組成理由＋老師 30 秒自介，再付款。</p>
+      </div>
+      <div class="card">
+        <h4>成效承諾：用服務補償，不退現金</h4>
+        <p class="small">借鏡森塾「＋20 分成績保證」：沒達到就第 3 學期學費全免；FY2025/9 營收 351 億日圓（+10%）、純益 2.2 倍<a class="src" href="#s102">來源 102</a>。美國按成效付費合約實付浮動 35–37%，很少付到上限。</p>
+        <p class="small" style="margin-top:8px">台灣沒有明文禁止成績保證，但廣告寫了就變契約義務（消保法第 22 條），做不到可能違反公平法第 21 條。<b>本書做法</b>：只承諾可量測的「學會卡點數」與「段考前後對照」；未達則免費補強或下一期折抵；不承諾分數、不退現金。<span class="pill gold">待法務確認</span></p>
+      </div>
+      <div class="card">
+        <h4>預收不超過一期</h4>
+        <p class="small">一期 8 週 NT$2,990 是預收上限。參照：中國學科培訓預收上限「3 個月／60 課時／5,000 元」＋資金銀行託管<a class="src" href="#s65">來源 65</a>；台灣「預收款＋倒閉」是家長最怕的事（消基會退費申訴<a class="src" href="#s20">來源 20</a>）；數位部線上課退費級距若生效，到第 4 次課仍需退一半（第 9 章）。要明文寫進對外條款。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 競爭 ============ -->
+<section class="ch" id="c6">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">06</div><div><div class="kicker">競爭與護城河</div><h2>空位不是護城河；護城河＝卡點資料 × 湊隊密度 × 老師供給</h2></div></div>
+    <p class="lead">「台灣沒有國中數理線上小組課」這個判斷要修正：有補習班的線上版、有出版社的 1 對多、有免費的 AI 陪練與 LINE 通知，只是沒有獨立品牌、也沒有「卡點配隊」這個賣法。<b>任何一家大戶把 1 對多改成固定小隊＋段考 8 週都不難</b>，時間窗口大概 12–24 個月。</p>
+
+    <h3>6.1 Top players 對照</h3>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>業者</th><th>型態</th><th>價格</th><th>規模</th><th>近況</th><th>對 Tandelo 的意思</th></tr></thead>
+      <tbody>
+        <tr><th>卓越成功／陳立教育</th><td data-l="型態">國中小數學實體＋直播</td><td data-l="價格">直播課每期 10,800–14,400<a class="src" href="#s31">來源 31</a></td><td data-l="規模">2025 營收 8.71 億、EPS 6.12；16 直營校</td><td data-l="近況">2026 年 8 月營收年減 1.11%；上半年新增 3 據點往國中小紮根；AI 用在後台<a class="src" href="#s32">來源 32</a></td><td data-l="對 Tandelo 的意思">最強的實體數學品牌；成長趨緩，最有動機做線上小隊</td></tr>
+        <tr><th>三貝德</th><td data-l="型態">數位內容＋實體＋兒美＋個別指導</td><td data-l="價格">未公開</td><td data-l="規模">2026 年 1–8 月營收 12.99 億（+50.31%）；集團 55 據點 1.6 萬生、個別指導約 2,000 生</td><td data-l="近況">2025-10 以逾 12.4 億收購亞洲教育與弋果<a class="src" href="#s33">來源 33</a></td><td data-l="對 Tandelo 的意思">最可能做「線上導流、線下收高價」的整併者；沒看到線上小隊課</td></tr>
+        <tr><th>明光義塾台灣</th><td data-l="型態">個別指導 1 對 2–3</td><td data-l="價格">國中約 870／90 分（舊資料）</td><td data-l="規模">自述百餘間教室<a class="src" href="#s34">來源 34</a></td><td data-l="近況">查不到近兩年公開動作</td><td data-l="對 Tandelo 的意思">營運經驗最像 Tandelo 小隊；實體加盟、價格不公開</td></tr>
+        <tr class="warn"><th>翰林e家教／雲端學院</th><td data-l="型態">線上真人 1 對 1 至 1 對多；錄播＋題庫</td><td data-l="價格">e家教 5 堂 10 小時 4,380–5,180；雲端學院國中單科 2,580／年</td><td data-l="規模">雲端學院自述 37.8 萬學生<a class="src" href="#s30">來源 30</a></td><td data-l="近況">LINE 課後通知已在做</td><td data-l="對 Tandelo 的意思"><b>最直接的線上替代品</b>：同樣國中、真人、1 對多、LINE 回報、教科書品牌</td></tr>
+        <tr><th>寰宇在線</th><td data-l="型態">國中數理 Zoom 直播小班、AI 評測、錯題雲端</td><td data-l="價格">未公開；每週 3 小時、學期制</td><td data-l="規模">查不到<a class="src" href="#s43">來源 43</a></td><td data-l="近況">—</td><td data-l="對 Tandelo 的意思">最像 Tandelo 的實體補習班線上版；班級人數論壇稱不到 20 人</td></tr>
+        <tr><th>AmazingTalker</th><td data-l="型態">語言為主的一對一家教市集</td><td data-l="價格">老師自訂，每堂 250–1,000</td><td data-l="規模">2024 年營收 18 億、人力約百人</td><td data-l="近況">AI 家教 Bella 兩週吸 3 萬學生但轉不成付費，已放棄主打 AI<a class="src" href="#s40">來源 40</a></td><td data-l="對 Tandelo 的意思">AI 拉得到試用、留不住付費的本土證據</td></tr>
+        <tr><th>TutorJr</th><td data-l="型態">兒童英文一對一</td><td data-l="價格">24 個月約 11–12.5 萬（部落客整理）</td><td data-l="規模">查不到<a class="src" href="#s42">來源 42</a></td><td data-l="近況">家長 App 可即時觀課、看錄影、每堂報告</td><td data-l="對 Tandelo 的意思">不做國中數理；只當線上家庭付費意願的參照</td></tr>
+        <tr><th>Snapask 時課問</th><td data-l="型態">24 小時解題＋衝刺班</td><td data-l="價格">2021 年高中進度班每科 1,490／月</td><td data-l="規模">查不到近年營收<a class="src" href="#s41">來源 41</a></td><td data-l="近況">仍營運</td><td data-l="對 Tandelo 的意思">「解題」正面撞上免費 AI</td></tr>
+        <tr><th>均一／因材網</th><td data-l="型態">免費影片、練習、AI 診斷；e度學伴</td><td data-l="價格">免費</td><td data-l="規模">均一累計註冊 530 萬、月活約 27 萬；因材網 e度逾 75 萬師生<a class="src" href="#s35">來源 35</a><a class="src" href="#s36">來源 36</a></td><td data-l="近況">因材網搭配 e度數學測驗通過率 37%→58%（官方統計、非隨機對照）</td><td data-l="對 Tandelo 的意思">免費層天花板；家長會問「用均一就好？」答案要寫在頁面上：均一給內容，Tandelo 給有人帶、有隊友、對準段考、驗證學會</td></tr>
+        <tr><th>AI 工具（ChatGPT 學習模式、康軒 AI 會考通）</th><td data-l="型態">純 AI</td><td data-l="價格">免費</td><td data-l="規模">九年級 69% 用過生成式 AI<a class="src" href="#s14">來源 14</a></td><td data-l="近況">講解與解題定價權歸零<a class="src" href="#s37">來源 37</a></td><td data-l="對 Tandelo 的意思">「有 AI」不能當賣點</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>6.2 什麼不是護城河、什麼才是</h3>
+    <div class="grid g2">
+      <div class="card coral">
+        <h4>不是護城河的</h4>
+        <ul class="small">
+          <li><b>AI 陪練</b>：免費的一堆（因材網 e度、康軒 AI 會考通、ChatGPT）</li>
+          <li><b>LINE 家長週報</b>：翰林、康軒已在做</li>
+          <li><b>小班本身</b>：寰宇在線、明光義塾都有</li>
+          <li><b>「AI 配對」</b>：查不到任何權威機構把它列為前沿方向——它是我們的原創賭注，不應對外當護城河講</li>
+        </ul>
+      </div>
+      <div class="card mint">
+        <h4>只有三件一起才是</h4>
+        <ol class="small">
+          <li><b>卡點資料 × 湊隊密度的飛輪</b>：知道「哪些孩子、在同一版本同一段考前、卡在同一步」，別人要複製得先有同樣多的學生。只有這一條會隨規模變強，但前 1–2 年幾乎不存在，要靠集中打一個區域、一個版本才長得出來。</li>
+          <li><b>老師供給</b>：以國中主科家教兩倍的時薪、不用招生、備課只要 10 分鐘，能吸到實體補習班與家教市場的老師；線上 1 對多與大班業者的成本結構難跟進。</li>
+          <li><b>學會的證據</b>：7–12 天再測＋講得出來＋段考前後對照。台灣目前沒人把學習成效做成對外賣點，而 2026 會考數學非選題第 1 題 50%、第 2 題 59% 只拿 1 級分、逾四分之一直接放棄——會考真的在考「講得出來」<a class="src" href="#s17">來源 17</a>。但這是可被抄的做法，只有和第 1 條結合才是護城河。</li>
+        </ol>
+      </div>
+    </div>
+
+    <h3>6.3 大戶 12–24 個月跟進的風險與對策</h3>
+    <p class="prose">風險：卓越成功單月營收已轉負、正往國中小下紮<a class="src" href="#s32">來源 32</a>；三貝德有全通路<a class="src" href="#s33">來源 33</a>；翰林有 e家教<a class="src" href="#s30">來源 30</a>。任何一家把「1 對多線上課」改成「固定小隊＋段考 8 週」都不難。</p>
+    <ol class="steps" style="margin-top:16px">
+      <li><b>密度先行</b>試點前先用一個縣市、一個版本、兩個時段做「願意報名名單」測密度，未達 8 隊不開；正式上線後仍只打單一城市、單一版本，直到飛輪轉起來。</li>
+      <li><b>鎖老師</b>時薪兩倍＋保底＋不招生＋試上照拿保底；老師等級與學會獎金綁在 Tandelo 的證據系統上，跳槽帶不走。</li>
+      <li><b>證據做成第三方可驗證</b>評量題本與每日練習題庫分離、每月 10% 再測由不教這一隊的人覆核。Nerdy 收掉學區通路的四個抱怨之一就是「成效證據不足」<a class="src" href="#s102">來源 102</a>。</li>
+      <li><b>與其被抄，不如第二年主動授權</b>把配對引擎、老師版、成效報表賣給補教機構——atama+ 進 4,500 間教室後被公文全資併購<a class="src" href="#s58">來源 58</a>；但要等有第三方可驗證的成效之後。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 07 前瞻 ============ -->
+<section class="ch" id="c7">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">07</div><div><div class="kicker">前瞻性</div><h2>固定節奏有人盯的活下來；純 AI 純內容收縮</h2></div></div>
+    <p class="lead">四個市場最近兩年的答案指向同一邊。這不是我們自己想出來的方向——是日本、韓國、歐洲的龍頭各自用錢投票投出來的。Tandelo 的設計剛好站在「AI 找卡點、真人帶小隊」的交會點；<b>三年路徑家庭→機構→政府／海外，順序不能反。</b></p>
+
+    <h3>7.1 國外走向：四條線</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4><span class="pill ok">活下來</span> 固定節奏、有人盯、看得見進度</h4>
+        <ul class="small">
+          <li><b>日本</b>：明光義塾 FY2025/8 營收 +10.0%、營業利益 +67.4%；東京個別指導學院上半年營收 +11.4%、營業利益 +323%；森塾 +10%；東進靠助理盯進度營收 +16.2%<a class="src" href="#s55">來源 55</a><a class="src" href="#s56">來源 56</a><a class="src" href="#s102">來源 102</a>。2025 年 1–9 月補習班倒閉 37 件創新高、幾乎都是小型業者——量縮但頭部增收。</li>
+          <li><b>韓國</b>：全管理型的 시대인재 2025 營收 +21.7%、營業利益 +27.8%<a class="src" href="#s59">來源 59</a>；參與家庭每人支出 +2.0%<a class="src" href="#s54">來源 54</a>。</li>
+          <li><b>美國</b>：RSM（85 個據點、固定班、學年制、線上月費 US$166–444）、AoPS（固定梯次約每堂 US$30）長年存在，但沒有一家靠創投規模化——慢而穩的生意<a class="src" href="#s70">來源 70</a><a class="src" href="#s73">來源 73</a>。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="pill warn">收縮</span> 純 AI、純內容、純媒合</h4>
+        <ul class="small">
+          <li>スタディサプリ收掉「個別指導コース」新申請與塾端服務<a class="src" href="#s57">來源 57</a>。</li>
+          <li>QANDA 2024 虧損 194 億韓元，2025-08 被補習班業者投入 300 億韓元成為最大股東<a class="src" href="#s61">來源 61</a>。</li>
+          <li>Chegg 市值 −99.3%；AmazingTalker 的 Bella<a class="src" href="#s40">來源 40</a>；Khanmigo 只有 15% 在用、兩年 RCT 每學年僅 +0.06–0.08 SD<a class="src" href="#s82">來源 82</a>。</li>
+          <li>教訓：被 AI 殺死的是「給答案」，不是「教學習」。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="pill gold">錢流向</span> AI 新創直接賣家長，每月 US$20–45</h4>
+        <ul class="small">
+          <li>Vimi（國小四到國三 AI 數學家教，約 US$20／月）2026-01 種子輪 1,200 萬美元<a class="src" href="#s79">來源 79</a>；Synthesis Tutor US$45／月<a class="src" href="#s69">來源 69</a>；Gizmo 1,300 萬用戶、A 輪 2,200 萬美元<a class="src" href="#s80">來源 80</a>。</li>
+          <li>融資總量：2025 年 26 億美元（+11%），2026 上半年 10 億（−26%）<a class="src" href="#s78">來源 78</a>。投資人買「AI 放大人」（Preply 2026-01 募 1.5 億、估值 12 億、已獲利）或「AI 直接賣家長」，不再買大型直播平台。</li>
+          <li>Tandelo 的 Plus NT$299 落在這條線的下緣——所以它適合當漏斗與留存，不適合當主營收。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="pill">交會點</span> 亞洲龍頭往「AI＋真人」走</h4>
+        <ul class="small">
+          <li>公文 2026-07-05 全資收購 atama+，四分之一世紀以來第一宗併購<a class="src" href="#s58">來源 58</a>；시대인재投資 QANDA；GoStudent 估值被砍 70% 後去買實體補習班<a class="src" href="#s66">來源 66</a>。</li>
+          <li>PhysicsWallah 線上已賺錢、實體段 FY27 Q1 虧 ₹27 cr<a class="src" href="#s74">來源 74</a>；Megastudy「靠擴張實體求生」<a class="src" href="#s60">來源 60</a>。</li>
+          <li>兩個提醒：開實體不等於賺錢；B2G／學區採購仍是墳場（Paper、FEV、Varsity Tutors for Schools 都倒在這裡<a class="src" href="#s102">來源 102</a>）。</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>7.2 Tandelo 三年路徑</h3>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>年</th><th>做什麼</th><th>里程碑</th><th>為什麼是這個順序</th></tr></thead>
+      <tbody>
+        <tr><th>第一年｜家庭</th><td data-l="做什麼">直接面向家庭驗證：8 週試點 → 台灣正式上線（單一科目、單一城市）</td><td data-l="里程碑">試點過四關 → 500 個付費家庭 → 平均每隊 ≥5 人、獲客 ≤2,500、月流失 ≤9%</td><td data-l="為什麼是這個順序">只有家庭端會產生卡點資料與第三方可驗證的成效；活下來的清一色是家長自費（Nerdy 消費者端已占營收 84%）</td></tr>
+        <tr><th>第二年｜機構</th><td data-l="做什麼">把配對引擎、老師版、成效報表授權給補教機構</td><td data-l="里程碑">簽第一個機構客戶；3,000 個付費家庭；營業利益打平</td><td data-l="為什麼是這個順序">atama+ 先累積 4,500 間教室的資料才被收購<a class="src" href="#s58">來源 58</a>；沒有證據的授權只是賣軟體</td></tr>
+        <tr><th>第三年｜政府／海外</th><td data-l="做什麼">政府計畫、海外（越南、日本）；國一、理化、英文</td><td data-l="里程碑">3,000–5,000 個家庭；三市場三客戶；營業利益 ≥15%</td><td data-l="為什麼是這個順序">政府採購決定權不在我們、政策錢一退就崩（Paper、FEV）；要等機構端證明「機構願意為成效資料付費」</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">三年家庭數依第 1 章可觸及市場修正；原提案的 10,000 個家庭以擴科擴年級為前提。</p>
+
+    <h3>7.3 哪些訊號出現要轉向</h3>
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>訊號</th><th>門檻</th><th>轉向</th></tr></thead>
+      <tbody>
+        <tr><th>湊不成隊</th><td data-l="門檻">W6 成班率 &lt;50%、連續兩週沒團可上的人 &gt;15%</td><td data-l="轉向">改「線上 1 對 3＋每日陪練」，或把引擎轉 B2B2C 給有學生密度的實體班</td></tr>
+        <tr><th>學生不打開</th><td data-l="門檻">第三週每週練 ≥3 天的比例 &lt;30%</td><td data-l="轉向">砍掉「每天陪練」主打，改成「課前一題」單一節點；價值主張回到真人小隊課本身</td></tr>
+        <tr><th>講得出來 ≠ 學會</th><td data-l="門檻">當下通過高、過幾天再測 &lt;55%</td><td data-l="轉向">三道關分開記；再測率取代當下率成為老師卡的指標</td></tr>
+        <tr><th>大戶跟進</th><td data-l="門檻">卓越／三貝德／翰林推出固定小隊＋段考 8 週</td><td data-l="轉向">加速第二年機構授權；把差異押在老師供給與證據</td></tr>
+        <tr><th>免費層做出真人小組</th><td data-l="門檻">因材網或均一加上真人小組課</td><td data-l="轉向">差異只剩老師供給與證據；重估定價</td></tr>
+        <tr><th>退費級距生效</th><td data-l="門檻">數位部線上課退費級距正式公告</td><td data-l="轉向">現金流模型改 4 週一期為主力，8 週改為兩個 4 週</td></tr>
+        <tr><th>老師不續帶</th><td data-l="門檻">試點後願意續帶 &lt;6／8 位</td><td data-l="轉向">薪酬與課外工時重設；否則供給撐不起密度</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ 08 驗證 ============ -->
+<section class="ch" id="c8">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">08</div><div><div class="kicker">驗證計畫</div><h2>8 週試點，買五個答案；答案不好就停</h2></div></div>
+    <p class="lead">國二上數學、8 隊 × 5 人（4–6）、同老師同時段 8 週、對準第二次段考（段考每 7 週一次，8 週剛好包住補洞→跟上→衝刺→考後訂正一個循環<a class="src" href="#s101">來源 101</a>）。11 週：3 週準備＋8 週上課。<b>一半家庭從既有通路、一半從外部</b>，才量得到真實獲客成本。</p>
+
+    <h3>8.1 四道門檻（過關才進第二段）</h3>
+    <div class="grid g4">
+      <div class="stat"><div class="v">≥ 60%</div><div class="l">成班率（含被滿足率）</div><div class="d">本週有卡點的學生中，被排進一堂對準該卡點的小隊課的比例；每週量，W6 首讀</div></div>
+      <div class="stat"><div class="v">≥ 70%</div><div class="l">再測通過（學會率）</div><div class="d">兩個數字並列：①過幾天無提示再測通過 ÷ 當週說給我聽通過；②再測通過 ÷ 全體應測學生；W9</div></div>
+      <div class="stat"><div class="v">≥ 50%</div><div class="l">8 週續購率</div><div class="d">試點結束 14 天內付費續下一季 ÷ 試點家庭；「學完先停」不計入流失；W13</div></div>
+      <div class="stat"><div class="v honey">≥ 25%</div><div class="l">五人團每堂毛利</div><div class="d">收入 − 老師 − AI − 通路 − 5% 準備金；W11</div></div>
+    </div>
+    <p class="note">輔助指標：三週留存 ≥50%（第三週仍每週 ≥3 天完成一格且說給我聽）；每團實際人數平均 ≥4.5；老師願意續帶 ≥6／8 位；家長「今天可以問他什麼」開啟率 ≥60%；零重大安全事件且分級時限 100% 達標；再測抽查一致率 ≥85%。</p>
+
+    <h3>8.2 優先量的三件事（證據最薄的三個賭注）</h3>
+    <div class="grid g3">
+      <div class="card coral"><h4>1 5 人隊每人每堂開口次數</h4><p class="small">線上 4 人以上沒有任何實驗證據<a class="src" href="#s91">來源 91</a><a class="src" href="#s92">來源 92</a>。同時記不開鏡頭是否影響學習。</p></div>
+      <div class="card coral"><h4>2 第三週每週練 3 天以上的比例</h4><p class="small">Khanmigo 只有 15% 在用；AI 不給答案時學生會離開<a class="src" href="#s82">來源 82</a>。那是美國低成就生，台灣未知。</p></div>
+      <div class="card coral"><h4>3 老師實際課外工時</h4><p class="small">換算時薪是否仍高於一對一家教<a class="src" href="#s72">來源 72</a>；否則供給假設不成立。</p></div>
+    </div>
+
+    <h3>8.3 11 項待驗證清單</h3>
+    <div class="grid g2">
+      <ol class="prose small" style="margin:0">
+        <li>國二國三學生平日實際可上課時段分布（有補習／沒補習兩群）——查不到公開數據</li>
+        <li>5 人線上小隊裡每個孩子每堂真正開口幾次；不開鏡頭是否影響學習</li>
+        <li>小陪不給答案時，國中生第三週還有多少人每週用 3 天以上</li>
+        <li>家長願意為「線上小隊＋AI 陪練」付多少、跟實體補習班怎麼比</li>
+        <li>家長讀 LINE 週報的時間、開啟率，「今晚可以問他」會不會真的被問</li>
+        <li>孩子是否願意讓家長看到自己卡在哪；國中生希望分享到什麼程度</li>
+      </ol>
+      <ol class="prose small" start="7" style="margin:0">
+        <li>老師帶 5 人線上課的實際備課與課後時間</li>
+        <li>大學生老師期中考週的缺課率與代課需求；全職家教願意讓出多少黃金時段</li>
+        <li>「程度相近」怎麼定義，孩子才不會覺得被比下去或被拖累</li>
+        <li>國三會考前是否需要不同節奏（會考是最大煩惱，43%<a class="src" href="#s13">來源 13</a>）</li>
+        <li>國中生對「AI 教練」角色的接受度與稱呼偏好——查不到</li>
+      </ol>
+    </div>
+
+    <h3>8.4 訪談題綱摘要（24 位學生、12 位家長、8 位老師）</h3>
+    <div class="grid g3">
+      <div class="card soft"><h4>學生（10 題）</h4><p class="small">昨天放學到睡覺做了什麼、哪段最累｜上次考卷最想弄懂但沒弄懂的一題後來怎麼處理｜不會時問誰、什麼情況不會問｜AI 給答案跟不給答案反應差在哪｜一週一堂 50 分鐘哪天幾點最可能準時出現｜跟不熟同學上線上課會不會開鏡頭開麥｜30 秒講給隊友聽怎樣自在怎樣尷尬｜每天 10–20 分鐘可能嗎、什麼讓你放掉｜希望爸媽知道哪些、不希望哪些｜什麼情況會說「我不想上了」</p></div>
+      <div class="card soft"><h4>家長（10 題）</h4><p class="small">最擔心哪一件事｜目前補習與每月支出怎麼決定｜上次覺得補習費花得值／不值是什麼時候｜現在怎麼知道孩子學得怎樣、最想知道的是什麼｜每週一則 LINE 想看什麼、什麼會不想點開｜對線上小班最擔心什麼｜聽到「AI 陪練不給答案」第一反應｜付第一期 8 週前需要先看到什麼｜過去哪些做法讓您不舒服（推銷、合約、退費）｜8 週後用什麼判斷續不續</p></div>
+      <div class="card soft"><h4>老師（8 題）</h4><p class="small">一週怎麼排教學時間、哪段最難排最有價值｜學生從哪來、找學生最累的是什麼｜一堂 50 分鐘課外實際花多少時間｜一次帶 4–6 個國中生線上最難的是什麼｜前一晚給「這隊這週要解的 3 題」會照用、修改還是重備｜保底加分潤怎麼跟一對一比、什麼條件會讓出黃金時段｜過去哪些規則讓您想離開｜學生不練習希望平台幫什麼</p></div>
+    </div>
+
+    <h3>8.5 時程與停損規則</h3>
+    <div class="band">
+      <div class="grid g4" style="margin-bottom:22px">
+        <div class="stat"><div class="v">W0–W3</div><div class="l">立案、建置、訪談</div><div class="d">診斷、湊隊、LINE 付款、課前一頁、說給我聽三道關</div></div>
+        <div class="stat"><div class="v coral">W4–W6</div><div class="l">50 個家庭進 8 隊</div><div class="d">第一週試上成班；W6 第一次讀數：成班率、三週留存，不對就調規則</div></div>
+        <div class="stat"><div class="v honey">W9–W11</div><div class="l">學會率、四項初評</div><div class="d">再測資料夠了；段考後「檢討卷小隊課」；結案報告初稿</div></div>
+        <div class="stat"><div class="v">W13</div><div class="l">續購數字到齊才定案</div><div class="d">試點結束後 14 天</div></div>
+      </div>
+      <h4>停損</h4>
+      <ul class="m small">
+        <li><b style="color:var(--on-band)">四道門檻全過</b>（含安全與評量可信度兩關）→ 正式對家庭上線並開始談第一個機構客戶。</li>
+        <li><b style="color:var(--on-band)">過三缺一</b> → 延長 4 週修那一項。</li>
+        <li><b style="color:var(--on-band)">缺兩項以上</b> → 停，留下引擎、老師版與一份試點報告。損失上限＝試點預算，不追加。</li>
+        <li><b style="color:var(--on-band)">評量的獨立性</b>：評量題本與每日練習題庫分離；每月 10% 再測由不教這一隊的人覆核；分歧時由學科主管盲看裁定。否則出題、上課、評分、領學會獎金在同一條鏈上，北極星會被灌水。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 風險與法規 ============ -->
+<section class="ch" id="c9">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">09</div><div><div class="kicker">風險與法規</div><h2>成班密度第一，投入度第二；法規不是限制，退費是成本</h2></div></div>
+    <p class="lead">線上教學不是補習班，主管機關是數位部；退費規則因此不同、現金流比補習班差。兒少的語音、錯題與學習歷程都算個資。<b>不錄孩子不是省事，是產品原則。</b></p>
+
+    <div class="tbl-wrap"><table class="tbl cards">
+      <thead><tr><th>風險</th><th>嚴重度</th><th>證據</th><th>早期訊號</th><th>對策</th></tr></thead>
+      <tbody>
+        <tr class="warn"><th>成班密度</th><td data-l="嚴重度"><span class="pill warn">最高</span></td><td data-l="證據">四個條件（同校／同版本／同段考日／同時段）同時對上才開得成 4–6 人隊；多數孩子平日晚上已被補習班佔掉（63.8% 補到 9 點<a class="src" href="#s8">來源 8</a>）</td><td data-l="早期訊號">W6 成班率 &lt;50%</td><td data-l="對策">一縣市、一版本、兩時段測密度，未達 8 隊不開；連續兩週湊不到的人轉 25 分鐘一對一補強</td></tr>
+        <tr><th>投入度</th><td data-l="嚴重度"><span class="pill warn">高</span></td><td data-l="證據">Khanmigo 15% 在用、兩年 RCT +0.06–0.08 SD<a class="src" href="#s82">來源 82</a>；AI 拒絕給答案後多數學生就不用了；AmazingTalker Bella 留不住付費<a class="src" href="#s40">來源 40</a></td><td data-l="早期訊號">第三週每週練 ≥3 天 &lt;30%</td><td data-l="對策">固定小隊、固定老師、同儕互講、家人迴路；練習綁在老師與隊友看得到的節點</td></tr>
+        <tr><th>看管缺口</th><td data-l="嚴重度"><span class="pill warn">高</span></td><td data-l="證據">實體班同時賣時間與空間；線上課沒有</td><td data-l="早期訊號">家長訪談把「有地方待」列前三</td><td data-l="對策">只搶「不需要被看管、但需要被看見」的家庭；不假裝能取代</td></tr>
+        <tr><th>老師供給</th><td data-l="嚴重度"><span class="pill gold">中高</span></td><td data-l="證據">公立教師不得兼補習家教<a class="src" href="#s53">來源 53</a>；大學生期中考週停課；全職家教黃金時段重疊<a class="src" href="#s72">來源 72</a></td><td data-l="早期訊號">老師續帶 &lt;6／8；代課率高</td><td data-l="對策">保底＋兩倍時薪＋不招生；備援老師 2 位；代課加給</td></tr>
+        <tr><th>退費規定</th><td data-l="嚴重度"><span class="pill gold">中（現金流）</span></td><td data-l="證據">線上教學不是補習班，主管機關是數位部<a class="src" href="#s47">來源 47</a>；數位部 2023-12 預告線上課退費級距：用不到 10% 全退、10–30% 至少退 8 成、30–50% 至少退 5 成、超過 50% 可不退；違約金上限報導寫 2%、官方摘要寫 20%，不一致；<b>是否已正式生效查不到</b><a class="src" href="#s48">來源 48</a>。對照實體補習班：開課前退 90%、未滿 1/3 退 50%、滿 1/3 不退<a class="src" href="#s46">來源 46</a>；台北市更嚴<a class="src" href="#s49">來源 49</a></td><td data-l="早期訊號">退費集中在第 3 週</td><td data-l="對策">一期 8 次課，照數位部預告版要到第 5 次後才可不退——現金流比補習班差。<span class="pill gold">待法務確認</span> 登記為短期補習班還是線上數位內容</td></tr>
+        <tr><th>兒少個資</th><td data-l="嚴重度"><span class="pill gold">中高（合規）</span></td><td data-l="證據">《人工智慧基本法》2026-01-14 施行，高風險應用以兒少最佳利益為原則<a class="src" href="#s50">來源 50</a>；個資法修正 2025-11-11 公布、施行日未定<a class="src" href="#s51">來源 51</a>；7–18 歲重要處理要法定代理人同意；孩子的語音（說給我聽 30 秒）、錯題與學習歷程都算個資</td><td data-l="早期訊號">同意書簽署率低、家長質疑</td><td data-l="對策">家長明示同意、寫清楚保存期限與用途；錄音不留原檔；一期結束 30 天後刪</td></tr>
+        <tr><th>不錄孩子</th><td data-l="嚴重度"><span class="pill">中（產品原則）</span></td><td data-l="證據">42% 怕說錯被截圖<a class="src" href="#s13">來源 13</a>；不開鏡頭的原因是外表、家人入鏡、住處<a class="src" href="#s99">來源 99</a>；TutorJr 錄全程是反例<a class="src" href="#s42">來源 42</a></td><td data-l="早期訊號">分享關閉率 &gt;30%</td><td data-l="對策">只錄白板與老師講解，自動剪成 3 段給這一隊與家人看；孩子的影像與發言不錄、不能下載</td></tr>
+        <tr><th>成績保證</th><td data-l="嚴重度"><span class="pill gold">中（法遵）</span></td><td data-l="證據">消保法第 22 條廣告即契約義務；公平法第 21 條罰鍰 5 萬–2,500 萬</td><td data-l="早期訊號">行銷文案出現「保證進步」</td><td data-l="對策">只講過程與可量測的學會，用服務補償 <span class="pill gold">待法務確認</span></td></tr>
+        <tr><th>教職員查核</th><td data-l="嚴重度"><span class="pill">中</span></td><td data-l="證據">補習及進修教育法第 9 條要求聘人前查詢不適任紀錄<a class="src" href="#s52">來源 52</a>；線上服務若不登記補習班不一定適用</td><td data-l="早期訊號">—</td><td data-l="對策">比照辦理；家長會期待同等保護</td></tr>
+        <tr><th>安全事件</th><td data-l="嚴重度"><span class="pill warn">高（底線）</span></td><td data-l="證據">28% 國中生曾因課業壓力有自傷或輕生念頭<a class="src" href="#s9">來源 9</a></td><td data-l="早期訊號">—</td><td data-l="對策">三級分級與時限（急迫 15 分鐘內有人接手、2 小時內給保護與聯繫計畫）；若監護人可能是風險來源不自動通知；列入試點必過門檻</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ 10 來源 ============ -->
+<section class="ch" id="c10">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">10</div><div><div class="kicker">來源清單</div><h2>四份調研的來源合併、去重，共 102 條</h2></div></div>
+    <p class="lead">查詢日除另註者皆為 2026-09-30。第三方彙整、比價站、部落格只當量級參考，文中已標「信度低」或「第三方」。內部資料與公司內部數字一律不引用。</p>
+    <div class="srcs">
+
+      <h4>台灣官方統計與調查</h4>
+      <ol>
+      <li id="s1"><span class="no">1</span><b>教育部統計處《各教育階段學生數預測報告（115～130 學年度）》2026-08-13</b><br><a href="https://stats.moe.gov.tw/files/analysis/115_all_st.pdf" rel="noopener" target="_blank">https://stats.moe.gov.tw/files/analysis/115_all_st.pdf</a></li>
+      <li id="s2"><span class="no">2</span><b>教育部 109 學年度國民中學教育消費支出調查（中國時報 2021-12-26；中央社 2022-01-29）</b><br><a href="https://www.chinatimes.com/realtimenews/20211226002564-260405" rel="noopener" target="_blank">https://www.chinatimes.com/realtimenews/20211226002564-260405</a><br><a href="https://www.cna.com.tw/news/ahel/202201290059.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/ahel/202201290059.aspx</a></li>
+      <li id="s3"><span class="no">3</span><b>教育部統計處 113 學年教育消費支出調查說明（查詢 2026-09-30）</b><br><a href="https://depart.moe.edu.tw/ED4500/cp.aspx?n=816DD17CCD4C2B47&amp;s=760AE6268A615AFC" rel="noopener" target="_blank">https://depart.moe.edu.tw/ED4500/cp.aspx?n=816DD17CCD4C2B47&amp;s=760AE6268A615AFC</a></li>
+      <li id="s4"><span class="no">4</span><b>全國補習班資訊管理系統 即時統計（2026-09-30）</b><br><a href="https://bsb.kh.edu.tw/statistic_city.jsp" rel="noopener" target="_blank">https://bsb.kh.edu.tw/statistic_city.jsp</a></li>
+      <li id="s5"><span class="no">5</span><b>聯合新聞網：108 課綱五年文理類補習班增 966 家（2024-10-15）</b><br><a href="https://udn.com/news/story/6885/8292793" rel="noopener" target="_blank">https://udn.com/news/story/6885/8292793</a></li>
+      <li id="s6"><span class="no">6</span><b>文化部統計處《我國家庭休閒、文化及教育平均消費支出 2024 年》</b><br><a href="https://stat.moc.gov.tw/ImportantPointer_LatestDownload.aspx?sqno=46" rel="noopener" target="_blank">https://stat.moc.gov.tw/ImportantPointer_LatestDownload.aspx?sqno=46</a></li>
+      <li id="s7"><span class="no">7</span><b>主計總處《113 年家庭收支調查報告》</b><br><a href="https://ws.dgbas.gov.tw/001/Upload/466/ebook/ebook_341889/pdf/full.pdf" rel="noopener" target="_blank">https://ws.dgbas.gov.tw/001/Upload/466/ebook/ebook_341889/pdf/full.pdf</a></li>
+      <li id="s8"><span class="no">8</span><b>兒福聯盟《2023 年臺灣兒少學習狀況調查報告》</b><br><a href="https://www.children.org.tw/publication_research/research_report/2655" rel="noopener" target="_blank">https://www.children.org.tw/publication_research/research_report/2655</a></li>
+      <li id="s9"><span class="no">9</span><b>兒福聯盟《2026 台灣國中生學習壓力調查》2026-03-02</b><br><a href="https://www.children.org.tw/publication_research/research_report/3047" rel="noopener" target="_blank">https://www.children.org.tw/publication_research/research_report/3047</a></li>
+      <li id="s10"><span class="no">10</span><b>兒福聯盟《2025 台灣家長育兒焦慮調查》2025-08-26</b><br><a href="https://www.children.org.tw/publication_research/research_report/2984" rel="noopener" target="_blank">https://www.children.org.tw/publication_research/research_report/2984</a></li>
+      <li id="s11"><span class="no">11</span><b>兒盟教學正常化調查（自由時報 2026-05-18）</b><br><a href="https://news.ltn.com.tw/news/life/breakingnews/5440746" rel="noopener" target="_blank">https://news.ltn.com.tw/news/life/breakingnews/5440746</a></li>
+      <li id="s12"><span class="no">12</span><b>兒盟兒少手機與網路調查（自由時報 2026-08-26）</b><br><a href="https://health.ltn.com.tw/article/breakingnews/5552792" rel="noopener" target="_blank">https://health.ltn.com.tw/article/breakingnews/5552792</a></li>
+      <li id="s13"><span class="no">13</span><b>親子天下 2026 中小學生學習與心理調查（2026-06-09）</b><br><a href="https://www.parenting.com.tw/article/6002287" rel="noopener" target="_blank">https://www.parenting.com.tw/article/6002287</a><br><a href="https://teachersblog.edu.tw/info/2650" rel="noopener" target="_blank">https://teachersblog.edu.tw/info/2650</a></li>
+      <li id="s14"><span class="no">14</span><b>國教院 × 中研院 TASAL 生成式 AI 使用調查（中央社 2025-09-01；自由時報）</b><br><a href="https://www.cna.com.tw/news/ahel/202509010071.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/ahel/202509010071.aspx</a><br><a href="https://news.ltn.com.tw/news/life/breakingnews/5162697" rel="noopener" target="_blank">https://news.ltn.com.tw/news/life/breakingnews/5162697</a></li>
+      <li id="s15"><span class="no">15</span><b>TWNIC《2025 台灣網路報告》（LINE 80.1%；8.54% 願為生成式 AI 付費）</b><br><a href="https://report.twnic.tw/2025/" rel="noopener" target="_blank">https://report.twnic.tw/2025/</a><br><a href="https://technews.tw/2025/12/18/generative-ai-taiwan-people/" rel="noopener" target="_blank">https://technews.tw/2025/12/18/generative-ai-taiwan-people/</a></li>
+      <li id="s16"><span class="no">16</span><b>黃昆輝基金會民調（中央社 2026-08-01）；教團解讀（聯合報 2026-08-02）</b><br><a href="https://www.cna.com.tw/news/ahel/202608010183.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/ahel/202608010183.aspx</a><br><a href="https://udn.com/news/story/6885/9665251" rel="noopener" target="_blank">https://udn.com/news/story/6885/9665251</a></li>
+      <li id="s17"><span class="no">17</span><b>聯合新聞網：會考數學非選題逾半低於 1 級分（2026-06-06）</b><br><a href="https://udn.com/news/story/6898/9549150" rel="noopener" target="_blank">https://udn.com/news/story/6898/9549150</a></li>
+      <li id="s18"><span class="no">18</span><b>115 年會考成績分析（引心測中心）；CTWANT 114 年待加強比例（2025-06-06）</b><br><a href="https://www.rulinty.url.tw/custom_66825.html" rel="noopener" target="_blank">https://www.rulinty.url.tw/custom_66825.html</a><br><a href="https://www.ctwant.com/article/421954/" rel="noopener" target="_blank">https://www.ctwant.com/article/421954/</a></li>
+      <li id="s19"><span class="no">19</span><b>中央社：PISA 2022 台灣數學表現與焦慮（2023-12-06）</b><br><a href="https://www.cna.com.tw/news/ahel/202312060242.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/ahel/202312060242.aspx</a></li>
+      <li id="s20"><span class="no">20</span><b>消基會：補習退費申訴（2017-06-12）；線上課程平台退費條款（2018-12-20）</b><br><a href="https://www.consumers.org.tw/product-detail-2511574.html" rel="noopener" target="_blank">https://www.consumers.org.tw/product-detail-2511574.html</a><br><a href="https://www.consumers.org.tw/product-detail-2507080.html" rel="noopener" target="_blank">https://www.consumers.org.tw/product-detail-2507080.html</a></li>
+      <li id="s21"><span class="no">21</span><b>自由時報：補習班家數創五年新高（2025-07-06）</b><br><a href="https://news.ltn.com.tw/news/life/paper/1714953" rel="noopener" target="_blank">https://news.ltn.com.tw/news/life/paper/1714953</a></li>
+      <li id="s22"><span class="no">22</span><b>內政部戶籍統計：2025 年出生數（轉引自教育部預測報告說明）</b></li>
+      </ol>
+      <h4>台灣價格行情</h4>
+      <ol>
+      <li id="s23"><span class="no">23</span><b>TKB《2026 年國中補習費用指南》（查詢 2026-09-30）</b><br><a href="https://www.tkbgo.com.tw/schoolZone/university/news/toDetail?news_id=5127" rel="noopener" target="_blank">https://www.tkbgo.com.tw/schoolZone/university/news/toDetail?news_id=5127</a></li>
+      <li id="s24"><span class="no">24</span><b>104 職場力《2026 家教行情》2026-01-22</b><br><a href="https://blog.104.com.tw/tutor-hourly-salary/" rel="noopener" target="_blank">https://blog.104.com.tw/tutor-hourly-salary/</a></li>
+      <li id="s25"><span class="no">25</span><b>PRO360 數學家教費用；伴讀費用</b><br><a href="https://www.pro360.com.tw/price/math_lesson" rel="noopener" target="_blank">https://www.pro360.com.tw/price/math_lesson</a><br><a href="https://www.pro360.com.tw/price/tutor_study_guide" rel="noopener" target="_blank">https://www.pro360.com.tw/price/tutor_study_guide</a></li>
+      <li id="s26"><span class="no">26</span><b>pleyschool 安親班費用指南（2025）</b><br><a href="https://pleyschool.org/blog/elementary-school-childcare-programs/" rel="noopener" target="_blank">https://pleyschool.org/blog/elementary-school-childcare-programs/</a></li>
+      <li id="s27"><span class="no">27</span><b>珈群自習教室收費頁</b><br><a href="https://chachun-study.tw/payment/" rel="noopener" target="_blank">https://chachun-study.tw/payment/</a></li>
+      <li id="s28"><span class="no">28</span><b>1111 人力銀行：大學生家教時薪調查（2024-06-20）；大學生打工調查（2026-09）</b><br><a href="https://www.knews.com.tw/news/C40C2478869536011DF21214655C06A6" rel="noopener" target="_blank">https://www.knews.com.tw/news/C40C2478869536011DF21214655C06A6</a><br><a href="https://udn.com/news/story/7238/9760655" rel="noopener" target="_blank">https://udn.com/news/story/7238/9760655</a></li>
+      <li id="s29"><span class="no">29</span><b>勞動部：2026 年最低工資</b><br><a href="https://www.mol.gov.tw/1607/1632/1633/87257/post" rel="noopener" target="_blank">https://www.mol.gov.tw/1607/1632/1633/87257/post</a></li>
+      </ol>
+      <h4>台灣業者與平台</h4>
+      <ol>
+      <li id="s30"><span class="no">30</span><b>翰林雲端學院價格說明；翰林e家教國中頁</b><br><a href="https://blog.ehanlin.com.tw/ehanlin-review-cost" rel="noopener" target="_blank">https://blog.ehanlin.com.tw/ehanlin-review-cost</a><br><a href="https://www.ehanlin.com.tw/event/ecoach/intro-jr.html" rel="noopener" target="_blank">https://www.ehanlin.com.tw/event/ecoach/intro-jr.html</a></li>
+      <li id="s31"><span class="no">31</span><b>陳立教育數位課程商店</b><br><a href="https://eshop.chenliedu.com/" rel="noopener" target="_blank">https://eshop.chenliedu.com/</a></li>
+      <li id="s32"><span class="no">32</span><b>卓越成功：股東會（聯合新聞網 2026-05-29）；TechNews（2026-05-29、2026-08-05）；2026 年 8 月營收公告（Yahoo 股市）</b><br><a href="https://udn.com/news/story/7252/9533019" rel="noopener" target="_blank">https://udn.com/news/story/7252/9533019</a><br><a href="https://technews.tw/2026/05/29/ai-powered-tutoring-services/" rel="noopener" target="_blank">https://technews.tw/2026/05/29/ai-powered-tutoring-services/</a><br><a href="https://technews.tw/2026/08/05/lens-ai/" rel="noopener" target="_blank">https://technews.tw/2026/08/05/lens-ai/</a></li>
+      <li id="s33"><span class="no">33</span><b>三貝德：營收表（Yahoo 股市）；收購案（中央社 2025-10-15）；法說會備忘錄（富果 2025-12-29）</b><br><a href="https://tw.stock.yahoo.com/quote/8489.TWO/revenue" rel="noopener" target="_blank">https://tw.stock.yahoo.com/quote/8489.TWO/revenue</a><br><a href="https://www.cna.com.tw/news/afe/202510150369.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/afe/202510150369.aspx</a><br><a href="https://blog.fugle.tw/post/earnings-call-8489-2025-12-29" rel="noopener" target="_blank">https://blog.fugle.tw/post/earnings-call-8489-2025-12-29</a></li>
+      <li id="s34"><span class="no">34</span><b>明光義塾台灣官網；價格整理（2018–2024）</b><br><a href="https://www.meikoschool.com.tw/" rel="noopener" target="_blank">https://www.meikoschool.com.tw/</a><br><a href="https://blog957.com/wp/629" rel="noopener" target="_blank">https://blog957.com/wp/629</a></li>
+      <li id="s35"><span class="no">35</span><b>均一教育平台 關於我們</b><br><a href="https://official.junyiacademy.org/about/" rel="noopener" target="_blank">https://official.junyiacademy.org/about/</a></li>
+      <li id="s36"><span class="no">36</span><b>中央社：因材網搭配 AI 學伴 e度 學習成效（2026-06-19）</b><br><a href="https://www.cna.com.tw/news/ahel/202606190034.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/ahel/202606190034.aspx</a></li>
+      <li id="s37"><span class="no">37</span><b>康軒 AI 會考通（中央社訊息平台 2025-05）；YOURCLASS</b><br><a href="https://www.cna.com.tw/postwrite/chi/400711" rel="noopener" target="_blank">https://www.cna.com.tw/postwrite/chi/400711</a><br><a href="https://www.yourclass.com.tw/" rel="noopener" target="_blank">https://www.yourclass.com.tw/</a></li>
+      <li id="s38"><span class="no">38</span><b>PaGamO 產品頁</b><br><a href="https://about.pagamo.org/product/" rel="noopener" target="_blank">https://about.pagamo.org/product/</a></li>
+      <li id="s39"><span class="no">39</span><b>學習吧 關於我們</b><br><a href="https://www.learnmode.net/aboutus/" rel="noopener" target="_blank">https://www.learnmode.net/aboutus/</a></li>
+      <li id="s40"><span class="no">40</span><b>數位時代：AmazingTalker 人力腰斬、營收穩升、AI 家教 Bella（2025-10-10）</b><br><a href="https://www.bnext.com.tw/article/84650/amazing-talker-ai" rel="noopener" target="_blank">https://www.bnext.com.tw/article/84650/amazing-talker-ai</a></li>
+      <li id="s41"><span class="no">41</span><b>Snapask 官網；數位時代 2021 課程計畫</b><br><a href="https://snapask.com/zh-tw/" rel="noopener" target="_blank">https://snapask.com/zh-tw/</a><br><a href="https://www.bnext.com.tw/article/65560/snapask-2021-plan" rel="noopener" target="_blank">https://www.bnext.com.tw/article/65560/snapask-2021-plan</a></li>
+      <li id="s42"><span class="no">42</span><b>TutorJr 費用與評價（部落客整理，信度低）</b><br><a href="https://talkingdarcy.com/tutorjr/" rel="noopener" target="_blank">https://talkingdarcy.com/tutorjr/</a><br><a href="https://iceoffice.com.tw/tutorabc-junior/" rel="noopener" target="_blank">https://iceoffice.com.tw/tutorabc-junior/</a></li>
+      <li id="s43"><span class="no">43</span><b>寰宇教育 線上直播互動班</b><br><a href="https://www.globalchild.com.tw/class/globalliveclass/" rel="noopener" target="_blank">https://www.globalchild.com.tw/class/globalliveclass/</a></li>
+      <li id="s44"><span class="no">44</span><b>TKB 甄戰一點通 國中線上家教</b><br><a href="https://www.reallygood.com.tw/newExam/inside?str=7DD4C68F65FC63CAB962CD3616AAF503" rel="noopener" target="_blank">https://www.reallygood.com.tw/newExam/inside?str=7DD4C68F65FC63CAB962CD3616AAF503</a></li>
+      <li id="s45"><span class="no">45</span><b>數感實驗室 線上課程</b><br><a href="https://numeracylab.com/product-category/online-courses" rel="noopener" target="_blank">https://numeracylab.com/product-category/online-courses</a></li>
+      </ol>
+      <h4>台灣法規</h4>
+      <ol>
+      <li id="s46"><span class="no">46</span><b>《短期補習班設立及管理準則》</b><br><a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=H0080087" rel="noopener" target="_blank">https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=H0080087</a></li>
+      <li id="s47"><span class="no">47</span><b>教育部：網際網路教學服務非屬短期補習班（2021-01-08）</b><br><a href="https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&amp;s=D9844320B2AC4105" rel="noopener" target="_blank">https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&amp;s=D9844320B2AC4105</a></li>
+      <li id="s48"><span class="no">48</span><b>中央社：數位部擬訂線上課程退費級距（2023-12-05）</b><br><a href="https://www.cna.com.tw/news/afe/202312050179.aspx" rel="noopener" target="_blank">https://www.cna.com.tw/news/afe/202312050179.aspx</a></li>
+      <li id="s49"><span class="no">49</span><b>臺北市教育局 補習班退費規定</b><br><a href="https://www.doe.gov.taipei/News_Content.aspx?n=C99D2B2B8A8603B9&amp;sms=69B4E6B26379EE4E&amp;s=9A8AAA7D782C2E66" rel="noopener" target="_blank">https://www.doe.gov.taipei/News_Content.aspx?n=C99D2B2B8A8603B9&amp;sms=69B4E6B26379EE4E&amp;s=9A8AAA7D782C2E66</a></li>
+      <li id="s50"><span class="no">50</span><b>《人工智慧基本法》（2026-01-14 公布施行）</b><br><a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=H0160093" rel="noopener" target="_blank">https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=H0160093</a></li>
+      <li id="s51"><span class="no">51</span><b>理律：數發部 AI 風險分類框架（2026-07-07）；個資法施行細則與子法預告；個資會籌備處</b><br><a href="https://www.leeandli.com/TW/NewslettersDetail/7661.htm" rel="noopener" target="_blank">https://www.leeandli.com/TW/NewslettersDetail/7661.htm</a><br><a href="https://www.leeandli.com/TW/NewslettersDetail/7584.htm" rel="noopener" target="_blank">https://www.leeandli.com/TW/NewslettersDetail/7584.htm</a><br><a href="https://www.pdpc.gov.tw/" rel="noopener" target="_blank">https://www.pdpc.gov.tw/</a></li>
+      <li id="s52"><span class="no">52</span><b>《補習及進修教育法》</b><br><a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=H0080002" rel="noopener" target="_blank">https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=H0080002</a></li>
+      <li id="s53"><span class="no">53</span><b>教育部公立教師兼職規定（翻轉教育）</b><br><a href="https://flipedu.parenting.com.tw/article/008023" rel="noopener" target="_blank">https://flipedu.parenting.com.tw/article/008023</a></li>
+      </ol>
+      <h4>國外市場與公司</h4>
+      <ol>
+      <li id="s54"><span class="no">54</span><b>韓國教育部／國家數據處《2025 年中小學私教育費調查》（2026-03-12）</b><br><a href="https://www.newspim.com/news/view/20260312000148" rel="noopener" target="_blank">https://www.newspim.com/news/view/20260312000148</a><br><a href="https://www.korea.kr/briefing/policyBriefingView.do?newsId=156748552" rel="noopener" target="_blank">https://www.korea.kr/briefing/policyBriefingView.do?newsId=156748552</a></li>
+      <li id="s55"><span class="no">55</span><b>東京個別指導學院 FY2026/2 上半年（logmi Finance）</b><br><a href="https://finance.logmi.jp/companies/433" rel="noopener" target="_blank">https://finance.logmi.jp/companies/433</a></li>
+      <li id="s56"><span class="no">56</span><b>東進（ナガセ）FY2026/3 業績（日經 2026-05）</b><br><a href="https://www.nikkei.com/article/DGXZRST0526688Y5A420C2000000/" rel="noopener" target="_blank">https://www.nikkei.com/article/DGXZRST0526688Y5A420C2000000/</a></li>
+      <li id="s57"><span class="no">57</span><b>スタディサプリ：塾端服務結束（Resemom 2025-09-02）；官網價目</b><br><a href="https://reseed.resemom.jp/article/2025/09/02/11609.html" rel="noopener" target="_blank">https://reseed.resemom.jp/article/2025/09/02/11609.html</a><br><a href="https://studysapuri.jp/course/junior/pricing/" rel="noopener" target="_blank">https://studysapuri.jp/course/junior/pricing/</a></li>
+      <li id="s58"><span class="no">58</span><b>公文 KUMON 會費；atama+ 被公文收購（2026-07-05）</b><br><a href="https://www.kumon.ne.jp/kaihi/index.html" rel="noopener" target="_blank">https://www.kumon.ne.jp/kaihi/index.html</a><br><a href="https://corp.atama.plus/news/3283/" rel="noopener" target="_blank">https://corp.atama.plus/news/3283/</a></li>
+      <li id="s59"><span class="no">59</span><b>시대인재（하이컨시）財務（THE VC；EduPlus 2025-04）</b><br><a href="https://thevc.kr/hiconsy/financials" rel="noopener" target="_blank">https://thevc.kr/hiconsy/financials</a><br><a href="https://www.eduplusnews.com/news/articleView.html?idxno=14534" rel="noopener" target="_blank">https://www.eduplusnews.com/news/articleView.html?idxno=14534</a></li>
+      <li id="s60"><span class="no">60</span><b>Megastudy 2026 上半年（News Tomato 2026-08-18）</b><br><a href="https://www.newstomato.com/ReadNews.aspx?no=1310537" rel="noopener" target="_blank">https://www.newstomato.com/ReadNews.aspx?no=1310537</a></li>
+      <li id="s61"><span class="no">61</span><b>QANDA 2024 財務與策略（Wowtale 2025-04-11）</b><br><a href="https://wowtale.net/2025/04/11/239695/" rel="noopener" target="_blank">https://wowtale.net/2025/04/11/239695/</a></li>
+      <li id="s62"><span class="no">62</span><b>EBS 中學 Premium 免費化（Topstar News 2026-01-19）</b><br><a href="https://www.topstarnews.net/news/articleView.html?idxno=15938020" rel="noopener" target="_blank">https://www.topstarnews.net/news/articleView.html?idxno=15938020</a></li>
+      <li id="s63"><span class="no">63</span><b>TAL FY2027 Q1（SEC 6-K）</b><br><a href="https://www.sec.gov/Archives/edgar/data/1499620/000110465926088660/tm2621668d1_ex99-1.htm" rel="noopener" target="_blank">https://www.sec.gov/Archives/edgar/data/1499620/000110465926088660/tm2621668d1_ex99-1.htm</a></li>
+      <li id="s64"><span class="no">64</span><b>高途 2025 全年財報（PR Newswire）</b><br><a href="https://www.prnewswire.com/news-releases/gaotu-techedu-announces-fourth-quarter-and-fiscal-year-2025-unaudited-financial-results-302704957.html" rel="noopener" target="_blank">https://www.prnewswire.com/news-releases/gaotu-techedu-announces-fourth-quarter-and-fiscal-year-2025-unaudited-financial-results-302704957.html</a></li>
+      <li id="s65"><span class="no">65</span><b>中國教育部：校外培訓監管平台（2025-03）</b><br><a href="http://www.moe.gov.cn/srcsite/A29/202503/t20250326_1184786.html" rel="noopener" target="_blank">http://www.moe.gov.cn/srcsite/A29/202503/t20250326_1184786.html</a></li>
+      <li id="s66"><span class="no">66</span><b>GoStudent 全年營運獲利新聞稿（2025-09-02）；Trustpilot 評價</b><br><a href="https://www.gostudent.org/en-gb/press-releases/gostudent-group-achieves-full-year-operational-profitability/" rel="noopener" target="_blank">https://www.gostudent.org/en-gb/press-releases/gostudent-group-achieves-full-year-operational-profitability/</a><br><a href="https://www.trustpilot.com/review/www.gostudent.org" rel="noopener" target="_blank">https://www.trustpilot.com/review/www.gostudent.org</a></li>
+      <li id="s67"><span class="no">67</span><b>Preply 抽成模式（2024-09-19 更新）；App 頁</b><br><a href="https://help.preply.com/en/articles/4171383-preply-commission-model" rel="noopener" target="_blank">https://help.preply.com/en/articles/4171383-preply-commission-model</a><br><a href="https://preply.com/en/app" rel="noopener" target="_blank">https://preply.com/en/app</a></li>
+      <li id="s68"><span class="no">68</span><b>Outschool 老師分潤；報名管理；留存手冊（2024-07-30）；ESA 清單</b><br><a href="https://support.outschool.com/en/articles/2382129-teacher-earnings-and-payments-policy" rel="noopener" target="_blank">https://support.outschool.com/en/articles/2382129-teacher-earnings-and-payments-policy</a><br><a href="https://outschool.com/educators/handbook/keeping-enrollments-tactics-to-retain-learners-and-build-long-term-relationships-on-outschool" rel="noopener" target="_blank">https://outschool.com/educators/handbook/keeping-enrollments-tactics-to-retain-learners-and-build-long-term-relationships-on-outschool</a><br><a href="https://outschool.com/esa-guides/approved-list" rel="noopener" target="_blank">https://outschool.com/esa-guides/approved-list</a></li>
+      <li id="s69"><span class="no">69</span><b>Synthesis Tutor 官網與 App Store</b><br><a href="https://www.synthesis.com/tutor" rel="noopener" target="_blank">https://www.synthesis.com/tutor</a><br><a href="https://apps.apple.com/us/app/synthesis-math-tutor-for-kids/id6448335635" rel="noopener" target="_blank">https://apps.apple.com/us/app/synthesis-math-tutor-for-kids/id6448335635</a></li>
+      <li id="s70"><span class="no">70</span><b>RSM 俄羅斯數學學校（Wikipedia；價格第三方）</b><br><a href="https://en.wikipedia.org/wiki/Russian_School_of_Mathematics" rel="noopener" target="_blank">https://en.wikipedia.org/wiki/Russian_School_of_Mathematics</a><br><a href="https://brighterly.com/blog/russian-school-of-math-cost/" rel="noopener" target="_blank">https://brighterly.com/blog/russian-school-of-math-cost/</a></li>
+      <li id="s71"><span class="no">71</span><b>Dcard 教師板：學生拿補習班考卷來問（2024-06-25）</b><br><a href="https://www.dcard.tw/f/teacher/p/255946399" rel="noopener" target="_blank">https://www.dcard.tw/f/teacher/p/255946399</a></li>
+      <li id="s72"><span class="no">72</span><b>Dcard 家教板：補習班個別指導面試薪資（2025-03-12）；接案管道比較（2025-08-14）；全職家教八年（2025-08-08）；線上家教經驗（2023-06-20）</b><br><a href="https://www.dcard.tw/f/tutor/p/258238440" rel="noopener" target="_blank">https://www.dcard.tw/f/tutor/p/258238440</a><br><a href="https://www.dcard.tw/f/tutor/p/259528955" rel="noopener" target="_blank">https://www.dcard.tw/f/tutor/p/259528955</a><br><a href="https://www.dcard.tw/f/tutor/p/259486241" rel="noopener" target="_blank">https://www.dcard.tw/f/tutor/p/259486241</a><br><a href="https://www.dcard.tw/f/tutor/p/240721204" rel="noopener" target="_blank">https://www.dcard.tw/f/tutor/p/240721204</a></li>
+      <li id="s73"><span class="no">73</span><b>AoPS 線上課程頁</b><br><a href="https://artofproblemsolving.com/school/course/prealgebra-pt1" rel="noopener" target="_blank">https://artofproblemsolving.com/school/course/prealgebra-pt1</a></li>
+      <li id="s74"><span class="no">74</span><b>PhysicsWallah FY27 Q1（Inc42）</b><br><a href="https://inc42.com/buzz/physicswallah-q1-revenue-crosses-%E2%82%B91000-cr-mark-loss-down-31-yoy/" rel="noopener" target="_blank">https://inc42.com/buzz/physicswallah-q1-revenue-crosses-%E2%82%B91000-cr-mark-loss-down-31-yoy/</a></li>
+      <li id="s75"><span class="no">75</span><b>Byju&#x27;s 破產程序（Business Standard 2026-07）</b><br><a href="https://www.business-standard.com/companies/news/nclt-pauses-byju-s-insolvency-bidding-till-aug-31-giving-founders-relief-126072301153_1.html" rel="noopener" target="_blank">https://www.business-standard.com/companies/news/nclt-pauses-byju-s-insolvency-bidding-till-aug-31-giving-founders-relief-126072301153_1.html</a></li>
+      <li id="s76"><span class="no">76</span><b>Unacademy 出售（TechCrunch 2026-09-01）</b><br><a href="https://techcrunch.com/2026/09/01/indias-unacademy-sells-to-rival-upgrad-for-206m-about-94-less-than-its-peak-valuation/" rel="noopener" target="_blank">https://techcrunch.com/2026/09/01/indias-unacademy-sells-to-rival-upgrad-for-206m-about-94-less-than-its-peak-valuation/</a></li>
+      <li id="s77"><span class="no">77</span><b>Lido Learning 倒閉（YourStory 2022-09）</b><br><a href="https://yourstory.com/2022/09/lido-learning-insolvency-bankruptcy-edtech-startup-ronnie-screwvala" rel="noopener" target="_blank">https://yourstory.com/2022/09/lido-learning-insolvency-bankruptcy-edtech-startup-ronnie-screwvala</a></li>
+      <li id="s78"><span class="no">78</span><b>HolonIQ：2025 全年（2026-02-06）；2026 上半年（2026-07-14）</b><br><a href="https://www.holoniq.com/notes/edtech-hits-2-6b-in-investment-as-the-market-stabilizes-bigger-bets-in-ai-and-workforce-training" rel="noopener" target="_blank">https://www.holoniq.com/notes/edtech-hits-2-6b-in-investment-as-the-market-stabilizes-bigger-bets-in-ai-and-workforce-training</a><br><a href="https://www.holoniq.com/notes/1b-in-edtech-venture-capital-to-date-funding-falls-short-of-last-years-midpoint-asia-mena-buck-the-trend" rel="noopener" target="_blank">https://www.holoniq.com/notes/1b-in-edtech-venture-capital-to-date-funding-falls-short-of-last-years-midpoint-asia-mena-buck-the-trend</a></li>
+      <li id="s79"><span class="no">79</span><b>Vimi 種子輪（ynet 2026-01）</b><br><a href="https://www.ynetnews.com/tech-and-digital/article/b1v9yjpsfg" rel="noopener" target="_blank">https://www.ynetnews.com/tech-and-digital/article/b1v9yjpsfg</a></li>
+      <li id="s80"><span class="no">80</span><b>Gizmo A 輪（TechCrunch 2026-04-15）</b><br><a href="https://techcrunch.com/2026/04/15/ai-learning-app-gizmo-levels-up-with-13m-users-and-a-22m-investment/" rel="noopener" target="_blank">https://techcrunch.com/2026/04/15/ai-learning-app-gizmo-levels-up-with-13m-users-and-a-22m-investment/</a></li>
+      <li id="s81"><span class="no">81</span><b>Duolingo Q2 2026 股東信；Mazal〈How Duolingo reignited user growth〉；Friend Streak 部落格</b><br><a href="https://www.sec.gov/Archives/edgar/data/0001562088/000162828026053299/q2fy26duolingo6-30x26share.htm" rel="noopener" target="_blank">https://www.sec.gov/Archives/edgar/data/0001562088/000162828026053299/q2fy26duolingo6-30x26share.htm</a><br><a href="https://www.lennysnewsletter.com/p/how-duolingo-reignited-user-growth" rel="noopener" target="_blank">https://www.lennysnewsletter.com/p/how-duolingo-reignited-user-growth</a><br><a href="https://blog.duolingo.com/product-lessons-friend-streak/" rel="noopener" target="_blank">https://blog.duolingo.com/product-lessons-friend-streak/</a></li>
+      <li id="s82"><span class="no">82</span><b>Khanmigo：定價；官方部落格（2026）；15% 使用率報導；Chalkbeat 兩年研究（2026-08-25）</b><br><a href="https://www.khanmigo.ai/pricing" rel="noopener" target="_blank">https://www.khanmigo.ai/pricing</a><br><a href="https://blog.khanacademy.org/how-khan-academy-is-building-a-better-ai-tutor-our-most-recent-learnings/" rel="noopener" target="_blank">https://blog.khanacademy.org/how-khan-academy-is-building-a-better-ai-tutor-our-most-recent-learnings/</a><br><a href="https://www.edtechinnovationhub.com/news/only-15-percent-of-students-with-access-to-khanmigo-actually-use-it-khan-academy-admits" rel="noopener" target="_blank">https://www.edtechinnovationhub.com/news/only-15-percent-of-students-with-access-to-khanmigo-actually-use-it-khan-academy-admits</a><br><a href="https://www.chalkbeat.org/2026/08/25/ai-tutoring-students-khanmigo-khan-academy-engagement-study/" rel="noopener" target="_blank">https://www.chalkbeat.org/2026/08/25/ai-tutoring-students-khanmigo-khan-academy-engagement-study/</a></li>
+      <li id="s83"><span class="no">83</span><b>atama+ 官網；AI 伸びしろ診断新聞稿（2022-11-14）</b><br><a href="https://www.atama.plus/" rel="noopener" target="_blank">https://www.atama.plus/</a><br><a href="https://corp.atama.plus/news/2613/" rel="noopener" target="_blank">https://corp.atama.plus/news/2613/</a></li>
+      <li id="s84"><span class="no">84</span><b>武田塾官網；制度介紹（Diamond）</b><br><a href="https://www.takeda.tv/" rel="noopener" target="_blank">https://www.takeda.tv/</a><br><a href="https://diamond.jp/educate/articles/real_juku_comparison/400533/" rel="noopener" target="_blank">https://diamond.jp/educate/articles/real_juku_comparison/400533/</a></li>
+      <li id="s85"><span class="no">85</span><b>ClassDojo 官網；ClassDojo Translate（2015-10-03）</b><br><a href="https://www.classdojo.com/" rel="noopener" target="_blank">https://www.classdojo.com/</a><br><a href="https://blog.classdojo.com/introducing-classdojo-translate/" rel="noopener" target="_blank">https://blog.classdojo.com/introducing-classdojo-translate/</a></li>
+      <li id="s86"><span class="no">86</span><b>Photomath App Store；QANDA App Store；Mathpresso 產品頁</b><br><a href="https://apps.apple.com/us/app/photomath/id919087726" rel="noopener" target="_blank">https://apps.apple.com/us/app/photomath/id919087726</a><br><a href="https://apps.apple.com/us/app/qanda-ai-math-study-helper/id1270676408" rel="noopener" target="_blank">https://apps.apple.com/us/app/qanda-ai-math-study-helper/id1270676408</a><br><a href="https://mathpresso.com/en/products" rel="noopener" target="_blank">https://mathpresso.com/en/products</a></li>
+      <li id="s87"><span class="no">87</span><b>Speak 官網與 App Store</b><br><a href="https://www.speak.com/" rel="noopener" target="_blank">https://www.speak.com/</a><br><a href="https://apps.apple.com/us/app/speak-language-learning/id1286609883" rel="noopener" target="_blank">https://apps.apple.com/us/app/speak-language-learning/id1286609883</a></li>
+      <li id="s88"><span class="no">88</span><b>Nerdy／Varsity Tutors Live+AI 新聞稿（2025-04-29）；價格第三方</b><br><a href="https://www.businesswire.com/news/home/20250429401366/en/Varsity-Tutors-Launches-Live-AI-Platform-for-Schools-Delivering-NextGeneration-Tutoring-Teacher-Support-System" rel="noopener" target="_blank">https://www.businesswire.com/news/home/20250429401366/en/Varsity-Tutors-Launches-Live-AI-Platform-for-Schools-Delivering-NextGeneration-Tutoring-Teacher-Support-System</a><br><a href="https://brighterly.com/blog/varsity-tutors-cost/" rel="noopener" target="_blank">https://brighterly.com/blog/varsity-tutors-cost/</a></li>
+      <li id="s89"><span class="no">89</span><b>HK Tutor Link 2026 香港補習價錢</b><br><a href="https://hktutorlink.hk/guide/tutoring-costs" rel="noopener" target="_blank">https://hktutorlink.hk/guide/tutoring-costs</a></li>
+      </ol>
+      <h4>學術研究</h4>
+      <ol>
+      <li id="s90"><span class="no">90</span><b>Bastani et al., <i>PNAS</i> 2025（生成式 AI 與高中數學學習）</b><br><a href="https://www.pnas.org/doi/10.1073/pnas.2422633122" rel="noopener" target="_blank">https://www.pnas.org/doi/10.1073/pnas.2422633122</a></li>
+      <li id="s91"><span class="no">91</span><b>Kraft &amp; Lovison, EdWorkingPaper 24-976（2024-06，線上數學輔導 1 對 1 vs 1 對 3）</b><br><a href="https://edworkingpapers.com/sites/default/files/ai24-976.pdf" rel="noopener" target="_blank">https://edworkingpapers.com/sites/default/files/ai24-976.pdf</a></li>
+      <li id="s92"><span class="no">92</span><b>Calle et al., EdWorkingPaper 26-1496（2026-06，西班牙線上數學輔導規模化）</b><br><a href="https://edworkingpapers.com/sites/default/files/ai26-1496.pdf" rel="noopener" target="_blank">https://edworkingpapers.com/sites/default/files/ai26-1496.pdf</a></li>
+      <li id="s93"><span class="no">93</span><b>Wang et al., Tutor CoPilot（2024）</b><br><a href="https://edworkingpapers.com/sites/default/files/ai24-1054.pdf" rel="noopener" target="_blank">https://edworkingpapers.com/sites/default/files/ai24-1054.pdf</a></li>
+      <li id="s94"><span class="no">94</span><b>Alegre et al., <i>Heliyon</i> 2019（中學數學同儕輔導後設分析）</b><br><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6819807/" rel="noopener" target="_blank">https://pmc.ncbi.nlm.nih.gov/articles/PMC6819807/</a></li>
+      <li id="s95"><span class="no">95</span><b>Kobayashi 2019（教別人的學習效果後設分析）</b><br><a href="https://onlinelibrary.wiley.com/doi/10.1111/jpr.12221" rel="noopener" target="_blank">https://onlinelibrary.wiley.com/doi/10.1111/jpr.12221</a></li>
+      <li id="s96"><span class="no">96</span><b>Cepeda et al., <i>Psychological Science</i> 2008（間隔練習）</b><br><a href="https://escholarship.org/uc/item/0kp5q19x" rel="noopener" target="_blank">https://escholarship.org/uc/item/0kp5q19x</a></li>
+      <li id="s97"><span class="no">97</span><b>Kraft &amp; Rogers, <i>Economics of Education Review</i> 2015（老師每週給家長訊息）</b><br><a href="https://scholar.harvard.edu/mkraft/publications/underutilized-potential-teacher-parent-communication-evidence-field-experiment" rel="noopener" target="_blank">https://scholar.harvard.edu/mkraft/publications/underutilized-potential-teacher-parent-communication-evidence-field-experiment</a></li>
+      <li id="s98"><span class="no">98</span><b>Bergman &amp; Chan, <i>Journal of Human Resources</i> 2021（家長簡訊）</b><br><a href="https://jhr.uwpress.org/content/56/1/125" rel="noopener" target="_blank">https://jhr.uwpress.org/content/56/1/125</a></li>
+      <li id="s99"><span class="no">99</span><b>Castelli &amp; Sarvary 2021（康乃爾，學生不開鏡頭的原因）</b><br><a href="https://news.cornell.edu/stories/2021/01/appearance-social-norms-keep-students-zoom-cameras" rel="noopener" target="_blank">https://news.cornell.edu/stories/2021/01/appearance-social-norms-keep-students-zoom-cameras</a></li>
+      <li id="s100"><span class="no">100</span><b>Rawson &amp; Dunlosky 2022（成功提取次數與穩固）；Jordan 2015（線上課程完課率）；Padilla Rodriguez &amp; Armellini 2020（拆短課程與完課率）；Bostwick &amp; Nguyen 2025（上課頻率與成績）；NBER w35620 Khanmigo 兩年 RCT（2026-08）；賓大教師 AI 助教實驗（2026-07）</b><br>引自原提案文獻，本書未重新開啟原文</li>
+      <li id="s101"><span class="no">101</span><b>臺中市政府教育局 114 學年度國中行事簡曆（段考週次）</b><br>引自原提案</li>
+      <li id="s102"><span class="no">102</span><b>明光ネットワークジャパン FY2025/8 決算；スプリックス（森塾）FY2025/9 決算與成績保證制度；Nerdy 2025 年度財報與 Varsity Tutors for Schools 關閉公告</b><br>各公司 IR 資料，引自原提案與既有調研，本書未重新開啟原文</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="sig"><svg viewBox="0 0 64 40" aria-hidden="true"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></svg>Tandelo 概念驗證（POC）· Edward Tseng · 2026</div>
+    <p>本規劃書為概念驗證用途，所有人物、示範資料一律虛構；市場與商業數字以來源清單為準，推估值已註明假設。本頁不被搜尋引擎收錄，不收集任何資料，主題偏好只存在你的裝置。</p>
+    <a class="back-top" href="#top">回到最上面 ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var btn=document.getElementById('themeBtn'), label=document.getElementById('themeLabel');
+  var KEY='tandelo-plan-theme';
+  function current(){ return root.getAttribute('data-theme')||'auto'; }
+  function render(){
+    var c=current();
+    label.textContent = c==='dark'?'深色':(c==='light'?'淺色':'自動');
+    btn.setAttribute('aria-pressed', c!=='auto');
+    btn.setAttribute('aria-label','切換配色，目前：'+label.textContent);
+  }
+  btn.addEventListener('click',function(){
+    var c=current(), next = c==='auto'?'dark':(c==='dark'?'light':'auto');
+    if(next==='auto'){ root.removeAttribute('data-theme'); try{localStorage.removeItem(KEY);}catch(e){} }
+    else { root.setAttribute('data-theme',next); try{localStorage.setItem(KEY,next);}catch(e){} }
+    render();
+  });
+  render();
+
+  /* 目錄：捲動到哪一章就亮哪一顆 */
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  var toc=document.getElementById('toc');
+  function setActive(id){
+    links.forEach(function(a){
+      var on=a.getAttribute('href')==='#'+id;
+      a.classList.toggle('is-active',on);
+      if(on){ a.setAttribute('aria-current','true'); var l=a.offsetLeft-toc.clientWidth/2+a.offsetWidth/2; toc.scrollTo({left:l,behavior:'smooth'}); }
+      else a.removeAttribute('aria-current');
+    });
+  }
+  if('IntersectionObserver' in window){
+    var visible={};
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ visible[e.target.id]=e.isIntersecting?e.intersectionRatio:0; });
+      var best=null,bv=0;
+      secs.forEach(function(s){ if((visible[s.id]||0)>bv){bv=visible[s.id];best=s.id;} });
+      if(best) setActive(best);
+    },{rootMargin:'-30% 0px -55% 0px',threshold:[0,.1,.25,.5]});
+    secs.forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
