@@ -193,7 +193,7 @@
     }
   });
 
-  var renderDone = function (data, savedOk) {
+  var renderDone = function (data, savedOk, remoteId) {
     doneList.innerHTML = '';
     var rows = [
       ['姓名', data.name],
@@ -214,7 +214,14 @@
       doneList.appendChild(div);
     });
     var title = done.querySelector('.done-title');
-    title.textContent = savedOk ? '已收到，只存在你的裝置。' : '已完成示範，但這台裝置不允許儲存。';
+    var lead = done.querySelector('[data-done-lead]');
+    if (remoteId) {
+      title.textContent = '已送出（POC 後端）。';
+      if (lead) lead.textContent = '這是概念驗證：資料已送到示範後端（編號 ' + remoteId + '），也留了一份在你的裝置。正式招募開始時，請以正式公告為準。';
+    } else {
+      title.textContent = savedOk ? '已收到，只存在你的裝置。' : '已完成示範，但這台裝置不允許儲存。';
+      if (lead) lead.textContent = '這是概念驗證，資料只留在你的裝置，不會寄出。正式招募開始時，請以正式公告為準。';
+    }
   };
 
   var showSavedNote = function (text, withButton) {
@@ -269,15 +276,33 @@
       poc: true
     };
     var ok = store.set(data);
-    renderDone(data, ok);
-    form.hidden = true;
-    if (savedNote) savedNote.hidden = true;
-    done.hidden = false;
-    done.focus();
-    if (doneDuo && !T.reduceMotion()) {
-      doneDuo.classList.remove('is-celebrate');
-      void doneDuo.offsetWidth;
-      doneDuo.classList.add('is-celebrate');
+    var finish = function (remoteId) {
+      renderDone(data, ok, remoteId);
+      form.hidden = true;
+      if (savedNote) savedNote.hidden = true;
+      done.hidden = false;
+      done.focus();
+      if (doneDuo && !T.reduceMotion()) {
+        doneDuo.classList.remove('is-celebrate');
+        void doneDuo.offsetWidth;
+        doneDuo.classList.add('is-celebrate');
+      }
+    };
+    /* 有設定後端就同步一份過去（POC 後端）；沒有或失敗就維持只存本機 */
+    if (window.TANDELO_API_BASE) {
+      var submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+      import('./app/js/api.js')
+        .then(function (api) {
+          return api.submitTeacherApplication({
+            name: data.name, contact: data.contact, subjects: data.subjects, slots: data.slots,
+            experience: data.experience, note: data.note, consent: true
+          });
+        })
+        .then(function (res) { finish(res && res.id ? res.id : null); }, function () { finish(null); })
+        .then(function () { if (submitBtn) submitBtn.disabled = false; });
+    } else {
+      finish(null);
     }
   });
 

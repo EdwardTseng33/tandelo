@@ -121,11 +121,60 @@ h1[tabindex="-1"]:focus { outline: none; }
   .device { width: 100%; height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; }
 }
 
+/* ——— 寬版：教室與老師端在 768px 以上不套手機框、不顯示說明面板（平板／桌機優先） ——— */
+@media (min-width: 768px) {
+  .shell.wide { display: block; padding: 0; height: 100%; }
+  .shell.wide .panel { display: none; }
+  .shell.wide .device { width: 100%; height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; }
+  .shell.wide .app[data-role="teacher"] .pad { width: 100%; max-width: 1040px; margin: 0 auto; padding: 12px 32px 32px; }
+  .shell.wide .app[data-role="teacher"] .kids { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .shell.wide .app[data-role="teacher"] .tabbar { max-width: 1040px; margin: 0 auto; }
+  .shell.wide .app[data-role="teacher"] .dock { max-width: 480px; }
+  .shell.wide .sb { padding-left: 32px; padding-right: 26px; }
+}
+
+/* 教室寬版：上方六段、左白板、右隊友列、底部老師控制列 */
+.classroom.wide { width: 100%; max-width: 1200px; margin: 0 auto; padding: 8px 28px 24px; gap: 14px; }
+.cls-grid { display: grid; grid-template-columns: minmax(0, 1fr) 272px; gap: 20px; align-items: start; }
+.cls-board { background: var(--card); border-radius: 26px; padding: 22px 24px 24px; display: grid; gap: 16px; min-width: 0; }
+.cls-three { background: var(--mint); border-radius: 18px; padding: 12px 16px 14px; display: grid; gap: 8px; }
+.cls-three b { font-size: 13px; color: var(--accent); letter-spacing: .04em; }
+.cls-three ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
+.cls-three li small { display: block; font-size: 12px; color: var(--mute); }
+.cls-three li.on { font-weight: 700; }
+.cls-now { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cls-now h1 { margin: 0; }
+.cls-now h1 small { font-size: 14px; color: var(--mute); font-weight: 600; }
+.cls-side { display: grid; gap: 8px; position: sticky; top: 8px; }
+.cls-mates { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cls-mate { display: flex; align-items: center; gap: 10px; background: var(--card); border-radius: 18px; padding: 10px 12px; }
+.cls-mate.me { box-shadow: inset 0 0 0 2px var(--pine); }
+.cls-mate.t { background: var(--mint); }
+.cls-mate-b { min-width: 0; }
+.cls-mate-b b { display: block; font-size: 15px; line-height: 1.4; }
+.cls-mate-b small { display: block; color: var(--mute); font-size: 12.5px; line-height: 1.45; }
+.cls-mate-r { margin-left: auto; display: grid; gap: 4px; justify-items: end; flex: none; }
+.cls-mate-r .pill { font-size: 12px; padding: 2px 10px; }
+.pill.grp.gA { background: var(--coral-l); color: var(--coral-t); }
+.pill.grp.gB { background: var(--honey-l); color: var(--honey-t); }
+.cls-ctrl { position: sticky; bottom: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--card); border-radius: 20px; padding: 12px 16px; box-shadow: 0 -10px 30px rgba(13, 43, 38, .08); }
+.cls-ctrl .lbl { margin-right: auto; color: var(--mute); font-size: 13px; font-weight: 700; }
+.cls-ctrl .btn.s { flex: none; }
+.classroom.wide .segs b { font-size: 13.5px; }
+.classroom.wide .segs li { padding: 8px 6px; }
+.cls-link { overflow-wrap: anywhere; font-size: 13px; color: var(--mute); }
+@media (max-width: 1023px) {
+  .cls-grid { grid-template-columns: minmax(0, 1fr) 232px; gap: 14px; }
+  .classroom.wide { padding: 8px 20px 20px; }
+}
+
 /* ——— 狀態列（示範時間） ——— */
 .sb { flex: none; display: flex; align-items: center; gap: 8px; padding: max(10px, env(safe-area-inset-top)) 14px 2px 20px; min-height: 44px; }
 .sb-time { display: flex; align-items: baseline; gap: 6px; font-size: 15px; color: var(--ink); border-radius: 10px; padding: 2px 4px; margin-left: -4px; }
 .sb-time small { font-size: 12px; color: var(--mute); font-weight: 500; }
 .sb-time .i { align-self: center; width: 15px; height: 15px; }
+.sb-sync { font-size: 11px; font-weight: 700; color: var(--mute); background: var(--line); border-radius: 999px; padding: 2px 8px; }
+.sb-sync.on { color: var(--pine); background: var(--mint); }
 .sb-demo { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--coral-t); background: var(--coral-l); border-radius: 999px; padding: 2px 10px; }
 .sb-gear { width: 36px; height: 36px; }
 

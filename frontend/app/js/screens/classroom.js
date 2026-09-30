@@ -1,7 +1,7 @@
 // 學生：小隊課教室（模擬 50 分鐘六段，可快轉）
 
 import { esc, icon, m, mt, avatar, duo, backBar } from '../ui.js';
-import { SKILLS, SEGMENTS, TEACHER } from '../content.js';
+import { SKILLS, SEGMENTS, TEACHER, prepCandidates } from '../content.js';
 import { evaluateExplanation } from '../coach.js';
 import { lessonInfo } from './student.js';
 
@@ -10,7 +10,56 @@ const TOTAL = SEGMENTS.reduce((a, s) => a + s.min, 0);
 
 let ui = null;
 function fresh(week) {
-  return { week, seg: 0, min: 0, warm: null, tries: [null, null], teachText: '', teachRes: null, got: '', finished: false, timer: null, typing: null };
+  return { week, seg: 0, min: 0, warm: null, tries: [null, null], teachText: '', teachRes: null, got: '', finished: false, timer: null, typing: null, groups: null, rollcall: false };
+}
+
+// 教室是平板／桌機優先：寬度 768px 以上才開白板；手機只給「換裝置」說明與複製連結
+const WIDE_MQ = '(min-width: 768px)';
+export function isWide() { return typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia(WIDE_MQ).matches; }
+
+/** 這週要解的 3 題：老師課前一頁確認過就照她挑的，否則照卡點人數自動排前三 */
+function weekProblems(state, sq, L) {
+  const cands = prepCandidates(sq.members, state.student.questions || []);
+  const prep = state.teacher.prep;
+  if (prep && prep.week === L.week && prep.confirmed) {
+    const picked = prep.picks.map((id) => cands.find((c) => c.id === id)).filter(Boolean);
+    if (picked.length) return picked.slice(0, 3);
+  }
+  return cands.slice(0, 3);
+}
+
+function mateStatus(mm, L, state) {
+  if (mm.isMe) return L.skill && (state.student.skills[L.skill] || {}).status === 'learning' ? '練習中' : '這週的主角';
+  return (mm.stuck || []).includes(L.skill) ? `卡在：${SKILLS[L.skill].short}` : '這步已經會了';
+}
+
+function sidePanel(ctx, L, sq) {
+  const { state } = ctx;
+  const rows = sq.members.map((mm) => {
+    const g = ui.groups ? ui.groups[mm.id] : null;
+    return `<li class="cls-mate ${mm.isMe ? 'me' : ''}">${avatar(mm, 'm')}
+      <div class="cls-mate-b"><b>${mm.isMe ? '你' : esc(mm.name)}</b><small>${esc(mateStatus(mm, L, state))}</small></div>
+      <div class="cls-mate-r">${ui.rollcall ? '<span class="pill g">出席</span>' : ''}${g ? `<span class="pill grp g${g}">${g} 組</span>` : ''}</div>
+    </li>`;
+  });
+  return `<aside class="cls-side" aria-label="隊友">
+    <div class="cls-mate t">${avatar({ name: '林', color: 3 }, 'm')}<div class="cls-mate-b"><b>${esc(TEACHER.name)}</b><small>帶這一隊</small></div></div>
+    <ul class="cls-mates">${rows.join('')}</ul>
+    <p class="fine left">${ui.groups ? 'A 組：老師再帶一次；B 組：先做挑戰題。' : '上到「再帶一次」前，老師會分兩組。'}</p>
+  </aside>`;
+}
+
+function phoneNotice(L) {
+  const url = typeof location !== 'undefined' ? location.href : '';
+  return `<div class="pad pb">
+    <div class="abar"><button class="iconbtn" data-act="leave" aria-label="離開教室">${icon('x')}</button><span class="abar-t">第 ${L.week} 堂 · ${esc(SKILLS[L.skill].short)}</span></div>
+    <div class="center-col tight">${duo('idle', 'l')}</div>
+    <h1 class="hero s center" tabindex="-1">請用 iPad 或電腦開教室。</h1>
+    <p class="sub center">小隊課的白板和隊友列需要大一點的畫面。把這個連結貼到 iPad 或電腦的瀏覽器，就會進到同一堂課。</p>
+    <div class="card tight"><b>教室連結</b><p class="body num cls-link" id="clsLink">${esc(url)}</p></div>
+    <p class="fine center">手機用來做課與課之間的練習；家長只在 LINE。</p>
+    <div class="dock"><button class="btn block" data-act="copyLink">複製連結</button><button class="btn ghost block" data-act="leave">先回小隊</button></div>
+  </div>`;
 }
 function isMath(s) { return !/[一-鿿]/.test(s); }
 function fx(s) { return isMath(s) ? m(s) : mt(s); }
@@ -95,7 +144,10 @@ export const screens = {
       const L = lessonInfo(ctx.state);
       if (!ui || ui.week !== L.week || ui.finished) ui = fresh(L.week);
     },
-    mount() {
+    mount(ctx) {
+      const mq = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia(WIDE_MQ) : null;
+      const onChange = () => ctx.rerender({ top: true });
+      if (mq && mq.addEventListener) mq.addEventListener('change', onChange);
       ui.timer = setInterval(() => {
         if (ui.finished) return;
         const end = START[ui.seg] + SEGMENTS[ui.seg].min;
@@ -103,7 +155,7 @@ export const screens = {
         const c = document.getElementById('clsClock'); if (c) c.textContent = clockText(ui.min);
         const b = document.getElementById('clsBar'); if (b) b.style.width = `${(ui.min / TOTAL) * 100}%`;
       }, 1000);
-      return () => { clearInterval(ui.timer); if (ui.typing) { clearInterval(ui.typing); ui.typing = null; } };
+      return () => { clearInterval(ui.timer); if (ui.typing) { clearInterval(ui.typing); ui.typing = null; } if (mq && mq.removeEventListener) mq.removeEventListener('change', onChange); };
     },
     render(ctx) {
       const { state } = ctx;
@@ -129,19 +181,46 @@ export const screens = {
           <div class="dock"><button class="btn block" data-go="s/home">回今天</button><button class="btn ghost block" data-go="s/squad">看課堂紀錄</button></div>
         </div>`;
       }
+      if (!isWide()) return phoneNotice(L);
       const seg = SEGMENTS[ui.seg];
-      return `<div class="pad pb classroom">
+      const problems = weekProblems(state, sq, L);
+      return `<div class="pad pb classroom wide">
         <div class="abar"><button class="iconbtn" data-act="leave" aria-label="離開教室">${icon('x')}</button><span class="abar-t">第 ${L.week} 堂 · ${esc(SKILLS[L.skill].short)}</span><span class="abar-r num" id="clsClock">${clockText(ui.min)}</span></div>
         <div class="cls-bar" aria-hidden="true"><i id="clsBar" style="width:${(ui.min / TOTAL) * 100}%"></i></div>
         <ol class="segs" aria-label="這堂課的六段">${SEGMENTS.map((s, i) => `<li class="${i < ui.seg ? 'past' : i === ui.seg ? 'on' : ''}" ${i === ui.seg ? 'aria-current="step"' : ''}><b>${s.name}</b><small class="num">${s.min} 分</small></li>`).join('')}</ol>
-        <div class="mates">${sq.members.map((mm) => `<span class="mate ${mm.isMe ? 'me' : ''}">${avatar(mm, 's')}<small>${mm.isMe ? '你' : esc(mm.name)}</small></span>`).join('')}<span class="mate t">${avatar({ name: '林', color: 3 }, 's')}<small>${TEACHER.name}</small></span></div>
-        <h1 class="h2" tabindex="-1">${seg.name}</h1>
-        <div class="segbody">${segBody(ctx, L, sq)}</div>
-        <div class="dock"><button class="btn block" data-act="nextSeg">${ui.seg === SEGMENTS.length - 1 ? '下課' : `下一段：${SEGMENTS[ui.seg + 1].name}`}${icon('forward')}</button></div>
+        <div class="cls-grid">
+          <section class="cls-board" aria-label="白板">
+            <div class="cls-three"><b>這週要解的 3 題</b><ol>${problems.map((p) => `<li class="${p.skill === L.skill ? 'on' : ''}">${fx(p.text)}<small>${esc(p.source)}</small></li>`).join('')}</ol></div>
+            <div class="cls-now"><span class="pill">目前段落</span><h1 class="h2" tabindex="-1">${seg.name}<small class="num"> · ${seg.min} 分鐘</small></h1></div>
+            <div class="segbody">${segBody(ctx, L, sq)}</div>
+          </section>
+          ${sidePanel(ctx, L, sq)}
+        </div>
+        <div class="cls-ctrl" role="group" aria-label="老師控制列（示範）">
+          <span class="lbl">老師控制列 · 示範</span>
+          <button class="btn s ghost" data-act="rollcall" aria-pressed="${ui.rollcall}">${icon('users')}點名</button>
+          <button class="btn s ghost" data-act="splitGroups" aria-pressed="${!!ui.groups}">${icon('route')}分兩組</button>
+          <button class="btn s" data-act="nextSeg">${ui.seg === SEGMENTS.length - 1 ? '下課' : `下一段：${SEGMENTS[ui.seg + 1].name}`}${icon('forward')}</button>
+        </div>
       </div>`;
     },
     on: {
       leave(ctx) { ctx.go('s/squad'); },
+      copyLink(ctx) {
+        const url = location.href;
+        const done = () => ctx.toast('已複製教室連結。貼到 iPad 或電腦的瀏覽器就能開。');
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => ctx.toast('無法自動複製，請長按上面的連結複製。'));
+        else ctx.toast('無法自動複製，請長按上面的連結複製。');
+      },
+      rollcall(ctx) { ui.rollcall = !ui.rollcall; ctx.rerender(); if (ui.rollcall) ctx.toast('點名完成：全員出席。'); },
+      splitGroups(ctx) {
+        const L = lessonInfo(ctx.state);
+        if (ui.groups) { ui.groups = null; ctx.rerender(); return; }
+        ui.groups = {};
+        ctx.state.squad.members.forEach((mm) => { ui.groups[mm.id] = (mm.stuck || []).includes(L.skill) ? 'A' : 'B'; });
+        ctx.rerender();
+        ctx.toast('依這週的卡點分成 A／B 兩組。');
+      },
       warm(ctx, el) { ui.warm = Number(el.dataset.i); ctx.rerender(); },
       try(ctx, el) { ui.tries[Number(el.dataset.p)] = Number(el.dataset.i); ctx.rerender(); },
       teachType(ctx, el) { ui.teachText = el.value; },

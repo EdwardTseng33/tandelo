@@ -1,0 +1,67 @@
+# 後端部署範本（預設不啟用：副檔名是 .example，GitHub 不會執行）。
+# 啟用方式：改名成 deploy-backend.yml，二選一留下 Cloud Run 或 Fly.io 的 job，並在 repo 的
+# Settings → Secrets and variables → Actions 設定下面列出的 secrets。這個檔案裡沒有任何 secret 值。
+#
+# 兩條路都吃 docker-publish.yml 推上去的映像 ghcr.io/edwardtseng3/tandelo-backend:sha-<短碼>。
+#
+# ── Google Cloud Run 需要的 secrets ─────────────────────────────────────────
+#   GCP_PROJECT_ID          GCP 專案 id
+#   GCP_REGION              例如 asia-east1
+#   GCP_WORKLOAD_IDP        Workload Identity Provider 完整資源名（建議，不用放金鑰檔）
+#   GCP_SERVICE_ACCOUNT     部署用服務帳號 email
+#   ADMIN_TOKEN             後端管理權杖（建議改用 Secret Manager 掛進 Cloud Run）
+#   DATABASE_URL            正式資料庫連線字串（Cloud SQL Postgres；SQLite 在 Cloud Run 不持久）
+#   CORS_ORIGINS            例如 https://edwardtseng3.github.io
+#
+# ── Fly.io 需要的 secrets ──────────────────────────────────────────────────
+#   FLY_API_TOKEN           fly tokens create deploy -x 999999h
+#   （ADMIN_TOKEN／DATABASE_URL／CORS_ORIGINS 用 `fly secrets set` 放在 Fly 端，不放 GitHub）
+#   另外要在 repo 加 fly.toml（app 名稱、region、[mounts] 把 /data 掛成 volume 才能用 SQLite）。
+
+name: Deploy backend (example)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "要部署的映像標籤（例如 sha-abc1234 或 latest）"
+        required: true
+        default: latest
+
+permissions:
+  contents: read
+  id-token: write   # Cloud Run 的 Workload Identity 需要
+
+jobs:
+  cloud-run:
+    if: false   # 啟用時改成 true（或刪掉這行）
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDP }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: tandelo-backend
+          region: ${{ secrets.GCP_REGION }}
+          image: ghcr.io/edwardtseng3/tandelo-backend:${{ inputs.image_tag }}
+          flags: --port=8000 --allow-unauthenticated --min-instances=0 --max-instances=2
+          env_vars: |
+            APP_ENV=prod
+            COACH_PROVIDER=rules
+            SEED_ON_STARTUP=false
+            CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}
+          secrets: |
+            ADMIN_TOKEN=tandelo-admin-token:latest
+            DATABASE_URL=tandelo-database-url:latest
+
+  fly-io:
+    if: false   # 啟用時改成 true（或刪掉這行）
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --image ghcr.io/edwardtseng3/tandelo-backend:${{ inputs.image_tag }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

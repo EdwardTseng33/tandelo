@@ -1,2 +1,13 @@
 .DS_Store
 *.log
+# 機密與本機資料永不進 git
+.env
+.env.*
+!.env.example
+data/
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/

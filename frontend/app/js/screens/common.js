@@ -103,6 +103,14 @@ export const screens = {
           </ul>
         </div>
         <div class="card">
+          <b>用什麼裝置</b>
+          <ul class="list">
+            <li>上課用 iPad 或電腦的瀏覽器：教室有白板、隊友列與老師控制列，需要大一點的畫面（768px 以上）。</li>
+            <li>手機用在課與課之間：拍題問小陪、說給我聽、過幾天再測。</li>
+            <li>家長只在 LINE：不用裝 App，每週一份「他學會什麼、下週做什麼、今晚可以問他這一句」。</li>
+          </ul>
+        </div>
+        <div class="card">
           <b>你的資料</b>
           <p class="body">只存在這台裝置的瀏覽器（localStorage），不送到任何伺服器。可以在設定裡隨時重設。</p>
         </div>

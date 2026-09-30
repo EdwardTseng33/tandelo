@@ -1,6 +1,7 @@
 // main.js — 啟動、路由、事件分派、主題與關燈、桌機說明面板
 
-import { load, save, defaultState, isLightsOut, fmtLong, addDays, fmtMD } from './state.js';
+import { load, save, defaultState, isLightsOut, fmtLong, addDays, fmtMD, setSaveHook } from './state.js';
+import { isConfigured, isOnline, onStatusChange, probe, syncState } from './api.js';
 import { parseHash, homeFor, toHash } from './router.js';
 import { esc, icon } from './ui.js';
 import * as common from './screens/common.js';
@@ -39,6 +40,7 @@ const view = $('#view');
 const tabs = $('#tabs');
 const overlay = $('#overlay');
 const panel = $('#panel');
+const shell = $('.shell');
 const toastEl = $('#toast');
 
 function ctx() {
@@ -72,10 +74,13 @@ function applyTheme() {
   if (meta) meta.setAttribute('content', theme === 'dark' ? '#0C1412' : '#F6F4EE');
 }
 
+function apiLabel() { return (typeof window !== 'undefined' && window.TANDELO_API_BASE) || ''; }
+
 function statusBar() {
   const night = isLightsOut(state.clock.time);
   return `<button class="sb-time num" data-go="settings" aria-label="示範時間 ${esc(fmtLong(state.clock.date))} ${esc(state.clock.time)}，點一下到設定">${night ? icon('moon') : ''}${esc(state.clock.time)}<small>${esc(fmtMD(state.clock.date))}</small></button>
     <span class="sb-demo">示範模式</span>
+    <span class="sb-sync ${isOnline() ? 'on' : ''}" title="${isConfigured() ? '後端網址：' + esc(apiLabel()) : '沒有設定後端，資料只在這台裝置'}">${isOnline() ? '已同步' : '離線示範'}</span>
     <button class="iconbtn sb-gear" data-go="settings" aria-label="設定">${icon('gear')}</button>`;
 }
 
@@ -125,6 +130,8 @@ function renderPanel() {
 function render({ nav = false, focusTitle = false, focusSel = null, keepScrollBottom = false, top = false } = {}) {
   const c = ctx();
   applyTheme();
+  // 桌機外殼：手機框＋說明面板只給學生端非教室畫面；教室與老師端全寬（平板／桌機優先）
+  if (shell) shell.classList.toggle('wide', cur.key === 's/class' || state.role === 'teacher');
   sb.innerHTML = statusBar();
   const active = document.activeElement;
   const fid = !nav && active && view.contains(active) && active.id ? active.id : null;
@@ -276,6 +283,20 @@ document.addEventListener('keydown', (e) => {
 });
 window.addEventListener('hashchange', route);
 darkMQ.addEventListener?.('change', () => applyTheme());
-window.addEventListener('storage', (e) => { if (e.key === 'tandelo-poc-v1') { state = load(); route(); } });
+// 別的分頁改了資料就重讀；身分照這個分頁的網址（不回存），避免兩個分頁不同身分時互相改來改去
+window.addEventListener('storage', (e) => {
+  if (e.key !== 'tandelo-poc-v1') return;
+  state = load();
+  const { role } = parseHash(location.hash);
+  if (role) state.role = role;
+  route();
+});
+
+// 後端（可有可無）：有設定就探測一次，連得上就把每次存檔同步過去；狀態一變就更新狀態列小標
+if (isConfigured()) {
+  setSaveHook(syncState);
+  onStatusChange(() => { sb.innerHTML = statusBar(); });
+  probe().then((ok) => { if (ok) syncState(state); });
+}
 
 route();

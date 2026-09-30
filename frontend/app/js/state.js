@@ -39,6 +39,7 @@ export function defaultState() {
       sessions: [], // { week, date, attendance, groups, note, picks }
     },
     parent: { reactions: {} },
+    sync: { studentId: null, diagAt: null, slotsKey: null }, // 後端同步進度（沒有後端時不會用到）
   };
 }
 
@@ -56,8 +57,15 @@ export function load(storage = globalThis.localStorage) {
   }
 }
 
+/** 存檔後的鉤子：若有設定後端，就把狀態同步一份過去（失敗不影響本機） */
+let afterSave = null;
+export function setSaveHook(fn) { afterSave = typeof fn === 'function' ? fn : null; }
+
 export function save(state, storage = globalThis.localStorage) {
-  try { storage && storage.setItem(STORAGE_KEY, JSON.stringify(state)); return true; } catch { return false; }
+  let ok = false;
+  try { storage && storage.setItem(STORAGE_KEY, JSON.stringify(state)); ok = true; } catch { ok = false; }
+  if (afterSave) { try { afterSave(state); } catch { /* 同步失敗不影響本機 */ } }
+  return ok;
 }
 
 // ——— 日期（一律用 UTC 計算，避免時區造成差一天） ———
