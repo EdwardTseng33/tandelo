@@ -39,6 +39,7 @@
   --learned-bg:var(--mint); --mastered:var(--honey); --mastered-text:#7A5A08; --mastered-bg:var(--honey-soft);
   --band:var(--pine-deep); --on-band:var(--oat); --on-band-mute:#B9D3CB;
   --fog:#E3DFD3; --fog-text:#8A9793; --shadow-ink:#1B2B27;
+  --sea:#DCEAE6; --sea-line:#C9DDD7; --land:#FBFAF6; --land-edge:#D9D5CA; --sky:#4F7FD9;
   --focus:#0E5F52;
   --shadow-soft:0 1px 2px rgba(13,43,38,.04),0 12px 32px -12px rgba(13,43,38,.14);
   --shadow-lift:0 2px 4px rgba(13,43,38,.05),0 24px 48px -20px rgba(13,43,38,.22);
@@ -61,6 +62,7 @@
     --mastered-text:#F4C24D; --mastered-bg:#332A12;
     --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
     --fog:#1C2624; --fog-text:#6F7F7A; --shadow-ink:#0A100E;
+    --sea:#0B1917; --sea-line:#12241F; --land:#16211E; --land-edge:#2A3A35; --sky:#8AB0F5;
     --focus:#7ED3C0;
     --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
     --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
@@ -75,6 +77,7 @@
   --mastered-text:#F4C24D; --mastered-bg:#332A12;
   --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
   --fog:#1C2624; --fog-text:#6F7F7A; --shadow-ink:#0A100E;
+  --sea:#0B1917; --sea-line:#12241F; --land:#16211E; --land-edge:#2A3A35; --sky:#8AB0F5;
   --focus:#7ED3C0;
   --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
   --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
@@ -437,6 +440,35 @@ h4{font-size:16px;margin:22px 0 8px}
 .screen .relay .me{background:var(--surface);outline:2px dashed var(--brand);outline-offset:-2px}
 .screen .btn.warn{background:transparent;color:var(--stuck-text);border:1.5px solid var(--stuck)}
 
+/* ---------- 世界地圖 ---------- */
+.worldmap{background:var(--surface);border-radius:var(--r-lg);padding:clamp(10px,2vw,18px);box-shadow:var(--shadow-soft);margin:18px 0 8px;overflow-x:auto}
+.worldmap svg{width:100%;min-width:640px;height:auto;display:block}
+.worldmap .sea{fill:var(--sea)}
+.worldmap .wave{fill:none;stroke:var(--sea-line);stroke-width:2;stroke-linecap:round}
+.worldmap .land{fill:var(--land);stroke:var(--land-edge);stroke-width:2}
+.worldmap .cn{font-family:var(--font-sans);font-weight:900;font-size:17px;fill:var(--text)}
+.worldmap .cs{font-family:var(--font-sans);font-weight:700;font-size:12px;fill:var(--text-mute)}
+.worldmap .rl{font-family:var(--font-sans);font-weight:700;font-size:12.5px;fill:var(--text);text-anchor:middle;paint-order:stroke;stroke:var(--land);stroke-width:4px;stroke-linejoin:round}
+.worldmap .rl.fogt{fill:var(--fog-text)}
+.worldmap .tw{--tw-line:var(--ink);--tw-lamp:#FFF8DC;--tw-body:var(--surface)}
+.worldmap .t-coral{--tw-body:var(--coral)}
+.worldmap .t-sky{--tw-body:var(--sky)}
+.worldmap .t-honey{--tw-body:var(--honey)}
+.worldmap .t-none{--tw-body:var(--surface);--tw-line:var(--text-mute);--tw-lamp:var(--rule)}
+.worldmap .fogm{fill:var(--fog);stroke:var(--fog-text);stroke-width:1.5;stroke-dasharray:3 3}
+.worldmap .fogq{font-family:var(--font-num);font-weight:700;font-size:13px;fill:var(--fog-text);text-anchor:middle}
+.maplegend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--text-mute);margin:10px 0 0}
+.maplegend span{display:inline-flex;align-items:center;gap:8px}
+.maplegend i{width:14px;height:14px;border-radius:4px;display:inline-block;border:1.5px solid var(--ink)}
+.maplegend i.c{background:var(--coral)} .maplegend i.s{background:var(--sky)} .maplegend i.h{background:var(--honey)}
+.maplegend i.n{background:var(--surface);border-color:var(--text-mute)} .maplegend i.f{background:var(--fog);border:1.5px dashed var(--fog-text)}
+.screen .rank{display:grid;gap:6px}
+.screen .rank>div{display:grid;grid-template-columns:20px 12px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--surface);font-size:12.5px}
+.screen .rank .p{font-family:var(--font-num);font-weight:700;color:var(--text-mute)}
+.screen .rank .dot{width:12px;height:12px;border-radius:50%}
+.screen .rank b{font-family:var(--font-num)}
+.screen .rank .mine{outline:2px solid var(--brand);outline-offset:-2px}
+
 /* ---------- 頁尾 ---------- */
 footer{padding:48px 0 64px;color:var(--text-mute);font-size:13.5px}
 footer .sig{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:700;margin-bottom:10px}
@@ -458,6 +490,7 @@ footer .sig svg{width:38px;height:24px}
     <symbol id="m-tri" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M32 10l24 44H8z"/><circle fill="var(--m-eye)" cx="25" cy="42" r="5"/><circle fill="var(--m-eye)" cx="39" cy="42" r="5"/><circle fill="var(--m-pupil)" cx="26" cy="43" r="2.2"/><circle fill="var(--m-pupil)" cx="40" cy="43" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="18">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="50">?</text></symbol>
     <symbol id="m-cross" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M24 10h16v14h14v16H40v14H24V40H10V24h14z"/><circle fill="var(--m-eye)" cx="26" cy="32" r="5"/><circle fill="var(--m-eye)" cx="38" cy="32" r="5"/><circle fill="var(--m-pupil)" cx="27" cy="33" r="2.2"/><circle fill="var(--m-pupil)" cx="39" cy="33" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
     <symbol id="m-ring" viewBox="0 0 64 64"><path fill="var(--m-body)" fill-rule="evenodd" d="M32 8a24 24 0 1 0 0 48 24 24 0 0 0 0-48zm0 14a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/><circle fill="var(--m-eye)" cx="20" cy="26" r="4.5"/><circle fill="var(--m-eye)" cx="44" cy="26" r="4.5"/><circle fill="var(--m-pupil)" cx="21" cy="27" r="2"/><circle fill="var(--m-pupil)" cx="45" cy="27" r="2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+    <symbol id="tower" viewBox="0 0 24 32"><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M8 30V14h8v16z"/><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M5 14l7-8 7 8z"/><circle fill="var(--tw-lamp)" cx="12" cy="10" r="2.4"/></symbol>
     <symbol id="p-kid" viewBox="0 0 64 64"><circle cx="32" cy="24" r="14" fill="currentColor"/><path d="M8 62c2-16 12-24 24-24s22 8 24 24z" fill="currentColor"/></symbol>
     <symbol id="logo" viewBox="0 0 64 40"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></symbol>
   </defs>
@@ -481,9 +514,11 @@ footer .sig svg{width:38px;height:24px}
       <a href="#c4"><span class="n">04</span>成就與分享</a>
       <a href="#c5"><span class="n">05</span>PvE 副本</a>
       <a href="#c6"><span class="n">06</span>PvP 對戰</a>
-      <a href="#c7"><span class="n">07</span>畫面</a>
-      <a href="#c8"><span class="n">08</span>護欄</a>
-      <a href="#c9"><span class="n">09</span>分期</a>
+      <a href="#c7"><span class="n">07</span>公會與徽章</a>
+      <a href="#c8"><span class="n">08</span>世界地圖</a>
+      <a href="#c9"><span class="n">09</span>畫面</a>
+      <a href="#c10"><span class="n">10</span>護欄</a>
+      <a href="#c11"><span class="n">11</span>分期</a>
     </nav>
   </div>
 </header>
@@ -546,7 +581,7 @@ footer .sig svg{width:38px;height:24px}
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M12 20c0-3 3-5 6-5"/></svg></div>
         <div class="who">能一起</div>
         <p class="say">PvE 一起打副本，PvP 和同路線的小隊對戰。</p>
-        <p class="small">過關看小隊解題率。家人見證、公會共同倒數。對戰只在隊伍之間，沒有排名、沒有個人對戰。</p>
+        <p class="small">過關看小隊解題率。家人見證、公會每月一起拚徽章。對戰只在隊伍之間，沒有排名、沒有個人對戰。</p>
       </div>
     </div>
 
@@ -619,7 +654,7 @@ footer .sig svg{width:38px;height:24px}
       <div class="card"><div class="who">國文 · 字林</div><p class="say">音近字妖、之乎迷霧、修辭變臉怪</p><p class="small">再和在、做和作寫混；文言的「之」分不清用法；譬喻和轉化分不清。</p></div>
       <div class="card"><div class="who">社會 · 時光古道</div><p class="say">年代錯置怪、因果顛倒獸、經緯迷航</p><p class="small">把事件順序排錯；把結果當成原因；經度和緯度讀反。</p></div>
     </div>
-    <p class="note">真人小隊課仍然數學先行。其他三片大陸先以副本與對戰開放，要不要也開真人課，列在第 09 章待決。</p>
+    <p class="note">真人小隊課仍然數學先行。其他三片大陸先以副本與對戰開放，要不要也開真人課，列在第 11 章待決。</p>
   </div>
 </section>
 
@@ -1016,7 +1051,7 @@ footer .sig svg{width:38px;height:24px}
       <div>
         <div class="callout pine" style="margin-top:0">
           <p><b>判讀：為什麼是出題戰，不是搶答戰。</b>搶答比的是速度，速度會把最慢的那個孩子曝光。出題比的是理解：要出一題能騙到人的題，得先想清楚那隻怪在哪一步騙人，這和北極星是同一個方向。</p>
-          <p>對戰的作答算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 09 章有這條驗證。</p>
+          <p>對戰的作答算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 11 章有這條驗證。</p>
         </div>
         <div class="callout gov">
           <p><b>沙利曼：對戰多出三條線。</b>一、跨隊的互動只有題目和「這題出得好」，題目一律經內容團隊與嚮導審過；隊內只有候選答案和固定句。二、對戰報告不離開兩隊和兩位嚮導，公會牆只會出現「四葉小隊打了一場對戰」，不出現勝負，不出現對手。三、真人對戰用匿名投票決定，13 歲以下另需家長在 LINE 端同意。</p>
@@ -1026,10 +1061,238 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 07 畫面 ============ -->
+<!-- ============ 07 公會與徽章 ============ -->
 <section class="ch" id="c7">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no pine">07</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
+    <div class="ch-head"><div class="ch-no pine">07</div><div><div class="kicker">公會與徽章</div><h2>每月一枚拿得到手的徽章，全公會一起拚</h2></div></div>
+    <p class="lead">小隊八週就解散，公會不會。這一章設計兩件事：<b>用戰績解鎖的公會獎勵</b>，以及<b>每月一次的徽章公開賽</b>，達標的小隊每人拿到一枚真的徽章吊飾。戰績怎麼拿來排名、搶燈塔，寫在第 08 章。</p>
+
+    <h3>公會是誰</h3>
+    <div class="grid g3">
+      <div class="card"><div class="who">真人公會</div><p class="say">一位嚮導名下的所有小隊。</p><p class="small">嚮導是公會長。公會跨季存在，續走的理由從「再報一期」變成「我還在這個公會」。</p></div>
+      <div class="card"><div class="who">AI 公會</div><p class="say">國英社的 AI 小隊，依大陸和年級組成。</p><p class="small">公會長是真人巡查員，每週在公會牆留一則語音。做法寫在 AI 陪跑設計稿。</p></div>
+      <div class="card"><div class="who">公會牆</div><p class="say">只放值得慶祝的事。</p><p class="small">收服次數、徽章、好題印記、「打了一場對戰」。不放分數、不放勝負、不放誰還沒完成。</p></div>
+    </div>
+
+    <h3>戰績：只從學會來，累積不會花掉</h3>
+    <div class="grid g2" style="align-items:start">
+      <div class="formula">
+        <p class="eq">戰績只從驗證過的學會事件來</p>
+        <ul>
+          <li><b>10 點</b><span>收服一隻怪</span></li>
+          <li><b>5 點</b><span>叫醒一隻睡著的影子</span></li>
+          <li><b>3 點</b><span>講解被嚮導抽查合格</span></li>
+          <li><b>5–12 點</b><span>副本過關，一到三星，全隊一份</span></li>
+        </ul>
+        <p class="small">不從登入、練習量、連續天數、付費、儲值或對戰勝負來。戰績的上限就是每天三張任務卡，熬夜刷不上去。個人戰績只有自己和家長看得到，小隊和公會看到的是加總與人均。數字為提案，試點再調。</p>
+      </div>
+      <div class="tbl-wrap" style="margin:0">
+        <table class="tbl">
+          <thead><tr><th>解鎖什麼</th><th>誰的戰績</th><th>門檻</th></tr></thead>
+          <tbody>
+            <tr><th>隊旗圖樣、地圖配色、影子外框</th><td>小隊累積，解鎖後全隊投票選用</td><td class="n">100–200</td></tr>
+            <tr><th>隊伍牆的季末合照框</th><td>小隊累積</td><td class="n">300</td></tr>
+            <tr class="hi"><th>魔王攻略會：段考前嚮導加開 30 分鐘直播答疑</th><td>公會人均</td><td class="n">60</td></tr>
+            <tr><th>實體徽章吊飾</th><td>不能用戰績換，只能在公開賽拿到</td><td class="n">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note">戰績用「累積到門檻就解鎖」，不用「花掉換東西」，所以解鎖獎勵不會讓排名往下掉。公會共享的獎勵是一場真人的課，這是故意的：最好的獎品是有人願意為你們多花時間，而且全公會的孩子一起受益。</p>
+    <div class="callout">
+      <p><b>蘇菲：為什麼戰績不能換實體。</b>戰績一旦能換東西寄到家，就會變成「刷戰績換獎品」，家長也可能幫忙刷。實體獎品只綁在公開賽，數量控制得住、條件查得到，每一枚都對得上一次真的學會。</p>
+    </div>
+
+    <h3>每月徽章公開賽</h3>
+    <p class="prose" style="margin-bottom:16px">每個月一枚主題徽章，對應當月的「月之魔王」。所有小隊都能報名，真人小隊和 AI 小隊一起打。一學年十枚，湊成一本徽章冊。</p>
+    <div class="grid g4">
+      <div class="card"><div class="who">什麼時候</div><p class="say">每月最後一個週六 09:00 到週日 20:00。</p><p class="small">避開各校段考週。週末白天打，不佔平日的任務卡，22:30 關燈照舊。</p></div>
+      <div class="card"><div class="who">打什麼</div><p class="say">一個特別副本：試煉副本。</p><p class="small">當月主題大陸的怪。題目由 AI 生成、內容團隊全部人審，每人不同變體，用過一次就退休。</p></div>
+      <div class="card honey"><div class="who">怎麼贏</div><p class="say">解題率 80% 以上，而且沒申報缺席的人全員出手。</p><p class="small">達到就贏，每位隊員各得一枚實體徽章吊飾。不是只有前幾名。</p></div>
+      <div class="card"><div class="who">公開什麼</div><p class="say">本月徽章牆，列出所有拿到徽章的隊名。</p><p class="small">隨機排序、不排名次、不寫分數。小隊也可以選擇不上牆。</p></div>
+    </div>
+
+    <h3>兩種贏法並排</h3>
+    <div class="tbl-wrap">
+      <table class="tbl cards">
+        <thead><tr><th></th><th>達標制（建議）</th><th>名額制</th></tr></thead>
+        <tbody>
+          <tr><th>誰拿到徽章</th><td data-l="達標制">所有達到門檻的小隊</td><td data-l="名額制">解題率前幾名的小隊</td></tr>
+          <tr><th>熱血感</th><td data-l="達標制">大家一起跟魔王打，每一隊都有機會</td><td data-l="名額制">最高，有真正的冠軍</td></tr>
+          <tr><th>對落後的隊伍</th><td data-l="達標制">看得到自己拿得到，會想再拚一次</td><td data-l="名額制">很快放棄，公開賽變成排行榜</td></tr>
+          <tr><th>代答的誘因</th><td data-l="達標制">有，靠複核擋</td><td data-l="名額制">很高，名次越前越值得代答</td></tr>
+          <tr><th>成本</th><td data-l="達標制">隨達標人數變動，用門檻控制</td><td data-l="名額制">固定</td></tr>
+          <tr class="hi"><th>和產品原則</th><td data-l="達標制">符合「不比較」</td><td data-l="名額制">違反「不做排行」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose small" style="margin-top:14px">想要冠軍的熱血感，但不變成排名，用這兩個加碼：</p>
+    <div class="grid g2" style="margin-top:10px">
+      <div class="card honey"><div class="who">全服目標</div><p class="say">所有參賽隊伍的收服次數加總，達到當月目標，全體達標者的徽章升級成金邊版。</p><p class="small">全平台一起推一條進度條，贏的是大家。</p></div>
+      <div class="card honey"><div class="who">出題賞</div><p class="say">每月從全平台的出題戰選出三題好題，收進下個月的試煉副本。</p><p class="small">出題的小隊得到一枚「出題者」徽章。被表揚的是題目的品質，不是分數。</p></div>
+    </div>
+
+    <h3>送出真的獎品之前，要先想好的四件事</h3>
+    <ol class="steps">
+      <li><b>擋代答。</b>試煉每人不同變體；每人隨機兩題要錄一句「為什麼」，AI 初篩、真人抽審。試煉成績明顯高於孩子近期的紀錄時，發徽章前由嚮導或巡查員複核。家長報名時勾選「由孩子本人作答」。</li>
+      <li><b>寄送與個資。</b>寄給家長，不寄給孩子。收件資料由家長在 LINE 端填寫，只用在寄送，寄出後 30 天刪除。不蒐集孩子本人的地址或電話。</li>
+      <li><b>控成本。</b>吊飾單價約 NT$30–80，含包材與寄送約 NT$100。以 500 個付費家庭、參賽率六成、達標率五成推估，每月約 150 枚、NT$1.5 萬，約等於每個付費家庭每月 NT$30。改成每季寄一次、三枚一起寄，運費還能再降；數位徽章當下就發。</li>
+      <li><b>法規先對齊。</b>得獎只看門檻與實力，不摻抽籤或機率，就不落入公平會「贈獎」的射倖定義；徽章也不綁付費，避免被當成附隨於付費服務的贈品。收件人資料依個資法第 8 條告知，13 到 15 歲屬限制行為能力人，由家長同意；個資法 2025 年 11 月公布修正，施行日待行政院另定，個資事故通報義務要先準備好。對家長不宣稱徽章對升學有幫助：國中沒有學習歷程檔案，基北區免試入學也不採計競賽。這幾條是城堡自行查證的摘要，正式上線前要請法務對照原文確認。</li>
+    </ol>
+    <div class="callout gov">
+      <p><b>沙利曼：實體獎品多出三條線。</b>一、公開賽不得有任何機率成分，戰績也不能用錢買，否則會碰到《網路連線遊戲服務定型化契約》的機率型商品揭露與兒少分級規定。二、《人工智慧基本法》已於 2026-01-14 施行，兒少最佳利益是原則，試煉副本由 AI 生成的題目要標示、要有真人審。三、徽章牆與分享卡上永遠是隊名和頭像色塊，沒有孩子的臉、真名、學校與地區。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 世界地圖 ============ -->
+<section class="ch" id="c8">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">08</div><div><div class="kicker">世界地圖、戰績與燈塔</div><h2>四片大陸，每區一座燈塔，拓荒的隊伍把旗插上去</h2></div></div>
+    <p class="lead">世界是這樣疊起來的：<b>一科一片大陸，一章一個區域，一個卡點一隻怪，一個區域一座燈塔</b>。拓荒累積戰績，戰績決定榜上的位置，也決定誰能把隊旗插上燈塔。地圖是幻想的，聯賽的分區才用真實的地理。</p>
+
+    <h3>地圖要用什麼地理：三種做法並排</h3>
+    <div class="tbl-wrap">
+      <table class="tbl cards">
+        <thead><tr><th></th><th>真實地域（台北市各區）</th><th>東西南北抽象分區</th><th>幻想大陸（建議）</th></tr></thead>
+        <tbody>
+          <tr><th>認同感</th><td data-l="真實地域">最強，孩子認得大安、士林</td><td data-l="東西南北">弱，四個方位沒有故事</td><td data-l="幻想大陸">中到強，靠怪與區域的命名累積</td></tr>
+          <tr><th>和學習內容的關係</th><td data-l="真實地域">沒有，章節塞進行政區是硬湊</td><td data-l="東西南北">沒有</td><td data-l="幻想大陸">區域就是章節，怪就是卡點，拓荒就是學會</td></tr>
+          <tr><th>兒少安全</th><td data-l="真實地域">守塔隊掛在真實區名上，等於公開孩子住哪、讀哪</td><td data-l="東西南北">安全</td><td data-l="幻想大陸">安全</td></tr>
+          <tr><th>公平</th><td data-l="真實地域">明星學區一定壓過其他區，地圖變成社經排名</td><td data-l="東西南北">公平</td><td data-l="幻想大陸">公平，區域只看課程</td></tr>
+          <tr><th>擴張</th><td data-l="真實地域">換一個縣市就要重畫，出國就作廢</td><td data-l="東西南北">可擴張但無感</td><td data-l="幻想大陸">全台、全世界同一張地圖</td></tr>
+          <tr class="hi"><th>怎麼用</th><td data-l="真實地域">只用來分聯賽區：北、中、南、東，對應各校段考時程與教科書版本</td><td data-l="東西南北">就是台灣的北中南東</td><td data-l="幻想大陸">主地圖</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout pine">
+      <p><b>判讀：兩個都要，但放在不同層。</b>地圖用幻想大陸，因為區域要對到章節，拓荒才等於學會。真實地理只用在聯賽分區：北、中、南、東四區，剛好就是你說的東西南北，而且對到規劃書「一縣市、一版本、兩時段測密度」的成班邏輯。孩子會說「我們是北區的四葉小隊，守著根號谷的燈塔」，兩種認同都有，卻不會暴露住在哪一區。</p>
+    </div>
+
+    <h3>世界地圖示意</h3>
+    <div class="worldmap"><svg viewBox="0 0 960 560" role="img" aria-label="Tandelo 世界地圖示意：四片大陸環繞內海，每個區域一座燈塔">
+  <rect class="sea" x="0" y="0" width="960" height="560" rx="18"/>
+  <path class="wave" d="M430 300q14-8 28 0t28 0M450 330q14-8 28 0t28 0M470 270q14-8 28 0t28 0M120 520q14-8 28 0t28 0M700 40q14-8 28 0t28 0"/>
+  <!-- 數理大陸 -->
+  <path class="land" d="M70 150c30-60 120-90 190-70s110 60 150 120c30 45 20 110-20 150s-90 50-150 60-120-10-150-60S40 210 70 150z"/>
+  <text class="cn" x="92" y="120">數理大陸</text><text class="cs" x="92" y="138">數學 · 六區</text>
+  <use href="#tower" class="tw t-coral" x="150" y="175" width="22" height="30"/><text class="rl" x="161" y="225">乘法平原</text>
+  <use href="#tower" class="tw t-sky" x="255" y="150" width="22" height="30"/><text class="rl" x="266" y="200">多項式林</text>
+  <use href="#tower" class="tw t-honey" x="340" y="215" width="22" height="30"/><text class="rl" x="351" y="265">根號谷</text>
+  <use href="#tower" class="tw t-none" x="130" y="300" width="22" height="30"/><text class="rl" x="141" y="350">畢氏山</text>
+  <use href="#tower" class="tw t-none" x="240" y="330" width="22" height="30"/><text class="rl" x="251" y="380">分解洞窟</text>
+  <ellipse class="fogm" cx="330" cy="350" rx="58" ry="34"/><text class="fogq" x="330" y="355">?</text><text class="rl fogt" x="330" y="405">二次高原</text>
+  <!-- 西風港 -->
+  <path class="land" d="M480 60c60-30 150-30 220 0s90 80 60 120-100 50-170 40-120-20-140-60 0-80 30-100z"/>
+  <text class="cn" x="500" y="52">西風港</text><text class="cs" x="500" y="70">英文</text>
+  <use href="#tower" class="tw t-sky" x="540" y="95" width="22" height="30"/><text class="rl" x="551" y="145">時態海灣</text>
+  <use href="#tower" class="tw t-none" x="640" y="120" width="22" height="30"/><text class="rl" x="651" y="170">單複數礁</text>
+  <ellipse class="fogm" cx="720" cy="120" rx="46" ry="28"/><text class="fogq" x="720" y="125">?</text><text class="rl fogt" x="720" y="168">介係詞燈塔</text>
+  <!-- 時光古道 -->
+  <path class="land" d="M790 190c40-20 100-10 120 30s10 90-30 110-90 10-110-30-20-90 20-110z"/>
+  <text class="cn" x="792" y="182">時光古道</text><text class="cs" x="792" y="200">社會</text>
+  <ellipse class="fogm" cx="840" cy="250" rx="50" ry="30"/><text class="fogq" x="840" y="255">?</text><text class="rl fogt" x="840" y="300">年代峽谷</text>
+  <use href="#tower" class="tw t-none" x="870" y="300" width="22" height="30"/>
+  <!-- 字林 -->
+  <path class="land" d="M540 330c50-40 150-40 230-10s110 80 80 130-110 70-190 60-140-30-160-80 0-70 40-100z"/>
+  <text class="cn" x="562" y="322">字林</text><text class="cs" x="562" y="340">國文</text>
+  <use href="#tower" class="tw t-none" x="600" y="360" width="22" height="30"/><text class="rl" x="611" y="410">音近字妖窟</text>
+  <ellipse class="fogm" cx="720" cy="420" rx="56" ry="32"/><text class="fogq" x="720" y="425">?</text><text class="rl fogt" x="720" y="472">之乎迷霧</text>
+  <ellipse class="fogm" cx="810" cy="370" rx="44" ry="26"/><text class="fogq" x="810" y="375">?</text><text class="rl fogt" x="810" y="414">修辭林</text>
+  <!-- 內海與航線 -->
+  <text class="cs" x="430" y="392" style="font-size:12px">內海 · 四片大陸的中間</text>
+</svg></div>
+    <div class="maplegend"><span><i class="c"></i>我們小隊守塔</span><span><i class="s"></i>其他小隊守塔</span><span><i class="h"></i>燈已點亮、無守塔隊</span><span><i class="n"></i>燈未點亮</span><span><i class="f"></i>迷霧，還沒偵察</span></div>
+    <p class="note">區域名稱為提案。國文、英文、社會的區域數量會依各版本的單元數決定，示意圖只畫了前幾區。</p>
+
+    <h3>戰績與三個榜</h3>
+    <p class="prose" style="margin-bottom:16px">戰績的來源寫在第 07 章：只從驗證過的收服、叫醒、講解和副本過關來，每天有上限。你要的「累積越多排名越靠前」在這裡，但排的是隊伍，個人榜由孩子自己決定要不要上。</p>
+    <div class="grid g3">
+      <div class="card honey">
+        <div class="who">隊伍榜 · 公開</div>
+        <p class="say">同聯賽區、同科、同路線的小隊，依本季戰績排。</p>
+        <p class="small">畫面只顯示自己前後各三隊，不顯示第幾名，也不顯示總隊數。季末重置，新隊伍下一季就能追上。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">公會榜 · 公開</div>
+        <p class="say">同聯賽區的公會，依人均戰績排。</p>
+        <p class="small">用人均不用總和，小公會不吃虧。公會長的名字可以上榜，這是給老師的舞台。</p>
+      </div>
+      <div class="card soft">
+        <div class="who">個人拓荒榜 · 自己選</div>
+        <p class="say">預設關，孩子自己打開才會出現在公會內的榜上。</p>
+        <p class="small">上榜的只有稱號和隊名，例如「本月拓荒者 · 四葉小隊」。自己看得到自己在同路線裡的百分位，別人看不到。</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><b>蕪菁頭：排行榜對前 20% 的孩子有用，對其他人是反效果。</b>這是遊戲化研究裡最穩定的一個發現：公開排名會推動已經領先的人，但讓中後段的人放棄。所以隊伍榜只顯示「前後各三隊」，讓每一隊都看得到下一個目標；個人榜交給孩子自己開，因為敢上榜的人本來就是被排名推動的那群。</p>
+    </div>
+
+    <h3>燈塔：一種合作、一種爭奪</h3>
+    <div class="grid g2">
+      <div class="card mint">
+        <div class="who">點燈 · 全服合作</div>
+        <p class="say">同一區所有小隊的戰績加總，達到門檻就把燈點亮。</p>
+        <p class="small">點亮後，這一區的迷霧對所有人散開，怪的圖鑑和陷阱說明全部解鎖。這是拓荒的第一步，人人有份。</p>
+      </div>
+      <div class="card coral">
+        <div class="who">守塔 · 同路線爭奪</div>
+        <p class="say">每座塔有四層，一層對應一條路線。每月 1 日結算，該區當月戰績最高的小隊成為那一層的守塔隊。</p>
+        <p class="small">平原線的隊伍只跟平原線的隊伍爭，新手也守得到塔。並列就一起守。</p>
+      </div>
+    </div>
+    <h4>守塔的三條規則</h4>
+    <ol class="steps">
+      <li><b>守塔沒有義務，塔也不會被偷。</b>不衰減、不用防守、不用每天上線巡。下個月結算時換人，上個月的隊名刻進「歷代守塔隊」名冊，永遠留著。</li>
+      <li><b>守塔的特權是幫別人。</b>守塔隊選一句「這區的怪要注意什麼」，刻在塔上，全聯賽區在這一區打副本都看得到。塔上還掛守塔隊的隊旗，分享卡可以帶上「守塔隊」的印記。</li>
+      <li><b>戰績有每日上限，所以塔搶不出熬夜。</b>每人每天最多三張任務卡，一支五人隊一個月的戰績上限是固定的。搶塔比的是全隊每週三天以上都有出手，不是誰刷得兇。</li>
+    </ol>
+
+    <div class="grid g2" style="margin-top:22px;align-items:start">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:36</span><span>北區 · 數學</span></div>
+          <span class="t">根號谷 · 燈塔</span>
+          <h5>燈亮著，<br>四葉小隊守著平原線這一層。</h5>
+          <div class="c honey">
+            <div class="kv"><span>點燈進度 · 全北區</span><b>3,240 / 3,000</b></div>
+            <div class="bar gold"><i style="width:100%"></i></div>
+            <p class="fine" style="margin-top:6px">已點亮。這一區的圖鑑對所有人開放。</p>
+          </div>
+          <div class="c">
+            <b style="font-size:13px">塔上的話 · 四葉小隊</b>
+            <p class="fine" style="margin-top:4px">「根號裡面要先算完，拆根蟲最愛騙你先開根號。」</p>
+          </div>
+          <div class="c">
+            <b style="font-size:13px">本月爭奪 · 平原線層 · 到 10/31</b>
+            <div class="rank" style="margin-top:8px">
+              <div><span class="p">↑</span><span class="dot" style="background:var(--av-4)"></span><span>星期三小隊</span><b>412</b></div>
+              <div class="mine"><span class="p">·</span><span class="dot" style="background:var(--av-2)"></span><span>四葉小隊</span><b>396</b></div>
+              <div><span class="p">↓</span><span class="dot" style="background:var(--av-5)"></span><span>夜行小隊</span><b>371</b></div>
+            </div>
+            <p class="fine" style="margin-top:6px">只顯示你前後各三隊，不顯示名次。</p>
+          </div>
+          <div class="grow"></div>
+          <span class="btn ghost">看歷代守塔隊</span>
+        </div></div>
+        <p class="phone-cap"><b>燈塔頁</b>點燈是全區的，守塔是同路線的，榜只看前後。示意畫面、資料為虛構。</p>
+      </div>
+      <div>
+        <div class="callout honey" style="margin-top:0">
+          <p><b>誠實說：領土型玩法的兩個已知坑。</b>第一是「要一直守」，Pokémon GO 的道館讓人每天巡，這裡用月結算和不衰減避開。第二是「強隊永遠佔著」，這裡用四層塔、同路線爭奪，和季末重置避開。還有一個要在試點觀察的：塔被別隊拿走那一天，孩子會不會難過到不想打。所以名冊是永久的，被換掉的隊仍然刻在塔上。</p>
+        </div>
+        <div class="callout gov">
+          <p><b>沙利曼：地圖上不能出現真實地點。</b>聯賽區只到北、中、南、東四個字，不到縣市，更不到學校。守塔隊、榜、塔上的話都只掛隊名與頭像色塊。孩子自己開個人榜要在 App 內確認一次，13 歲以下需家長在 LINE 端同意。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 畫面 ============ -->
+<section class="ch" id="c9">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">09</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
     <p class="lead">色彩用品牌既有的珊瑚、松綠、蜂蜜金，怪用品牌的圓做出來，不用任何既有 IP 的視覺。<b>示意畫面、資料為虛構</b>。</p>
 
     <div class="phones">
@@ -1130,10 +1393,10 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 08 護欄 ============ -->
-<section class="ch" id="c8">
+<!-- ============ 10 護欄 ============ -->
+<section class="ch" id="c10">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no">08</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
+    <div class="ch-head"><div class="ch-no honey">10</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
     <p class="lead">規劃書的三條護欄與八條原則全部沿用。下面是遊戲化這一層額外加的界線，每一條都對應一個已知會出事的地方。</p>
 
     <div class="dodont">
@@ -1151,6 +1414,9 @@ footer .sig svg{width:38px;height:24px}
           <li>收服只在伏擊層與叫醒任務卡產生，不進全隊分數，每個再測窗口只認第一次作答。</li>
           <li>真人對戰用匿名投票，全隊同意才開，否則對手是幽靈隊。對戰輸贏不影響路線。</li>
           <li>副本難度用「七成隊伍第一次就過關」校準，撤退不扣分。</li>
+          <li>公開賽採達標制：徽章牆只列拿到的隊名，隨機排序、不寫分數，小隊可以選擇不上牆。</li>
+          <li>隊伍榜只顯示前後各三隊、季末重置；守塔月結算、不衰減，歷代守塔隊永久留名。</li>
+          <li>實體獎品寄給家長，收件資料寄出後 30 天刪除。</li>
           <li>分享由孩子主動按，卡上沒有臉、真名、分數、隊友狀態。</li>
           <li>任務卡每天最多三張，22:30 後不發、不亮、不推播，段考週不加量。</li>
           <li>角色每週輪換，由系統排、嚮導可調，不看程度。</li>
@@ -1165,7 +1431,10 @@ footer .sig svg{width:38px;height:24px}
           <li>轉蛋、戰利品箱、隨機獎勵。</li>
           <li>比速度的搶答、限時倒數，或任何會往回退路線的懲罰。</li>
           <li>用練習量或連續天數算的稱號，個人或隊伍都一樣。</li>
+          <li>用戰績換實體獎品，或用名次決定誰拿到實體獎品。</li>
           <li>用「銅、銀、金」這類金屬名做等級，或把路線掛在隊伍牆、分享卡上。</li>
+          <li>把真實縣市、學校放上地圖或榜；聯賽區只到北中南東。</li>
+          <li>會衰減、要防守、每天要巡的領土機制；預設開啟的個人排行榜。</li>
           <li>未成年之間的自由文字聊天。</li>
           <li>晚上發任務、用「怪要逃走了」之類的焦慮句催練習。</li>
           <li>直接使用《我獨自升級》或任何作品的名稱、角色、視覺。</li>
@@ -1180,10 +1449,10 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 09 分期 ============ -->
-<section class="ch" id="c9">
+<!-- ============ 11 分期 ============ -->
+<section class="ch" id="c11">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no honey">09</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
+    <div class="ch-head"><div class="ch-no honey">11</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
     <p class="lead">第一輪在現有 POC 原型上做個人的冒險與副本主循環，隊友先用示範資料。第二輪在試點用真的小隊打副本與對戰。第三輪開英文大陸與公會，國文和社會等題庫與版本備好再上。</p>
 
     <div class="phase">
@@ -1219,6 +1488,9 @@ footer .sig svg{width:38px;height:24px}
         <span class="no">第三輪 · 續走</span>
         <h4>四科與公會</h4>
         <ul>
+          <li>戰績、解鎖與公會魔王攻略會</li>
+          <li>每月徽章公開賽，先用數學大陸辦兩個月</li>
+          <li>世界地圖、點燈與守塔，先開北區數學</li>
           <li>副本依題庫達標順序開：英文、社會、國文。未達標的大陸先開任務卡</li>
           <li>一位老師名下所有小隊組成一個公會，老師是公會長</li>
           <li>魔王戰共同倒數、公會牆</li>
@@ -1229,7 +1501,7 @@ footer .sig svg{width:38px;height:24px}
       </div>
     </div>
 
-    <h3>六件要愛德華拍板的事</h3>
+    <h3>九件要愛德華拍板的事</h3>
     <div class="ask">
       <div><span class="q">1</span><div><b>怪與地區的命名調性</b><p>目前是「帥一點的可愛」，例：漏項獸、負號幽靈、根號谷。往帥調會更像動畫，往可愛調家長更放心。<em>蘇菲建議：維持現在這一格，試點看孩子怎麼叫牠們再修。</em></p></div></div>
       <div><span class="q">2</span><div><b>美術方向</b><p>用品牌的圓做出來的幾何怪（本稿），或手繪紙地圖風格。前者和現有品牌一致、成本低；後者更有冒險感，但要另開一套視覺系統。<em>蘇菲建議：第一輪用幾何怪，第二輪地圖再評估紙地圖。</em></p></div></div>
@@ -1237,6 +1509,9 @@ footer .sig svg{width:38px;height:24px}
       <div><span class="q">4</span><div><b>真人對戰預設開還是關</b><p>預設開，對戰氣氛最熱；預設關、匿名投票全隊同意才開，最安全，但可能很多隊一直打幽靈隊。<em>蘇菲建議：預設關，開季第一週匿名投票。看得出大家敢打，再改預設。</em></p></div></div>
       <div><span class="q">5</span><div><b>國英社要不要開真人小隊課</b><p>只做遊戲層的話，國英社的小隊沒有真人嚮導，由小陪帶隊、內容團隊審題、出題戰只用陷阱模板，可以放進 Plus 方案當留存。開真人課就要招三科老師、備三科版本，規模完全不同。<em>蘇菲建議：先只做遊戲層、放進 Plus，數學試點的續購率過了 50% 再決定。</em></p></div></div>
       <div><span class="q">6</span><div><b>等級叫「路線」還是「銅銀金」</b><p>你提過「同樣白銀級的隊伍對戰」。金屬名最直覺，但依診斷定段會變成能力分班的標籤，也和「金色＝收服」撞名。<em>蘇菲建議：用平原線、丘陵線這類路線名，開季一律從平原線出發，配對照樣是「同一條路線」，體驗和同級對戰一樣。</em></p></div></div>
+      <div><span class="q">7</span><div><b>公開賽用達標制還是名額制</b><p>你說的是「勝利的小隊拿到真的獎品」。名額制最熱血，但會變成排行榜，也最容易引來代答。<em>蘇菲建議：達標制，加上「全服目標」和「出題賞」補熱血感。先辦兩個月，看參賽率和複核退件率再決定。</em></p></div></div>
+      <div><span class="q">8</span><div><b>地圖用幻想大陸，還是台北市真實地圖</b><p>真實地圖認同感最強，但區域對不到章節、會暴露孩子住哪、明星學區會壓過其他區、換縣市要重畫。<em>蘇菲建議：主地圖用幻想大陸，真實地理只用來分北中南東四個聯賽區。</em></p></div></div>
+      <div><span class="q">9</span><div><b>個人排行榜要不要開</b><p>你提的「戰績越多排越前面」在隊伍榜和公會榜都做了。個人榜的證據是對前 20% 有用、對其他人反效果。<em>蘇菲建議：個人榜預設關、孩子自己開，只顯示稱號與隊名。試點看開榜比例再決定要不要放大。</em></p></div></div>
     </div>
   </div>
 </section>
