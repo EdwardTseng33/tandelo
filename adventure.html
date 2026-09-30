@@ -428,9 +428,10 @@ footer .sig svg{width:38px;height:24px}
       <a href="#c2"><span class="n">02</span>一趟遠征</a>
       <a href="#c3"><span class="n">03</span>小隊角色</a>
       <a href="#c4"><span class="n">04</span>成就與分享</a>
-      <a href="#c5"><span class="n">05</span>畫面</a>
-      <a href="#c6"><span class="n">06</span>護欄</a>
-      <a href="#c7"><span class="n">07</span>分期</a>
+      <a href="#c5"><span class="n">05</span>小隊對戰</a>
+      <a href="#c6"><span class="n">06</span>畫面</a>
+      <a href="#c7"><span class="n">07</span>護欄</a>
+      <a href="#c8"><span class="n">08</span>分期</a>
     </nav>
   </div>
 </header>
@@ -492,8 +493,8 @@ footer .sig svg{width:38px;height:24px}
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M12 20c0-3 3-5 6-5"/></svg></div>
         <div class="who">能一起</div>
-        <p class="say">家人見證、小隊整備、公會共同倒數。</p>
-        <p class="small">全部是合作與見證，沒有排名、沒有對戰。</p>
+        <p class="say">家人見證、小隊整備、小隊對戰、公會共同倒數。</p>
+        <p class="small">全部是合作與見證。對戰只在隊伍之間，沒有排名、沒有個人對戰。</p>
       </div>
     </div>
 
@@ -528,6 +529,7 @@ footer .sig svg{width:38px;height:24px}
           <tr class="hi"><th>已掌握（金色）</th><td data-l="冒險小隊的說法">收服：怪變成站在你身後的影子</td><td data-l="為什麼可以這樣講">收服是驗證過的事件，影子牆就是證據牆</td></tr>
           <tr class="hi"><th>之後又錯，回到練習清單</th><td data-l="冒險小隊的說法">影子睡著了，等你叫醒</td><td data-l="為什麼可以這樣講">不扣分、不消失，只是換一種狀態。這句話守住「金色不是永久等級」</td></tr>
           <tr><th>家長 LINE 週報</th><td data-l="冒險小隊的說法">營地來信</td><td data-l="為什麼可以這樣講">家長端內容不變：他學會了什麼、下週做什麼、今晚可以問他一句</td></tr>
+          <tr><th>第 4 週結業點前、第 7 週段考前</th><td data-l="冒險小隊的說法">小隊對戰：兩支同段位的隊伍互相出題</td><td data-l="為什麼可以這樣講">出題是「講給隊友聽」的進階版，只能拿自己收服過的怪出題，見第 05 章</td></tr>
           <tr><th>段考與段考對照</th><td data-l="冒險小隊的說法">魔王戰與戰報</td><td data-l="為什麼可以這樣講">段考本來就是八週的終點，前後對照就是戰報</td></tr>
           <tr><th>第 4 週結業點</th><td data-l="冒險小隊的說法">中途營地，可停可續</td><td data-l="為什麼可以這樣講">停止和續走一樣容易，是規劃書第七條原則</td></tr>
         </tbody>
@@ -691,10 +693,96 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 05 畫面 ============ -->
+<!-- ============ 05 小隊對戰 ============ -->
 <section class="ch" id="c5">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no">05</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
+    <div class="ch-head"><div class="ch-no honey">05</div><div><div class="kicker">小隊對戰</div><h2>隊伍對隊伍，出題對出題，個人不上擂台</h2></div></div>
+    <p class="lead">動畫裡最熱血的一幕是兩支隊伍對上。Tandelo 可以有，條件是<b>對戰的單位永遠是小隊，比的是出題和合作，不是誰算得快</b>。這一章把它設計成一期兩場的「模擬戰」，放在中途營地前和魔王戰前。</p>
+
+    <div class="callout">
+      <p><b>蕪菁頭先把數據擺出來。</b>國中生有 38.9% 怕因成績被看不起、42% 怕說錯話被截圖、19.2% 重度學習疲勞。這些數字反對的不是競爭，是「個人被看見輸」。所以規則只有一個方向：讓孩子被看見的是隊伍，隊伍被看見的是出的題有多好，而不是誰拖累了誰。</p>
+    </div>
+
+    <h3>一場對戰怎麼打</h3>
+    <ol class="steps">
+      <li><b>配對：同段位、同進度、不同嚮導的兩支隊伍。</b>段位看這一期全隊都收服的怪有幾隻：銅 1 到 2 隻、銀 3 到 4 隻、金 5 隻以上。段位是這一期的拓荒進度，期末歸零，不是永久等級。<span class="was">對應：<b>依卡點與段考日期湊隊</b>的同一套配對邏輯</span></li>
+      <li><b>出題：各隊從自己收服過的怪裡挑三隻，每隻出一題。</b>只能拿收服過的怪出題，因為出題要先懂牠怎麼騙人。全隊在遠征的合擊那一幕討論，書記寫下，嚮導審過才送出。<span class="was">對應：<b>講給隊友聽</b>的進階版，出題是最深的學會</span></li>
+      <li><b>作答：對方三題，全隊討論後交一個答案。</b>三天內完成，算在當天任務卡的一張裡，不加量。交的是隊伍的答案，沒有個人答案，所以沒有人「害全隊輸」。<span class="was">對應：<b>每日任務卡</b>與每天上限三張</span></li>
+      <li><b>結果：遠征日的整隊那一幕揭曉。</b>嚮導帶大家看對方出的題是哪隻怪、我們為什麼中招。兩隊各得一份對戰報告，只有兩隊和兩位嚮導看得到。<span class="was">對應：<b>整隊 5 分鐘</b>與嚮導的課前一頁</span></li>
+    </ol>
+
+    <h3>合作成績怎麼算</h3>
+    <div class="grid g3">
+      <div class="card honey">
+        <div class="who">答題分 · 三題</div>
+        <p class="say">隊伍的答案答對一題得一分。</p>
+        <p class="small">只有一個隊伍答案，所以只有隊伍得分。討論怎麼進行是隊伍自己的事，整備官負責確認每個人都看過題目。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">出題分 · 三題</div>
+        <p class="say">對方答錯，而且嚮導判定這題確實在考那隻怪，得一分。</p>
+        <p class="small">出一題只是難、不是在考那隻怪的，不算。這條讓孩子把力氣花在「怎麼騙人」而不是「怎麼刁難」。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">好題分 · 一分</div>
+        <p class="say">對方按下「這題出得好」，得一分。</p>
+        <p class="small">兩隊各只能按一次。這是唯一跨隊的互動動作，內容固定，不能自己打字。</p>
+      </div>
+    </div>
+    <p class="note">七分制，出題和作答一樣重。贏的隊伍在對戰報告上多一行「勝」，沒有積分榜、沒有連勝紀錄、沒有跨隊伍的排名。隊伍的戰績頁只列自己打過的每一場。</p>
+
+    <h3>一期兩場，都是魔王戰前的模擬戰</h3>
+    <div class="grid g2">
+      <div class="card">
+        <div class="who">第 4 週 · 中途營地前</div>
+        <p class="say">補洞期打完，先跟另一支隊伍對一場。</p>
+        <p class="small">用來檢查前三週收服的怪是不是真的收服了。對戰報告和結業點的「續走或先停」一起看。</p>
+      </div>
+      <div class="card">
+        <div class="who">第 7 週 · 魔王戰前</div>
+        <p class="say">段考前一週的對戰，題目全部對準這次段考範圍。</p>
+        <p class="small">段考週不加量的原則不變，所以作答放在第 7 週，第 8 週只做整隊與回顧。</p>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:22px;align-items:start">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:43</span><span>今天 2 / 3</span></div>
+          <span class="t">小隊對戰 · 第 4 週 · 銀段位</span>
+          <h5>星期三小隊出了三題，<br>我們一起答。</h5>
+          <div class="c">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-drop"/></svg></div><div><b>第 2 題 · 分解洞窟</b><small>對方拿平方差雙子出題</small></div></div>
+            <p style="margin-top:8px;font-family:var(--font-math)">9x² − 4 = ?</p>
+          </div>
+          <div class="c mint">
+            <b style="font-size:13px">隊伍討論 · 3 / 4 人看過</b>
+            <p class="fine" style="margin-top:4px">小安：我覺得是 (3x+2)(3x−2)<br>小晴：同意，一加一減<br>阿哲：等等，−4 是 2²，對</p>
+          </div>
+          <div class="grow"></div>
+          <span class="btn">交出隊伍的答案</span>
+          <span class="btn ghost">等小恩看過再交</span>
+          <p class="fine" style="text-align:center">交的是隊伍的答案。星期五遠征揭曉。</p>
+        </div></div>
+        <p class="phone-cap"><b>對戰卡</b>隊伍討論是結構化的：每人一句、只能對題目說話。示意畫面、資料為虛構。</p>
+      </div>
+      <div>
+        <div class="callout pine" style="margin-top:0">
+          <p><b>判讀：為什麼是出題戰，不是搶答戰。</b>搶答比的是速度，速度會把最慢的那個孩子曝光。出題比的是理解，而且只能拿收服過的怪出題，等於逼隊伍先把自己的影子叫醒一遍。研究上「學生自己出題」對理解的效果一直比多寫題穩定，這剛好和北極星同方向。</p>
+          <p>對戰的三天算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 08 章有這條驗證。</p>
+        </div>
+        <div class="callout gov">
+          <p><b>沙利曼：對戰多出兩條線。</b>一、跨隊的互動只有題目和「這題出得好」，題目一律經嚮導審過，隊伍討論只在隊內、每人一句。二、對戰報告不離開兩隊和兩位嚮導，公會牆只會出現「四葉小隊打了一場對戰」，不出現勝負，不出現對手。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 畫面 ============ -->
+<section class="ch" id="c6">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">06</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
     <p class="lead">色彩用品牌既有的珊瑚、松綠、蜂蜜金，怪用品牌的圓做出來，不用任何既有 IP 的視覺。<b>示意畫面、資料為虛構</b>。</p>
 
     <div class="phones">
@@ -795,10 +883,10 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 06 護欄 ============ -->
-<section class="ch" id="c6">
+<!-- ============ 07 護欄 ============ -->
+<section class="ch" id="c7">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no pine">06</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
+    <div class="ch-head"><div class="ch-no pine">07</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
     <p class="lead">規劃書的三條護欄與八條原則全部沿用。下面是遊戲化這一層額外加的界線，每一條都對應一個已知會出事的地方。</p>
 
     <div class="dodont">
@@ -810,6 +898,7 @@ footer .sig svg{width:38px;height:24px}
           <li>影子睡著不消失、不扣分，叫醒的日期寫在牆上。</li>
           <li>隊伍進度只顯示數量，不顯示誰還沒收服。</li>
           <li>隊友之間只有結構化動作：「等你」「我也卡過這一步」「你講的那次我聽懂了」。</li>
+          <li>對戰以隊伍為單位：出題經嚮導審過才送出、作答是全隊討論後交一個答案、結果只讓兩隊和兩位嚮導看到。</li>
           <li>分享由孩子主動按，卡上沒有臉、真名、分數、隊友狀態。</li>
           <li>任務卡每天最多三張，22:30 後不發、不亮、不推播，段考週不加量。</li>
           <li>角色每週輪換，由系統排、嚮導可調，不看程度。</li>
@@ -820,7 +909,7 @@ footer .sig svg{width:38px;height:24px}
           <h4>不做</h4>
           <li>個人經驗值、等級、能力點：任何和練習量掛勾的數字。</li>
           <li>會斷掉的個人連續天數與懲罰區。</li>
-          <li>排行榜、對戰、任何讓孩子和隊友比高低的畫面。</li>
+          <li>排行榜、個人對戰、跨隊伍的積分榜。小隊對戰只在第 05 章的四條規則下做。</li>
           <li>轉蛋、戰利品箱、隨機獎勵。</li>
           <li>未成年之間的自由文字聊天。</li>
           <li>晚上發任務、用「怪要逃走了」之類的焦慮句催練習。</li>
@@ -836,11 +925,11 @@ footer .sig svg{width:38px;height:24px}
   </div>
 </section>
 
-<!-- ============ 07 分期 ============ -->
-<section class="ch" id="c7">
+<!-- ============ 08 分期 ============ -->
+<section class="ch" id="c8">
   <div class="wrap">
-    <div class="ch-head"><div class="ch-no honey">07</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
-    <p class="lead">第一輪只動學生端與家長 LINE 的一個按鈕，在現有 POC 原型上就能做。第二輪要動小隊與老師流程。第三輪的公會等前兩輪的數字出來再說。</p>
+    <div class="ch-head"><div class="ch-no honey">08</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
+    <p class="lead">第一輪只動學生端與家長 LINE 的一個按鈕，在現有 POC 原型上就能做。第二輪要動小隊與老師流程，小隊對戰放在這一輪的最後。第三輪的公會等前兩輪的數字出來再說。</p>
 
     <div class="phase">
       <div class="card">
@@ -865,8 +954,9 @@ footer .sig svg{width:38px;height:24px}
           <li>四個角色每週輪替，進老師的課前一頁</li>
           <li>隊名、隊伍牆</li>
           <li>遠征六幕進老師端課堂流程</li>
+          <li>小隊對戰：第 4 週、第 7 週各一場，先用兩支隊伍試</li>
         </ul>
-        <div class="kpi"><b>驗證：</b>每團實際人數平均 ≥ 4.5；5 人隊每人每堂開口次數；隊伍稱號達成率</div>
+        <div class="kpi"><b>驗證：</b>每團實際人數平均 ≥ 4.5；5 人隊每人每堂開口次數；對戰週的練習天數不低於非對戰週；對戰後一週再測通過率不掉</div>
       </div>
       <div class="card">
         <span class="no">第三輪 · 續走</span>
@@ -881,11 +971,12 @@ footer .sig svg{width:38px;height:24px}
       </div>
     </div>
 
-    <h3>三件要愛德華拍板的事</h3>
+    <h3>四件要愛德華拍板的事</h3>
     <div class="ask">
       <div><span class="q">1</span><div><b>怪與地區的命名調性</b><p>目前是「帥一點的可愛」，例：漏項獸、負號幽靈、根號谷。往帥調會更像動畫，往可愛調家長更放心。<em>蘇菲建議：維持現在這一格，試點看孩子怎麼叫牠們再修。</em></p></div></div>
       <div><span class="q">2</span><div><b>美術方向</b><p>用品牌的圓做出來的幾何怪（本稿），或手繪紙地圖風格。前者和現有品牌一致、成本低；後者更有冒險感，但要另開一套視覺系統。<em>蘇菲建議：第一輪用幾何怪，第二輪地圖再評估紙地圖。</em></p></div></div>
       <div><span class="q">3</span><div><b>角色輪替要不要進第一輪</b><p>角色是小隊感的核心，但要動老師流程。<em>蘇菲建議：第一輪先在任務卡上「預告」角色（例：你這週是先鋒），真正輪替第二輪再上。</em></p></div></div>
+      <div><span class="q">4</span><div><b>小隊對戰的節奏與規模</b><p>一期兩場、每場只對一支隊伍，還是開放隊伍自己挑戰。前者可控、嚮導審題負擔小；後者熱鬧，但審題量與比較壓力都會上來。<em>蘇菲建議：試點只做一期兩場、系統配對，數字對了再開放挑戰。</em></p></div></div>
     </div>
   </div>
 </section>
