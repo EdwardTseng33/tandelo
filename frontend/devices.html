@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Tandelo 服務裝置與設計規劃書：每一種人用什麼裝置、在什麼情境、看到什麼、怎麼設計、技術怎麼撐。概念驗證用。">
+<meta name="color-scheme" content="light dark">
+<title>Tandelo 服務裝置與設計規劃書</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Ccircle cx='21' cy='20' r='18' fill='%23F26B54'/%3E%3Ccircle cx='43' cy='20' r='18' fill='%230E5F52'/%3E%3Cpath d='M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z' fill='%230D281B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&amp;family=Outfit:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+/* 主題：手動選擇 > 22:30–06:00 自動轉暗 > 系統設定。放在最前面避免閃爍。 */
+(function(){
+  try{
+    var saved=localStorage.getItem('tandelo-plan-theme');
+    if(saved==='light'||saved==='dark'){document.documentElement.setAttribute('data-theme',saved);return;}
+    var h=new Date().getHours(), m=new Date().getMinutes();
+    if(h>22||(h===22&&m>=30)||h<6){document.documentElement.setAttribute('data-theme','dark');}
+  }catch(e){}
+})();
+</script>
+<style>
+/* ---------- Token（Tandelo 品牌視覺規範 v1.0） ---------- */
+:root{
+  --pine:#0E5F52; --pine-deep:#0A463D; --ink:#0D2B26;
+  --coral:#F26B54; --coral-deep:#D9523C; --coral-soft:#FDE7E1;
+  --honey:#F4C24D; --honey-soft:#FBEBC0;
+  --oat:#F6F4EE; --mint:#DCEFE8; --sand:#ECE9E1; --line:#D9D5CA; --mute:#5E6B67; --white:#FFFFFF;
+  --overlap:#0D281B;
+  --av-1:#DCEFE8; --av-2:#F9D3C9; --av-3:#FBE7B2; --av-4:#C9DDF8; --av-5:#DDD2F6; --av-6:#CFEBDD;
+
+  --bg:var(--oat); --bg-alt:var(--sand); --surface:var(--white); --surface-2:#FBFAF7;
+  --text:var(--ink); --text-mute:var(--mute); --rule:var(--line);
+  --brand:var(--pine); --brand-fill:var(--pine); --on-brand:var(--white);
+  --stuck:var(--coral); --stuck-text:#B8412D; --stuck-bg:var(--coral-soft);
+  --learned-bg:var(--mint); --mastered:var(--honey); --mastered-text:#7A5A08; --mastered-bg:var(--honey-soft);
+  --band:var(--pine-deep); --on-band:var(--oat); --on-band-mute:#B9D3CB;
+  --chart-ink:var(--ink); --chart-mute:#7C8884; --chart-grid:#E3DFD3;
+  --focus:#0E5F52;
+  --shadow-soft:0 1px 2px rgba(13,43,38,.04),0 12px 32px -12px rgba(13,43,38,.14);
+  --shadow-lift:0 2px 4px rgba(13,43,38,.05),0 24px 48px -20px rgba(13,43,38,.22);
+
+  --font-sans:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-num:"Outfit","Noto Sans TC",system-ui,sans-serif;
+  --fs-body:15.5px; --lh-body:1.75;
+  --r-sm:12px; --r-btn:18px; --r-card:22px; --r-lg:26px; --r-pill:999px;
+  --ease:cubic-bezier(.2,.8,.2,1); --dur:.45s;
+  --gutter:clamp(16px,5vw,48px); --wrap:1120px; --measure:72ch;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1412; --bg-alt:#0F1917; --surface:#131D1A; --surface-2:#111A18;
+    --text:#EAF1EE; --text-mute:#9FB0AA; --rule:#1F2C28;
+    --brand:#7ED3C0; --brand-fill:#7ED3C0; --on-brand:#0C1412;
+    --stuck-text:#FF9A86; --stuck-bg:#3A1E18; --learned-bg:#16302A;
+    --mastered-text:#F4C24D; --mastered-bg:#332A12;
+    --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
+    --chart-ink:#EAF1EE; --chart-mute:#9FB0AA; --chart-grid:#243430;
+    --focus:#7ED3C0;
+    --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1412; --bg-alt:#0F1917; --surface:#131D1A; --surface-2:#111A18;
+  --text:#EAF1EE; --text-mute:#9FB0AA; --rule:#1F2C28;
+  --brand:#7ED3C0; --brand-fill:#7ED3C0; --on-brand:#0C1412;
+  --stuck-text:#FF9A86; --stuck-bg:#3A1E18; --learned-bg:#16302A;
+  --mastered-text:#F4C24D; --mastered-bg:#332A12;
+  --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
+  --chart-ink:#EAF1EE; --chart-mute:#9FB0AA; --chart-grid:#243430;
+  --focus:#7ED3C0;
+  --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+/* ---------- 基礎 ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:120px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *,*::before,*::after{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+@supports (overflow-x:clip){body{overflow-x:clip}}
+img,svg{display:block;max-width:100%}
+a{color:var(--brand);text-decoration:none;text-underline-offset:.2em}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{margin:0;color:var(--text);font-weight:900;letter-spacing:-.01em;line-height:1.25}
+h1,h2,.quote,.lead{text-wrap:balance}
+p{margin:0}
+ul,ol{margin:0;padding-left:1.4em}
+li+li{margin-top:.35em}
+strong{font-weight:700}
+.num,.n{font-family:var(--font-num);font-weight:600;font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:10px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:16px;top:-60px;background:var(--brand-fill);color:var(--on-brand);padding:10px 18px;border-radius:var(--r-btn);z-index:100;font-weight:700}
+.skip-link:focus{top:12px}
+.wrap{width:min(100% - 2*var(--gutter),var(--wrap));margin-inline:auto}
+
+/* ---------- 頂欄與目錄 ---------- */
+.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.top-row{display:flex;align-items:center;gap:14px;padding:12px 0 8px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--text);font-family:var(--font-num);font-weight:700;font-size:20px;letter-spacing:-.03em}
+.logo svg{width:38px;height:24px}
+.top-kicker{font-size:13px;color:var(--text-mute);margin-left:2px;font-weight:500}
+.spacer{flex:1}
+.theme-btn{border:0;background:var(--surface);color:var(--text);border-radius:var(--r-pill);padding:8px 14px;font-size:13px;font-weight:700;box-shadow:var(--shadow-soft);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.theme-btn .dot{width:12px;height:12px;border-radius:50%;background:var(--brand)}
+.toc{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;-ms-overflow-style:none;mask-image:linear-gradient(90deg,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent)}
+.toc::-webkit-scrollbar{display:none}
+.toc a{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--r-pill);font-size:13px;font-weight:700;color:var(--text-mute);background:transparent;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);white-space:nowrap}
+.toc a .n{font-size:12px;opacity:.75}
+.toc a:hover{background:var(--surface);text-decoration:none;color:var(--text)}
+.toc a.is-active{background:var(--brand-fill);color:var(--on-brand)}
+.toc a.is-active .n{opacity:1}
+
+/* ---------- Hero ---------- */
+.hero{padding:clamp(40px,8vw,96px) 0 clamp(32px,6vw,64px)}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.04em}
+.hero h1{font-size:clamp(32px,6.2vw,72px);line-height:1.1;margin:18px 0 22px;letter-spacing:-.02em;max-width:22ch}
+.hero h1 .accent{color:var(--stuck)}
+.hero .sub{font-size:clamp(17px,2.2vw,21px);color:var(--text-mute);max-width:40ch;line-height:1.6}
+.hero .meta{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--text-mute)}
+.hero .meta b{color:var(--text)}
+.duo{display:inline-block;width:56px;height:36px;vertical-align:middle}
+.howto{margin-top:34px;background:var(--surface);border-radius:var(--r-card);padding:20px 24px;box-shadow:var(--shadow-soft);max-width:70ch;font-size:14.5px;color:var(--text-mute)}
+.howto b{color:var(--text)}
+.tag{display:inline-block;padding:1px 9px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;margin-right:4px;vertical-align:1px}
+.tag.fact{background:var(--learned-bg);color:var(--brand)}
+.tag.est{background:var(--mastered-bg);color:var(--mastered-text)}
+.tag.pos{background:var(--stuck-bg);color:var(--stuck-text)}
+
+/* ---------- 章節 ---------- */
+.ch{padding:clamp(44px,7vw,88px) 0;position:relative}
+.ch+.ch::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(100% - 2*var(--gutter),var(--wrap));height:1px;background:var(--rule)}
+.ch-head{display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;margin-bottom:clamp(22px,4vw,40px)}
+.ch-no{font-family:var(--font-num);font-weight:700;font-size:clamp(54px,9vw,104px);line-height:.85;color:var(--stuck);letter-spacing:-.04em}
+.ch-no.pine{color:var(--brand)}
+.ch-no.honey{color:var(--mastered)}
+.ch-head h2{font-size:clamp(26px,4.2vw,44px);letter-spacing:-.02em}
+.ch-head .kicker{font-size:13.5px;font-weight:700;color:var(--text-mute);margin-bottom:6px;letter-spacing:.03em}
+@media (max-width:560px){.ch-head{grid-template-columns:1fr;gap:6px}.ch-no{font-size:56px}}
+.lead{font-size:clamp(17px,2vw,20px);line-height:1.6;max-width:var(--measure);color:var(--text);margin-bottom:28px}
+.lead b{color:var(--brand)}
+h3{font-size:clamp(19px,2.4vw,24px);margin:40px 0 14px}
+h3:first-of-type{margin-top:0}
+h4{font-size:16px;margin:22px 0 8px}
+.prose{max-width:var(--measure)}
+.prose p+p{margin-top:.9em}
+.prose ul,.prose ol{margin:.6em 0}
+.small{font-size:13.5px;color:var(--text-mute)}
+.src{display:inline-block;font-family:var(--font-num);font-weight:600;font-size:11.5px;color:var(--brand);background:var(--learned-bg);padding:0 7px;border-radius:var(--r-pill);vertical-align:.15em;margin-left:3px;line-height:1.6;white-space:nowrap}
+.src:hover{text-decoration:none;background:var(--brand-fill);color:var(--on-brand)}
+.note{font-size:13px;color:var(--text-mute);margin-top:12px;max-width:var(--measure)}
+
+/* ---------- 卡片、格線、數字 ---------- */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:900px){.g3,.g4,.g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+.card{background:var(--surface);border-radius:var(--r-card);padding:22px 24px;box-shadow:var(--shadow-soft)}
+.card h4{margin-top:0}
+.card.soft{background:var(--surface-2);box-shadow:none}
+.card.mint{background:var(--learned-bg);box-shadow:none}
+.card.coral{background:var(--stuck-bg);box-shadow:none}
+.card.honey{background:var(--mastered-bg);box-shadow:none}
+.card .who{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--text-mute);margin-bottom:8px}
+.card .say{font-size:17px;font-weight:700;line-height:1.5;margin-bottom:10px}
+.stat{background:var(--surface);border-radius:var(--r-card);padding:20px 22px;box-shadow:var(--shadow-soft)}
+.stat .v{font-family:var(--font-num);font-weight:700;font-size:clamp(30px,4vw,40px);line-height:1;letter-spacing:-.03em;color:var(--brand)}
+.stat .v.coral{color:var(--stuck-text)}
+.stat .v.honey{color:var(--mastered-text)}
+.stat .l{font-size:13.5px;font-weight:700;margin-top:8px}
+.stat .d{font-size:12.5px;color:var(--text-mute);margin-top:4px;line-height:1.5}
+.callout{border-radius:var(--r-lg);padding:24px 28px;margin:26px 0;background:var(--stuck-bg);position:relative;max-width:var(--measure)}
+.callout::before{content:"立場";position:absolute;top:-11px;left:22px;background:var(--stuck);color:#fff;font-size:12px;font-weight:900;padding:2px 12px;border-radius:var(--r-pill);letter-spacing:.06em}
+.callout.pine{background:var(--learned-bg)}
+.callout.pine::before{content:"判讀";background:var(--brand-fill);color:var(--on-brand)}
+.callout.honey{background:var(--mastered-bg)}
+.callout.honey::before{content:"誠實說";background:var(--mastered);color:#3B2A00}
+.callout p+p{margin-top:.7em}
+.quote{font-size:clamp(20px,3vw,30px);font-weight:900;line-height:1.35;letter-spacing:-.015em;max-width:26ch;margin:30px 0;padding-left:22px;border-left:5px solid var(--stuck);border-radius:3px}
+.quote.pine{border-color:var(--brand)}
+.band{background:var(--band);color:var(--on-band);border-radius:var(--r-lg);padding:clamp(24px,4vw,44px);margin:28px 0}
+.band h3,.band h4{color:var(--on-band);margin-top:0}
+.band .m{color:var(--on-band-mute)}
+.band .stat{background:rgba(255,255,255,.06);box-shadow:none}
+.band .stat .v{color:#7ED3C0}
+.band .stat .v.coral{color:#FFB3A3}
+.band .stat .v.honey{color:var(--honey)}
+.band .stat .l{color:var(--on-band)}
+.band .stat .d{color:var(--on-band-mute)}
+.pill{display:inline-block;padding:3px 12px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;background:var(--surface-2);color:var(--text-mute)}
+.pill.ok{background:var(--learned-bg);color:var(--brand)}
+.pill.warn{background:var(--stuck-bg);color:var(--stuck-text)}
+.pill.gold{background:var(--mastered-bg);color:var(--mastered-text)}
+.steps{counter-reset:s;display:grid;gap:12px}
+.steps>li{list-style:none;position:relative;padding:16px 18px 16px 62px;background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-soft);counter-increment:s}
+.steps>li::before{content:counter(s);position:absolute;left:18px;top:16px;width:32px;height:32px;border-radius:50%;background:var(--brand-fill);color:var(--on-brand);font-family:var(--font-num);font-weight:700;display:grid;place-items:center;font-size:15px}
+.steps>li b{display:block;font-size:16px;margin-bottom:3px}
+.steps>li+li{margin-top:0}
+
+/* ---------- 表格（手機轉卡片） ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;background:var(--surface);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--shadow-soft)}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:12px 14px;border-top:1px solid var(--rule)}
+.tbl thead th{border-top:0;background:var(--surface-2);font-size:12.5px;letter-spacing:.04em;color:var(--text-mute);font-weight:700}
+.tbl tbody th{font-weight:700;color:var(--text)}
+.tbl td.n,.tbl th.n{font-family:var(--font-num);font-weight:600;white-space:nowrap}
+.tbl tr.hi td,.tbl tr.hi th{background:var(--learned-bg)}
+.tbl tr.warn td,.tbl tr.warn th{background:var(--stuck-bg)}
+.tbl-wrap{margin:14px 0}
+@media (max-width:760px){
+  .tbl.cards thead{display:none}
+  .tbl.cards,.tbl.cards tbody,.tbl.cards tr,.tbl.cards td,.tbl.cards th{display:block}
+  .tbl.cards tr{padding:10px 16px 14px;border-top:1px solid var(--rule)}
+  .tbl.cards tr:first-child{border-top:0}
+  .tbl.cards td,.tbl.cards th{border:0;padding:5px 0}
+  .tbl.cards tbody th{font-size:16px;padding-bottom:6px}
+  .tbl.cards td::before{content:attr(data-l);display:block;font-size:11.5px;font-weight:700;color:var(--text-mute);letter-spacing:.05em;margin-bottom:1px}
+  .tbl.cards td:not([data-l])::before{content:none}
+  .tbl.cards td.n{white-space:normal}
+}
+
+/* ---------- 圖表 ---------- */
+.fig{background:var(--surface);border-radius:var(--r-lg);padding:clamp(16px,3vw,28px);box-shadow:var(--shadow-soft);margin:18px 0}
+.fig figcaption{font-size:13px;color:var(--text-mute);margin-top:12px;line-height:1.6}
+.fig figcaption b{color:var(--text)}
+.fig svg{width:100%;height:auto;font-family:var(--font-num);font-weight:600}
+.fig svg .lab{font-family:var(--font-sans);font-weight:700}
+.fig svg .t{fill:var(--chart-ink)}
+.fig svg .m{fill:var(--chart-mute)}
+.fig svg .grid{stroke:var(--chart-grid);stroke-width:1.5}
+.fig svg .ax{stroke:var(--chart-mute);stroke-width:2}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px;margin-top:14px;font-size:13.5px}
+.legend li{list-style:none;display:flex;gap:10px;align-items:flex-start;margin:0}
+.legend .k{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-num);font-weight:700;font-size:13px;color:#fff;background:var(--pine)}
+.legend .k.c{background:var(--coral)}
+.legend .k.h{background:var(--honey);color:#3B2A00}
+.legend .k.g{background:#8A9793}
+.legend .k.t{background:var(--ink);color:#fff;outline:3px solid var(--coral);outline-offset:-3px}
+:root[data-theme="dark"] .legend .k.t{background:#EAF1EE;color:#0C1412}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .legend .k.t{background:#EAF1EE;color:#0C1412}}
+.legend b{display:block}
+.legend span{color:var(--text-mute);font-size:12.5px}
+
+/* ---------- 來源 ---------- */
+.srcs{columns:2;column-gap:32px;font-size:13px;line-height:1.55;color:var(--text-mute)}
+@media (max-width:760px){.srcs{columns:1}}
+.srcs h4{column-span:all;margin:22px 0 8px;font-size:14px;color:var(--text)}
+.srcs ol{padding-left:0;list-style:none}
+.srcs li{break-inside:avoid;margin:0 0 9px;padding-left:44px;position:relative}
+.srcs li .no{position:absolute;left:0;top:0;font-family:var(--font-num);font-weight:700;color:var(--brand);background:var(--learned-bg);padding:0 7px;border-radius:var(--r-pill);font-size:11.5px;line-height:1.7}
+.srcs li b{color:var(--text);font-weight:700}
+.srcs a{word-break:break-all;color:var(--brand)}
+.srcs li:target{background:var(--mastered-bg);border-radius:12px;padding:6px 8px 6px 50px}
+.srcs li:target .no{left:8px;top:7px}
+
+/* ---------- 頁尾 ---------- */
+footer{padding:48px 0 64px;color:var(--text-mute);font-size:13.5px}
+footer .sig{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:700;margin-bottom:10px}
+footer .sig svg{width:38px;height:24px}
+.back-top{display:inline-block;margin-top:14px;font-weight:700}
+
+/* ---------- 本書追加（沿用同一組 token） ---------- */
+.tbl a,.prose a{overflow-wrap:anywhere;word-break:break-word}
+.tbl td,.tbl th{overflow-wrap:break-word}
+@media (min-width:761px){.tbl tbody th{min-width:5.5em}.tbl td{min-width:4.5em}}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--surface-2);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+.fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig-scroll svg{min-width:620px}
+.fig svg .surf{fill:var(--surface-2)} .fig svg .card{fill:var(--surface)} .fig svg .bgf{fill:var(--bg-alt)}
+.fig svg .ln{stroke:var(--rule);stroke-width:1.5;fill:none}
+.fig svg .pine{fill:var(--pine)} .fig svg .coral{fill:var(--coral)} .fig svg .honey{fill:var(--honey)}
+.fig svg .ring{fill:none;stroke:var(--coral);stroke-width:3}
+.fig svg .brandt{fill:var(--brand)}
+.prose-wide p{max-width:var(--measure);margin:.7em 0}
+.ch ul,.ch ol{max-width:var(--measure)}
+.ch li{margin:.3em 0}
+.tbl-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到內容</a>
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <a class="logo" href="#top" aria-label="Tandelo 回到最上面">
+        <svg viewBox="0 0 64 40" aria-hidden="true"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></svg>
+        Tandelo <span class="top-kicker">裝置與設計規劃書</span>
+      </a>
+      <span class="spacer"></span>
+      <button class="theme-btn" id="themeBtn" type="button" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span id="themeLabel">自動</span></button>
+    </div>
+    <nav class="toc" aria-label="章節目錄" id="toc">
+      <a href="#c1"><span class="n">01</span>總覽</a>
+      <a href="#c2"><span class="n">02</span>裝置平台</a>
+      <a href="#c3"><span class="n">03</span>教室</a>
+      <a href="#c4"><span class="n">04</span>手機</a>
+      <a href="#c5"><span class="n">05</span>家長 LINE</a>
+      <a href="#c6"><span class="n">06</span>老師端</a>
+      <a href="#c7"><span class="n">07</span>設計系統</a>
+      <a href="#c8"><span class="n">08</span>畫面清單</a>
+      <a href="#c9"><span class="n">09</span>技術架構</a>
+      <a href="#c10"><span class="n">10</span>里程碑</a>
+      <a href="#c11"><span class="n">11</span>待拍板</a>
+      <a href="#c12"><span class="n">12</span>來源</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<div id="top"></div>
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><svg class="duo" viewBox="0 0 64 40" aria-hidden="true" style="width:34px;height:22px"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></svg>服務裝置與設計規劃書 · 版本 1.0 · 2026-10-01</p>
+    <h1>每一種人，一個主場<br><span class="accent">上課在大螢幕，練習在手機，家長在 LINE。</span></h1>
+    <p class="sub">每一種人用什麼裝置、在什麼情境、看到什麼、怎麼設計、技術怎麼撐。搭配《Tandelo 產品規劃書》閱讀，完整到可以直接交給設計與工程開工。</p>
+    <div class="meta"><span>既定方向：<b>網頁與 PWA 優先</b>、不先做原生 App</span><span>示範資料與人物一律虛構</span></div>
+    <div class="howto">
+      <b>讀法</b>：
+      <span class="tag fact">事實</span>＝官網公開定價或平台文件（附網址與查詢日）；
+      <span class="tag est">推估</span>＝本書換算，會寫算式；
+      <span class="tag pos">立場</span>＝本書的判斷。查不到的直接寫「查不到」。
+    </div>
+  </div>
+</section>
+<section class="ch" id="c1">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no pine">01</div><div><div class="kicker">一頁總覽：角色 × 裝置 × 情境 × 時段</div><h2>上課在大螢幕，練習在手機，家長在 LINE，老師在桌機</h2></div></div>
+<div class="prose-wide">
+<p><b>一句話</b>：上課在大螢幕，練習在手機，家長在 LINE，老師在桌機。四種人各只有一個主場，不要求任何人為了 Tandelo 多裝一個 App。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">角色</th><th scope="col">主要裝置</th><th scope="col">次要裝置</th><th scope="col">情境</th><th scope="col">時段</th><th scope="col">看到什麼</th><th scope="col">不做什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">學生（上課）</th><td data-l="主要裝置">iPad 或電腦瀏覽器（橫向）</td><td data-l="次要裝置">手機當「紙本鏡頭」</td><td data-l="情境">每週一堂 50 分鐘小隊課</td><td data-l="時段">平日 20:30–21:20；週末白天</td><td data-l="看到什麼">白板、老師、隊友小格、六段進度</td><td data-l="不做什麼">不用手機當主畫面上課（只當備援）</td></tr>
+<tr><th scope="row">學生（課與課之間）</th><td data-l="主要裝置">手機（直向，PWA）</td><td data-l="次要裝置">平板也可</td><td data-l="情境">拍題、說給我聽、每日練習、再測、卡點地圖</td><td data-l="時段">平日 21:00–22:30 的 10–20 分鐘；通勤與下課零碎時間</td><td data-l="看到什麼">今天的兩件事、小陪、卡點地圖</td><td data-l="不做什麼">22:30 後不出聲、不推播</td></tr>
+<tr><th scope="row">家長</th><td data-l="主要裝置">LINE（手機）</td><td data-l="次要裝置">無</td><td data-l="情境">每週一則週報、成班與扣款通知、段考對照</td><td data-l="時段">20:00–21:30</td><td data-l="看到什麼">Flex 卡片＋一個按鈕</td><td data-l="不做什麼">不裝 App、不看排名、不聽孩子錄音</td></tr>
+<tr><th scope="row">老師（教學與備課）</th><td data-l="主要裝置">桌機或筆電（1280 以上）</td><td data-l="次要裝置">外接手寫板或 iPad 當第二螢幕</td><td data-l="情境">課前一頁、上課控場、課後紀錄、收入</td><td data-l="時段">課前一晚 10 分鐘；上課 50 分鐘；課後 30 秒</td><td data-l="看到什麼">接班卡、課前一頁、教室控制台</td><td data-l="不做什麼">不在手機上課</td></tr>
+<tr><th scope="row">老師（提醒與接班）</th><td data-l="主要裝置">手機</td><td data-l="次要裝置">無</td><td data-l="情境">有新小隊可接、明天課前一頁好了、代課邀請</td><td data-l="時段">08:00–22:00（勿擾 22:00–08:00）</td><td data-l="看到什麼">一張卡、一個按鈕</td><td data-l="不做什麼">不在手機備課與出帳對帳</td></tr>
+<tr><th scope="row">營運（試點）</th><td data-l="主要裝置">桌機</td><td data-l="次要裝置">無</td><td data-l="情境">湊隊、安全事件分級、再測抽查</td><td data-l="時段">上班時段＋課堂時段值班</td><td data-l="看到什麼">後台清單</td><td data-l="不做什麼">不在本書範圍，只列資料介面</td></tr>
+</tbody></table></div>
+<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 680 400" role="img" aria-labelledby="mxt mxd">
+<title id="mxt">角色與裝置矩陣</title>
+<desc id="mxd">學生上課的主場是平板與電腦，手機是備援與紙本鏡頭；學生課與課之間的主場是手機，平板可用；家長只在 LINE；老師教學與備課的主場是電腦，平板當手寫第二螢幕；老師的提醒與接班在手機。</desc>
+<text class="t lab" x="250" y="34" font-size="15" text-anchor="middle">手機</text>
+<text class="t lab" x="370" y="34" font-size="15" text-anchor="middle">平板</text>
+<text class="t lab" x="490" y="34" font-size="15" text-anchor="middle">電腦</text>
+<text class="t lab" x="610" y="34" font-size="15" text-anchor="middle">LINE</text>
+<line class="ln" x1="16" y1="50" x2="664" y2="50"/>
+<text class="t lab" x="16" y="83" font-size="15">學生 · 上課</text><text class="m" x="16" y="101" font-size="12" style="font-family:var(--font-sans);font-weight:400">每週 50 分鐘小隊課</text>
+<circle class="ring" cx="250" cy="86" r="11"/>
+<circle class="pine" cx="370" cy="86" r="17"/>
+<circle class="pine" cx="490" cy="86" r="17"/>
+<line class="ln" x1="603" y1="86" x2="617" y2="86"/>
+<line class="ln" x1="16" y1="115" x2="664" y2="115" stroke-dasharray="3 6"/>
+<text class="t lab" x="16" y="141" font-size="15">學生 · 課與課之間</text><text class="m" x="16" y="159" font-size="12" style="font-family:var(--font-sans);font-weight:400">拍題、說給我聽、練習、再測</text>
+<circle class="pine" cx="250" cy="144" r="17"/>
+<circle class="ring" cx="370" cy="144" r="11"/>
+<line class="ln" x1="483" y1="144" x2="497" y2="144"/>
+<line class="ln" x1="603" y1="144" x2="617" y2="144"/>
+<line class="ln" x1="16" y1="173" x2="664" y2="173" stroke-dasharray="3 6"/>
+<text class="t lab" x="16" y="199" font-size="15">家長</text><text class="m" x="16" y="217" font-size="12" style="font-family:var(--font-sans);font-weight:400">每週一則週報</text>
+<line class="ln" x1="243" y1="202" x2="257" y2="202"/>
+<line class="ln" x1="363" y1="202" x2="377" y2="202"/>
+<line class="ln" x1="483" y1="202" x2="497" y2="202"/>
+<circle class="pine" cx="610" cy="202" r="17"/>
+<line class="ln" x1="16" y1="231" x2="664" y2="231" stroke-dasharray="3 6"/>
+<text class="t lab" x="16" y="257" font-size="15">老師 · 教學與備課</text><text class="m" x="16" y="275" font-size="12" style="font-family:var(--font-sans);font-weight:400">課前一頁、控場、收入</text>
+<line class="ln" x1="243" y1="260" x2="257" y2="260"/>
+<circle class="ring" cx="370" cy="260" r="11"/>
+<circle class="pine" cx="490" cy="260" r="17"/>
+<line class="ln" x1="603" y1="260" x2="617" y2="260"/>
+<line class="ln" x1="16" y1="289" x2="664" y2="289" stroke-dasharray="3 6"/>
+<text class="t lab" x="16" y="315" font-size="15">老師 · 提醒與接班</text><text class="m" x="16" y="333" font-size="12" style="font-family:var(--font-sans);font-weight:400">一張卡、一顆按鈕</text>
+<circle class="pine" cx="250" cy="318" r="17"/>
+<line class="ln" x1="363" y1="318" x2="377" y2="318"/>
+<line class="ln" x1="483" y1="318" x2="497" y2="318"/>
+<line class="ln" x1="603" y1="318" x2="617" y2="318"/>
+<circle class="pine" cx="26" cy="376" r="9"/><text class="m" x="42" y="381" font-size="13" style="font-family:var(--font-sans)">主場</text><circle class="ring" cx="110" cy="376" r="8"/><text class="m" x="126" y="381" font-size="13" style="font-family:var(--font-sans)">可用或備援（含等值路徑）</text><line class="ln" x1="318" y1="376" x2="332" y2="376"/><text class="m" x="342" y="381" font-size="13" style="font-family:var(--font-sans)">不提供</text>
+</svg></div><figcaption><b>圖 1｜角色 × 裝置矩陣。</b>實心圓是主場：每種情境只有一個主場（學生上課是平板或電腦擇一）。空心圓是等值路徑或備援，不是次等方案。</figcaption></figure>
+<p><b>一週的節奏（以平日場為例）</b></p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">時間點</th><th scope="col">學生</th><th scope="col">家長</th><th scope="col">老師</th></tr></thead>
+<tbody>
+<tr><th scope="row">課前一晚 20:00</th><td data-l="學生">手機：課前自己試一題（3 分鐘）</td><td data-l="家長">無</td><td data-l="老師">桌機／手機：課前一頁待確認</td></tr>
+<tr><th scope="row">上課日 20:20</th><td data-l="學生">平板／電腦：裝置檢查、進等候室</td><td data-l="家長">無</td><td data-l="老師">桌機：進教室、看這一隊的三題</td></tr>
+<tr><th scope="row">20:30–21:20</th><td data-l="學生">六段小隊課</td><td data-l="家長">無</td><td data-l="老師">控場</td></tr>
+<tr><th scope="row">21:20–21:25</th><td data-l="學生">手機：今晚不再有功課的確認畫面</td><td data-l="家長">無</td><td data-l="老師">桌機：30 秒語音紀錄</td></tr>
+<tr><th scope="row">上課日 21:30 前</th><td data-l="學生">無</td><td data-l="家長">LINE：第一堂當晚一定送；之後每週一則</td><td data-l="老師">確認週報草稿（可一鍵送出）</td></tr>
+<tr><th scope="row">隔天起</th><td data-l="學生">手機：第一題就是老師語音講的那個卡點</td><td data-l="家長">無</td><td data-l="老師">無</td></tr>
+<tr><th scope="row">第 7–12 天</th><td data-l="學生">手機：無提示再測</td><td data-l="家長">LINE：金色那一格出現在下一則週報</td><td data-l="老師">桌機：學生狀態更新</td></tr>
+</tbody></table></div>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c2">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no ">02</div><div><div class="kicker">裝置與平台決策</div><h2>不要求任何人為了 Tandelo 多裝一個 App</h2></div></div>
+<div class="prose-wide">
+<h3>2.1 Web／PWA 優先的理由<span class="tag pos">立場</span></h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">理由</th><th scope="col">說明</th></tr></thead>
+<tbody>
+<tr><th scope="row">進教室零安裝</th><td data-l="說明">家長付款後孩子點連結就能上課；第一堂前要先過 App 商店審核、家長密碼、儲存空間三關，會直接吃掉成班率</td></tr>
+<tr><th scope="row">一份程式碼撐四種裝置</th><td data-l="說明">試點只有 3 週建置期；iPad、Chromebook、Windows 筆電、Android 平板都是瀏覽器</td></tr>
+<tr><th scope="row">需要的能力瀏覽器都有</th><td data-l="說明">相機、麥克風、WebRTC、Pointer Events（手寫筆壓感）、Service Worker、Web Push 皆已是標準</td></tr>
+<tr><th scope="row">兒少 App 上架門檻</th><td data-l="說明">以未成年人為對象的原生 App 有額外審核與年齡分級要求，POC 與試點階段不值得先付這個成本</td></tr>
+<tr><th scope="row">更新不用等審核</th><td data-l="說明">試點每週都會改規則與文案</td></tr>
+</tbody></table></div>
+<p><b>代價與對策</b>：iOS 的網頁推播只有「加入主畫面」的 PWA 才收得到（iOS 16.4 起，<span class="tag fact">事實</span>WebKit 公告），國中生未必會加。對策是把提醒設計成「不靠推播也成立」：見 4.6 通知策略與第 11 章第 3 題。什麼訊號出現才做原生 App，見第 10 章。</p>
+<h3>2.2 各功能需要的裝置能力</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">功能</th><th scope="col">相機</th><th scope="col">麥克風</th><th scope="col">通知</th><th scope="col">手寫</th><th scope="col">視訊</th><th scope="col">離線</th><th scope="col">備註</th></tr></thead>
+<tbody>
+<tr><th scope="row">小隊課教室</th><td data-l="相機">選用（可不開鏡頭）</td><td data-l="麥克風">必要</td><td data-l="通知">課前 10 分鐘提醒</td><td data-l="手寫">建議（筆或手指）</td><td data-l="視訊">收老師畫面必要</td><td data-l="離線">否</td><td data-l="備註">允許只開麥</td></tr>
+<tr><th scope="row">拍題問小陪</th><td data-l="相機">必要（後鏡頭）</td><td data-l="麥克風">選用</td><td data-l="通知">否</td><td data-l="手寫">選用（圈出寫到哪）</td><td data-l="視訊">否</td><td data-l="離線">可排隊稍後送</td><td data-l="備註">拍完先在本機壓縮</td></tr>
+<tr><th scope="row">說給我聽 30 秒</th><td data-l="相機">否</td><td data-l="麥克風">必要</td><td data-l="通知">否</td><td data-l="手寫">否</td><td data-l="視訊">否</td><td data-l="離線">可先錄、連線後送</td><td data-l="備註">錄音不留原檔</td></tr>
+<tr><th scope="row">每日練習／再測</th><td data-l="相機">否</td><td data-l="麥克風">否</td><td data-l="通知">每日一則（可關）</td><td data-l="手寫">選用（草稿區）</td><td data-l="視訊">否</td><td data-l="離線">可（題目預先快取）</td><td data-l="備註">再測不給提示</td></tr>
+<tr><th scope="row">卡點地圖</th><td data-l="相機">否</td><td data-l="麥克風">否</td><td data-l="通知">否</td><td data-l="手寫">否</td><td data-l="視訊">否</td><td data-l="離線">可（唯讀）</td><td data-l="備註">珊瑚→松綠→金</td></tr>
+<tr><th scope="row">家長週報</th><td data-l="相機">否</td><td data-l="麥克風">否</td><td data-l="通知">LINE 推播</td><td data-l="手寫">否</td><td data-l="視訊">否</td><td data-l="離線">LINE 內建</td><td data-l="備註">只有 LINE</td></tr>
+<tr><th scope="row">段考考卷上傳</th><td data-l="相機">必要</td><td data-l="麥克風">否</td><td data-l="通知">否</td><td data-l="手寫">否</td><td data-l="視訊">否</td><td data-l="離線">否</td><td data-l="備註">家長在 LINE 內開網頁拍</td></tr>
+<tr><th scope="row">老師教室控制</th><td data-l="相機">必要</td><td data-l="麥克風">必要</td><td data-l="通知">否</td><td data-l="手寫">必要（手寫板或 iPad）</td><td data-l="視訊">送出必要</td><td data-l="離線">否</td><td data-l="備註">建議有線網路與耳機</td></tr>
+<tr><th scope="row">老師課後語音</th><td data-l="相機">否</td><td data-l="麥克風">必要</td><td data-l="通知">否</td><td data-l="手寫">否</td><td data-l="視訊">否</td><td data-l="離線">可先錄</td><td data-l="備註">30 秒</td></tr>
+</tbody></table></div>
+<h3>2.3 最低規格與網路</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">項目</th><th scope="col">學生上課</th><th scope="col">學生手機</th><th scope="col">老師</th></tr></thead>
+<tbody>
+<tr><th scope="row">裝置</th><td data-l="學生上課">iPad（第 6 代以上，iPadOS 16.4 以上）；Windows／macOS 筆電；Chromebook（記憶體 4GB 以上）；Android 平板（Android 10 以上、記憶體 3GB 以上）</td><td data-l="學生手機">iPhone（iOS 16.4 以上）；Android 10 以上</td><td data-l="老師">桌機或筆電，1280×720 以上，近五年機種</td></tr>
+<tr><th scope="row">瀏覽器</th><td data-l="學生上課">Safari 16.4 以上、Chrome／Edge 近兩個大版本</td><td data-l="學生手機">同左</td><td data-l="老師">Chrome／Edge 近兩個大版本（Safari 列為可用、不優先測）</td></tr>
+<tr><th scope="row">螢幕</th><td data-l="學生上課">寬 768 以上；橫向</td><td data-l="學生手機">寬 360 以上</td><td data-l="老師">寬 1280 以上，建議雙螢幕</td></tr>
+<tr><th scope="row">網路（一般）</th><td data-l="學生上課">下行 2 Mbps、上行 0.6 Mbps<span class="tag est">推估</span>老師 720p 約 1.2 Mbps＋5 格小畫面各約 0.15 Mbps </td><td data-l="學生手機">4G 即可</td><td data-l="老師">下行 4 Mbps、上行 2 Mbps，建議有線</td></tr>
+<tr><th scope="row">網路（低頻寬模式）</th><td data-l="學生上課">下行 0.3 Mbps：只收聲音與白板</td><td data-l="學生手機">圖片壓到長邊 1600、約 300KB</td><td data-l="老師">不提供（老師網路不足就換代課）</td></tr>
+<tr><th scope="row">周邊</th><td data-l="學生上課">耳機（強烈建議，避免回音與家人聲音入麥）</td><td data-l="學生手機">無</td><td data-l="老師">耳機必要；手寫板或 iPad 擇一</td></tr>
+</tbody></table></div>
+<p>這些是設計基準，不是實測結果；試點第 1 週用「裝置檢查」頁實收每一戶的數字再修（第 10 章）。</p>
+<h3>2.4 低頻寬模式</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">觸發</th><th scope="col">行為</th><th scope="col">孩子看到什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">連續 5 秒下行估計低於 1 Mbps，或封包遺失高於 8%</th><td data-l="行為">先關隊友小格影像（改成色圓）→ 老師畫面降到 180p → 再不行只留聲音＋白板</td><td data-l="孩子看到什麼">右上一顆珊瑚小點＋一句「網路有點慢，我先幫你顧聲音和白板」</td></tr>
+<tr><th scope="row">手動</th><td data-l="行為">設定裡「省流量上課」</td><td data-l="孩子看到什麼">同上，不自動回復</td></tr>
+<tr><th scope="row">網路恢復 15 秒</th><td data-l="行為">逐級回復</td><td data-l="孩子看到什麼">小點消失，不跳提示</td></tr>
+</tbody></table></div>
+<p>白板走資料通道（每秒數 KB），是最後才會斷的東西；所以<b>白板是教室的主角，視訊是配角</b>，這個優先序同時決定了版面（第 3 章）。</p>
+<h3>2.5 iPad 手寫筆、Android 平板與 Chromebook</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">裝置</th><th scope="col">手寫</th><th scope="col">設計處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">iPad＋手寫筆</th><td data-l="手寫">Pointer Events 的 pen 型別、壓感與傾斜；偵測到筆之後，手指改成移動畫布（防手掌誤觸）</td><td data-l="設計處理">筆畫延遲目標 30 毫秒內；工具列放在慣用手的對側（可左右切換）</td></tr>
+<tr><th scope="row">iPad 無筆</th><td data-l="手寫">手指書寫</td><td data-l="設計處理">筆畫自動平滑加粗；提供「放大寫字框」：在下方大格子寫，縮小貼到白板</td></tr>
+<tr><th scope="row">Android 平板</th><td data-l="手寫">多數無壓感筆</td><td data-l="設計處理">同「iPad 無筆」；Chrome 視訊解碼較吃力時自動限制為 4 格小畫面</td></tr>
+<tr><th scope="row">Chromebook</th><td data-l="手寫">觸控板或觸控螢幕</td><td data-l="設計處理">預設開「紙本鏡頭」路徑（見 2.6）；鍵盤可輸入數學式（分數、次方、根號的簡寫）</td></tr>
+<tr><th scope="row">筆電無觸控</th><td data-l="手寫">滑鼠</td><td data-l="設計處理">同 Chromebook</td></tr>
+</tbody></table></div>
+<h3>2.6 沒有平板的家庭怎麼辦<span class="tag pos">立場</span>不能讓裝置變成成班門檻 </h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">家裡有什麼</th><th scope="col">路徑</th><th scope="col">等值性</th></tr></thead>
+<tbody>
+<tr><th scope="row">筆電或桌機（無觸控）</th><td data-l="路徑">電腦上課＋<b>手機當紙本鏡頭</b>：在紙上算，手機掃教室畫面上的配對圖碼，按一下就把紙本算式貼上自己的白板頁</td><td data-l="等值性">與手寫平板等值；老師看到的是同一格</td></tr>
+<tr><th scope="row">只有手機</th><td data-l="路徑">手機上課（直向）：白板全幅、老師小窗、隊友是一排圓點；寫在紙上，用同一支手機「拍我的算式」</td><td data-l="等值性">可上課，但「自己試試」時要切換拍照；試點記錄這群孩子的開口次數與完成率是否較低</td></tr>
+<tr><th scope="row">手機是家長的</th><td data-l="路徑">排週末白天場；上課連結可由家長 LINE 一鍵開啟瀏覽器</td><td data-l="等值性">同上</td></tr>
+<tr><th scope="row">都沒有或網路不穩</th><td data-l="路徑">試點備出借平板（數量待拍板，第 11 章第 5 題）；行動網路不足時自動走低頻寬模式</td><td data-l="等值性">等值</td></tr>
+</tbody></table></div>
+<p>紙本路徑不是次等方案：國中段考是紙筆作答，在紙上算、拍上來，反而最接近考場。文案一律寫「用紙也可以」，不寫「如果你沒有平板」。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c3">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no honey">03</div><div><div class="kicker">教室（核心）</div><h2>白板是主角，視訊是配角；隊友是圓，不是臉</h2></div></div>
+<div class="prose-wide">
+<h3>3.1 版面原則</h3>
+<ol><li><b>白板佔七成</b>。孩子的注意力應該在題目與算式，不是在別人的臉。</li><li><b>隊友是圓，不是臉</b>。預設顯示六色頭像圓；開鏡頭是選項，不開不扣分、不提示。說話的人，圓的外圈會呼吸。</li><li><b>永遠知道現在是第幾段、還剩多久</b>。六段進度條固定在底部，是整堂課的節拍器。</li><li><b>一個畫面一個主要動作</b>。每一段只有一顆主要按鈕（例如「我寫好了」「換我講」）。</li><li><b>老師的控制不出現在學生畫面上</b>。學生只看到結果（例如被分到小組），看不到誰被靜音、誰被點名的操作過程。</li></ol>
+<h3>3.2 寬版版面（1280 與 1024 橫向）</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">區域</th><th scope="col">位置與尺寸</th><th scope="col">內容</th><th scope="col">互動</th></tr></thead>
+<tbody>
+<tr><th scope="row">頂列</th><td data-l="位置與尺寸">高 48</td><td data-l="內容">小隊名、第幾週、段考倒數、連線狀態小點</td><td data-l="互動">點連線小點看網路與裝置</td></tr>
+<tr><th scope="row">白板區</th><td data-l="位置與尺寸">左側，約 72% 寬</td><td data-l="內容">共用白板；「自己試試」時換成我的那一頁</td><td data-l="互動">筆、橡皮擦、移動、拍紙本貼上、復原</td></tr>
+<tr><th scope="row">老師視訊</th><td data-l="位置與尺寸">右欄最上，16:9</td><td data-l="內容">老師畫面；老師沒開鏡頭時顯示兩個圓</td><td data-l="互動">點一下放大成半版（只影響自己）</td></tr>
+<tr><th scope="row">隊友小格</th><td data-l="位置與尺寸">右欄中段，2 欄 × 3 列</td><td data-l="內容">六色圓＋名字；說話時外圈呼吸；舉手時圓往上浮</td><td data-l="互動">無（不能私訊、不能互相靜音）</td></tr>
+<tr><th scope="row">小陪</th><td data-l="位置與尺寸">右欄最下，一行高</td><td data-l="內容">兩個圓＋一句話；整堂課最多出聲 3 次</td><td data-l="互動">「要一點提示」只在自己試試時可按</td></tr>
+<tr><th scope="row">六段進度</th><td data-l="位置與尺寸">底列，高 64</td><td data-l="內容">六個節拍格＋這一段倒數</td><td data-l="互動">無（由老師推進）</td></tr>
+<tr><th scope="row">我的控制</th><td data-l="位置與尺寸">底列右側</td><td data-l="內容">麥克風、鏡頭、舉手、離開</td><td data-l="互動">麥克風是最大那一顆</td></tr>
+</tbody></table></div>
+<p>768 直向（iPad 直拿）：白板在上佔六成高，老師與隊友變成一排橫向小圓，六段進度留在底部。375 手機：白板全幅，老師是可拖曳的小窗，隊友是一排 28px 圓點，進度條縮成六個點。</p>
+<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 960 600" role="img" aria-labelledby="rmt rmd">
+<title id="rmt">教室寬版版面示意</title>
+<desc id="rmd">寬版教室：頂列是小隊名、段考倒數、只錄白板標籤與連線狀態；左側約七成是白板，上緣中央是目前有發言權的隊友的圓與九十秒計時環；右欄由上到下是老師視訊、兩欄三列的隊友圓、小陪一行；底列是六段進度與麥克風、鏡頭、舉手控制。</desc>
+<rect class="bgf" x="0" y="0" width="960" height="600" rx="22"/>
+<rect class="card" x="16" y="14" width="928" height="44" rx="14"/>
+<circle cx="38" cy="36" r="9" fill="#F26B54"/><circle cx="50" cy="36" r="9" fill="#0E5F52"/>
+<text class="t lab" x="70" y="41" font-size="14">松鼠小隊 · 第 3 週</text>
+<text class="m" x="230" y="41" font-size="13" style="font-family:var(--font-sans)">段考倒數 19 天</text>
+<rect x="700" y="24" width="96" height="24" rx="12" fill="#DCEFE8"/><text x="748" y="41" font-size="12" text-anchor="middle" fill="#0E5F52" class="lab">只錄白板</text>
+<circle class="pine" cx="822" cy="36" r="5"/><text class="m" x="834" y="41" font-size="12" style="font-family:var(--font-sans)">連線良好</text>
+<rect x="16" y="70" width="676" height="430" rx="20" fill="#FFFFFF"/>
+<text x="40" y="150" font-size="13" fill="#5E6B67" style="font-family:var(--font-sans)">這一隊這週最多人卡的一步</text>
+<text x="40" y="196" font-size="26" fill="#0D2B26" style="font-family:'STIX Two Text',Georgia,serif;font-style:italic;font-weight:400">x² + 6x + 5 = 0</text>
+<text x="40" y="240" font-size="24" fill="#0D2B26" style="font-family:'STIX Two Text',Georgia,serif;font-style:italic;font-weight:400">x² + 6x + 9 = −5 + 9</text>
+<path d="M36 252 Q 150 262 300 250" fill="none" stroke="#F26B54" stroke-width="3" stroke-linecap="round"/>
+<text x="312" y="258" font-size="13" fill="#B8412D" class="lab">卡在這一步：為什麼加 9</text>
+<text x="40" y="296" font-size="24" fill="#0E5F52" style="font-family:'STIX Two Text',Georgia,serif;font-style:italic;font-weight:400">(x + 3)² = 4</text>
+<circle cx="354" cy="104" r="24" fill="#FBE7B2"/><circle cx="354" cy="104" r="29" fill="none" stroke="#D9D5CA" stroke-width="4"/><path d="M354 75 A29 29 0 1 1 325 104" fill="none" stroke="#0E5F52" stroke-width="4" stroke-linecap="round"/>
+<text x="354" y="109" font-size="13" text-anchor="middle" fill="#0D2B26" class="lab">語彤</text>
+<text x="392" y="100" font-size="12" fill="#5E6B67" style="font-family:var(--font-sans)">正在講 · 還有 0:52</text>
+<rect x="36" y="440" width="236" height="44" rx="22" fill="#F6F4EE"/>
+<text x="66" y="467" font-size="12.5" text-anchor="middle" fill="#0D2B26" class="lab">筆</text>
+<text x="122" y="467" font-size="12.5" text-anchor="middle" fill="#0D2B26" class="lab">擦</text>
+<text x="178" y="467" font-size="12.5" text-anchor="middle" fill="#0D2B26" class="lab">移動</text>
+<text x="242" y="467" font-size="12.5" text-anchor="middle" fill="#0D2B26" class="lab">拍紙本</text>
+<rect x="548" y="440" width="124" height="44" rx="18" fill="#0E5F52"/><text x="610" y="467" font-size="14" text-anchor="middle" fill="#FFFFFF" class="lab">換我講</text>
+<rect x="706" y="70" width="238" height="134" rx="18" fill="#0A463D"/>
+<circle cx="812" cy="130" r="18" fill="#F26B54"/><circle cx="836" cy="130" r="18" fill="#0E5F52"/>
+<text x="825" y="186" font-size="12.5" text-anchor="middle" fill="#F6F4EE" class="lab">老師視訊（16:9）</text>
+<rect class="card" x="706" y="216" width="238" height="216" rx="18"/>
+<circle cx="766" cy="262" r="22" fill="#DCEFE8"/>
+<text x="766" y="266" font-size="12" text-anchor="middle" fill="#0D2B26" class="lab">宥辰</text>
+<circle cx="884" cy="262" r="22" fill="none" stroke="#D9D5CA" stroke-width="2" stroke-dasharray="4 5"/>
+<text class="m" x="884" y="266" font-size="11" text-anchor="middle" style="font-family:var(--font-sans)">講者</text>
+<circle cx="766" cy="328" r="22" fill="#FBE7B2"/>
+<text x="766" y="332" font-size="12" text-anchor="middle" fill="#0D2B26" class="lab">睿哲</text>
+<circle cx="766" cy="328" r="26" fill="none" stroke="#F26B54" stroke-width="2.5"/><text x="766" y="368" font-size="10.5" text-anchor="middle" fill="#B8412D" class="lab">舉手</text>
+<circle cx="884" cy="328" r="22" fill="#C9DDF8"/>
+<text x="884" y="332" font-size="12" text-anchor="middle" fill="#0D2B26" class="lab">小安</text>
+<circle cx="766" cy="394" r="22" fill="#DDD2F6"/>
+<text x="766" y="398" font-size="12" text-anchor="middle" fill="#0D2B26" class="lab">阿哲</text>
+<circle cx="884" cy="394" r="22" fill="#CFEBDD"/>
+<text x="884" y="398" font-size="12" text-anchor="middle" fill="#0D2B26" class="lab">我</text>
+<rect x="706" y="444" width="238" height="56" rx="18" fill="#DCEFE8"/>
+<circle cx="734" cy="472" r="9" fill="#F26B54"/><circle cx="746" cy="472" r="9" fill="#0E5F52"/>
+<text x="766" y="477" font-size="12.5" fill="#0A463D" style="font-family:var(--font-sans)">小陪：我在聽。</text>
+<rect class="card" x="16" y="512" width="928" height="74" rx="20"/>
+<rect x="34" y="530" width="64" height="12" rx="6" fill="#0E5F52"/>
+<text class="m" x="34" y="566" font-size="12" style="font-family:var(--font-sans)">暖身 5</text>
+<rect x="106" y="530" width="100" height="12" rx="6" fill="#0E5F52"/>
+<text class="m" x="106" y="566" font-size="12" style="font-family:var(--font-sans)">大家常錯的 10</text>
+<rect x="214" y="530" width="100" height="12" rx="6" fill="#0E5F52"/>
+<text class="m" x="214" y="566" font-size="12" style="font-family:var(--font-sans)">自己試試 10</text>
+<rect x="322" y="530" width="64" height="12" rx="6" fill="#0E5F52"/>
+<text class="m" x="322" y="566" font-size="12" style="font-family:var(--font-sans)">再帶一次 5</text>
+<rect x="394" y="530" width="136" height="12" rx="6" fill="#F4C24D"/>
+<text class="t lab" x="394" y="566" font-size="12" >講給隊友聽 15</text>
+<rect x="538" y="530" width="64" height="12" rx="6" fill="#ECE9E1"/>
+<text class="m" x="538" y="566" font-size="12" style="font-family:var(--font-sans)">我搞懂的 5</text>
+<circle cx="806" cy="549" r="26" fill="#0E5F52"/><text x="806" y="554" font-size="12" text-anchor="middle" fill="#FFFFFF" class="lab">麥克風</text>
+<circle class="surf" cx="862" cy="549" r="20"/><text class="t lab" x="862" y="553" font-size="11" text-anchor="middle">鏡頭</text>
+<circle class="surf" cx="910" cy="549" r="20"/><text class="t lab" x="910" y="553" font-size="11" text-anchor="middle">舉手</text>
+</svg></div><figcaption><b>圖 2｜教室寬版版面（1280，第 5 段「講給隊友聽」）。</b>白板約佔七成；有發言權的人，圓會浮到白板上緣並帶 90 秒計時環；隊友預設是圓不是臉；底列六段進度是整堂課的節拍器。人名為虛構。白板區在深色模式也維持淺底。</figcaption></figure>
+<h3>3.3 50 分鐘六段：每一段畫面怎麼變</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">段</th><th scope="col">分鐘</th><th scope="col">畫面</th><th scope="col">學生的主要動作</th><th scope="col">老師看到</th><th scope="col">小陪</th></tr></thead>
+<tbody>
+<tr><th scope="row">1 暖身</th><td data-l="分鐘">5</td><td data-l="畫面">白板一題；每人在自己的透明層作答</td><td data-l="學生的主要動作">「我寫好了」</td><td data-l="老師看到">誰寫好了（圓點亮起），不對全隊顯示對錯</td><td data-l="小陪">待命</td></tr>
+<tr><th scope="row">2 大家常錯的</th><td data-l="分鐘">10</td><td data-l="畫面">老師放大；白板是這一隊這週最多人卡的一步</td><td data-l="學生的主要動作">「我也卡這裡」（匿名計數）</td><td data-l="老師看到">幾個人按了、不顯示是誰給學生看</td><td data-l="小陪">待命</td></tr>
+<tr><th scope="row">3 自己試試</th><td data-l="分鐘">10</td><td data-l="畫面">白板換成我的那一頁；麥克風預設關</td><td data-l="學生的主要動作">寫；可按「要一點提示」（最多示範一步）</td><td data-l="老師看到">全隊縮圖一覽（最多六格），點一格放大並可在上面批註</td><td data-l="小陪">在聽；誰要過提示老師看得到</td></tr>
+<tr><th scope="row">4 再帶一次</th><td data-l="分鐘">5</td><td data-l="畫面">回共用白板；老師挑一份作品上板</td><td data-l="學生的主要動作">被挑到的人先按「可以用我的」才上板，預設匿名</td><td data-l="老師看到">上板前要學生同意</td><td data-l="小陪">待命</td></tr>
+<tr><th scope="row">5 講給隊友聽</th><td data-l="分鐘">15</td><td data-l="畫面">超過 4 人自動分兩小組；白板是講者的頁</td><td data-l="學生的主要動作">「換我講」→ 90 秒發言；聽的人兩顆按鈕「我聽懂了」「這一步再講一次」</td><td data-l="老師看到">兩小組並排，可進出任一組；看得到每人已講秒數</td><td data-l="小陪">先讓每人對小陪私下講 30 秒暖身，再上場</td></tr>
+<tr><th scope="row">6 我搞懂的</th><td data-l="分鐘">5</td><td data-l="畫面">每人一張卡：今天哪一格翻過去了</td><td data-l="學生的主要動作">選一格＋用一句話寫下來</td><td data-l="老師看到">全隊六張卡；一鍵產生課後紀錄草稿</td><td data-l="小陪">學會的一起跳（只跳一次）</td></tr>
+</tbody></table></div>
+<p><b>分兩小組的規則</b>：5 人分成 2＋3、6 人分成 3＋3；分組由系統依「卡在同一步」先配、老師可拖曳調整；同一期前 3 週固定組合讓孩子熟起來，第 4 週後才輪換。分組的動態是圓各自滑向兩側，不出現「你被分到 B 組」這種字。</p>
+<p><b>發言權與計時</b></p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">規則</th><th scope="col">設計</th></tr></thead>
+<tbody>
+<tr><th scope="row">一次只有一個人有發言權</th><td data-l="設計">講者的圓浮到白板上緣中央並放大，其餘人的麥克風保持可開但視覺退後</td></tr>
+<tr><th scope="row">每人 90 秒</th><td data-l="設計">圓的外圈是一條 90 秒的環；剩 15 秒時環由松綠轉金，不閃、不響</td></tr>
+<tr><th scope="row">時間到</th><td data-l="設計">不切麥，環走完後停住，出現「講完這一句就好」</td></tr>
+<tr><th scope="row">順序</th><td data-l="設計">第一位由自願者按「換我講」；沒人按時系統輪到上次最後講的人的下一位，不由老師點名</td></tr>
+<tr><th scope="row">聽的人</th><td data-l="設計">「我聽懂了」＝講者得到一個松綠小點；「這一步再講一次」＝在白板上點那一步，講者只看到位置，看不到是誰按的</td></tr>
+<tr><th scope="row">卡住</th><td data-l="設計">講者可按「我卡在這」把發言權交給隊友接下去，這算一次有效開口，不算失敗</td></tr>
+<tr><th scope="row">記錄</th><td data-l="設計">只記每人開口次數與秒數（試點第一優先指標），不存聲音</td></tr>
+</tbody></table></div>
+<h3>3.4 只錄白板、不錄孩子：做法</h3>
+<p>不是「錄完再把孩子遮掉」，而是<b>從來源就不收</b>。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">層</th><th scope="col">做法</th></tr></thead>
+<tbody>
+<tr><th scope="row">錄什麼</th><td data-l="做法">白板的操作事件（誰的筆畫只標「老師」或「學生」，不標名字）＋老師的單一路音訊。重播時用事件重畫白板，不是影片</td></tr>
+<tr><th scope="row">不錄什麼</th><td data-l="做法">學生的影像、學生的聲音、隊友小格、聊天。伺服器端只對老師的音軌開錄製，學生音軌不進錄製服務</td></tr>
+<tr><th scope="row">老師麥克風收進孩子聲音怎麼辦</th><td data-l="做法">老師必須戴耳機（進教室的裝置檢查會擋喇叭外放）；第 5 段「講給隊友聽」整段暫停錄製，畫面上錄製指示會熄掉</td></tr>
+<tr><th scope="row">學生白板頁</th><td data-l="做法">「自己試試」的個人頁不進錄影；只有本人按「可以用我的」上板的那一份會進</td></tr>
+<tr><th scope="row">誰看得到</th><td data-l="做法">這一隊的學生與其綁定家長；串流播放、不能下載；浮水印是小隊名，不是個人名</td></tr>
+<tr><th scope="row">自動剪三段</th><td data-l="做法">以六段的切點剪出「大家常錯的」「再帶一次」「我搞懂的」三段，每段 5–10 分鐘</td></tr>
+<tr><th scope="row">保存</th><td data-l="做法">一期結束 30 天後刪除</td></tr>
+<tr><th scope="row">畫面告知</th><td data-l="做法">頂列固定一顆「只錄白板」標籤，點開一句話說明；開始、暫停、恢復時小陪各說一次</td></tr>
+</tbody></table></div>
+<h3>3.5 視訊 SDK 選型（公開定價查詢日 2026-10-01）</h3>
+<p>一堂課＝5 位學生＋1 位老師 × 50 分鐘＝300 參與者分鐘<span class="tag est">推估</span>。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">方案</th><th scope="col">公開定價<span class="tag fact">事實</span></th><th scope="col">一堂課量級<span class="tag est">推估</span></th><th scope="col">每月 1,000 堂<span class="tag est">推估</span></th><th scope="col">優點</th><th scope="col">顧慮</th></tr></thead>
+<tbody>
+<tr><th scope="row">LiveKit Cloud</th><td data-l="公開定價〔事實〕">Build 0 美元含 5,000 分鐘；Ship 每月 50 美元含 150,000 分鐘，超出每分鐘 0.0005 美元；下行流量含 250GB、超出每 GB 0.12 美元；單軌匯出每分鐘 0.001 美元（<a href="https://livekit.com/pricing" rel="noopener noreferrer">https://livekit.com/pricing</a>）</td><td data-l="一堂課量級〔推估〕">約 0.15 美元＋流量</td><td data-l="每月 1,000 堂〔推估〕">約 125 美元＋流量</td><td data-l="優點">開源、可自架（之後資料落地有退路）；可只匯出單一路音軌，正好符合「只錄老師」；小組分房、資料通道齊全</td><td data-l="顧慮">流量另計，要實測；亞洲節點品質待測</td></tr>
+<tr><th scope="row">Daily</th><td data-l="公開定價〔事實〕">視訊每參與者分鐘 0.004 美元；每月 10,000 分鐘免費；雲端錄影每分鐘 0.01349 美元（<a href="https://www.daily.co/pricing/video-sdk/" rel="noopener noreferrer">https://www.daily.co/pricing/video-sdk/</a>）</td><td data-l="一堂課量級〔推估〕">約 1.2 美元</td><td data-l="每月 1,000 堂〔推估〕">約 1,160 美元</td><td data-l="優點">內建介面元件最完整、上手最快</td><td data-l="顧慮">單價約為 LiveKit 的 8 倍；不能自架</td></tr>
+<tr><th scope="row">Agora</th><td data-l="公開定價〔事實〕">每 1,000 分鐘 0.59 美元起，每月前 10,000 分鐘免費；雲端錄製每 1,000 分鐘 0.99 美元；互動白板每 1,000 分鐘 1.4 美元（<a href="https://www.agora.io/en/pricing/" rel="noopener noreferrer">https://www.agora.io/en/pricing/</a>）</td><td data-l="一堂課量級〔推估〕">0.18 美元起（高畫質視訊的單價本次<b>查不到</b>，「起」多半是語音價）</td><td data-l="每月 1,000 堂〔推估〕">177 美元起</td><td data-l="優點">亞洲弱網表現口碑好；有自家白板</td><td data-l="顧慮">高畫質實際單價要再問；不開源；兒少資料落地地區要確認</td></tr>
+<tr><th scope="row">Zoom Video SDK</th><td data-l="公開定價〔事實〕"><b>查不到</b>（官方定價頁本次回應 404）</td><td data-l="一堂課量級〔推估〕">查不到</td><td data-l="每月 1,000 堂〔推估〕">查不到</td><td data-l="優點">家長與老師對品牌熟悉</td><td data-l="顧慮">介面自訂彈性與錄製粒度需另查</td></tr>
+</tbody></table></div>
+<p><b>量級結論</b><span class="tag est">推估</span>：試點 8 隊 × 8 週＝64 堂＝19,200 參與者分鐘，任何一家都在每月 100 美元以內；視訊費在試點不是決策因素，<b>「能不能只錄老師」與「之後能不能自架」才是</b>。</p>
+<h3>3.6 白板 SDK 選型</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">方案</th><th scope="col">授權與價格<span class="tag fact">事實</span></th><th scope="col">優點</th><th scope="col">顧慮</th></tr></thead>
+<tbody>
+<tr><th scope="row">tldraw SDK</th><td data-l="授權與價格〔事實〕">正式環境需商業授權，價格未公開（依價值議價）；有 100 天免費試用、新創折扣（<a href="https://tldraw.dev/pricing" rel="noopener noreferrer">https://tldraw.dev/pricing</a>）</td><td data-l="優點">筆跡手感好、支援筆壓；多人同步現成；頁面與圖層模型適合「共用頁＋每人一頁」；可自訂工具（拍紙本貼上、數學式）</td><td data-l="顧慮">授權費<b>查不到</b>，要先問價；100 天試用剛好涵蓋 11 週試點（77 天）</td></tr>
+<tr><th scope="row">Excalidraw</th><td data-l="授權與價格〔事實〕">開放原始碼（MIT），免費</td><td data-l="優點">零授權費；手繪風格親切</td><td data-l="顧慮">多人同步、分頁、權限要自己做；作為嵌入元件的擴充性較弱</td></tr>
+<tr><th scope="row">Agora 互動白板</th><td data-l="授權與價格〔事實〕">每 1,000 分鐘 1.4 美元</td><td data-l="優點">與 Agora 視訊同一家</td><td data-l="顧慮">綁定供應商；事件格式不易自行重播</td></tr>
+<tr><th scope="row">自製畫布</th><td data-l="授權與價格〔事實〕">人力成本</td><td data-l="優點">完全掌控</td><td data-l="顧慮">試點 3 週做不完</td></tr>
+</tbody></table></div>
+<h3>3.7 推薦組合<span class="tag pos">立場</span></h3>
+<p><b>LiveKit Cloud（Ship 方案）＋ tldraw SDK，同步伺服器自架。</b></p>
+<ul><li>理由一：LiveKit 能只對老師音軌做單軌匯出，「不錄孩子」可以從架構上保證，而不是靠流程。</li><li>理由二：兩者都能自架，兒少資料之後要落地台灣有退路。</li><li>理由三：tldraw 的試用期涵蓋整個試點；試點結束才需要決定授權。</li><li>退路：tldraw 報價不合 → 換 Excalidraw，多花約 2–3 週做同步與分頁<span class="tag est">推估</span>；LiveKit 亞洲品質不如預期 → 換 Agora（介面層先包一層轉接，不直接依賴供應商的元件）。</li></ul>
+<h3>3.8 斷線重連</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">情況</th><th scope="col">系統行為</th><th scope="col">孩子看到</th><th scope="col">老師看到</th></tr></thead>
+<tbody>
+<tr><th scope="row">斷線 10 秒內</th><td data-l="系統行為">自動重連，白板狀態由伺服器補齊</td><td data-l="孩子看到">白板不變灰，只有連線小點轉珊瑚</td><td data-l="老師看到">該生的圓變半透明</td></tr>
+<tr><th scope="row">斷線 10–60 秒</th><td data-l="系統行為">持續重試；視訊先放棄、先救聲音與白板</td><td data-l="孩子看到">「正在接回來，你寫的都還在」</td><td data-l="老師看到">「某某正在重新連線」</td></tr>
+<tr><th scope="row">超過 60 秒</th><td data-l="系統行為">提供「改用手機接回來」圖碼與「只聽聲音」</td><td data-l="孩子看到">兩顆按鈕</td><td data-l="老師看到">可按「請營運打電話」</td></tr>
+<tr><th scope="row">重新進來</th><td data-l="系統行為">直接回到目前這一段，不重跑等候室；筆畫在本機暫存後補送</td><td data-l="孩子看到">一句「歡迎回來，現在在第 3 段」</td><td data-l="老師看到">圓恢復</td></tr>
+<tr><th scope="row">老師斷線</th><td data-l="系統行為">60 秒內：學生看到「老師正在接回來」，小陪出一題同卡點的題讓大家先寫；超過 3 分鐘：營運值班接手或改期，不扣次數</td><td data-l="孩子看到">同左</td><td data-l="老師看到">用手機可先以語音接回</td></tr>
+<tr><th scope="row">整堂沒進來</th><td data-l="系統行為">當晚給三段白板重播＋隔天第一題補上</td><td data-l="孩子看到">手機首頁一張卡</td><td data-l="老師看到">課後紀錄標記缺席</td></tr>
+</tbody></table></div>
+<h3>3.9 低設備等值路徑（總表）</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">能力</th><th scope="col">完整（iPad＋筆）</th><th scope="col">電腦無觸控</th><th scope="col">只有手機</th><th scope="col">低頻寬</th></tr></thead>
+<tbody>
+<tr><th scope="row">看白板</th><td data-l="完整（iPad＋筆）">有</td><td data-l="電腦無觸控">有</td><td data-l="只有手機">有（可雙指放大）</td><td data-l="低頻寬">有</td></tr>
+<tr><th scope="row">寫</th><td data-l="完整（iPad＋筆）">筆</td><td data-l="電腦無觸控">紙本＋手機拍上來，或鍵盤數學式</td><td data-l="只有手機">紙本拍上來</td><td data-l="低頻寬">同左</td></tr>
+<tr><th scope="row">聽與說</th><td data-l="完整（iPad＋筆）">有</td><td data-l="電腦無觸控">有</td><td data-l="只有手機">有</td><td data-l="低頻寬">有</td></tr>
+<tr><th scope="row">看老師</th><td data-l="完整（iPad＋筆）">720p</td><td data-l="電腦無觸控">720p</td><td data-l="只有手機">小窗</td><td data-l="低頻寬">關</td></tr>
+<tr><th scope="row">講給隊友聽</th><td data-l="完整（iPad＋筆）">邊講邊指白板</td><td data-l="電腦無觸控">先拍上來再講</td><td data-l="只有手機">先拍上來再講</td><td data-l="低頻寬">同左</td></tr>
+<tr><th scope="row">我搞懂的</th><td data-l="完整（iPad＋筆）">有</td><td data-l="電腦無觸控">有</td><td data-l="只有手機">有</td><td data-l="低頻寬">有</td></tr>
+</tbody></table></div>
+<p>驗收標準：四條路徑的孩子都能完成六段的每一個主要動作；差別只允許在「看老師的畫質」。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c4">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no ">04</div><div><div class="kicker">手機：課與課之間</div><h2>每次打開只做一兩件事，做完就說「今天到這裡」</h2></div></div>
+<div class="prose-wide">
+<h3>4.1 定位與資訊架構</h3>
+<p>手機不是「小一號的教室」，是<b>課與課之間的隊務</b>：每次打開只做一兩件事，3–10 分鐘結束，做完就明講「今天到這裡」。</p>
+<p>底部只有三個分頁，中間一顆相機鈕：</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">位置</th><th scope="col">名稱</th><th scope="col">內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">分頁 1</th><td data-l="名稱">今天</td><td data-l="內容">今天的兩件事、下一堂課倒數、小隊連續格</td></tr>
+<tr><th scope="row">中央按鈕</th><td data-l="名稱">拍題</td><td data-l="內容">直接開相機</td></tr>
+<tr><th scope="row">分頁 2</th><td data-l="名稱">地圖</td><td data-l="內容">卡點地圖（珊瑚／松綠／金）</td></tr>
+<tr><th scope="row">分頁 3</th><td data-l="名稱">小隊</td><td data-l="內容">隊友圓點、這週大家搞懂的、老師的課後語音、白板重播三段</td></tr>
+<tr><th scope="row">右上</th><td data-l="名稱">我</td><td data-l="內容">設定、家人綁定代碼、通知、省流量、關燈時間</td></tr>
+</tbody></table></div>
+<h3>4.2 每個畫面的目的與主要動作</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">目的</th><th scope="col">唯一主要動作</th><th scope="col">次要</th><th scope="col">完成後</th></tr></thead>
+<tbody>
+<tr><th scope="row">今天</th><td data-l="目的">不用自己想要做什麼</td><td data-l="唯一主要動作">「開始第一件」</td><td data-l="次要">看下一堂課、看小隊格</td><td data-l="完成後">做完兩件顯示「今天到這裡」，不再推新任務</td></tr>
+<tr><th scope="row">拍題</th><td data-l="目的">把卡住的那一題帶進來</td><td data-l="唯一主要動作">快門</td><td data-l="次要">從相簿選、補光</td><td data-l="完成後">進「你寫到哪一步」</td></tr>
+<tr><th scope="row">你寫到哪一步</th><td data-l="目的">把對話鎖在孩子已經寫的地方</td><td data-l="唯一主要動作">在照片上圈一下</td><td data-l="次要">用說的、打字</td><td data-l="完成後">小陪回一句觀察＋一個問題</td></tr>
+<tr><th scope="row">小陪對話</th><td data-l="目的">往前推一步，不給答案</td><td data-l="唯一主要動作">回答或「示範一步給我看」（每題一次）</td><td data-l="次要">「我懂了，自己寫」</td><td data-l="完成後">寫完拍第二張或直接標「我寫出來了」</td></tr>
+<tr><th scope="row">說給我聽</th><td data-l="目的">用自己的話證明懂了</td><td data-l="唯一主要動作">按住說 30 秒</td><td data-l="次要">重錄（不限次數）、先看提示詞</td><td data-l="完成後">小陪回「我聽到你說……」＋一個追問</td></tr>
+<tr><th scope="row">每日練習</th><td data-l="目的">2–4 題，隔天第一題是老師語音講的卡點</td><td data-l="唯一主要動作">作答</td><td data-l="次要">草稿區、跳過（每天一次）</td><td data-l="完成後">回到今天</td></tr>
+<tr><th scope="row">再測</th><td data-l="目的">7–12 天後無提示確認</td><td data-l="唯一主要動作">作答</td><td data-l="次要">「今天狀況不好，改明天」（一次）</td><td data-l="完成後">通過就翻過去變金色；沒過回到練習清單，文案是「還要再走一次」</td></tr>
+<tr><th scope="row">卡點地圖</th><td data-l="目的">看見自己走到哪</td><td data-l="唯一主要動作">點一格看這一步的歷程</td><td data-l="次要">看前面年級的先備</td><td data-l="完成後">無</td></tr>
+<tr><th scope="row">小隊</th><td data-l="目的">有人在等我</td><td data-l="唯一主要動作">聽老師 30 秒語音</td><td data-l="次要">看白板重播、看小隊連續格</td><td data-l="完成後">無</td></tr>
+<tr><th scope="row">進教室</th><td data-l="目的">上課入口（備援裝置）</td><td data-l="唯一主要動作">「用這支手機上課」或「當紙本鏡頭」</td><td data-l="次要">傳連結到平板</td><td data-l="完成後">進等候室</td></tr>
+</tbody></table></div>
+<h3>4.3 拍題與小陪的互動細節</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">步驟</th><th scope="col">設計</th><th scope="col">為什麼</th></tr></thead>
+<tbody>
+<tr><th scope="row">開相機</th><td data-l="設計">中央按鈕一按即開；取景框提示「把你寫的也拍進來」</td><td data-l="為什麼">拍題是入口，不是答案；要拍到孩子的算式才有得談</td></tr>
+<tr><th scope="row">拍完</th><td data-l="設計">本機壓到長邊 1600 再上傳；上傳時兩個圓「在聽」浮起</td><td data-l="為什麼">弱網也能送</td></tr>
+<tr><th scope="row">第一句</th><td data-l="設計">永遠是「你寫到哪一步？」；照片上可用手指圈</td><td data-l="為什麼">對話只針對孩子寫過的那一步</td></tr>
+<tr><th scope="row">沒寫任何步驟</th><td data-l="設計">小陪：「先寫第一行就好，寫什麼都可以，我等你。」附一個 60 秒的安靜計時</td><td data-l="為什麼">不替孩子開頭</td></tr>
+<tr><th scope="row">小陪回覆</th><td data-l="設計">一次最多兩句：一句觀察、一個問題；數學式用 STIX 斜體；計算對錯由確定性引擎判斷</td><td data-l="為什麼">短句、不轟炸</td></tr>
+<tr><th scope="row">示範一步</th><td data-l="設計">每題一次；示範的是「下一步」，以一行算式逐字出現，不是完整解</td><td data-l="為什麼">最多示範一步</td></tr>
+<tr><th scope="row">連續三次要答案</th><td data-l="設計">小陪：「我不會直接給答案。要不要把這題帶到週四，讓老師帶？」→ 一鍵加入課前一頁候選</td><td data-l="為什麼">把離開的衝動接到真人</td></tr>
+<tr><th scope="row">結束</th><td data-l="設計">「下一題自己做對」才算有效；畫面不出現分數</td><td data-l="為什麼">成效用下一題量</td></tr>
+<tr><th scope="row">用量上限</th><td data-l="設計">每天拍題上限（數字待試點定）；到上限顯示「今天問夠了，剩下的帶去課上」</td><td data-l="為什麼">護欄</td></tr>
+<tr><th scope="row">安全</th><td data-l="設計">出現自傷、被欺負等訊號 → 小陪停止解題、給求助資訊，並依分級通知值班</td><td data-l="為什麼">底線</td></tr>
+</tbody></table></div>
+<h3>4.4 再測與提醒</h3>
+<ul><li>再測在卡點通過「說給我聽」後第 7–12 天之間，挑孩子平常打開 App 的時段出現在「今天」的第一件事；不另外推播催。</li><li>不給提示、不顯示倒數計時、不顯示「這是考試」，只說「這一步過幾天了，看看還在不在」。</li><li>通過 → 招牌動作「翻過去」；之後又錯 → 那一格由金回到松綠，文案是「它又鬆了，再走一次」，沒有扣分的概念。</li><li>段考前 3 天不排新的再測（段考前不加量）。</li></ul>
+<h3>4.5 22:30 關燈與弱網</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">時間</th><th scope="col">行為</th></tr></thead>
+<tbody>
+<tr><th scope="row">22:00</th><td data-l="行為">介面開始轉暗（8 秒緩慢過渡）；「今天」上方一行「再 30 分鐘我就休息了」</td></tr>
+<tr><th scope="row">22:15</th><td data-l="行為">不再開新的練習與拍題；進行中的可以做完</td></tr>
+<tr><th scope="row">22:30</th><td data-l="行為">關燈：深色底、兩個圓靠在一起不動；只剩「看地圖」與「明天再說」；小陪不出聲</td></tr>
+<tr><th scope="row">22:30 後拍題</th><td data-l="行為">可以拍，存進「明天第一件事」；不回覆</td></tr>
+<tr><th scope="row">06:00</th><td data-l="行為">自動恢復</td></tr>
+</tbody></table></div>
+<p>家長不能把關燈時間往後調；孩子可以往前調（例如 22:00）。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">弱網情況</th><th scope="col">處理</th></tr></thead>
+<tbody>
+<tr><th scope="row">無網路</th><td data-l="處理">今天的練習題與地圖前一晚已快取，可照做；作答先存本機，連線後補送</td></tr>
+<tr><th scope="row">拍題送不出去</th><td data-l="處理">排隊，顯示「等網路好一點我再看」，可先寫下一題</td></tr>
+<tr><th scope="row">錄音送不出去</th><td data-l="處理">先存本機最多 3 則；送出後本機即刪</td></tr>
+<tr><th scope="row">省流量</th><td data-l="處理">白板重播只下載事件與老師音訊，約為影片的十分之一以下<span class="tag est">推估</span></td></tr>
+</tbody></table></div>
+<h3>4.6 通知策略</h3>
+<p>原則：<b>一天最多一則、沒有也不會壞、22:00–07:00 不發</b>。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">通知</th><th scope="col">管道</th><th scope="col">時間</th><th scope="col">上限</th><th scope="col">可關</th></tr></thead>
+<tbody>
+<tr><th scope="row">上課前 10 分鐘</th><td data-l="管道">推播（已加入主畫面者）＋行事曆檔（加入小隊時一鍵加入手機行事曆，內建提醒）</td><td data-l="時間">課前 10 分鐘</td><td data-l="上限">每堂一次</td><td data-l="可關">不建議關</td></tr>
+<tr><th scope="row">今天的兩件事</th><td data-l="管道">推播</td><td data-l="時間">孩子自己選的時間（預設 21:00，有補習者）</td><td data-l="上限">每天一則；當天已打開就不發</td><td data-l="可關">可</td></tr>
+<tr><th scope="row">老師語音到了</th><td data-l="管道">App 內紅點（珊瑚點），不推播</td><td data-l="時間">—</td><td data-l="上限">—</td><td data-l="可關">—</td></tr>
+<tr><th scope="row">小隊連續格只差你</th><td data-l="管道">App 內顯示，不推播、不點名</td><td data-l="時間">—</td><td data-l="上限">—</td><td data-l="可關">—</td></tr>
+<tr><th scope="row">再測</th><td data-l="管道">不推播</td><td data-l="時間">—</td><td data-l="上限">—</td><td data-l="可關">—</td></tr>
+</tbody></table></div>
+<p>不做的事：不用「你的隊友都練了」這種句子催人；不在段考週推播；不發促銷。推播收不到的孩子（未加入主畫面的 iPhone）靠行事曆提醒與固定時段的習慣，這個缺口是否用其他管道補，見第 11 章第 3 題。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c5">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no pine">05</div><div><div class="kicker">家長 LINE</div><h2>一則訊息、一件事、一顆按鈕</h2></div></div>
+<div class="prose-wide">
+<h3>5.1 原則</h3>
+<p>家長的全部體驗＝一個 LINE 官方帳號。看訊息不用登入、不用裝 App；需要操作（付款、上傳考卷、同意書）才在 LINE 內開一頁網頁。每則訊息只講一件事、只有一顆主要按鈕。</p>
+<h3>5.2 訊息類型</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">#</th><th scope="col">類型</th><th scope="col">觸發</th><th scope="col">頻率</th><th scope="col">需要老師確認</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td data-l="類型">診斷摘要</td><td data-l="觸發">孩子完成診斷並綁定</td><td data-l="頻率">一次</td><td data-l="需要老師確認">否</td></tr>
+<tr><th scope="row">2</th><td data-l="類型">成班通知／未成班退回</td><td data-l="觸發">開課前 48 小時截止時</td><td data-l="頻率">每期一次</td><td data-l="需要老師確認">否</td></tr>
+<tr><th scope="row">3</th><td data-l="類型">第一堂當晚回饋</td><td data-l="觸發">第一堂下課後、21:30 前</td><td data-l="頻率">一次</td><td data-l="需要老師確認">是</td></tr>
+<tr><th scope="row">4</th><td data-l="類型">每週週報</td><td data-l="觸發">上課日當晚或隔天 20:00</td><td data-l="頻率">每週一則</td><td data-l="需要老師確認">是（可一鍵送）</td></tr>
+<tr><th scope="row">5</th><td data-l="類型">第 4 週結業點</td><td data-l="觸發">第 4 堂後</td><td data-l="頻率">一次</td><td data-l="需要老師確認">否</td></tr>
+<tr><th scope="row">6</th><td data-l="類型">段考對照</td><td data-l="觸發">上傳考卷後 24 小時內</td><td data-l="頻率">每期一次</td><td data-l="需要老師確認">是</td></tr>
+<tr><th scope="row">7</th><td data-l="類型">期末續走</td><td data-l="觸發">第 8 堂後</td><td data-l="頻率">一次，最多再提醒一次</td><td data-l="需要老師確認">否</td></tr>
+<tr><th scope="row">8</th><td data-l="類型">扣款、退回、請假改期</td><td data-l="觸發">事件發生時</td><td data-l="頻率">依事件</td><td data-l="需要老師確認">否</td></tr>
+<tr><th scope="row">9</th><td data-l="類型">安全通知</td><td data-l="觸發">依分級與時限</td><td data-l="頻率">依事件</td><td data-l="需要老師確認">由值班人員發，不自動</td></tr>
+<tr><th scope="row">10</th><td data-l="類型">兩週沒練習的提醒</td><td data-l="觸發">連續 14 天沒有任何練習</td><td data-l="頻率">每期最多兩次</td><td data-l="需要老師確認">否；文案不責備</td></tr>
+</tbody></table></div>
+<h3>5.3 卡片格式（Flex Message 層級）</h3>
+<p>以「每週週報」為例，其餘類型沿用同一骨架、換內容：</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">區塊</th><th scope="col">元件</th><th scope="col">內容</th><th scope="col">規則</th></tr></thead>
+<tbody>
+<tr><th scope="row">header</th><td data-l="元件">box＋text</td><td data-l="內容">兩個圓＋「宥辰 · 第 3 週」</td><td data-l="規則">多子女時 header 底色用該孩子的頭像色</td></tr>
+<tr><th scope="row">body 1</th><td data-l="元件">text（大）</td><td data-l="內容">「這週他搞懂了：配方法的第二步」</td><td data-l="規則">一句話，不超過 24 字</td></tr>
+<tr><th scope="row">body 2</th><td data-l="元件">box 橫列</td><td data-l="內容">三顆圓點：金 1、松綠 2、珊瑚 1＋小字說明</td><td data-l="規則">不出現分數、不出現排名</td></tr>
+<tr><th scope="row">body 3</th><td data-l="元件">text</td><td data-l="內容">「還差：移項時的正負號。下週課上會帶。」</td><td data-l="規則">一定要有「還差什麼」，不只報喜</td></tr>
+<tr><th scope="row">body 4</th><td data-l="元件">box（薄荷底）</td><td data-l="內容">「今晚可以問他：『配方法為什麼要加一次項係數一半的平方？』」</td><td data-l="規則">一句、用引號、可直接唸</td></tr>
+<tr><th scope="row">footer</th><td data-l="元件">button（主要）</td><td data-l="內容">「看這週的白板 3 分鐘」</td><td data-l="規則">開 LINE 內網頁</td></tr>
+<tr><th scope="row">footer</th><td data-l="元件">button（文字連結）</td><td data-l="內容">「我問了」</td><td data-l="規則">回傳事件，量「真的有問」的比例</td></tr>
+</tbody></table></div>
+<p>其他卡片的按鈕：成班通知＝「看小隊與老師」；結業點＝「繼續走」與「停在這裡」<b>並排同大小</b>；段考對照＝「看前後對照」；續走＝「下一期的時段」；未成班＝「看退回明細」。卡片替代文字（通知列顯示）寫成完整一句，例如「宥辰這週搞懂了配方法的第二步」。</p>
+<h3>5.4 頻率與時段上限</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">規則</th><th scope="col">數值</th></tr></thead>
+<tbody>
+<tr><th scope="row">發送時段</th><td data-l="數值">19:30–21:30；交易類（扣款、退回）08:00–21:30</td></tr>
+<tr><th scope="row">一般週</th><td data-l="數值">每位孩子每週最多 2 則（週報 1＋事件 1）</td></tr>
+<tr><th scope="row">每期合計</th><td data-l="數值">8 週約 12–14 則<span class="tag est">推估</span>週報 8＋成班 1＋第一堂 1＋結業點 1＋對照 1＋續走 1–2 </td></tr>
+<tr><th scope="row">段考週</th><td data-l="數值">只發週報，不發續走與行銷</td></tr>
+<tr><th scope="row">行銷訊息</th><td data-l="數值">不發。續走只在結業點與期末出現</td></tr>
+<tr><th scope="row">家長主動傳訊</th><td data-l="數值">回覆訊息不受上述上限；上班時段真人回，其餘時間自動回覆「明天 10 點前回您」</td></tr>
+</tbody></table></div>
+<p>費用量級：LINE 官方帳號依推播則數計費，回覆訊息不計。官方頁面本次只查到「價格方案將於 2026-11-01 起調整」（<a href="https://tw.linebiz.com/service/account-solutions/line-official-account/" rel="noopener noreferrer">https://tw.linebiz.com/service/account-solutions/line-official-account/</a>），各級距的確切月費與則數<b>查不到</b>，試點前要以新方案重算。以 40 個家庭、每戶每月約 7 則估，每月約 280 則<span class="tag est">推估</span>，屬於最低的一兩個級距。</p>
+<h3>5.5 綁定流程（LINE Login＋孩子代碼）</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">步驟</th><th scope="col">誰</th><th scope="col">做什麼</th><th scope="col">設計重點</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td data-l="誰">孩子</td><td data-l="做什麼">App「我 → 家人」顯示 6 碼代碼與圖碼，10 分鐘有效</td><td data-l="設計重點">孩子知道家長會看到什麼（有一頁預覽）</td></tr>
+<tr><th scope="row">2</th><td data-l="誰">家長</td><td data-l="做什麼">掃圖碼 → 加入官方帳號好友</td><td data-l="設計重點">一步完成，不用找帳號</td></tr>
+<tr><th scope="row">3</th><td data-l="誰">家長</td><td data-l="做什麼">自動開 LINE 內網頁，以 LINE Login 取得身分</td><td data-l="設計重點">不用另設密碼</td></tr>
+<tr><th scope="row">4</th><td data-l="誰">家長</td><td data-l="做什麼">確認孩子名字（只顯示名與學校年級）＋輸入代碼</td><td data-l="設計重點">防止掃錯</td></tr>
+<tr><th scope="row">5</th><td data-l="誰">家長</td><td data-l="做什麼">讀並勾選同意書：語音、錯題、白板錄影各自分開勾</td><td data-l="設計重點">法定代理人明示同意；每一項寫保存期限</td></tr>
+<tr><th scope="row">6</th><td data-l="誰">系統</td><td data-l="做什麼">綁定成功卡＋診斷摘要</td><td data-l="設計重點">當場就有第一則有價值的訊息</td></tr>
+<tr><th scope="row">7</th><td data-l="誰">第二位家長</td><td data-l="做什麼">由第一位家長在選單「加入另一位家人」產生邀請</td><td data-l="設計重點">最多 2 位；任一位可解除</td></tr>
+</tbody></table></div>
+<p>家長先來（從廣告或朋友介紹加好友）的反向流程：家長在 LINE 內填孩子年級與學校 → 取得一個「給孩子的連結」→ 孩子用連結開啟即自動綁定，不用再輸代碼。</p>
+<h3>5.6 多子女與不顯示的資料</h3>
+<ul><li>一個 LINE 帳號可綁多位孩子；每位孩子一張卡，header 用該孩子的頭像色與名字；同一晚多張時合成一則橫向輪播，算一則通知。</li><li>圖文選單第一格是「切換孩子」，其餘為：這週、白板重播、方案與扣款、請假、聯絡我們。</li></ul>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">不給家長看的</th><th scope="col">原因</th></tr></thead>
+<tbody>
+<tr><th scope="row">「說給我聽」的錄音與逐字</th><td data-l="原因">孩子需要一個講錯也沒關係的地方；錄音本來就不留原檔</td></tr>
+<tr><th scope="row">小陪對話原文</th><td data-l="原因">同上；家長只看到「這週問了幾題、卡在哪一步」</td></tr>
+<tr><th scope="row">隊友的姓名與任何資料</th><td data-l="原因">他人個資；卡片上只會出現「小隊」</td></tr>
+<tr><th scope="row">排名、與隊友的比較</th><td data-l="原因">品牌原則</td></tr>
+<tr><th scope="row">每天幾點上線、用了幾分鐘</th><td data-l="原因">避免變成監控工具；只給「這週練了幾天」</td></tr>
+<tr><th scope="row">孩子的鏡頭畫面</th><td data-l="原因">從不錄</td></tr>
+<tr><th scope="row">再測沒過的次數</th><td data-l="原因">只顯示目前狀態（還在走／學會／已掌握）</td></tr>
+</tbody></table></div>
+<p>例外：安全事件依分級處理，不受上表限制；若監護人可能是風險來源則不自動通知。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c6">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no ">06</div><div><div class="kicker">老師端（桌機優先）</div><h2>要專心的在桌機，要快的在手機</h2></div></div>
+<div class="prose-wide">
+<h3>6.1 原則</h3>
+<p>老師的工作分兩種：<b>要專心的</b>（備課、上課、對帳）在桌機；<b>要快的</b>（接班、收提醒）在手機。手機版不做完整後台，只做卡片與按鈕。勿擾 22:00–08:00。</p>
+<h3>6.2 桌機畫面</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">版面</th><th scope="col">主要動作</th><th scope="col">關鍵設計</th></tr></thead>
+<tbody>
+<tr><th scope="row">今天（首頁）</th><td data-l="版面">左：今天與明天的課；右：待辦三格（待確認的課前一頁、待送的週報、待接的小隊）</td><td data-l="主要動作">點最上面那件</td><td data-l="關鍵設計">待辦不超過三類；清空時畫面留白＋一句話</td></tr>
+<tr><th scope="row">接班卡</th><td data-l="版面">一張大卡：這一隊卡在哪三步、人數、時段、8 週日期、預估每堂收入（保底與分潤並列）、小圓點代表成員</td><td data-l="主要動作">「接這一隊」</td><td data-l="關鍵設計">先看得到收入再決定；倒數顯示保留時間；接下後有成班儀式（7.4）</td></tr>
+<tr><th scope="row">課前一頁</th><td data-l="版面">左：這一隊這週要解的 3 題（可換題、改數字、調順序）；右：每個孩子卡在哪一步、上週誰沒開口</td><td data-l="主要動作">「確認，就用這三題」</td><td data-l="關鍵設計">目標 10 分鐘內完成；頁面頂端顯示已用時間，試點用來量備課工時</td></tr>
+<tr><th scope="row">教室控制台</th><td data-l="版面">學生版面＋右側多一欄控制：推進到下一段、分組、全隊縮圖、靜音全體、錄製狀態</td><td data-l="主要動作">「下一段」</td><td data-l="關鍵設計">鍵盤快速鍵（空白鍵＝下一段、數字鍵 1–6＝放大第幾位）；雙螢幕時控制欄可拉到第二螢幕</td></tr>
+<tr><th scope="row">課後紀錄</th><td data-l="版面">一顆大的錄音鈕＋系統先填好的草稿（誰開口幾次、誰翻過去哪一格）</td><td data-l="主要動作">按住說 30 秒</td><td data-l="關鍵設計">語音轉成三行文字：這隊今天最卡的、明天第一題出什麼、要特別留意誰；可改字</td></tr>
+<tr><th scope="row">週報確認</th><td data-l="版面">每個孩子一張 LINE 卡的預覽</td><td data-l="主要動作">「全部送出」</td><td data-l="關鍵設計">逐張可改一句話；不確認不會送（第一堂當晚例外：21:15 未確認則提醒一次）</td></tr>
+<tr><th scope="row">學生狀態</th><td data-l="版面">小隊為列、卡點為欄的格狀圖（珊瑚／松綠／金）</td><td data-l="主要動作">點一格看歷程</td><td data-l="關鍵設計">不排名；可依「還沒開口」「兩週沒練」篩選</td></tr>
+<tr><th scope="row">行事曆</th><td data-l="版面">週檢視；固定小隊為色塊，段考日為直線</td><td data-l="主要動作">設定可上課時段</td><td data-l="關鍵設計">可匯出到手機行事曆；期中考週可預先標「不排課」</td></tr>
+<tr><th scope="row">請假與代課</th><td data-l="版面">請假：選哪一堂 → 系統顯示可代課老師數 → 送出；代課：收到邀請卡含課前一頁摘要與代課加給</td><td data-l="主要動作">「送出請假」／「我來代」</td><td data-l="關鍵設計">48 小時前請假不扣；代課老師看得到這一隊的卡點卡，看不到家長聯絡方式</td></tr>
+<tr><th scope="row">收入與出帳</th><td data-l="版面">本月每堂一列：學費、分潤比例、保底是否啟動、獎金；上方一條「距離下一級還差幾堂」</td><td data-l="主要動作">「下載明細」</td><td data-l="關鍵設計">每個數字都能展開算式；出帳日固定並顯示在頁首</td></tr>
+<tr><th scope="row">設定</th><td data-l="版面">裝置檢查、通知、收款帳戶、個人介紹（給家長看的 30 秒自介）</td><td data-l="主要動作">—</td><td data-l="關鍵設計">收款帳戶變更需二次驗證</td></tr>
+</tbody></table></div>
+<h3>6.3 老師手機</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">卡片</th><th scope="col">內容</th><th scope="col">按鈕</th></tr></thead>
+<tbody>
+<tr><th scope="row">有一隊可以接</th><td data-l="內容">三個卡點、時段、每堂預估收入</td><td data-l="按鈕">「接這一隊」／「這次先不要」</td></tr>
+<tr><th scope="row">課前一頁好了</th><td data-l="內容">三題縮圖</td><td data-l="按鈕">「照用」／「晚點用電腦改」</td></tr>
+<tr><th scope="row">週報待確認</th><td data-l="內容">幾位孩子</td><td data-l="按鈕">「全部送出」／「逐張看」</td></tr>
+<tr><th scope="row">30 分鐘後上課</th><td data-l="內容">小隊名</td><td data-l="按鈕">「加入行事曆」</td></tr>
+<tr><th scope="row">代課邀請</th><td data-l="內容">時段、加給金額</td><td data-l="按鈕">「我來代」／「沒辦法」</td></tr>
+<tr><th scope="row">緊急：斷線時語音接回</th><td data-l="內容">—</td><td data-l="按鈕">「用手機先接回教室」</td></tr>
+</tbody></table></div>
+<p>老師的提醒管道（LINE 或網頁推播）見第 11 章第 4 題。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c7">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no honey">07</div><div><div class="kicker">設計系統（多裝置層）與動態規範</div><h2>四個斷點、一組動態語言：兩個圓怎麼動</h2></div></div>
+<div class="prose-wide">
+<p>品牌 token（顏色、字體、圓角、用詞）沿用品牌視覺規範 v1.0，本章只補「多裝置」與「動態」兩層。</p>
+<h3>7.1 斷點</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">斷點</th><th scope="col">代表裝置</th><th scope="col">版面</th><th scope="col">導覽</th></tr></thead>
+<tbody>
+<tr><th scope="row">375（360–767）</th><td data-l="代表裝置">手機直向</td><td data-l="版面">單欄；卡片滿版、左右留 16</td><td data-l="導覽">底部三分頁＋中央相機鈕</td></tr>
+<tr><th scope="row">768（768–1023）</th><td data-l="代表裝置">iPad 直向、小平板</td><td data-l="版面">單欄加寬或上下分割（教室：白板上、人在下）</td><td data-l="導覽">底部分頁</td></tr>
+<tr><th scope="row">1024（1024–1279）</th><td data-l="代表裝置">iPad 橫向、Chromebook</td><td data-l="版面">雙欄；教室為白板＋右欄 240</td><td data-l="導覽">左側窄導覽（只有圖示）</td></tr>
+<tr><th scope="row">1280 以上</th><td data-l="代表裝置">筆電、桌機</td><td data-l="版面">雙欄到三欄；教室為白板＋右欄 320；老師多一欄控制</td><td data-l="導覽">左側導覽（圖示＋文字）</td></tr>
+</tbody></table></div>
+<p>內容最大寬 1120；教室例外，白板吃滿可用寬度。所有頁面在 375 不得出現水平捲動。</p>
+<h3>7.2 字級與觸控目標</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">項目</th><th scope="col">手機</th><th scope="col">平板</th><th scope="col">桌機</th></tr></thead>
+<tbody>
+<tr><th scope="row">內文</th><td data-l="手機">15.5px／行高 1.75</td><td data-l="平板">16px</td><td data-l="桌機">15.5px</td></tr>
+<tr><th scope="row">大標</th><td data-l="手機">26–30px、字重 900</td><td data-l="平板">32–36px</td><td data-l="桌機">36–44px</td></tr>
+<tr><th scope="row">數字（Outfit 600）</th><td data-l="手機">與內文同級或更大</td><td data-l="平板">同左</td><td data-l="桌機">同左</td></tr>
+<tr><th scope="row">白板上的題目</th><td data-l="手機">不小於 18px</td><td data-l="平板">不小於 20px</td><td data-l="桌機">不小於 20px</td></tr>
+<tr><th scope="row">觸控目標</th><td data-l="手機">至少 48×48，間距 8</td><td data-l="平板">至少 48×48</td><td data-l="桌機">滑鼠目標至少 32 高</td></tr>
+<tr><th scope="row">教室麥克風鈕</th><td data-l="手機">64</td><td data-l="平板">64</td><td data-l="桌機">56</td></tr>
+<tr><th scope="row">主要按鈕</th><td data-l="手機">高 56、滿版、圓角 18</td><td data-l="平板">高 56、寬 240 以上</td><td data-l="桌機">高 48</td></tr>
+</tbody></table></div>
+<p>系統字級放大到 200% 時版面不破、不截字；按鈕文字不超過 8 個字。</p>
+<h3>7.3 深色與關燈</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">模式</th><th scope="col">觸發</th><th scope="col">色彩</th><th scope="col">行為差異</th></tr></thead>
+<tbody>
+<tr><th scope="row">淺色</th><td data-l="觸發">預設</td><td data-l="色彩">燕麥底、白卡</td><td data-l="行為差異">—</td></tr>
+<tr><th scope="row">深色</th><td data-l="觸發">系統深色</td><td data-l="色彩">底 #0C1412、卡 #131D1A、字 #EAF1EE、線 #1F2C28；主色改用較亮的松綠讓對比達 4.5:1</td><td data-l="行為差異">珊瑚與金降低面積、不降低飽和</td></tr>
+<tr><th scope="row">關燈</th><td data-l="觸發">22:30–06:00（學生端）</td><td data-l="色彩">同深色，再降一階亮度</td><td data-l="行為差異">小陪不出聲、不開新任務；不能手動關掉</td></tr>
+<tr><th scope="row">教室</th><td data-l="觸發">上課中</td><td data-l="色彩">跟隨系統，但白板永遠是淺底</td><td data-l="行為差異">老師可切「黑板」底色，全隊同步</td></tr>
+</tbody></table></div>
+<h3>7.4 元件清單與狀態</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">元件</th><th scope="col">用在哪</th><th scope="col">狀態</th></tr></thead>
+<tbody>
+<tr><th scope="row">主要按鈕</th><td data-l="用在哪">全部</td><td data-l="狀態">一般、按下（縮到 0.97）、處理中（兩個圓呼吸）、停用、完成（短暫轉松綠勾）</td></tr>
+<tr><th scope="row">卡點格</th><td data-l="用在哪">地圖、學生狀態、週報</td><td data-l="狀態">卡住（珊瑚）、學會（松綠）、已掌握（金）、又鬆了（松綠＋金色細框）、未開始（線框）</td></tr>
+<tr><th scope="row">小陪</th><td data-l="用在哪">手機、教室</td><td data-l="狀態">待命、在聽、說話、學會；另有關燈（靜止）</td></tr>
+<tr><th scope="row">隊友圓</th><td data-l="用在哪">教室、小隊頁</td><td data-l="狀態">在線、說話中、舉手、有發言權、重新連線中、未到</td></tr>
+<tr><th scope="row">六段進度</th><td data-l="用在哪">教室</td><td data-l="狀態">未到、進行中（含倒數）、已完成、暫停</td></tr>
+<tr><th scope="row">發言計時環</th><td data-l="用在哪">教室</td><td data-l="狀態">進行、最後 15 秒、走完</td></tr>
+<tr><th scope="row">連線小點</th><td data-l="用在哪">教室頂列</td><td data-l="狀態">好、慢、重新連線、離線</td></tr>
+<tr><th scope="row">錄製標籤</th><td data-l="用在哪">教室頂列</td><td data-l="狀態">只錄白板、已暫停</td></tr>
+<tr><th scope="row">對話泡泡</th><td data-l="用在哪">小陪</td><td data-l="狀態">小陪（薄荷底）、我（白底）、示範一步（薄荷底＋算式逐字）</td></tr>
+<tr><th scope="row">相機取景</th><td data-l="用在哪">拍題、紙本鏡頭、考卷</td><td data-l="狀態">取景、對焦、已拍、上傳中、排隊中</td></tr>
+<tr><th scope="row">錄音鈕</th><td data-l="用在哪">說給我聽、老師課後紀錄</td><td data-l="狀態">待命、錄音中（環形進度）、可重錄、送出中</td></tr>
+<tr><th scope="row">接班卡</th><td data-l="用在哪">老師</td><td data-l="狀態">可接、保留中（倒數）、已接、已被接走、已截止</td></tr>
+<tr><th scope="row">空畫面</th><td data-l="用在哪">全部</td><td data-l="狀態">兩個圓＋一句話＋（至多）一顆按鈕</td></tr>
+<tr><th scope="row">提示條</th><td data-l="用在哪">全部</td><td data-l="狀態">訊息、需要注意（珊瑚）、離線；不用紅色</td></tr>
+</tbody></table></div>
+<p>每個元件交付時都要有：四個斷點、淺色與深色、鍵盤焦點、減少動態、載入與錯誤五種檢查。</p>
+<h3>7.5 動態與趣味互動規範</h3>
+<p>共通：緩動一律 <code>cubic-bezier(.2,.8,.2,1)</code>（下表稱「品牌緩動」）；一般切換 0.45 秒；只動 transform 與 opacity；同一時間畫面上只有一個「主角動態」；慶祝只用品牌色小圓點，不用彩帶、星星、表情符號；任何動態都不擋操作（可被下一次點擊打斷）。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">動態</th><th scope="col">觸發時機</th><th scope="col">時長</th><th scope="col">緩動</th><th scope="col">可否重播</th><th scope="col">減少動態時的替代</th></tr></thead>
+<tbody>
+<tr><th scope="row"><b>翻過去</b>（招牌）</th><td data-l="觸發時機">再測通過，卡點由松綠變金</td><td data-l="時長">0.7 秒；翻到 90 度時換色</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">可：在地圖長按該格重看一次</td><td data-l="減少動態時的替代">0.2 秒淡入換色</td></tr>
+<tr><th scope="row">圓點散開</th><td data-l="觸發時機">翻過去結束的瞬間；全隊都完成「我搞懂的」</td><td data-l="時長">0.9 秒；12–18 顆品牌色小圓點向外散開後淡出</td><td data-l="緩動">先快後慢</td><td data-l="可否重播">否（一次一格只放一次）</td><td data-l="減少動態時的替代">不播，改在格子旁顯示一顆靜止金點</td></tr>
+<tr><th scope="row">小陪：待命</th><td data-l="觸發時機">無互動時</td><td data-l="時長">4 秒一循環，兩圓縮放 1–1.04</td><td data-l="緩動">正弦</td><td data-l="可否重播">持續</td><td data-l="減少動態時的替代">靜止</td></tr>
+<tr><th scope="row">小陪：在聽</th><td data-l="觸發時機">孩子在錄音、打字、上傳</td><td data-l="時長">0.45 秒浮起 6px，之後隨音量微幅起伏</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">持續到輸入結束</td><td data-l="減少動態時的替代">靜止＋外框加粗</td></tr>
+<tr><th scope="row">小陪：說話</th><td data-l="觸發時機">小陪輸出文字時</td><td data-l="時長">每句一次一縮一放，0.6 秒</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">每句一次</td><td data-l="減少動態時的替代">靜止，文字直接出現</td></tr>
+<tr><th scope="row">小陪：學會</th><td data-l="觸發時機">孩子說給我聽通過、下一題自己做對</td><td data-l="時長">0.8 秒，兩圓一起跳一次、落地微壓</td><td data-l="緩動">彈性（單次過衝）</td><td data-l="可否重播">否</td><td data-l="減少動態時的替代">兩圓由淡到實 0.2 秒</td></tr>
+<tr><th scope="row">兩個圓靠攏（主視覺）</th><td data-l="觸發時機">首頁首屏載入；之後隨捲動或指標位置，兩圓距離改變，重疊處顏色加深；輕點可把其中一個圓拉開再放手彈回</td><td data-l="時長">載入 1.2 秒；互動即時跟隨</td><td data-l="緩動">品牌緩動；放手時彈性</td><td data-l="可否重播">可（每次互動）</td><td data-l="減少動態時的替代">靜態商標</td></tr>
+<tr><th scope="row">湊隊：小圓被吸進大圓</th><td data-l="觸發時機">湊隊畫面每多一位隊友；老師接班卡上成員到齊</td><td data-l="時長">每顆 0.6 秒，沿弧線飛入並在大圓邊緣排好；大圓隨之長大一點</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">否（進頁面時依實際人數播一次）</td><td data-l="減少動態時的替代">小圓直接出現在定位，逐顆淡入</td></tr>
+<tr><th scope="row">六段進度的節拍</th><td data-l="觸發時機">上課中每一段切換</td><td data-l="時長">目前這一格每 2 秒輕微呼吸一次；切段時下一格 0.45 秒填滿、前一格縮成實心點；最後 10 秒呼吸加快為每秒一次</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">持續</td><td data-l="減少動態時的替代">靜態填色＋文字倒數</td></tr>
+<tr><th scope="row">發言權交接</th><td data-l="觸發時機">「換我講」</td><td data-l="時長">0.6 秒，講者的圓由右欄飛到白板上緣並放大 1.6 倍，上一位飛回</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">否</td><td data-l="減少動態時的替代">位置不動，外框加粗並標「正在講」</td></tr>
+<tr><th scope="row">分兩小組</th><td data-l="觸發時機">第 5 段開始</td><td data-l="時長">0.8 秒，圓各自滑向左右兩側並靠攏</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">否</td><td data-l="減少動態時的替代">直接顯示兩組名單</td></tr>
+<tr><th scope="row">成班的儀式感</th><td data-l="觸發時機">老師按下「接這一隊」；學生與家長端收到成班</td><td data-l="時長">共 2.4 秒：成員小圓依序靠攏（1.2）→ 老師的圓最後進來與大家重疊、重疊處加深（0.6）→ 圓點散開＋小隊名浮現（0.6）</td><td data-l="緩動">品牌緩動；最後一拍彈性</td><td data-l="可否重播">可：小隊頁點隊徽重看</td><td data-l="減少動態時的替代">一張靜態隊徽＋一句「成班了」</td></tr>
+<tr><th scope="row">關燈</th><td data-l="觸發時機">22:00–22:30</td><td data-l="時長">8 秒緩慢轉暗；22:30 兩圓靠在一起停住</td><td data-l="緩動">線性</td><td data-l="可否重播">否</td><td data-l="減少動態時的替代">直接切換深色</td></tr>
+<tr><th scope="row">頁面切換</th><td data-l="觸發時機">導覽</td><td data-l="時長">0.45 秒，內容上移 12px 並淡入</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">—</td><td data-l="減少動態時的替代">無位移，僅 0.15 秒淡入</td></tr>
+<tr><th scope="row">按下回饋</th><td data-l="觸發時機">任何按鈕</td><td data-l="時長">0.12 秒縮到 0.97</td><td data-l="緩動">品牌緩動</td><td data-l="可否重播">—</td><td data-l="減少動態時的替代">改為底色變化</td></tr>
+</tbody></table></div>
+<p><b>趣味不等於吵</b>：每個畫面的「驚喜」預算是一個。上課中除了節拍與發言權交接外不放其他裝飾動態；地圖是唯一可以盡情玩的地方（長按重看、格子之間的連線會隨手指微微彎曲）。聲音：預設靜音；只有「翻過去」有一個可關的短音。</p>
+<h3>7.6 低效能裝置降級</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">判斷</th><th scope="col">降級</th></tr></thead>
+<tbody>
+<tr><th scope="row">記憶體 4GB 以下、或連續 2 秒幀率低於 40</th><td data-l="降級">關閉圓點散開的粒子數（18→6）、主視覺改靜態、白板筆跡平滑降一級</td></tr>
+<tr><th scope="row">上課中處理器吃緊（視訊解碼掉幀）</th><td data-l="降級">動態全部降為淡入淡出；隊友小格固定為色圓</td></tr>
+<tr><th scope="row">省電模式</th><td data-l="降級">小陪待命呼吸停止</td></tr>
+</tbody></table></div>
+<p>降級只影響裝飾，不影響「翻過去」的顏色變化與任何功能。</p>
+<h3>7.7 無障礙</h3>
+<ul><li>對比 4.5:1 以上；狀態不只靠顏色（卡點格同時有形狀：卡住是空心缺口、學會是實心、已掌握是實心加外圈）。</li><li>全部功能可用鍵盤完成；焦點框 2px 松綠、不被裁切；教室有快速鍵總表（按 ? 開啟）。</li><li>螢幕閱讀器：六段切換、發言權、連線狀態以禮貌模式播報；動態圓點對輔助技術隱藏。</li><li>數學式提供文字讀法（例如「x 的平方加 6x」）。</li><li>聽力：老師講解提供即時字幕（試點列為選配，見第 10 章）。</li><li>說話困難或不方便開麥的孩子：可用白板逐步寫＋打字完成「講給隊友聽」，同樣算一次有效開口。</li><li>尊重系統「減少動態」；另在設定提供手動開關。</li></ul>
+<h3>7.8 文案語氣</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">情境</th><th scope="col">這樣寫</th><th scope="col">不這樣寫</th></tr></thead>
+<tbody>
+<tr><th scope="row">答錯</th><td data-l="這樣寫">「這一步還卡著，我們看一下第二行。」</td><td data-l="不這樣寫">「答錯了」「再接再厲」</td></tr>
+<tr><th scope="row">再測沒過</th><td data-l="這樣寫">「它又鬆了，再走一次。」</td><td data-l="不這樣寫">「未通過」「退步」</td></tr>
+<tr><th scope="row">斷線</th><td data-l="這樣寫">「正在接回來，你寫的都還在。」</td><td data-l="不這樣寫">「連線失敗（錯誤代碼）」</td></tr>
+<tr><th scope="row">上限</th><td data-l="這樣寫">「今天問夠了，剩下的帶去課上。」</td><td data-l="不這樣寫">「已達每日使用上限」</td></tr>
+<tr><th scope="row">催練習</th><td data-l="這樣寫">不催；只在今天頁寫「兩件事，約 8 分鐘」</td><td data-l="不這樣寫">「你已經三天沒練了」</td></tr>
+<tr><th scope="row">對家長</th><td data-l="這樣寫">「今晚可以問他……」</td><td data-l="不這樣寫">「您的孩子本週表現……」</td></tr>
+<tr><th scope="row">對老師</th><td data-l="這樣寫">「這一隊這週要解的 3 題，你確認才用。」</td><td data-l="不這樣寫">「系統已為您自動排課」</td></tr>
+<tr><th scope="row">小隊</th><td data-l="這樣寫">小隊、隊友、卡點、已掌握、說給我聽</td><td data-l="不這樣寫">班級、對手、弱點、滿分、口試</td></tr>
+</tbody></table></div>
+<p>句子短、用「我」、少用驚嘆號；按鈕用動詞開頭；錯誤訊息永遠包含「現在可以怎麼做」。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c8">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no ">08</div><div><div class="kicker">畫面清單</div><h2>每個角色、每個裝置，一張表</h2></div></div>
+<div class="prose-wide">
+<p>階段欄：<b>已有</b>＝POC 已可操作（示範資料）；<b>試點</b>＝試點版要做；<b>正式</b>＝正式版才做。POC 的教室為模擬畫面，沒有真實視訊與多人白板。</p>
+<h3>8.1 學生 · 手機</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">目的</th><th scope="col">主要動作</th><th scope="col">資料</th><th scope="col">狀態</th><th scope="col">階段</th></tr></thead>
+<tbody>
+<tr><th scope="row">開場三問</th><td data-l="目的">兩分鐘內找到第一個卡點</td><td data-l="主要動作">回答目標、學校、段考日</td><td data-l="資料">學生、學校段考日</td><td data-l="狀態">填寫中、完成</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">診斷</th><td data-l="目的">看三題或拍考卷</td><td data-l="主要動作">作答／拍照</td><td data-l="資料">診斷題、卡點</td><td data-l="狀態">進行、結果</td><td data-l="階段">已有（拍考卷為模擬）</td></tr>
+<tr><th scope="row">診斷結果一頁</th><td data-l="目的">「你只卡在一步」</td><td data-l="主要動作">轉給家人（LINE）</td><td data-l="資料">卡點、先備單元</td><td data-l="狀態">有卡點、無卡點</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">可上課時段</th><td data-l="目的">湊隊條件</td><td data-l="主要動作">勾時段</td><td data-l="資料">可上課時段</td><td data-l="狀態">未填、已填</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">湊隊中／成班</th><td data-l="目的">看見隊友到齊</td><td data-l="主要動作">等待／看老師自介</td><td data-l="資料">小隊、成員</td><td data-l="狀態">湊隊中、已成班、改 1 對 3、未成班</td><td data-l="階段">已有（無儀式動態）</td></tr>
+<tr><th scope="row">今天</th><td data-l="目的">今天的兩件事</td><td data-l="主要動作">開始第一件</td><td data-l="資料">練習、再測排程</td><td data-l="狀態">未做、做一半、今天到這裡、關燈</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">拍題</th><td data-l="目的">帶題進來</td><td data-l="主要動作">快門</td><td data-l="資料">圖片</td><td data-l="狀態">取景、上傳、排隊</td><td data-l="階段">試點（POC 為示範圖）</td></tr>
+<tr><th scope="row">小陪對話</th><td data-l="目的">往前一步</td><td data-l="主要動作">回答、示範一步</td><td data-l="資料">對話、步驟判斷</td><td data-l="狀態">示範模式、上限、安全轉介</td><td data-l="階段">已有（規則引擎）；試點接模型</td></tr>
+<tr><th scope="row">說給我聽</th><td data-l="目的">用自己的話講</td><td data-l="主要動作">按住說</td><td data-l="資料">錄音（不留原檔）、摘要</td><td data-l="狀態">錄音、重錄、通過、再試</td><td data-l="階段">已有（模擬）；試點接語音辨識</td></tr>
+<tr><th scope="row">每日練習</th><td data-l="目的">2–4 題</td><td data-l="主要動作">作答</td><td data-l="資料">題目、作答紀錄</td><td data-l="狀態">進行、完成、離線</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">再測</th><td data-l="目的">無提示確認</td><td data-l="主要動作">作答</td><td data-l="資料">再測紀錄</td><td data-l="狀態">到期、通過、再走一次</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">卡點地圖</th><td data-l="目的">看見進度</td><td data-l="主要動作">點格子</td><td data-l="資料">卡點狀態</td><td data-l="狀態">三色、又鬆了</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">小隊</th><td data-l="目的">有人在等</td><td data-l="主要動作">聽老師語音</td><td data-l="資料">課後紀錄、連續格、白板重播</td><td data-l="狀態">有新語音、無</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">家人綁定</th><td data-l="目的">讓家長收到週報</td><td data-l="主要動作">顯示代碼</td><td data-l="資料">綁定代碼</td><td data-l="狀態">未綁、已綁 1–2 位</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">段考考卷</th><td data-l="目的">前後對照</td><td data-l="主要動作">拍考卷</td><td data-l="資料">考卷圖、對照</td><td data-l="狀態">未上傳、分析中、完成</td><td data-l="階段">已有（示範）</td></tr>
+<tr><th scope="row">設定</th><td data-l="目的">通知、省流量、關燈時間</td><td data-l="主要動作">—</td><td data-l="資料">偏好</td><td data-l="狀態">—</td><td data-l="階段">已有（部分）</td></tr>
+</tbody></table></div>
+<h3>8.2 學生 · 平板／電腦（教室）</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">目的</th><th scope="col">主要動作</th><th scope="col">資料</th><th scope="col">狀態</th><th scope="col">階段</th></tr></thead>
+<tbody>
+<tr><th scope="row">裝置檢查</th><td data-l="目的">開課前排除問題</td><td data-l="主要動作">測麥克風、喇叭、網路、筆</td><td data-l="資料">裝置檢查紀錄</td><td data-l="狀態">通過、建議改善、無法上課（給替代路徑）</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">等候室</th><td data-l="目的">安心等開始</td><td data-l="主要動作">無（看隊友的圓到齊）</td><td data-l="資料">出席</td><td data-l="狀態">早到、準時、老師未到</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">教室</th><td data-l="目的">六段小隊課</td><td data-l="主要動作">依段落</td><td data-l="資料">白板、視訊、段落事件</td><td data-l="狀態">六段、分組、低頻寬、重連</td><td data-l="階段">已有（模擬）；試點真實化</td></tr>
+<tr><th scope="row">我的白板頁</th><td data-l="目的">自己試試</td><td data-l="主要動作">寫、拍紙本貼上</td><td data-l="資料">個人頁</td><td data-l="狀態">書寫、已交、被上板</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">紙本鏡頭（手機）</th><td data-l="目的">把紙本算式貼上白板</td><td data-l="主要動作">拍</td><td data-l="資料">圖片</td><td data-l="狀態">已配對、已貼上</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">我搞懂的</th><td data-l="目的">收尾</td><td data-l="主要動作">選一格＋一句話</td><td data-l="資料">出場卡</td><td data-l="狀態">未填、已填</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">白板重播</th><td data-l="目的">沒跟上的再看</td><td data-l="主要動作">播放三段</td><td data-l="資料">白板事件、老師音訊</td><td data-l="狀態">可看、已過期</td><td data-l="階段">試點</td></tr>
+</tbody></table></div>
+<h3>8.3 家長 · LINE</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">目的</th><th scope="col">主要動作</th><th scope="col">資料</th><th scope="col">狀態</th><th scope="col">階段</th></tr></thead>
+<tbody>
+<tr><th scope="row">綁定與同意書（LINE 內網頁）</th><td data-l="目的">建立關係與同意</td><td data-l="主要動作">輸入代碼、勾同意</td><td data-l="資料">家長、綁定、同意紀錄</td><td data-l="狀態">未綁、已綁、已撤回</td><td data-l="階段">試點（POC 為模擬 LINE 畫面）</td></tr>
+<tr><th scope="row">診斷摘要卡</th><td data-l="目的">付款前看到價值</td><td data-l="主要動作">看小隊與老師</td><td data-l="資料">診斷</td><td data-l="狀態">—</td><td data-l="階段">已有（模擬）</td></tr>
+<tr><th scope="row">成班／未成班卡</th><td data-l="目的">知道開不開</td><td data-l="主要動作">看小隊／看退回</td><td data-l="資料">小隊、款項</td><td data-l="狀態">成班、1 對 3、未成班</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">週報卡</th><td data-l="目的">這週搞懂什麼</td><td data-l="主要動作">看白板 3 分鐘、我問了</td><td data-l="資料">週報</td><td data-l="狀態">草稿、已送、已讀</td><td data-l="階段">已有（模擬）；試點真送</td></tr>
+<tr><th scope="row">結業點卡</th><td data-l="目的">可停可續</td><td data-l="主要動作">繼續走／停在這裡</td><td data-l="資料">方案</td><td data-l="狀態">—</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">段考對照頁</th><td data-l="目的">看見 8 週解決了什麼</td><td data-l="主要動作">上傳考卷</td><td data-l="資料">考卷、對照</td><td data-l="狀態">未上傳、完成</td><td data-l="階段">已有（示範）</td></tr>
+<tr><th scope="row">方案與扣款頁</th><td data-l="目的">錢花在哪</td><td data-l="主要動作">付款、請假、退回</td><td data-l="資料">訂單</td><td data-l="狀態">—</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">多子女切換</th><td data-l="目的">換孩子</td><td data-l="主要動作">選孩子</td><td data-l="資料">綁定</td><td data-l="狀態">—</td><td data-l="階段">正式（試點以分卡處理）</td></tr>
+</tbody></table></div>
+<h3>8.4 老師 · 桌機</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">目的</th><th scope="col">主要動作</th><th scope="col">資料</th><th scope="col">狀態</th><th scope="col">階段</th></tr></thead>
+<tbody>
+<tr><th scope="row">今天</th><td data-l="目的">看待辦</td><td data-l="主要動作">點第一件</td><td data-l="資料">課表、待辦</td><td data-l="狀態">有待辦、清空</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">接班卡</th><td data-l="目的">決定接不接</td><td data-l="主要動作">接這一隊</td><td data-l="資料">小隊、預估收入</td><td data-l="狀態">可接、保留、已接、被接走</td><td data-l="階段">已有</td></tr>
+<tr><th scope="row">課前一頁</th><td data-l="目的">確認三題</td><td data-l="主要動作">確認</td><td data-l="資料">題目、卡點分布</td><td data-l="狀態">草稿、已確認、已改</td><td data-l="階段">已有（不可改題）；試點可改</td></tr>
+<tr><th scope="row">教室控制台</th><td data-l="目的">控場</td><td data-l="主要動作">下一段</td><td data-l="資料">教室即時狀態</td><td data-l="狀態">六段、分組、錄製</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">課後紀錄</th><td data-l="目的">30 秒語音</td><td data-l="主要動作">按住說</td><td data-l="資料">語音、草稿</td><td data-l="狀態">未錄、已送</td><td data-l="階段">已有（模擬）</td></tr>
+<tr><th scope="row">週報確認</th><td data-l="目的">送出給家長</td><td data-l="主要動作">全部送出</td><td data-l="資料">週報草稿</td><td data-l="狀態">待確認、已送</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">學生狀態</th><td data-l="目的">看這一隊</td><td data-l="主要動作">點格子</td><td data-l="資料">卡點狀態</td><td data-l="狀態">—</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">收入與出帳</th><td data-l="目的">看得懂的收入</td><td data-l="主要動作">下載明細</td><td data-l="資料">堂次、分潤、保底</td><td data-l="狀態">本月、已出帳</td><td data-l="階段">已有（試算）</td></tr>
+<tr><th scope="row">行事曆</th><td data-l="目的">管時段</td><td data-l="主要動作">設定可上課時段</td><td data-l="資料">時段、課表</td><td data-l="狀態">—</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">請假與代課</th><td data-l="目的">不讓小隊開天窗</td><td data-l="主要動作">送出請假／我來代</td><td data-l="資料">請假、代課邀請</td><td data-l="狀態">申請、已找到、找不到</td><td data-l="階段">正式（試點由營運人工處理）</td></tr>
+</tbody></table></div>
+<h3>8.5 老師 · 手機</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">畫面</th><th scope="col">目的</th><th scope="col">主要動作</th><th scope="col">資料</th><th scope="col">狀態</th><th scope="col">階段</th></tr></thead>
+<tbody>
+<tr><th scope="row">提醒卡片串</th><td data-l="目的">快速處理</td><td data-l="主要動作">一顆按鈕</td><td data-l="資料">通知</td><td data-l="狀態">未處理、已處理</td><td data-l="階段">試點</td></tr>
+<tr><th scope="row">接班卡（精簡）</th><td data-l="目的">搶時效</td><td data-l="主要動作">接這一隊</td><td data-l="資料">同桌機</td><td data-l="狀態">同桌機</td><td data-l="階段">已有（響應式）</td></tr>
+<tr><th scope="row">語音接回教室</th><td data-l="目的">斷線備援</td><td data-l="主要動作">接回</td><td data-l="資料">教室</td><td data-l="狀態">—</td><td data-l="階段">試點</td></tr>
+</tbody></table></div>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c9">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no pine">09</div><div><div class="kicker">技術架構對應</div><h2>從來源就不收：隱私寫進架構</h2></div></div>
+<div class="prose-wide">
+<h3>9.1 分層</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">層</th><th scope="col">試點版做法</th><th scope="col">對應 POC 現況</th></tr></thead>
+<tbody>
+<tr><th scope="row">前端</th><td data-l="試點版做法">單一網頁應用＋PWA（Service Worker 快取外殼與當日題目、Web App Manifest、加入主畫面引導）；教室為獨立路由並延遲載入視訊與白板程式</td><td data-l="對應 POC 現況">純靜態前端，資料先存本機、有後端才同步</td></tr>
+<tr><th scope="row">即時層：影音</th><td data-l="試點版做法">LiveKit 房間＝一堂課；分兩小組用同房內的訂閱分組（不另開房，老師可同時聽兩組）</td><td data-l="對應 POC 現況">無（模擬）</td></tr>
+<tr><th scope="row">即時層：白板</th><td data-l="試點版做法">tldraw 同步伺服器自架；頁面＝共用頁＋每人一頁；事件寫入儲存供重播</td><td data-l="對應 POC 現況">無</td></tr>
+<tr><th scope="row">即時層：課堂狀態</th><td data-l="試點版做法">六段、發言權、計時走 LiveKit 資料通道，以伺服器時間為準；老師端是唯一可推進的角色</td><td data-l="對應 POC 現況">前端計時</td></tr>
+<tr><th scope="row">後端 API</th><td data-l="試點版做法">既有 REST 服務擴充；新增教室權杖簽發、事件接收、LINE webhook</td><td data-l="對應 POC 現況">已有學生、診斷、湊隊、接班、練習、再測、週報等端點</td></tr>
+<tr><th scope="row">小陪</th><td data-l="試點版做法">語言模型只負責對話；算式判斷走確定性引擎；語音轉文字後即刪原檔</td><td data-l="對應 POC 現況">前端規則引擎＋預寫對話（示範模式）</td></tr>
+<tr><th scope="row">儲存</th><td data-l="試點版做法">關聯式資料庫；白板事件與老師音訊放物件儲存，設定到期自動刪除</td><td data-l="對應 POC 現況">檔案型資料庫（可換）</td></tr>
+<tr><th scope="row">LINE</th><td data-l="試點版做法">官方帳號＋Messaging API（推播 Flex、圖文選單、webhook）＋LINE Login＋LINE 內網頁</td><td data-l="對應 POC 現況">模擬畫面</td></tr>
+</tbody></table></div>
+<h3>9.2 主要事件</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">事件</th><th scope="col">產生者</th><th scope="col">用途</th></tr></thead>
+<tbody>
+<tr><th scope="row">教室：加入、離開、重連、降級</th><td data-l="產生者">前端</td><td data-l="用途">裝置指標、出席</td></tr>
+<tr><th scope="row">段落切換</th><td data-l="產生者">老師端</td><td data-l="用途">錄製切點、節拍同步</td></tr>
+<tr><th scope="row">發言開始／結束（含秒數）</th><td data-l="產生者">伺服器（依發言權）</td><td data-l="用途">每人開口次數（試點第一優先指標）</td></tr>
+<tr><th scope="row">要提示、我也卡這裡、我聽懂了</th><td data-l="產生者">學生端</td><td data-l="用途">課後紀錄草稿、卡點統計</td></tr>
+<tr><th scope="row">上板同意</th><td data-l="產生者">學生端</td><td data-l="用途">錄製範圍</td></tr>
+<tr><th scope="row">練習作答、拍題、說給我聽通過、再測結果</th><td data-l="產生者">學生端</td><td data-l="用途">卡點狀態、北極星</td></tr>
+<tr><th scope="row">課後語音送出、課前一頁確認（含用時）</th><td data-l="產生者">老師端</td><td data-l="用途">隔天第一題、備課工時</td></tr>
+<tr><th scope="row">週報送出、已讀、「我問了」</th><td data-l="產生者">後端／LINE webhook</td><td data-l="用途">家長迴路</td></tr>
+<tr><th scope="row">綁定、同意、撤回</th><td data-l="產生者">LINE 內網頁</td><td data-l="用途">合規紀錄</td></tr>
+</tbody></table></div>
+<h3>9.3 資料模型變更</h3>
+<p>既有：學生、診斷、可上課時段、老師、小隊、成員、老師申請、堂次、課後紀錄、練習、再測、家長週報。</p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">新增／變更</th><th scope="col">欄位重點</th><th scope="col">原因</th></tr></thead>
+<tbody>
+<tr><th scope="row">家長、家長綁定</th><td data-l="欄位重點">LINE 使用者識別碼、孩子、關係、綁定時間</td><td data-l="原因">LINE 綁定與多子女</td></tr>
+<tr><th scope="row">同意紀錄</th><td data-l="欄位重點">項目（語音／錯題／白板錄影）、版本、時間、撤回時間</td><td data-l="原因">兒少個資</td></tr>
+<tr><th scope="row">綁定代碼</th><td data-l="欄位重點">6 碼、到期時間、已使用</td><td data-l="原因">綁定流程</td></tr>
+<tr><th scope="row">裝置與推播訂閱</th><td data-l="欄位重點">裝置類型、瀏覽器、是否加入主畫面、推播端點</td><td data-l="原因">通知與裝置指標</td></tr>
+<tr><th scope="row">裝置檢查</th><td data-l="欄位重點">麥克風、喇叭、網速、是否有筆、結果</td><td data-l="原因">開課前排除</td></tr>
+<tr><th scope="row">堂次（變更）</th><td data-l="欄位重點">加：房間識別、目前段落、各段起訖時間、錄製狀態</td><td data-l="原因">教室</td></tr>
+<tr><th scope="row">發言紀錄</th><td data-l="欄位重點">堂次、學生、開始、秒數、是否交棒</td><td data-l="原因">開口次數</td></tr>
+<tr><th scope="row">白板錄製</th><td data-l="欄位重點">堂次、事件檔位置、老師音訊位置、三段切點、到期日</td><td data-l="原因">只錄白板</td></tr>
+<tr><th scope="row">訊息紀錄</th><td data-l="欄位重點">對象、類型、送出時間、已讀、按鈕回傳</td><td data-l="原因">頻率上限與開啟率</td></tr>
+<tr><th scope="row">請假與代課</th><td data-l="欄位重點">堂次、原老師、代課老師、狀態、加給</td><td data-l="原因">老師端</td></tr>
+<tr><th scope="row">出帳</th><td data-l="欄位重點">月份、老師、每堂明細、保底啟動、獎金</td><td data-l="原因">收入頁</td></tr>
+<tr><th scope="row">安全事件</th><td data-l="欄位重點">等級、時間、接手人、處置</td><td data-l="原因">分級與時限</td></tr>
+</tbody></table></div>
+<h3>9.4 兒少隱私與錄影同意</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">項目</th><th scope="col">做法</th></tr></thead>
+<tbody>
+<tr><th scope="row">同意</th><td data-l="做法">法定代理人在 LINE 內網頁逐項明示同意；孩子端另有一頁白話說明（家人看得到什麼、看不到什麼）</td></tr>
+<tr><th scope="row">最小化</th><td data-l="做法">學生影像與聲音不錄；說給我聽轉文字後刪原檔；白板事件不含學生姓名</td></tr>
+<tr><th scope="row">保存</th><td data-l="做法">白板錄製與學習歷程於一期結束 30 天後刪除（家長可選擇保留歷程到下一期）</td></tr>
+<tr><th scope="row">取用</th><td data-l="做法">重播只限本隊與其綁定家長；串流、不可下載；老師離隊即失去存取</td></tr>
+<tr><th scope="row">截圖</th><td data-l="做法">網頁無法阻止截圖，所以從設計上降低可被截的內容：預設不顯示臉、個人白板頁不對隊友顯示名字</td></tr>
+<tr><th scope="row">第三方</th><td data-l="做法">影音、白板、語言模型供應商皆需簽資料處理約定並確認資料落地地區；不把可識別個人的資料送進模型訓練</td></tr>
+<tr><th scope="row">撤回</th><td data-l="做法">家長在圖文選單可隨時撤回任一項同意；撤回錄影同意後該生的上板作品不再進錄製</td></tr>
+</tbody></table></div>
+<p>法遵定位（線上服務的主管機關、退費級距、同意書文字）沿用產品規劃書第 9 章的待法務確認事項，本書不重複。</p>
+<h3>9.5 監控指標</h3>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">類別</th><th scope="col">指標</th><th scope="col">警戒值（設計基準，試點後修正）</th></tr></thead>
+<tbody>
+<tr><th scope="row">教室</th><td data-l="指標">進教室成功率</td><td data-l="警戒值（設計基準，試點後修正）">低於 98%</td></tr>
+<tr><th scope="row">教室</th><td data-l="指標">從點連結到聽見聲音的中位時間</td><td data-l="警戒值（設計基準，試點後修正）">高於 20 秒</td></tr>
+<tr><th scope="row">教室</th><td data-l="指標">每堂每人重連次數</td><td data-l="警戒值（設計基準，試點後修正）">高於 1 次</td></tr>
+<tr><th scope="row">教室</th><td data-l="指標">低頻寬模式占比</td><td data-l="警戒值（設計基準，試點後修正）">高於 15% 的學生堂次</td></tr>
+<tr><th scope="row">教室</th><td data-l="指標">聲音延遲（端到端）</td><td data-l="警戒值（設計基準，試點後修正）">高於 400 毫秒</td></tr>
+<tr><th scope="row">白板</th><td data-l="指標">筆畫延遲</td><td data-l="警戒值（設計基準，試點後修正）">高於 100 毫秒</td></tr>
+<tr><th scope="row">手機</th><td data-l="指標">首屏可互動時間（4G）</td><td data-l="警戒值（設計基準，試點後修正）">高於 3 秒</td></tr>
+<tr><th scope="row">手機</th><td data-l="指標">拍題送出成功率</td><td data-l="警戒值（設計基準，試點後修正）">低於 97%</td></tr>
+<tr><th scope="row">小陪</th><td data-l="指標">洩漏答案率、問完後下一題自己做對率</td><td data-l="警戒值（設計基準，試點後修正）">依產品規劃書</td></tr>
+<tr><th scope="row">LINE</th><td data-l="指標">送達率、開啟率、「我問了」比例</td><td data-l="警戒值（設計基準，試點後修正）">開啟率低於 60%</td></tr>
+<tr><th scope="row">隱私</th><td data-l="指標">學生音軌進入錄製的次數</td><td data-l="警戒值（設計基準，試點後修正）">必須為 0</td></tr>
+<tr><th scope="row">護欄</th><td data-l="指標">22:30 後的互動次數</td><td data-l="警戒值（設計基準，試點後修正）">必須為 0</td></tr>
+</tbody></table></div>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c10">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no ">10</div><div><div class="kicker">里程碑與驗收</div><h2>POC → 試點版 → 正式版</h2></div></div>
+<div class="prose-wide">
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">階段</th><th scope="col">裝置支援範圍</th><th scope="col">內容</th><th scope="col">驗收標準</th></tr></thead>
+<tbody>
+<tr><th scope="row"><b>POC（現在）</b></th><td data-l="裝置支援範圍">手機 375 與桌機瀏覽器；教室為模擬；LINE 為模擬畫面</td><td data-l="內容">三條流程可點完；示範資料；資料只留在本機</td><td data-l="驗收標準">375 無水平捲動；鍵盤可操作；頁面標示示範模式；公開內容不含任何公司與真實個資</td></tr>
+<tr><th scope="row"><b>試點版（建置 3 週＋上課 8 週）</b></th><td data-l="裝置支援範圍">學生上課：iPad（Safari）、Windows／macOS／Chromebook（Chrome、Edge）；手機與 Android 平板列為「可用、有等值路徑」。學生手機：PWA。家長：LINE 真實收發。老師：桌機 Chrome／Edge；手機只有提醒卡</td><td data-l="內容">真實視訊與多人白板、六段與分組、只錄白板、紙本鏡頭、低頻寬模式、斷線重連、LINE 綁定與週報、課前一頁可改題、課後語音</td><td data-l="驗收標準">8 隊 64 堂：進教室成功率 98% 以上；因裝置或網路而整堂無法上課為 0；四條裝置路徑都能完成六段主要動作；學生音軌進錄製為 0；第一堂當晚週報 100% 送達</td></tr>
+<tr><th scope="row"><b>正式版</b></th><td data-l="裝置支援範圍">加：Android 平板完整測試、老師 Safari、多子女切換、請假代課自助、即時字幕；視數據決定是否做原生 App</td><td data-l="內容">擴科目與多縣市所需的排程、出帳、客服後台</td><td data-l="驗收標準">同時 50 堂課的負載測試通過；無障礙檢核通過；資料到期自動刪除經稽核</td></tr>
+</tbody></table></div>
+<p><b>試點要量的裝置指標</b></p>
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">指標</th><th scope="col">為什麼量</th><th scope="col">影響的決策</th></tr></thead>
+<tbody>
+<tr><th scope="row">上課裝置組合（平板＋筆／平板無筆／電腦／只有手機）</th><td data-l="為什麼量">不知道家庭實際有什麼</td><td data-l="影響的決策">出借平板數量、紙本鏡頭要不要當預設</td></tr>
+<tr><th scope="row">各裝置路徑的每人開口次數與「自己試試」完成率</th><td data-l="為什麼量">等值路徑是否真的等值</td><td data-l="影響的決策">是否限制只有手機的孩子報名</td></tr>
+<tr><th scope="row">紙本鏡頭使用率</th><td data-l="為什麼量">紙本是否反而是主流</td><td data-l="影響的決策">白板工具的投資順序</td></tr>
+<tr><th scope="row">開鏡頭比例與是否影響開口</th><td data-l="為什麼量">「隊友是圓」的設計是否成立</td><td data-l="影響的決策">是否保留鏡頭選項</td></tr>
+<tr><th scope="row">進教室時間、重連次數、低頻寬占比（分家用網路與行動網路）</th><td data-l="為什麼量">網路基準是否太樂觀</td><td data-l="影響的決策">最低規格、供應商選擇</td></tr>
+<tr><th scope="row">PWA 加入主畫面比例、推播允許比例（分 iPhone 與 Android）</th><td data-l="為什麼量">推播缺口有多大</td><td data-l="影響的決策">是否做原生 App、學生是否也走 LINE</td></tr>
+<tr><th scope="row">每日練習的打開時段分布</th><td data-l="為什麼量">21:00 預設提醒是否對</td><td data-l="影響的決策">提醒時間、關燈前的緩衝</td></tr>
+<tr><th scope="row">LINE 週報開啟時間與開啟率、「我問了」比例</th><td data-l="為什麼量">家長迴路是否成立</td><td data-l="影響的決策">發送時段</td></tr>
+<tr><th scope="row">老師課前一頁用時、裝置（手寫板或 iPad）</th><td data-l="為什麼量">備課 10 分鐘是否成立</td><td data-l="影響的決策">老師端工具投資</td></tr>
+</tbody></table></div>
+<p><b>做原生 App 的觸發條件</b><span class="tag pos">立場</span>：iPhone 學生加入主畫面比例低於 30% 且每週練 3 天以上的比例明顯低於 Android；或拍題與錄音在瀏覽器的失敗率高於 3%。兩者都沒發生就不做。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c11">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no honey">11</div><div><div class="kicker">待拍板</div><h2>八題，拍了才能開工</h2></div></div>
+<div class="prose-wide">
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">#</th><th scope="col">題目</th><th scope="col">選項</th><th scope="col">建議</th><th scope="col">主要影響</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td data-l="題目">視訊供應商</td><td data-l="選項">LiveKit／Agora／Daily</td><td data-l="建議">LiveKit Cloud，介面包一層轉接</td><td data-l="主要影響">可否只錄老師音軌、日後能否自架</td></tr>
+<tr><th scope="row">2</th><td data-l="題目">白板</td><td data-l="選項">tldraw（要談授權）／Excalidraw（免費、多 2–3 週工）</td><td data-l="建議">試點用 tldraw 試用期，同時詢價；報價不合再換</td><td data-l="主要影響">試點時程與正式版授權費</td></tr>
+<tr><th scope="row">3</th><td data-l="題目">學生提醒要不要也走 LINE</td><td data-l="選項">只用 PWA 推播與行事曆／學生也加官方帳號</td><td data-l="建議">試點先不走 LINE，量 iPhone 推播缺口再定</td><td data-l="主要影響">「家長只在 LINE」的界線、孩子是否覺得被家長帳號盯著</td></tr>
+<tr><th scope="row">4</th><td data-l="題目">老師的提醒管道</td><td data-l="選項">LINE 官方帳號（老師專用）／網頁推播／簡訊</td><td data-l="建議">老師專用 LINE 帳號（與家長帳號分開）</td><td data-l="主要影響">接班時效、訊息費</td></tr>
+<tr><th scope="row">5</th><td data-l="題目">沒有平板的家庭</td><td data-l="選項">不處理（紙本鏡頭即可）／試點出借平板幾台</td><td data-l="建議">以紙本鏡頭為主，另備 5 台出借機當保險</td><td data-l="主要影響">成班率、試點預算</td></tr>
+<tr><th scope="row">6</th><td data-l="題目">只有手機可不可以報名</td><td data-l="選項">可以／可以但先提醒／不可以</td><td data-l="建議">可以但先提醒，試點量等值性後再定</td><td data-l="主要影響">可觸及家庭數與課堂品質</td></tr>
+<tr><th scope="row">7</th><td data-l="題目">開鏡頭政策</td><td data-l="選項">完全自選／老師可邀請但不可強制／第 1 堂請大家開一次</td><td data-l="建議">完全自選；老師端不提供「要求開鏡頭」按鈕</td><td data-l="主要影響">安全感與老師控場</td></tr>
+<tr><th scope="row">8</th><td data-l="題目">白板錄影保存期限與家長是否可下載</td><td data-l="選項">30 天不可下載／保留到下一期／可下載</td><td data-l="建議">一期結束 30 天、只能串流</td><td data-l="主要影響">隱私風險與家長感受</td></tr>
+</tbody></table></div>
+<p>另有兩件要先查清楚才拍得了板：tldraw 商業授權報價（查不到公開價）、LINE 官方帳號 2026-11-01 後的新價格級距（查不到確切數字）。</p>
+</div>
+</div>
+</section>
+
+<section class="ch" id="c12">
+<div class="wrap">
+<div class="ch-head"><div class="ch-no pine">12</div><div><div class="kicker">來源</div><h2>公開定價與平台文件（查詢日 2026-10-01）</h2></div></div>
+<div class="prose-wide">
+<div class="tbl-wrap"><table class="tbl cards">
+<thead><tr><th scope="col">項目</th><th scope="col">網址</th><th scope="col">取得內容</th></tr></thead>
+<tbody>
+<tr><th scope="row">LiveKit 定價</th><td data-l="網址"><a href="https://livekit.com/pricing" rel="noopener noreferrer">https://livekit.com/pricing</a></td><td data-l="取得內容">方案月費、含分鐘數、超出單價、流量與匯出單價</td></tr>
+<tr><th scope="row">Daily 定價</th><td data-l="網址"><a href="https://www.daily.co/pricing/video-sdk/" rel="noopener noreferrer">https://www.daily.co/pricing/video-sdk/</a></td><td data-l="取得內容">每參與者分鐘單價、免費分鐘、錄影單價</td></tr>
+<tr><th scope="row">Agora 定價</th><td data-l="網址"><a href="https://www.agora.io/en/pricing/" rel="noopener noreferrer">https://www.agora.io/en/pricing/</a></td><td data-l="取得內容">起始單價、免費分鐘、雲端錄製與白板單價；高畫質視訊單價查不到</td></tr>
+<tr><th scope="row">Zoom Video SDK 定價</th><td data-l="網址"><a href="https://www.zoom.com/en/products/video-sdk/pricing/" rel="noopener noreferrer">https://www.zoom.com/en/products/video-sdk/pricing/</a></td><td data-l="取得內容">查不到（頁面回應 404）</td></tr>
+<tr><th scope="row">tldraw 授權</th><td data-l="網址"><a href="https://tldraw.dev/pricing" rel="noopener noreferrer">https://tldraw.dev/pricing</a></td><td data-l="取得內容">正式環境需商業授權、100 天試用；價格未公開</td></tr>
+<tr><th scope="row">LINE 官方帳號</th><td data-l="網址"><a href="https://tw.linebiz.com/service/account-solutions/line-official-account/" rel="noopener noreferrer">https://tw.linebiz.com/service/account-solutions/line-official-account/</a></td><td data-l="取得內容">三級用量方案、2026-11-01 起調價；確切數字查不到</td></tr>
+<tr><th scope="row">iOS 網頁推播</th><td data-l="網址">WebKit 公告（iOS 16.4 起支援加入主畫面的網頁應用推播）</td><td data-l="取得內容">本次未重新查證網址，屬既有知識</td></tr>
+</tbody></table></div>
+<p>本書的最低規格、頻寬、延遲與警戒值均為設計基準<span class="tag est">推估</span>，尚未實測；以試點第 1 週的裝置檢查數據為準。</p>
+</div>
+</div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <div class="sig"><svg viewBox="0 0 64 40" aria-hidden="true"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></svg>Tandelo 概念驗證（POC）· Edward Tseng · 2026</div>
+    <p>本規劃書為概念驗證用途，所有人物、示範資料一律虛構；最低規格、頻寬與警戒值為設計基準，尚未實測。本頁不被搜尋引擎收錄，不收集任何資料，主題偏好只存在你的裝置。</p>
+    <a class="back-top" href="#top">回到最上面 ↑</a>
+  </div>
+</footer>
+<script>
+(function(){
+  var root=document.documentElement;
+  var btn=document.getElementById('themeBtn'), label=document.getElementById('themeLabel');
+  var KEY='tandelo-plan-theme';
+  function current(){ return root.getAttribute('data-theme')||'auto'; }
+  function render(){
+    var c=current();
+    label.textContent = c==='dark'?'深色':(c==='light'?'淺色':'自動');
+    btn.setAttribute('aria-pressed', c!=='auto');
+    btn.setAttribute('aria-label','切換配色，目前：'+label.textContent);
+  }
+  btn.addEventListener('click',function(){
+    var c=current(), next = c==='auto'?'dark':(c==='dark'?'light':'auto');
+    if(next==='auto'){ root.removeAttribute('data-theme'); try{localStorage.removeItem(KEY);}catch(e){} }
+    else { root.setAttribute('data-theme',next); try{localStorage.setItem(KEY,next);}catch(e){} }
+    render();
+  });
+  render();
+
+  /* 目錄：捲動到哪一章就亮哪一顆 */
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  var toc=document.getElementById('toc');
+  function setActive(id){
+    links.forEach(function(a){
+      var on=a.getAttribute('href')==='#'+id;
+      a.classList.toggle('is-active',on);
+      if(on){ a.setAttribute('aria-current','true'); var l=a.offsetLeft-toc.clientWidth/2+a.offsetWidth/2; toc.scrollTo({left:l,behavior:'smooth'}); }
+      else a.removeAttribute('aria-current');
+    });
+  }
+  if('IntersectionObserver' in window){
+    var visible={};
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ visible[e.target.id]=e.isIntersecting?e.intersectionRatio:0; });
+      var best=null,bv=0;
+      secs.forEach(function(s){ if((visible[s.id]||0)>bv){bv=visible[s.id];best=s.id;} });
+      if(best) setActive(best);
+    },{rootMargin:'-30% 0px -55% 0px',threshold:[0,.1,.25,.5]});
+    secs.forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
