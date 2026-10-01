@@ -1,6 +1,6 @@
-# 美術掛載點（由本地 codex 產生）
+# 美術掛載點
 
-把 codex 依 `docs/codex-image-brief.md` 產出的檔案放進這個資料夾，並放一個 `manifest.json`（例如 `{"version":"1"}`）。
+這裡現在放的是**第一版**（由 `_src/scenes.py` 產生：`python3 _src/scenes.py` 重產）。codex 依 `docs/codex-image-brief.md` 產出的檔案用**同名**直接蓋上去即可，`manifest.json` 已存在（改 `version` 可讓快取失效）。
 Demo 啟動時偵測到 manifest 就會在 `<html>` 加上 `data-art`，`art.css` 的規則隨之生效；沒有這些檔案時，Demo 維持目前的向量版，不會壞。
 
 檔名固定（SVG，淺色與深色各一，深色加 `-dark`）：
@@ -19,6 +19,8 @@ Demo 啟動時偵測到 manifest 就會在 `<html>` 加上 `data-art`，`art.css
 | `guide.svg`、`patrol.svg` | 嚮導、巡查員 | 64×64 |
 | `monsters-defs-2.svg` | 英文、國文、社會九隻怪的 symbol | 64×64 symbol |
 | `art.css` | 把上面的檔接到畫面：`[data-art] .dg-hero{background-image:url(bg-dungeon.svg)}` 等 | — |
+
+地圖：`app.js` 在 `.map .cam` 裡放了 `<image class="art-map light|dark">` 兩層，`[data-art]` 時隱藏向量地形 `.terrain`，顯示對應主題的那一張；燈塔、迷霧、區名仍由程式畫在上面，所以地圖裡**不要**畫塔或字。人物：`.kid.k1…k6`、`.kid.guide`、`.kid.patrol` 對應六色隊員與兩位大人。
 
 `art.css` 範例：
 

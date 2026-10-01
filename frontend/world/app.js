@@ -120,7 +120,7 @@ SCREENS.shadows = () => {
   ${hd('怪物圖鑑', `收服的夥伴站在你身後 · ${esc(D.SQUAD.me.nick)}`, false)}
   <div class="wall"><div class="stars"></div><div class="count">收服 <b>${caps.length}</b> 隻 · 睡著 ${asleep.length}</div>
     <div class="shadows">${[...caps.map((m) => ({ m, cls: 'shadow blink' })), ...asleep.map((m) => ({ m, cls: 'asleep' }))].map((o, i, arr) => { const n = arr.length; const spread = Math.min(220, 70 * (n - 1)); const sx = n === 1 ? 0 : -spread / 2 + (spread / (n - 1)) * i; const sy = 8 + Math.abs(sx) * 0.18; return monSvg(o.m, o.cls, `style="--sx:${sx}px;--sy:${sy}px;--ss:${1 - Math.abs(sx) / 600};--sd:${i * 0.12}s"`); }).join('')}</div>
-    <div class="you"><span class="kid">${kid}</span><small>${esc(D.SQUAD.me.nick)} · ${esc(D.SQUAD.name)}</small></div>
+    <div class="you"><span class="kid k1">${kid}</span><small>${esc(D.SQUAD.me.nick)} · ${esc(D.SQUAD.name)}</small></div>
   </div>
   <div class="sect"><h3>數理大陸 · 八隻怪</h3><span class="meta">點一隻看傳說卡</span></div>
   <div class="mgrid">${D.MONSTERS.map((m) => { const s = S.shadows[m.id]; return `<button class="mcard ${s.state === 'fog' ? 'fogc' : ''}" data-lore="${m.id}">${monSvg(m, stateCls[s.state])}<span><b>${s.state === 'fog' ? '？？？' : esc(m.name)}</b><small>${esc(region(m.region).name)} · ${esc(D.STATE_LABEL[s.state])}${s.days ? ` · 第 ${s.days} 天` : ''}</small></span></button>`; }).join('')}</div>
@@ -256,7 +256,8 @@ SCREENS.map = () => {
   ${hd('世界地圖', `${esc(D.SQUAD.league)} · 數理大陸`, false)}
   <div class="leagues">${['北區', '中區', '南區', '東區'].map((l) => `<button class="${l === D.SQUAD.league ? 'on' : ''}" ${l === D.SQUAD.league ? '' : 'disabled'}>${l}</button>`).join('')}</div>
   <div class="map"><svg viewBox="0 0 440 420" role="img" aria-label="數理大陸地圖：六個區域各一座燈塔"><g class="cam">
-    ${D.MAP_TERRAIN}
+    <image class="art-map light" href="art/map-math.svg" x="0" y="0" width="440" height="420"/><image class="art-map dark" href="art/map-math-dark.svg" x="0" y="0" width="440" height="420"/>
+    <g class="terrain">${D.MAP_TERRAIN}</g>
     ${R.filter((r) => r.light === 'lit').map((r) => `<path class="beam" style="--bx:${r.x}px;--by:${r.y - 18}px" d="M${r.x} ${r.y - 18}L${r.x - 70} ${r.y - 150}L${r.x + 70} ${r.y - 150}z"/>`).join('')}
     ${R.filter((r) => r.light === 'fog').map((r) => `<ellipse class="fogdrift" cx="${r.x - 20}" cy="${r.y - 10}" rx="70" ry="34"/>`).join('')}
     <text class="cn" x="96" y="96">數理大陸</text><text class="cs" x="96" y="112">數學 · 六區</text>
@@ -315,7 +316,7 @@ SCREENS.capture = (id) => {
   const m = mon(id) || mon('sqrt-split');
   return `<div class="capture p1" id="cap"><div class="sky"></div><div class="stars"></div><div class="rays" aria-hidden="true"></div><div class="ring" aria-hidden="true"></div><div class="confetti" id="confetti"></div>
     <div class="top"><span class="eyebrow">收服 · 第 ${D.SQUAD.week} 週</span><h2 id="cap-title">${esc(m.name)}……</h2></div>
-    <div class="arena"><span class="kid">${kid}</span>${monSvg(m, 'xl')}</div>
+    <div class="arena"><span class="kid k1">${kid}</span>${monSvg(m, 'xl')}</div>
     <div><p class="line" id="cap-line">「${esc(m.taunt)}」</p><p class="ev" id="cap-ev" style="opacity:0"><b>${esc(m.weakness)}</b><br>第 0 天 在遠征中被打倒 · 第 9 天 不給提示也會</p>
     <div class="btns"><button class="btn honey" data-share="${m.id}">傳到營地（家人 LINE）</button><div class="btns two" style="margin-top:0"><button class="btn ghost" data-act="wall-post">放上隊伍牆</button><button class="btn ghost" data-go="shadows">先收著</button></div></div></div></div>`;
 };
