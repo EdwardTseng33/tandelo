@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tandelo 產品驗證報告（PATH）</title>
+<meta name="description" content="用財務模型反推 Tandelo 的產品與市場健康度：PATH 四維評分、規模效應、投入判定與門檻。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--p:#7C5CFC;--teal:#1BA891;--gold:#E08A3A;--rose:#D94462;--ink:#1a1a2e;--mute:#6b7280;--bg:#fafafa;--card:#fff;--line:#e5e7eb;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter','Noto Sans TC',system-ui,sans-serif;line-height:1.7;font-size:15.5px}
+.wrap{max-width:860px;margin:0 auto;padding:3rem 2rem}@media(max-width:640px){.wrap{padding:1.5rem 1rem}}
+.brand{color:var(--p);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:12px}
+h1{font-size:2.2rem;font-weight:700;margin:.4rem 0 .6rem;line-height:1.2}h2{font-size:1.4rem;margin:2.6rem 0 .8rem;padding-top:1.2rem;border-top:1px solid var(--line)}h3{font-size:1.05rem;margin:1.4rem 0 .5rem}
+.meta{display:flex;flex-wrap:wrap;gap:1rem;color:var(--mute);font-size:13px}
+.card{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:1.4rem 1.6rem;margin:1rem 0}
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:1.6rem;align-items:center;border-left:6px solid var(--teal)}
+@media(max-width:640px){.verdict{grid-template-columns:1fr}}
+.score{font-size:4rem;font-weight:700;color:var(--p);line-height:1}.score small{font-size:1rem;color:var(--mute);display:block;font-weight:500}
+.badge{display:inline-block;padding:.3rem .7rem;border-radius:8px;font-weight:700;font-size:13px;color:#fff;background:var(--teal)}
+.badge.gold{background:var(--gold)}.badge.rose{background:var(--rose)}.badge.p{background:var(--p)}
+.grid{display:grid;gap:1rem}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}@media(max-width:640px){.g2,.g4{grid-template-columns:1fr}}
+.dim{padding:1rem 1.2rem}.dim b{display:block;font-size:13px;color:var(--mute);letter-spacing:.5px}.dim .n{font-size:2rem;font-weight:700}.dim .n.t{color:var(--teal)}.dim .n.g{color:var(--gold)}
+.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:.4rem}.bar i{display:block;height:100%;background:var(--p)}.bar i.t{background:var(--teal)}.bar i.g{background:var(--gold)}.bar i.r{background:var(--rose)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:.6rem 0}th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mute);font-weight:600;font-size:12.5px}tbody tr:nth-child(even){background:#f6f6fb}tbody tr:hover{background:#efeafc}
+.insight{border-left:4px solid var(--p);background:#f4f1ff;padding:.9rem 1.1rem;border-radius:0 12px 12px 0;margin:.9rem 0;font-size:14.5px}
+.insight.t{border-color:var(--teal);background:#edf9f6}.insight.g{border-color:var(--gold);background:#fdf4ea}.insight.r{border-color:var(--rose);background:#fdeef1}
+.radar{width:300px;max-width:100%;height:auto;display:block;margin:0 auto}.radar .grid{fill:none;stroke:var(--line)}.radar .axis{stroke:var(--line)}.radar .poly{fill:rgba(124,92,252,.18);stroke:var(--p);stroke-width:2}.radar text{font-size:12px;fill:var(--mute)}
+.chart{display:grid;grid-template-columns:repeat(6,1fr);gap:.6rem;align-items:end;height:180px;padding:0 .2rem}
+.chart div{display:grid;grid-template-rows:1fr auto;height:100%;text-align:center;font-size:11.5px;color:var(--mute)}
+.chart i{display:block;align-self:end;border-radius:6px 6px 0 0;background:var(--teal)}.chart i.neg{background:var(--rose);border-radius:0 0 6px 6px;align-self:start}
+.chart .lbl{margin-top:.3rem}.chart .lbl b{display:block;color:var(--ink);font-size:13px}
+.timeline{display:grid;gap:.6rem}.timeline div{display:grid;grid-template-columns:90px 1fr;gap:1rem;padding:.6rem .8rem;background:var(--card);border-radius:12px;box-shadow:var(--sh);font-size:14px}.timeline b{color:var(--p)}
+details{margin:.6rem 0}summary{cursor:pointer;font-weight:600}
+.foot{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--mute);font-size:12.5px}
+.radar-card{display:grid;grid-template-columns:300px 1fr;gap:1.4rem;align-items:center}@media(max-width:640px){.radar-card{grid-template-columns:1fr}table{display:block;overflow-x:auto}.chart{height:140px}}
+@media print{body{background:#fff}.card{box-shadow:none;border:1px solid var(--line)}h2{page-break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">BeyondPath · PATH 評估</div>
+  <h1>Tandelo 產品驗證報告：用財務模型反推產品與市場的健康度</h1>
+  <div class="meta"><span>評估日期：2026-10-01</span><span>產品階段：mvp（可操作 Demo＋後端 0.3）</span><span>市場：B2C 為主、B2B2C 第二曲線 · 台灣</span><span>評估者：城堡（蘇菲）</span></div>
+</header>
+
+<h2>執行摘要</h2>
+<div class="card verdict">
+  <div class="score">65<small>PATH 總分 · 蓄勢待發者</small></div>
+  <div>
+    <span class="badge">PERSEVERE · 分階段投入</span>
+    <p style="margin:.6rem 0 0">值得投入，但以門檻分段：先投 80–90 萬做 12 週的人力介入階梯試點，買到四個數字；四個都過關才投第二筆約 500 萬把直營與合作方通道做到第 11 個月損平。四個維度在 53–73 之間、差距 20，輪廓均衡；最弱的是受眾輪廓，因為到今天為止沒有一場第一手訪談。</p>
+  </div>
+</div>
+<div class="grid g4">
+  <div class="card dim"><b>P 問題驗證</b><span class="n t">73</span><div class="bar"><i class="t" style="width:73%"></i></div></div>
+  <div class="card dim"><b>A 受眾輪廓</b><span class="n g">53</span><div class="bar"><i class="g" style="width:53%"></i></div></div>
+  <div class="card dim"><b>T 市場牽引力</b><span class="n t">73</span><div class="bar"><i class="t" style="width:73%"></i></div></div>
+  <div class="card dim"><b>H 執行力</b><span class="n">60</span><div class="bar"><i style="width:60%"></i></div></div>
+</div>
+<div class="card radar-card">
+  <svg class="radar" viewBox="0 0 300 300" role="img" aria-label="PATH 四維雷達圖：P 73、A 53、T 73、H 60">
+    <polygon class="grid" points="150,30 270,150 150,270 30,150"/><polygon class="grid" points="150,70 230,150 150,230 70,150"/><polygon class="grid" points="150,110 190,150 150,190 110,150"/>
+    <line class="axis" x1="150" y1="30" x2="150" y2="270"/><line class="axis" x1="30" y1="150" x2="270" y2="150"/>
+    <polygon class="poly" points="150,62.4 237.6,150 150,237.6 78,150"/>
+    <text x="150" y="20" text-anchor="middle">P 問題驗證 73</text><text x="285" y="155" text-anchor="end">A 受眾 53</text><text x="150" y="292" text-anchor="middle">T 市場 73</text><text x="15" y="155">H 執行 60</text>
+  </svg>
+  <div><h3 style="margin-top:0">一句話</h3><p style="margin:0">問題真、市場有空位、商業模式算得出來會賺；缺的是第一手證據。這是一個「值得花小錢買確定性」的案子，不是「值得現在 all-in」的案子。</p></div>
+</div>
+
+<h2>一、從財務模型反推：這個生意要成立，世界必須長什麼樣</h2>
+<p>財務模型定稿（情境 E）說第 11 個月損平、第 3 年營收約 4,200 萬、毛利率 77%、營業利益約 2,000 萬。把它倒過來讀，它其實在要求下面八件事同時為真。每一件都對照市場證據打分。</p>
+<table>
+<thead><tr><th>模型要求</th><th>市場證據</th><th>健康度</th></tr></thead>
+<tbody>
+<tr><td>第 1 年底 1,014 個直營付費家庭、第 3 年 5,146</td><td>可服務市場約 4.4 萬人（60.5 萬國中生 × 六都 70% × B 後段至 C 上緣 35% × 願線上混合 30%）。第 3 年滲透 11.7%，落在 SOM 積極情境內；每屆核心客群 6–8 萬人，5,000 付費約占一屆的 7%</td><td><span class="badge gold">可達但偏積極</span></td></tr>
+<tr><td>主力方案真人追蹤 890／月、月流失 ≤ 8%</td><td>價格落在翰林雲端（約 215／月）與實體小班（4,500／月）之間、低於家教一小時；消費者教育訂閱月流失常見 5–10%。價格與流失都沒有第一手驗證</td><td><span class="badge rose">最大未知</span></td></tr>
+<tr><td>AI 練習 299／月、月流失 ≤ 12%</td><td>對標 Khanmigo US$4、Duolingo Super；免費的因材網與均一是最直接替代。LTV 約 2,000、獲客 800，LTV/CAC 2.5，單靠它不夠，要靠升級到 890</td><td><span class="badge gold">入門而非主力</span></td></tr>
+<tr><td>每生每週人力 4 分鐘（巡查）</td><td>聽 3 段 30 秒錄音、留一則語音、處理求援，4 分鐘合理；一位全職巡查員以 150 小時／月算可顧約 500 生。人力一旦溢出到 8 分鐘，L1 貢獻率從 78% 掉到 68%，仍賺</td><td><span class="badge">健康，要盯</span></td></tr>
+<tr><td>獲客每戶 ≤ 800</td><td>試點靠訪談名單、老師免費開隊、LINE 官方帳號、推薦，不買廣告；規模期靠合作方與分享卡。台灣教育 B2C 若買關鍵字廣告，每戶常破 2,000，所以通路設計是生死線</td><td><span class="badge gold">靠通路，不靠廣告</span></td></tr>
+<tr><td>合作方第 2 年 8 家、第 3 年 42 家，每家 60 生</td><td>全台補習班 8,000 家以上；42 家是 0.5%。日本 atama+ 以同樣模式導入 4,000 家。前提是補習班缺 AI 內容與留存機制，而這正是調研看到的</td><td><span class="badge">健康，待第一家證明</span></td></tr>
+<tr><td>毛利率 77%</td><td>Duolingo 72%、Kahoot 95%、真人小班 Nerdy 63–70%。77% 來自人力只賣 4 分鐘；自營真人課限量 10 隊</td><td><span class="badge">同業可比</span></td></tr>
+<tr><td>團隊固定成本第 3 年 60 萬／月服務 7,600 名學生</td><td>約 10 人團隊，每人服務 760 生；軟體型教育公司常見比例</td><td><span class="badge">健康</span></td></tr>
+</tbody>
+</table>
+<div class="insight r"><b>最大的單一風險：</b>890 這個價位與 8% 流失是整個模型的支點。它們沒驗證之前，第 11 個月損平只是算式。家長訪談的願付四問與試點 L1 層的續購，是這份報告最想買到的兩個數字。</div>
+
+<h2>二、越做越賺，不是越做越賠：規模效應的證據</h2>
+<p>妳的要求是商業模式要有營運槓桿。情境 E 的營業利益率曲線如下：每多一個家庭，變動成本只有 AI 推論、LINE、題庫攤提與 4 分鐘人力，固定團隊成本增加得比營收慢得多。</p>
+<div class="card">
+<div class="chart" aria-label="營業利益率：第 6 個月 −101%、第 12 個月 11%、第 18 個月 28%、第 24 個月 42%、第 30 個月 47%、第 36 個月 52%">
+  <div><i class="neg" style="height:100%"></i><span class="lbl"><b>−101%</b>第 6 月</span></div>
+  <div><i style="height:21%"></i><span class="lbl"><b>11%</b>第 12 月</span></div>
+  <div><i style="height:54%"></i><span class="lbl"><b>28%</b>第 18 月</span></div>
+  <div><i style="height:81%"></i><span class="lbl"><b>42%</b>第 24 月</span></div>
+  <div><i style="height:90%"></i><span class="lbl"><b>47%</b>第 30 月</span></div>
+  <div><i style="height:100%"></i><span class="lbl"><b>52%</b>第 36 月</span></div>
+</div>
+</div>
+<table>
+<thead><tr><th>年</th><th>營收</th><th>毛利率</th><th>團隊固定占營收</th><th>獲客占營收</th><th>營業利益率</th></tr></thead>
+<tbody>
+<tr><td>第 1 年</td><td>415 萬</td><td>74%</td><td>96%</td><td>27%</td><td style="color:var(--rose)">−50%</td></tr>
+<tr><td>第 2 年</td><td>1,945 萬</td><td>77%</td><td>30%</td><td>17%</td><td style="color:var(--teal)">30%</td></tr>
+<tr><td>第 3 年</td><td>4,211 萬</td><td>77%</td><td>17%</td><td>13%</td><td style="color:var(--teal)">47%</td></tr>
+</tbody>
+</table>
+<div class="insight t"><b>為什麼會越做越賺：</b>四個結構性原因。一、AI 練習的邊際人力是零，真人追蹤的邊際人力是 4 分鐘，兩者都不隨規模變貴。二、真人上課交給合作方，Tandelo 不養老師，合作方帶來的學生沒有獲客成本。三、題庫、怪的定義檔、世界一次做好，四科與所有方案重用。四、團隊固定成本從 96% 降到 17%，這就是營運槓桿本身。</div>
+<div class="insight g"><b>什麼會讓它反過來越做越賠：</b>人力分鐘失控（每生每週超過 10 分鐘）、為了成長去買廣告（獲客破 2,000）、自營真人課不限量（每隊貢獻接近零還要養嚮導）、免費層被當成產品而不是漏斗。這四件事在策略頁都已列為「不做」，試點的介入紀錄與獲客帳是防線。</div>
+
+<h2>三、PATH 四維詳解</h2>
+<h3>P 問題驗證 · 73</h3>
+<table><thead><tr><th>題</th><th>評分</th><th>依據</th></tr></thead><tbody>
+<tr><td>痛點確認</td><td>3</td><td>沒有本案的第一手訪談；但有同業真實資料：3,500 個付費家庭的用量下滑、退費原因、體驗課成交率，加上 TIMSS 動機低於國際平均</td></tr>
+<tr><td>替代方案</td><td>4</td><td>補習班、家教、免費平台、拍照解題都盤過，也知道家長為何不滿（價格、改上實體、看不到成效）</td></tr>
+<tr><td>問題表述</td><td>3</td><td>「卡在沒人看見的那一步」說得清楚，但沒被用戶驗證</td></tr>
+<tr><td>付費意願</td><td>2</td><td>沒測過；只有市場價格錨</td></tr>
+<tr><td>頻率</td><td>4</td><td>每學期 2–3 次段考，國中補習參與率約六成五，家長主動在找</td></tr>
+</tbody></table>
+<h3>A 受眾輪廓 · 53</h3>
+<table><thead><tr><th>題</th><th>評分</th><th>依據</th></tr></thead><tbody>
+<tr><td>ICP 精確度</td><td>4</td><td>國二、B 後段到 C 上緣、都會公立、家長月預算 3,000–8,000</td></tr>
+<tr><td>深度對話</td><td>1</td><td>零。這是整份評估最低的一題</td></tr>
+<tr><td>用戶旅程</td><td>2</td><td>有 persona 與一天時間軸，但沒實際觀察過孩子怎麼寫作業</td></tr>
+<tr><td>負面 persona</td><td>3</td><td>排除 A 段資優、C 底需要一對一、不能固定參與的家庭</td></tr>
+<tr><td>找得到 10 個用戶</td><td>3</td><td>可行通道有（老師開隊、LINE 官方帳號、同業家庭），未驗證</td></tr>
+</tbody></table>
+<h3>T 市場牽引力 · 73</h3>
+<table><thead><tr><th>題</th><th>評分</th><th>依據</th></tr></thead><tbody>
+<tr><td>市場規模</td><td>4</td><td>TAM 210–260 億、SAM 約 3.1 億、SOM 三情境，公式與假設都列出</td></tr>
+<tr><td>競品</td><td>3</td><td>國際與台灣三層矩陣完整；沒訪談過競品用戶</td></tr>
+<tr><td>差異化</td><td>3</td><td>「真人加 AI 混合 × 固定小隊 × 段考為時鐘」的組合在兩張矩陣都是空位；有數據支持，未經用戶驗證</td></tr>
+<tr><td>商業模式</td><td>4</td><td>情境 E 單位經濟為正、第 11 個月損平、有營運槓桿</td></tr>
+<tr><td>進入壁壘</td><td>2</td><td>題庫、怪的定義檔與段考對準是先行者優勢；資料護城河（卡點履歷）要累積後才成立</td></tr>
+</tbody></table>
+<h3>H 執行力 · 60</h3>
+<table><thead><tr><th>題</th><th>評分</th><th>依據</th></tr></thead><tbody>
+<tr><td>MVP 階段</td><td>3</td><td>可操作的 Demo、後端 0.3（世界引擎、小陪接模型與守門）、94 個測試</td></tr>
+<tr><td>團隊能力</td><td>3</td><td>產品、設計、品牌、AI 協作到位；缺一位全端與一位數學內容老師</td></tr>
+<tr><td>時程</td><td>3</td><td>到試點可跑約 2 週準備（付款、同意、題庫達標）</td></tr>
+<tr><td>策略資源</td><td>2</td><td>母公司資源與第一家補習班都在接觸中，沒有簽字</td></tr>
+<tr><td>領域契合</td><td>3</td><td>相關行業經驗，教學端專業要靠嚮導補</td></tr>
+</tbody></table>
+<h3>AI 產品附加題 · 60</h3>
+<p>必要性高（學生已在用免費 AI 解題，問題是給答案）；核心不依賴完美準確（人審題目、守門擋答案）；專屬資料會隨卡點履歷累積；法規有要求（兒少、個資、AI 標示）；大廠風險中高（Gemini、ChatGPT 都有引導式學習），所以 AI 不能是賣點，這一點策略頁已經寫死。</p>
+
+<h2>四、判定與門檻</h2>
+<div class="card">
+<p style="margin-top:0"><span class="badge">PERSEVERE</span>　總分 65，四維差距 20，屬「輪廓均衡，繼續驗證但保持警覺」。</p>
+<div class="timeline">
+  <div><b>現在</b><span>投 80–90 萬做 12 週人力介入階梯試點。不投第二筆錢之前，不招人、不買廣告、不做其他三科的真人課。</span></div>
+  <div><b>第 3 個月</b><span>四個門檻同時過才繼續：真人追蹤續購 ≥ 60%（對應月流失 ≤ 8%）、AI 練習月流失 ≤ 12%、每生每週人力 ≤ 6 分鐘、獲客 ≤ 800。</span></div>
+  <div><b>過關</b><span>投第二筆約 500 萬（最大累計虧損 220 萬的兩倍安全係數），目標第 11 個月損平；同時簽第一家合作方。</span></div>
+  <div><b>不過關</b><span>三種結局都正常：價格不對就調價再試 10 組；流失太高就回到產品；人力溢出就改流程。都不行就停，損失是 80–90 萬，不是 500 萬。</span></div>
+</div>
+</div>
+<div class="insight"><b>給投資與補助的版本：</b>毛利 77% 的軟體型教育服務，人力只在最有效處介入，越做越賺（營業利益率從第 2 年 30% 到第 3 年 47%）；第 11 個月損平、三年累計營業利益約 2,400 萬；需要約 500 萬，分兩段投入，第一段 90 萬在 12 週內買到四個可驗證的數字。</div>
+
+<h2>五、市場與競品摘要</h2>
+<div class="grid g2">
+  <div class="card"><h3 style="margin-top:0">市場</h3><p>國中生 60.5 萬、補習參與率約六成五、月均 4,400 元；會考數學 C 級約四分之一。TAM 210–260 億／年（數學 75–105 億），SAM 約 3.1 億／年，SOM 三年 300 萬到 4,600 萬。市場不缺人，缺的是「看得到學會了什麼」的服務。</p></div>
+  <div class="card"><h3 style="margin-top:0">競品與空位</h3><p>免費端（因材網、均一、PaGamO）強在內容與遊戲，沒有真人與段考節奏；高價端（名師班、家教、一對一線上）沒有同儕與每天的陪練。中間「每月 1,000 上下、固定小隊、剛好的真人」是空的。國際上最接近的 Synthesis Teams 年齡偏低、不對準考試。</p></div>
+</div>
+
+<h2>六、行動建議</h2>
+<ol>
+<li><b>兩週內做 20 位孩子試玩與 30 組家長訪談</b>（腳本在 docs/pilot）。把 A 維度從 53 拉到 70 以上，整份評估會從「蓄勢待發」進到「準備起飛」。</li>
+<li><b>願付四問同時測 890 與 1,995</b>，確認主力方案價格；299 只測免費層轉換。</li>
+<li><b>第一家合作方先簽意向</b>，哪怕只是 30 個學生，讓 B2B2C 從假設變成一筆真實營收。</li>
+<li><b>介入紀錄從第一天就記</b>，每生每週人力分鐘是模型的生死線。</li>
+<li><b>美術與手感繼續投</b>，但只投能被試點驗證的部分；codex 產出的 Demo 美術優先。</li>
+</ol>
+
+<details><summary>附錄：評分方法與資料來源</summary>
+<p>PATH 標準版 20 題，每題 1–4 分；維度分數＝((原始分總和 − 題目數) ÷ (3 × 題目數)) × 100；總分為四維平均。判定依 BeyondPath 決策樹。資料來源：docs/research 六份調研、docs/gtm-and-finance.md 的情境 E 模型（financial-model-E.csv）、frontend/strategy.html 2.1、同業內部資料摘要（未進公開 repo）。所有市場數字來自搜尋摘要交叉比對，標有可信度；沒有第一手訪談是本報告最大的限制。</p>
+</details>
+
+<div class="foot">Tandelo 概念驗證（POC）· Edward Tseng · 2026 · 本報告為內部評估，數字為提案值，試點實測後取代。</div>
+</div>
+</body>
+</html>

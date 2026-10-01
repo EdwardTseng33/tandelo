@@ -111,8 +111,13 @@ class TeamOut(BaseModel):
     max_size: int
     rule: str
     focus: List[str]
+    layer: str = "L2"  # 人力介入分層（L0／L1／L2／L3）
     members: List[MemberOut]
     sessions: int = 0
+
+
+class TeamLayerIn(BaseModel):
+    layer: str = Field(pattern=r"^L[0-3]$")
 
 
 # ——— 練習與再測 ———
@@ -293,6 +298,10 @@ class CoachReplyIn(BaseModel):
     hint_level: int = Field(default=0, ge=0)
     start_tier: int = Field(default=1, ge=0, le=2)
     time: Optional[str] = Field(default=None, pattern=r"^\d{2}:\d{2}$", description="示範用：覆蓋現在時間（HH:MM）")
+    monster_id: str = Field(default="", max_length=40, description="這一題背後的怪（world.json 的 id）；空＝用 skill_id")
+    step_text: str = Field(default="", max_length=400, description="孩子目前寫到的步驟（原文）")
+    level: Optional[int] = Field(default=None, ge=0, le=9, description="引導層級：0 問、1 指、2 借、3 示範一步；4 以上只回固定句。空＝用 hint_level")
+    answer_forms: List[str] = Field(default_factory=list, max_length=10, description="最終答案的各種寫法（守門用）；空＝用題庫的最終答案")
 
 
 class CoachReplyOut(BaseModel):
@@ -303,6 +312,9 @@ class CoachReplyOut(BaseModel):
     hint_level: int
     done: bool
     ok: Optional[bool] = None
+    level: Optional[int] = None
+    handoff: bool = False
+    guarded: Optional[str] = Field(default=None, description="模型回覆沒過守門時的原因（leak／too_long／unsafe…），這時 text 來自規則引擎")
 
 
 # ——— 冒險世界（0.2）———
@@ -485,3 +497,99 @@ class BoardOut(BaseModel):
     subject: str
     route: str
     entries: List[Dict[str, Any]]
+
+
+# ——— 題目變體引擎（0.3）———
+class VariantOut(BaseModel):
+    """給學生作答的一題：不回答案與 trap 的索引，用 answer_token 判題。"""
+
+    index: int
+    variant_key: str
+    monster_id: str
+    difficulty: str
+    level: int
+    cross_chapter: bool
+    stem: str
+    options: List[str]
+    answer_token: str
+
+
+class VariantListOut(BaseModel):
+    monster_id: str
+    name: str
+    route: str
+    seed: str
+    n: int
+    items: List[VariantOut]
+
+
+class VariantCheckIn(BaseModel):
+    answer_token: str = Field(min_length=1, max_length=400)
+    choice: int = Field(ge=0, le=3)
+
+
+class VariantCheckOut(BaseModel):
+    monster_id: str
+    variant_key: str
+    correct: bool
+    hit_trap: bool
+    trap_kind: str
+    trap_label: str
+    answer: int
+    why: str
+    steps: List[str]
+
+
+class BankStatusOut(BaseModel):
+    monster_id: str
+    name: str
+    size: int
+    threshold: int
+    routes: Dict[str, Dict[str, Any]]
+    ready: bool
+
+
+# ——— 人工介入紀錄（0.3）———
+class InterventionIn(BaseModel):
+    """note 最多 200 字、不放個資。at：示範用，覆蓋建立時間（週摘要要排在哪一週）。"""
+
+    student_id: Optional[int] = None
+    team_id: Optional[int] = None
+    by: str = Field(pattern=r"^(system|patrol|guide|cs)$")
+    kind: str = Field(pattern=r"^(nudge|explain|comfort|demo|review|parent_note)$")
+    trigger: str = Field(pattern=r"^(help_timeout|three_wrong|three_days_off|expedition|weekly|parent_message|manual)$")
+    minutes: float = Field(default=0.0, ge=0, le=600)
+    note: str = Field(default="", max_length=200)
+    at: Optional[_dt.datetime] = None
+
+
+class InterventionOut(BaseModel):
+    id: int
+    student_id: Optional[int]
+    team_id: Optional[int]
+    by: str
+    kind: str
+    trigger: str
+    minutes: float
+    note: str
+    created_at: _dt.datetime
+    week: str
+    next_level: str  # 同一位學生、同一個 trigger、同一週：下一次該由誰介入
+
+
+class InterventionSummaryOut(BaseModel):
+    scope: str  # team／layer
+    team_id: Optional[int] = None
+    layer: Optional[str] = None
+    teams: List[int]
+    week: Optional[str]
+    count: int
+    students: int
+    human_minutes: float
+    system_minutes: float
+    team_minutes: float
+    per_student: Dict[int, float]
+    per_student_week: Dict[int, Dict[str, float]]
+    per_kind: Dict[str, float]
+    per_trigger: Dict[str, int]
+    per_by: Dict[str, float]

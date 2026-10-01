@@ -12,11 +12,12 @@
 
 | 頁 | 內容 |
 |---|---|
-| `index.html` | 首頁 2.0：冒險世界定位、點一下收服的主視覺、八隻怪圖鑑、一週節奏、三個價格帶、家長 LINE、護欄、FAQ |
-| `strategy.html` | 策略與規劃 2.0：市場、國內外競品定位矩陣、商業模式與毛利槓桿、產品輪廓架構、技術架構、POC 12 週計畫、待拍板 |
+| `index.html`、`en.html` | 首頁（中、英）：首屏先說給誰、解決什麼、怎麼服務，一題示範，冒險世界定位、點一下收服的主視覺、八隻怪圖鑑、一週節奏、三個價格帶、家長 LINE、護欄、FAQ |
+| `eval.html` | 產品驗證報告：用財務模型反推產品與市場健康度，PATH 四維評分、規模效應、分段投入門檻 |
+| `strategy.html` | 策略與規劃 2.1：市場、國內外競品定位矩陣、商業模式與毛利槓桿、產品輪廓架構、技術架構、POC 12 週計畫、待拍板 |
 | `plan.html` | 產品規劃書 1.0 |
 | `adventure.html`、`coach.html`、`segment.html` | 冒險小隊概念稿、AI 陪跑設計稿、核心用戶輪廓 |
-| `world/` | 冒險世界高保真 Demo：今天、巡邏、Boss 接力、伏擊→收服時刻、結算、出題戰、影子牆、地圖與燈塔、公會與徽章賽、營地來信、小陪 |
+| `world/` | 冒險世界高保真 Demo：今天、巡邏、Boss 接力、伏擊→收服時刻、結算、出題戰、圖鑑、地圖與燈塔、公會與徽章賽、營地來信、小陪 |
 | `app/` | App 原型（學生、家長 LINE、老師三條流程） |
 | `teachers.html` | 老師招募 |
 
@@ -25,8 +26,13 @@
 ```
 tandelo/
 ├─ frontend/            純靜態：index.html（首頁 2.0）、teachers.html、plan.html、adventure.html、coach.html、segment.html、strategy.html、app/、world/、assets/
-│   ├─ world/           冒險世界高保真 Demo（hash 路由、localStorage、11 個場景）
-├─ docs/research/       調研報告：教育遊戲化的年齡與性別偏好、核心用戶族群選擇、國際 Top players、台灣市場、商業模式標竿
+│   ├─ world/           冒險世界 Demo（可操作 POC、11 個場景、PWA manifest；art/ 為 codex 美術掛載點）
+│   ├─ assets/monsters-defs.svg、worldmap-terrain.svg  八隻怪 v2 與數理大陸地形（由 illustrations/_src/*.py 產生）
+├─ docs/research/       調研報告：教育遊戲化的年齡與性別偏好、核心用戶族群選擇、國際 Top players、台灣市場、商業模式標竿、2026 設計趨勢與規範
+├─ docs/gtm-and-finance.md、financial-model.py／.csv  進入市場計畫與 36 個月財務模型（四個情境）
+├─ docs/partner-onepager.md  合作方（補習班）一頁提案
+├─ docs/pilot/          W1–2 試點準備包：孩子試玩與家長訪談腳本、同意書草案、人工介入紀錄表、題本規格、分層規則
+├─ docs/design-audit-2026.md  2026 設計規範稽核（50 項，對首頁與 Demo 逐項）；docs/codex-image-brief.md 給本地 codex 的向量圖需求單
 │   ├─ config.js        window.TANDELO_API_BASE（Pages 留空＝離線；Docker 由 nginx 注入 '/api'）
 │   ├─ app/js/api.js    後端連線包裝：isOnline()、request()、syncState()
 │   ├─ nginx.conf       靜態伺服＋gzip＋快取標頭＋ /api 反向代理
@@ -94,9 +100,12 @@ make logs / make down
 | `CORS_ORIGINS` | `http://localhost:8080,http://127.0.0.1:8080` | 逗號分隔白名單；Pages 版要接後端就加 `https://edwardtseng33.github.io` |
 | `ADMIN_TOKEN` | 空（關閉） | 讀招募表單的 `X-Admin-Token` |
 | `RATE_LIMIT_PER_MINUTE` | 120 | 每 IP 每分鐘上限（記憶體） |
-| `COACH_PROVIDER` | `rules` | 小陪回覆提供者；目前只有規則引擎，不接 LLM、不放金鑰 |
+| `COACH_PROVIDER` | `rules` | 小陪回覆提供者：`rules`（規則引擎）或 `anthropic`（接模型；沒金鑰或沒裝 SDK 會自動退回 `rules` 並記一行 log） |
+| `ANTHROPIC_API_KEY` | 空（不接模型） | Anthropic API 金鑰；只放環境變數或 `.env`，程式碼與測試裡絕不放真金鑰 |
+| `COACH_MODEL` | `claude-sonnet-5-5` | `COACH_PROVIDER=anthropic` 時用的模型 id |
 | `TIMEZONE` / `LIGHTS_OUT_START` / `LIGHTS_OUT_END` | `Asia/Taipei` / `22:30` / `06:00` | 關燈判斷 |
 | `SEED_ON_STARTUP` | `false`（Docker：`true`） | 啟動時資料庫空就灌種子 |
+| `VARIANT_SECRET` | 空（啟動時隨機產生） | 題目變體 `answer_token` 的簽章金鑰；沒設就每次啟動換一把，舊 token 失效 |
 
 範本：`.env.example`（compose 用）、`backend/.env.example`（直接跑後端用）。`.env*` 不進 git。
 
@@ -118,20 +127,26 @@ make logs / make down
 | GET | `/students/{id}/parent-report`、`/students/{id}/parent-reports` | 生成週報、歷史週報 |
 | POST / GET | `/teacher-applications` | 招募表單；列表需 `X-Admin-Token` |
 | GET | `/teachers`、`/teachers/{id}/earnings?tier=&teams=&size=` | 老師清單、收入試算（45／52／60%、保底 600） |
-| POST | `/coach/reply`、`/coach/explain` | 小陪規則回覆（22:30–06:00 回「關燈中」）、說給我聽評分 |
+| POST | `/coach/reply`、`/coach/explain` | 小陪回覆（規則引擎或接模型，四層引導、答案守門；22:30–06:00 回「關燈中」且不呼叫模型）、說給我聽評分 |
+| GET | `/coach/metrics` | 小陪洩漏率：`leak`／`total`（記憶體計數） |
 | GET | `/world/map` | 冒險世界：四片大陸、區域與燈塔、怪的傳說卡、路線、聯賽區 |
-| GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 影子狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
+| GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 夥伴狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
 | GET | `/students/{id}/record`、`/teams/{id}/record` | 戰績（收服 10、叫醒 5、講解 3、副本 5／8／12）；小隊只回加總、人均與解鎖 |
 | POST | `/teams/{id}/dungeons` | 開副本（22:30–06:00 回 423；路線只升不降） |
 | POST | `/dungeons/{id}/answers`、`/dungeons/{id}/absences`、`/dungeons/{id}/settle` | 巡邏／接力／伏擊作答（求助照算）、缺席申報（每季 2 次、48 小時內）、結算（小隊解題率→星數） |
 | POST | `/matches/mirror`、`/matches/duel` | 鏡像賽（只比解題率）、出題戰（六分制）；投票未全數同意或交集不足三隻→幽靈隊 |
 | GET / POST | `/leagues/{league}/regions/{region_id}/tower`、`/towers/settle` | 燈塔（點燈進度、守塔隊、歷代名冊）；月結算需 `X-Admin-Token` |
 | GET | `/leagues/{league}/board?team_id=&subject=&route=` | 隊伍榜：只回我前後各三隊，不含名次與總數 |
+| GET / POST | `/world/monsters/{id}/variants?n=&route=&seed=`、`/world/monsters/{id}/variants/check` | 題目變體（數學八隻怪、四條路線＝難度、種子決定性）：不回答案，用 `answer_token` 判對錯並回有沒有踩到那隻怪的 trap |
+| GET | `/world/monsters/{id}/bank-status?size=` | 題庫門檻：人數 × 6 ＋ 4（六人隊 40 題），每條路線是否達標 |
+| POST | `/interventions` | 人工介入紀錄（by／kind／trigger／分鐘；note ≤ 200 字、不放個資）；回下一個該介入的層級（系統 → 巡邏 → 嚮導） |
+| GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
+| PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
 
 ## 說明
 
 - 教室與老師端是平板／桌機優先：寬度 768px 以上是寬版（白板、隊友列、老師控制列，不套手機框）；手機開教室只會看到「請用 iPad 或電腦開教室」與複製連結。手機用在課與課之間的練習；家長只在 LINE。
-- AI 教練「小陪」在 POC 中以規則引擎與預寫對話模擬，畫面標示「示範模式」；不接任何 AI 服務。
+- AI 教練「小陪」預設是規則引擎（畫面標示「示範模式」）；後端可用 `COACH_PROVIDER=anthropic` 接模型，但每一句都過「不給答案」守門，沒過就退回規則引擎，前端目前仍走規則引擎。
 - 全站 `noindex`，不供搜尋引擎收錄。
 - 授權：保留所有權利（POC 展示用）。
 

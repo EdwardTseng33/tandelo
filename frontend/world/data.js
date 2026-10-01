@@ -114,7 +114,7 @@ export const MONSTERS = [
   },
 ];
 
-// 我的影子狀態：fog 迷霧 / near 還在附近 / hit 打中了 / captured 收服 / asleep 睡著了
+// 我的夥伴狀態：fog 迷霧 / near 還在附近 / hit 打中了 / captured 收服 / asleep 睡著了
 export const INITIAL_SHADOWS = {
   'sq-expand': { state: 'captured', day0: '10/02', dayN: '10/11', days: 9 },
   'sign-dist': { state: 'near', note: '這週的怪 · 今晚補刀' },
@@ -132,7 +132,7 @@ export const STATE_LABEL = {
 
 export const TITLES = [
   { id: 'first', name: '初次拓荒', rule: '第一次收服', earned: true },
-  { id: 'keeper', name: '守住的人', rule: '叫醒三隻睡著的影子', earned: false, progress: [1, 3] },
+  { id: 'keeper', name: '守住的人', rule: '叫醒三隻睡著的夥伴', earned: false, progress: [1, 3] },
   { id: 'explainer', name: '講解者', rule: '主攻被嚮導蓋章三次', earned: false, progress: [1, 3] },
   { id: 'flag', name: '開拓者之旗', rule: '全隊一起收服 20 隻', team: true, earned: false, progress: [11, 20] },
 ];
@@ -196,7 +196,7 @@ export const RELAY = {
   flags: 2,
 };
 
-// 伏擊層：到期的影子回來。沒有提示、不能求援、只認第一次。
+// 伏擊層：到期的夥伴回來。沒有提示、不能求援、只認第一次。
 export const AMBUSH = {
   monster: 'sqrt-split',
   stem: '√(169 − 25) = ?',
@@ -253,7 +253,7 @@ export const GUILD = {
   unlocks: [
     { name: '隊旗圖樣', at: 100, who: 'squad' },
     { name: '地圖配色', at: 150, who: 'squad' },
-    { name: '影子外框', at: 200, who: 'squad' },
+    { name: '夥伴外框', at: 200, who: 'squad' },
     { name: '季末合照框', at: 300, who: 'squad' },
     { name: '魔王攻略會 · 段考前加開 30 分鐘', at: 60, who: 'guild' },
   ],
@@ -291,6 +291,7 @@ export const LETTER = {
 export const CAMP = {
   time: '星期二 21:02',
   text: '小睿今晚收服了一隻怪：漏項獸（完全平方要有中間那一項）。第 9 天不給提示也會。',
+  chase: '還在追：負號幽靈（這週遠征的怪），林老師週四處理。',
   ask: '今晚可以問他：「一塊邊長是 a+b 的正方形，為什麼比 a² + b² 多出兩塊長方形？」',
   witnessed: true,
 };
@@ -302,3 +303,6 @@ export const CLOCKS = [
   { id: 'tue', label: '週二 22:00', day: '週二', time: '22:00', note: '副本結算' },
   { id: 'night', label: '週二 22:40', day: '週二', time: '22:40', note: '關燈中' },
 ];
+
+// 數理大陸地形（由 assets/illustrations/_src/worldmap.py 產生）
+export const MAP_TERRAIN = `<path class="wave" d="M26 40q10-6 20 0t20 0M372 70q10-6 20 0t20 0M46 392q10-6 20 0t20 0M352 372q10-6 20 0t20 0M400 330q10-6 20 0t20 0"/><path class="land" d="M76 128c14-44 60-74 118-82 46-6 96 4 134 34 36 28 60 70 52 118-6 36-32 62-60 86-30 26-66 44-108 44-44 0-84-20-110-50-26-32-40-80-26-150z"/><path class="shore" d="M94 150c10-30 44-56 90-64" /><path class="shore" d="M330 100c22 20 38 48 38 80"/><path class="field" d="M112 182h66M106 196h74M112 210h66M118 224h56"/><path class="tree" d="M236 122l-6 10h4v4h4v-4h4z"/><path class="tree" d="M256 116l-6 10h4v4h4v-4h4z"/><path class="tree" d="M276 126l-6 10h4v4h4v-4h4z"/><path class="tree" d="M246 142l-6 10h4v4h4v-4h4z"/><path class="tree" d="M268 146l-6 10h4v4h4v-4h4z"/><path class="tree" d="M290 140l-6 10h4v4h4v-4h4z"/><path class="tree" d="M228 150l-6 10h4v4h4v-4h4z"/><path class="tree" d="M302 158l-6 10h4v4h4v-4h4z"/><path class="valley" d="M318 206l20 36 22-40"/><path class="river" d="M338 242q6 18-4 34t2 34"/><path class="peak" d="M126 284l-14 22h28z"/><path class="snow" d="M126 284l-5 8h10z"/><path class="peak" d="M154 270l-14 22h28z"/><path class="snow" d="M154 270l-5 8h10z"/><path class="peak" d="M176 296l-14 22h28z"/><path class="snow" d="M176 296l-5 8h10z"/><path class="cave" d="M232 356a22 18 0 0 1 44 0z"/><path class="cave-in" d="M242 356a12 10 0 0 1 24 0z"/><path class="mesa" d="M296 318l14-14h40l14 14z"/><path class="mesa-top" d="M310 304h40"/><path class="route" d="M60 60q60-30 120-10M400 390q-40 20-90 6"/>`;

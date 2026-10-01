@@ -1,0 +1,19 @@
+{
+  "id": "/tandelo/world/",
+  "name": "Tandelo 冒險世界",
+  "short_name": "Tandelo",
+  "description": "被同一隻怪打倒過的人，組隊回去打牠。對準段考的國中數學冒險小隊。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "zh-Hant-TW",
+  "background_color": "#F6F4EE",
+  "theme_color": "#F6F4EE",
+  "categories": ["education"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

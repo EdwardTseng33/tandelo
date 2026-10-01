@@ -157,6 +157,7 @@ def team_out(team: models.Team) -> Dict:
         "max_size": team.max_size,
         "rule": verdict["label"],
         "focus": json_get(team.focus_json),
+        "layer": team.layer or "L2",
         "members": [{"student_id": m.student_id, "nickname": m.student.nickname, "plan_id": m.plan_id, "stuck": m.student.stuck} for m in team.members],
         "sessions": len(team.sessions),
     }

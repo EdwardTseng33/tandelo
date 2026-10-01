@@ -18,11 +18,14 @@ class Settings(BaseSettings):
     cors_origins: str = Field(default="http://localhost:8080,http://127.0.0.1:8080", description="逗號分隔的白名單")
     admin_token: str = Field(default="", description="讀招募表單用的 X-Admin-Token；空字串＝關閉管理端點")
     rate_limit_per_minute: int = Field(default=120, description="每個來源 IP 每分鐘的請求上限（記憶體計數）")
-    coach_provider: str = Field(default="rules", description="小陪回覆的提供者：目前只有 rules；預留 llm 介面但不實作")
+    coach_provider: str = Field(default="rules", description="小陪回覆的提供者：rules（規則引擎）或 anthropic（接模型；沒有金鑰或沒裝 SDK 會自動退回 rules）")
+    anthropic_api_key: str = Field(default="", description="Anthropic API 金鑰，只從環境變數 ANTHROPIC_API_KEY 讀；空字串＝不接模型")
+    coach_model: str = Field(default="claude-sonnet-5-5", description="COACH_PROVIDER=anthropic 時用的模型 id（環境變數 COACH_MODEL）")
     timezone: str = Field(default="Asia/Taipei", description="關燈判斷與日期用的時區")
     lights_out_start: str = Field(default="22:30", description="關燈開始（含）")
     lights_out_end: str = Field(default="06:00", description="關燈結束（不含）")
     seed_on_startup: bool = Field(default=False, description="啟動時若資料庫是空的就灌種子資料")
+    variant_secret: str = Field(default="", description="題目變體 answer_token 的簽章金鑰；空字串＝啟動時隨機產生（重啟後舊 token 失效）")
 
     @property
     def cors_origin_list(self) -> List[str]:
