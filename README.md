@@ -28,6 +28,8 @@ tandelo/
 │   ├─ world/           冒險世界 Demo（可操作 POC、11 個場景、PWA manifest；art/ 為 codex 美術掛載點）
 │   ├─ assets/monsters-defs.svg、worldmap-terrain.svg  八隻怪 v2 與數理大陸地形（由 illustrations/_src/*.py 產生）
 ├─ docs/research/       調研報告：教育遊戲化的年齡與性別偏好、核心用戶族群選擇、國際 Top players、台灣市場、商業模式標竿、2026 設計趨勢與規範
+├─ docs/gtm-and-finance.md、financial-model.py／.csv  進入市場計畫與 36 個月財務模型（四個情境）
+├─ docs/pilot/          W1–2 試點準備包：孩子試玩與家長訪談腳本、同意書草案、人工介入紀錄表、題本規格、分層規則
 ├─ docs/design-audit-2026.md  2026 設計規範稽核（50 項，對首頁與 Demo 逐項）；docs/codex-image-brief.md 給本地 codex 的向量圖需求單
 │   ├─ config.js        window.TANDELO_API_BASE（Pages 留空＝離線；Docker 由 nginx 注入 '/api'）
 │   ├─ app/js/api.js    後端連線包裝：isOnline()、request()、syncState()

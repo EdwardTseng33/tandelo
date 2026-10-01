@@ -827,6 +827,17 @@ ul.tight li+li{margin-top:.4em}
       </tbody>
     </table></div>
     <p class="note">結論：真人季票在目前假設下不是高毛利產品，是介入階梯的最上層。毛利槓桿來自把人力壓到最有效的那幾分鐘，其餘交給系統；哪幾分鐘最有效，POC 量出來才算數。2.0 寫的「真人季票 40–45%」是漏扣固定成本的數字，2.1 撤回。</p>
+    <h3>每層的單位經濟與損平情境</h3>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>層（每生每月）</th><th>月價</th><th>人力＋每隊固定</th><th>貢獻</th><th>貢獻率</th></tr></thead>
+      <tbody>
+        <tr><th>L0 純系統</th><td>299</td><td>0</td><td>245</td><td>82%</td></tr>
+        <tr><th>L1 巡查</th><td>690</td><td>86</td><td>538</td><td>78%</td></tr>
+        <tr class="hi"><th>L2 遠征</th><td>1,495</td><td>1,333</td><td>72</td><td>5%</td></tr>
+        <tr><th>L3 遠征＋課後語音</th><td>1,495</td><td>1,720</td><td>−315</td><td>−21%</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">逐月 36 個月模型與四個情境在 <a href="../docs/gtm-and-finance.md">docs/gtm-and-finance.md</a>（程式 <code>docs/financial-model.py</code> 可重跑）。基準情境（表價、5 人隊）36 個月內不損平；真人層改 1,995／月、6 人隊、獲客 800、嚮導只做兩幕，第 17 個月損平、第 3 年毛利率 55%。所以家長訪談的願付要同時問 2,990 與 3,990 兩個價位。</p>
     <div class="grid g2">
       <div class="card mint"><div class="who">毛利的槓桿在哪（長期）</div><ul class="tight">
         <li>怪的傳說卡與題目引擎一次製作，四片大陸、所有價格帶、補習班通路全部重用。</li>
@@ -1089,7 +1100,7 @@ ul.tight li+li{margin-top:.4em}
       <li><b>價格帶：299 ／ 690–990 ／ 2,990 每 8 週，對應 L0／L1／L2–L3。</b>建議採用，試點各層按表價收費，續購率就是願付的答案。理由：對標 Khanmigo US$4、Duolingo Super、卓越小班 4,500 與家教行情。</li>
     </ol>
     <div class="callout honey">
-      <p><b>下一步。</b>城堡接著補兩塊：進入市場計畫（第一批 4 隊從哪來、通路、獲客成本）與逐月財務模型（含每隊固定成本與人工介入成本）。W1–2 的訪談腳本、同意書草案與獨立題本規格也一起出。這份頁面、調研、後端引擎與 Demo 都在 GitHub，PR 會一直更新。</p>
+      <p><b>下一步。</b>進入市場計畫與逐月財務模型在 <a href="../docs/gtm-and-finance.md">docs/gtm-and-finance.md</a>；W1–2 的訪談腳本、同意書草案、人工介入紀錄表、獨立題本規格、分層規則在 <a href="../docs/pilot/">docs/pilot/</a>。後端 0.3 接著做題目變體引擎、人工介入紀錄、小陪接模型與守門。這份頁面、調研、後端引擎與 Demo 都在 GitHub，PR 會一直更新。</p>
     </div>
   </div>
 </section>
