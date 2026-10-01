@@ -34,7 +34,7 @@ backend/app/
   models.py          SQLAlchemy 2 模型
   schemas.py         Pydantic 輸入輸出
   api/               路由：health、students、teams、teachers、coach
-  services/          純邏輯：content（題庫）、diagnosis（判卡點）、rules（規則）、teams（湊隊成班）、report（週報）、coach（小陪）
+  services/          純邏輯：content（題庫）、diagnosis（判卡點）、rules（規則）、teams（湊隊成班）、report（週報）、coach（小陪）、guard（小陪守門）
   seed.py            種子資料（虛構隊友、老師）
   data/content.json  題庫與卡點地圖
 ```
@@ -74,7 +74,7 @@ JSON 欄位用 Text 存字串，SQLite 與 Postgres 都不用特別處理；POC 
 
 - **SQLite 起步**：POC 單機、資料量小、零維運；`DATABASE_URL` 換成 `postgresql+psycopg://…` 就能上 Postgres（compose 有 `postgres` profile；後端映像要另外裝 `psycopg[binary]`，`pyproject.toml` 的 `postgres` extra 有列）。正式上雲（Cloud Run 這類無狀態平台）一定要換 Postgres，因為容器磁碟不持久。
 - **FastAPI + SQLAlchemy 2**：型別清楚、OpenAPI 文件免費、同步模式就夠 POC 用。
-- **小陪不接 LLM**：`COACH_PROVIDER=rules` 是規則引擎；`services/coach.py` 留了 `CoachProvider` 介面，要接模型時新增一個實作並從環境變數讀金鑰，程式碼裡永遠不放金鑰。
+- **小陪預設不接 LLM**：`COACH_PROVIDER=rules` 是規則引擎；`COACH_PROVIDER=anthropic` 走 `LLMProvider`（見下面「小陪接模型與守門（0.3）」），金鑰只從環境變數讀，程式碼裡永遠不放金鑰。
 - **nginx 注入 `/config.js`**：同一份靜態檔在 Pages 是離線模式、在 Docker 是同源 `/api`，不用建置工具也不用改檔案。
 - **rate limit 放記憶體**：單一副本夠用；多副本要換 Redis，middleware 的介面不變。
 
@@ -127,6 +127,30 @@ backend/app/
 POC 邊界：教科書版本還沒有欄位（配對時兩邊都視為同版本）；幽靈隊的歷史平均由呼叫端給；守塔結算以 `created_at` 的月份為準、資料量小直接在 Python 裡算。
 
 
+## 小陪接模型與守門（0.3）
+
+小陪可以接大模型了，但「不給答案」不是靠提示詞保證，是靠守門保證：模型說的每一句話都先過 `services/guard.py`，沒過就退回規則引擎同一層級的句子。
+
+```
+POST /coach/reply
+  ├─ 關燈（rules.is_lights_out）→ 回「關燈中」，不呼叫模型
+  ├─ level ≥ 4 → 固定句「這一步交給你，寫到哪裡再叫我」，不呼叫模型
+  ├─ action=answer → 先交給規則引擎比對（答對就換步驟，不叫模型；答錯才讓模型說一句）
+  └─ LLMProvider._call → guard.check(text, answer_forms)
+        ├─ 過 → 回 {level, text, handoff}
+        └─ 沒過（leak／answer_phrase／too_long／unsafe／bad_json／refusal／error）
+              → RulesCoach.line_for_level(skill, step, level) ＋ metrics.leak += 1 ＋ 一行 log
+```
+
+- **提供者**：`services/coach.py` 的 `CoachProvider` 介面不變。`COACH_PROVIDER=rules` 是原本的規則引擎；`COACH_PROVIDER=anthropic` 是 `LLMProvider`，只在有 `ANTHROPIC_API_KEY` 且裝了 SDK（`pip install 'tandelo-backend[llm]'`，`requirements.txt` 不強制）時啟用，否則 `create_app()` 啟動時退回規則引擎並記一行 log。模型 id 從 `COACH_MODEL` 讀，預設 `claude-sonnet-5-5`；SDK 用 try-import，程式碼與測試裡沒有任何金鑰。
+- **提示**：系統提示＝固定規則（繁體中文台灣用語、每句 ≤ 40 字、絕不給整題答案與最終數值、不出現「答案是」、只做目前層級的事、不評價孩子）＋怪的定義檔（`world.json`：名稱、騙術、口頭禪、弱點、被識破時）＋題目＋孩子目前寫到的步驟（`step_text`）＋目前層級（0 問、1 指、2 借、3 示範一步）。回覆用結構化輸出 `{level, text, handoff}`；`output_config.effort=low`、`max_tokens=300`，刻意短。
+- **守門（純函式，`services/guard.py`）**：`leaks_answer(text, answer_forms)` 把答案展開成各種寫法（正規化去空白、全形轉半形、整數／小數／最簡分數、`x = 4` 的右邊）直接比對，前後接到數字或字母不算（6 ≠ 6x、13 ≠ 130）；另外抓「答案是／就是／等於／=」後面那一段，項的順序不同也算（`7 + 2x` ＝ `2x + 7`）。`too_long` 每句 ≤ 40 字、最多 5 句；`has_unsafe` 是兒少不宜與貶低語氣的黑名單；`says_answer_phrase` 擋「答案是」。`answer_forms` 由前端或變體引擎提供，空的就用題庫的 `coach.final`；第三層以前連這一步的 `accept` 也擋（不寫下一步），第三層「示範一步」才放行。守門寧可誤擋（退回規則引擎），不放過。
+- **四層與交棒**：`level` 從 body 來（沒給就用 `hint_level`）。第 3 層回覆 `handoff=true`；`level ≥ 4` 不呼叫模型，只回固定句。對錯判斷與換步驟永遠在規則引擎（計算與答案比對不讓語言模型做）。
+- **計數**：`CoachMetrics`（記憶體，重啟歸零，多副本要換集中式）：`total`（小陪實際回覆數，關燈不算）、`llm_calls`、`leak`（沒過守門退回的次數）、`by_reason`。`GET /coach/metrics` 回 `leak_rate = leak / total`，對應設計稿的「洩漏答案率 ≤ 2%」。
+- **API**：`POST /coach/reply` body 多了 `monster_id`、`step_text`、`level`、`answer_forms`；回傳多了 `provider`（原本就有）、`level`、`handoff`、`guarded`（沒過守門的原因，這時句子來自規則引擎）。
+- **測試**：`tests/test_coach_guard.py` 用假的 SDK client（monkeypatch `coach._make_client`）鎖住：有金鑰走模型、沒金鑰或沒 SDK 退回規則、各種洩漏寫法、放過「負號要發給每一個人」、第四層固定句、關燈不呼叫模型、metrics 數字。不對外打 API。
+
+POC 邊界：前端 `app/` 與 `world/` 目前仍走規則引擎，還沒送 `step_text`／`level`；`services/variants.py`（變體引擎）還沒有，`answer_forms` 先由呼叫端給或用題庫的最終答案。
 
 ## 往 1.0 的方向
 

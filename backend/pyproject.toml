@@ -1,6 +1,6 @@
 [project]
 name = "tandelo-backend"
-version = "0.2.0"
+version = "0.3.0"
 description = "Tandelo 概念驗證後端：FastAPI + SQLAlchemy 2 + SQLite（可換 Postgres）"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest==8.3.4", "httpx==0.28.1", "ruff==0.8.4"]
 postgres = ["psycopg[binary]==3.2.3"]
+llm = ["anthropic>=0.75"]  # 小陪接模型用；不裝也能跑（自動退回規則引擎）
 
 [tool.uv]
 dev-dependencies = ["pytest==8.3.4", "httpx==0.28.1", "ruff==0.8.4"]

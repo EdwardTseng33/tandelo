@@ -293,6 +293,10 @@ class CoachReplyIn(BaseModel):
     hint_level: int = Field(default=0, ge=0)
     start_tier: int = Field(default=1, ge=0, le=2)
     time: Optional[str] = Field(default=None, pattern=r"^\d{2}:\d{2}$", description="示範用：覆蓋現在時間（HH:MM）")
+    monster_id: str = Field(default="", max_length=40, description="這一題背後的怪（world.json 的 id）；空＝用 skill_id")
+    step_text: str = Field(default="", max_length=400, description="孩子目前寫到的步驟（原文）")
+    level: Optional[int] = Field(default=None, ge=0, le=9, description="引導層級：0 問、1 指、2 借、3 示範一步；4 以上只回固定句。空＝用 hint_level")
+    answer_forms: List[str] = Field(default_factory=list, max_length=10, description="最終答案的各種寫法（守門用）；空＝用題庫的最終答案")
 
 
 class CoachReplyOut(BaseModel):
@@ -303,6 +307,9 @@ class CoachReplyOut(BaseModel):
     hint_level: int
     done: bool
     ok: Optional[bool] = None
+    level: Optional[int] = None
+    handoff: bool = False
+    guarded: Optional[str] = Field(default=None, description="模型回覆沒過守門時的原因（leak／too_long／unsafe…），這時 text 來自規則引擎")
 
 
 # ——— 冒險世界（0.2）———

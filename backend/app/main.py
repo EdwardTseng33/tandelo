@@ -14,9 +14,10 @@ from .api import coach, health, students, teachers, teams, world
 from .core.config import Settings, get_settings
 from .core.ratelimit import RateLimiter, RateLimitMiddleware
 from .db import Base, make_engine, make_session_factory
+from .services import coach as coach_svc
 
 API_PREFIX = "/api/v1"
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logging.getLogger("uvicorn.access").setLevel(logging.WARNING)  # 不記每筆請求的細節
@@ -38,6 +39,9 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
     app.state.rate_limiter = RateLimiter(settings.rate_limit_per_minute)
+    # 小陪：啟動時決定提供者；anthropic 但沒金鑰／沒 SDK 會在這裡退回規則引擎並記一行 log
+    app.state.coach_metrics = coach_svc.CoachMetrics()
+    app.state.coach_provider = coach_svc.get_provider(settings.coach_provider, settings.anthropic_api_key, settings.coach_model, app.state.coach_metrics)
 
     app.add_middleware(RateLimitMiddleware, limiter=app.state.rate_limiter)
     app.add_middleware(

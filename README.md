@@ -98,7 +98,9 @@ make logs / make down
 | `CORS_ORIGINS` | `http://localhost:8080,http://127.0.0.1:8080` | 逗號分隔白名單；Pages 版要接後端就加 `https://edwardtseng33.github.io` |
 | `ADMIN_TOKEN` | 空（關閉） | 讀招募表單的 `X-Admin-Token` |
 | `RATE_LIMIT_PER_MINUTE` | 120 | 每 IP 每分鐘上限（記憶體） |
-| `COACH_PROVIDER` | `rules` | 小陪回覆提供者；目前只有規則引擎，不接 LLM、不放金鑰 |
+| `COACH_PROVIDER` | `rules` | 小陪回覆提供者：`rules`（規則引擎）或 `anthropic`（接模型；沒金鑰或沒裝 SDK 會自動退回 `rules` 並記一行 log） |
+| `ANTHROPIC_API_KEY` | 空（不接模型） | Anthropic API 金鑰；只放環境變數或 `.env`，程式碼與測試裡絕不放真金鑰 |
+| `COACH_MODEL` | `claude-sonnet-5-5` | `COACH_PROVIDER=anthropic` 時用的模型 id |
 | `TIMEZONE` / `LIGHTS_OUT_START` / `LIGHTS_OUT_END` | `Asia/Taipei` / `22:30` / `06:00` | 關燈判斷 |
 | `SEED_ON_STARTUP` | `false`（Docker：`true`） | 啟動時資料庫空就灌種子 |
 
@@ -122,7 +124,8 @@ make logs / make down
 | GET | `/students/{id}/parent-report`、`/students/{id}/parent-reports` | 生成週報、歷史週報 |
 | POST / GET | `/teacher-applications` | 招募表單；列表需 `X-Admin-Token` |
 | GET | `/teachers`、`/teachers/{id}/earnings?tier=&teams=&size=` | 老師清單、收入試算（45／52／60%、保底 600） |
-| POST | `/coach/reply`、`/coach/explain` | 小陪規則回覆（22:30–06:00 回「關燈中」）、說給我聽評分 |
+| POST | `/coach/reply`、`/coach/explain` | 小陪回覆（規則引擎或接模型，四層引導、答案守門；22:30–06:00 回「關燈中」且不呼叫模型）、說給我聽評分 |
+| GET | `/coach/metrics` | 小陪洩漏率：`leak`／`total`（記憶體計數） |
 | GET | `/world/map` | 冒險世界：四片大陸、區域與燈塔、怪的傳說卡、路線、聯賽區 |
 | GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 夥伴狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
 | GET | `/students/{id}/record`、`/teams/{id}/record` | 戰績（收服 10、叫醒 5、講解 3、副本 5／8／12）；小隊只回加總、人均與解鎖 |
@@ -135,7 +138,7 @@ make logs / make down
 ## 說明
 
 - 教室與老師端是平板／桌機優先：寬度 768px 以上是寬版（白板、隊友列、老師控制列，不套手機框）；手機開教室只會看到「請用 iPad 或電腦開教室」與複製連結。手機用在課與課之間的練習；家長只在 LINE。
-- AI 教練「小陪」在 POC 中以規則引擎與預寫對話模擬，畫面標示「示範模式」；不接任何 AI 服務。
+- AI 教練「小陪」預設是規則引擎（畫面標示「示範模式」）；後端可用 `COACH_PROVIDER=anthropic` 接模型，但每一句都過「不給答案」守門，沒過就退回規則引擎，前端目前仍走規則引擎。
 - 全站 `noindex`，不供搜尋引擎收錄。
 - 授權：保留所有權利（POC 展示用）。
 
