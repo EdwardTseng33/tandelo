@@ -4,7 +4,7 @@
 
 這是一個**概念驗證（POC）**：品牌網站、老師招募頁、可操作的 App 原型（學生、家長 LINE、老師三條流程），以及一個小的後端 API。所有示範資料都是虛構的；沒有後端時，資料只留在使用者自己的裝置。
 
-- 網站（Pages）：<https://edwardtseng3.github.io/tandelo/>（離線示範模式，不連後端）
+- 網站（Pages）：<https://edwardtseng33.github.io/tandelo/>（離線示範模式，不連後端）
 - 架構說明：[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## 架構
@@ -66,7 +66,7 @@ make logs / make down
 |---|---|---|
 | `ci.yml` | PR、push main | 後端 ruff＋pytest（Python 3.12）；前端 HTML 標籤檢查＋`node --check`＋禁字檢查；兩個 Docker build 並起來打 health（不 push） |
 | `deploy-pages.yml` | push main（frontend/ 有變） | `upload-pages-artifact` 把 `frontend/` 部署到 GitHub Pages（`actions/deploy-pages`） |
-| `docker-publish.yml` | push main、tag `v*` | build 並推 `ghcr.io/edwardtseng3/tandelo-frontend`、`tandelo-backend`（標籤 `sha-…`、`latest`、版本號；用 `GITHUB_TOKEN`） |
+| `docker-publish.yml` | push main、tag `v*` | build 並推 `ghcr.io/edwardtseng33/tandelo-frontend`、`tandelo-backend`（標籤 `sha-…`、`latest`、版本號；用 `GITHUB_TOKEN`） |
 | `deploy-backend.yml.example` | 不啟用 | Cloud Run／Fly.io 部署範本，需要哪些 secrets 寫在檔頭 |
 
 工作流裡沒有任何 secret 值。**Pages 來源要改成「GitHub Actions」**（Settings → Pages → Source），舊的「從 main 根目錄發佈」會找不到檔案。
@@ -76,7 +76,7 @@ make logs / make down
 | 變數 | 預設 | 說明 |
 |---|---|---|
 | `DATABASE_URL` | `sqlite:///./data/tandelo.db`（Docker：`sqlite:////data/tandelo.db`） | SQLAlchemy 連線字串 |
-| `CORS_ORIGINS` | `http://localhost:8080,http://127.0.0.1:8080` | 逗號分隔白名單；Pages 版要接後端就加 `https://edwardtseng3.github.io` |
+| `CORS_ORIGINS` | `http://localhost:8080,http://127.0.0.1:8080` | 逗號分隔白名單；Pages 版要接後端就加 `https://edwardtseng33.github.io` |
 | `ADMIN_TOKEN` | 空（關閉） | 讀招募表單的 `X-Admin-Token` |
 | `RATE_LIMIT_PER_MINUTE` | 120 | 每 IP 每分鐘上限（記憶體） |
 | `COACH_PROVIDER` | `rules` | 小陪回覆提供者；目前只有規則引擎，不接 LLM、不放金鑰 |

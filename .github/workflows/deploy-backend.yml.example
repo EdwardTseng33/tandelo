@@ -2,7 +2,7 @@
 # 啟用方式：改名成 deploy-backend.yml，二選一留下 Cloud Run 或 Fly.io 的 job，並在 repo 的
 # Settings → Secrets and variables → Actions 設定下面列出的 secrets。這個檔案裡沒有任何 secret 值。
 #
-# 兩條路都吃 docker-publish.yml 推上去的映像 ghcr.io/edwardtseng3/tandelo-backend:sha-<短碼>。
+# 兩條路都吃 docker-publish.yml 推上去的映像 ghcr.io/edwardtseng33/tandelo-backend:sha-<短碼>。
 #
 # ── Google Cloud Run 需要的 secrets ─────────────────────────────────────────
 #   GCP_PROJECT_ID          GCP 專案 id
@@ -11,7 +11,7 @@
 #   GCP_SERVICE_ACCOUNT     部署用服務帳號 email
 #   ADMIN_TOKEN             後端管理權杖（建議改用 Secret Manager 掛進 Cloud Run）
 #   DATABASE_URL            正式資料庫連線字串（Cloud SQL Postgres；SQLite 在 Cloud Run 不持久）
-#   CORS_ORIGINS            例如 https://edwardtseng3.github.io
+#   CORS_ORIGINS            例如 https://edwardtseng33.github.io
 #
 # ── Fly.io 需要的 secrets ──────────────────────────────────────────────────
 #   FLY_API_TOKEN           fly tokens create deploy -x 999999h
@@ -45,7 +45,7 @@ jobs:
         with:
           service: tandelo-backend
           region: ${{ secrets.GCP_REGION }}
-          image: ghcr.io/edwardtseng3/tandelo-backend:${{ inputs.image_tag }}
+          image: ghcr.io/edwardtseng33/tandelo-backend:${{ inputs.image_tag }}
           flags: --port=8000 --allow-unauthenticated --min-instances=0 --max-instances=2
           env_vars: |
             APP_ENV=prod
@@ -62,6 +62,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --image ghcr.io/edwardtseng3/tandelo-backend:${{ inputs.image_tag }}
+      - run: flyctl deploy --remote-only --image ghcr.io/edwardtseng33/tandelo-backend:${{ inputs.image_tag }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
