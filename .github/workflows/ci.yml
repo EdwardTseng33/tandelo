@@ -52,7 +52,7 @@ jobs:
       - name: HTML 標籤檢查（doctype、noindex、viewport、lang、落款、成對標籤）
         run: |
           set -euo pipefail
-          for f in frontend/index.html frontend/teachers.html frontend/plan.html frontend/app/index.html; do
+          for f in frontend/index.html frontend/teachers.html frontend/plan.html frontend/adventure.html frontend/coach.html frontend/segment.html frontend/strategy.html frontend/app/index.html frontend/world/index.html; do
             grep -qi '<!doctype html>' "$f" || { echo "$f 缺 doctype"; exit 1; }
             grep -q 'name="robots" content="noindex' "$f" || { echo "$f 缺 noindex"; exit 1; }
             grep -q 'name="viewport"' "$f" || { echo "$f 缺 viewport"; exit 1; }
@@ -62,7 +62,7 @@ jobs:
               [ "$o" -eq "$c" ] || { echo "$f <$tag> 開 $o 關 $c 不成對"; exit 1; }
             done
           done
-          for f in frontend/index.html frontend/teachers.html frontend/plan.html; do
+          for f in frontend/index.html frontend/teachers.html frontend/plan.html frontend/adventure.html frontend/coach.html frontend/segment.html frontend/strategy.html; do
             grep -q 'Tandelo 概念驗證（POC）· Edward Tseng · 2026' "$f" || { echo "$f 缺落款"; exit 1; }
           done
           echo "HTML 檢查：通過"

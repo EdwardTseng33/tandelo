@@ -142,6 +142,7 @@ def team_out(team: models.Team) -> Dict:
     verdict = rules.squad_rule(team.size, team.min_size, team.max_size)
     return {
         "id": team.id,
+        "name": team.name or "",
         "subject": team.subject,
         "grade": team.grade,
         "slot_id": team.slot_id,

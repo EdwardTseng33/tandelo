@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
-  <title>Tandelo｜對準段考的 8 週小隊課</title>
-  <meta name="description" content="孩子卡在哪，就從哪裡開始。國二、國三數學，3–6 人固定小隊、同一位真人老師、每週 50 分鐘，加上每天和 AI 教練小陪練習，一起走 8 週對準下一次段考。">
+  <title>Tandelo｜被同一隻怪打倒過的人，組隊回去打牠</title>
+  <meta name="description" content="對準段考的國中數學冒險小隊：卡點是怪、老師是嚮導、AI 教練小陪只問你寫到哪一步。3–6 人固定小隊、每週一趟遠征、每天 10 到 20 分鐘，8 週一季。收服一隻怪＝隔幾天不給提示還會。家長只用 LINE。">
   <meta name="theme-color" content="#F6F4EE" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0C1412" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_TW">
   <meta property="og:site_name" content="Tandelo">
-  <meta property="og:title" content="Tandelo｜對準段考的 8 週小隊課">
-  <meta property="og:description" content="孩子卡在哪，就從哪裡開始。3–6 人固定小隊、同一位真人老師、每天有小陪陪練，8 週對準下一次段考。">
+  <meta property="og:title" content="Tandelo｜被同一隻怪打倒過的人，組隊回去打牠">
+  <meta property="og:description" content="對準段考的國中數學冒險小隊：真人嚮導、AI 教練小陪、3–6 人固定小隊、8 週一季。收服一隻怪＝隔幾天不給提示還會。">
   <meta name="twitter:card" content="summary">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@500;600;700&family=STIX+Two+Text:ital,wght@1,500&display=swap">
   <link rel="stylesheet" href="assets/brand.css">
   <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/world-home.css">
   <script>
     /* 在畫面出現前決定深淺色：手動選過就照選的；沒選過且在 22:30–06:00 之間自動轉暗 */
     (function () {
@@ -37,7 +38,7 @@
   </script>
   <script src="config.js"></script>
   <script src="assets/site.js" defer></script>
-  <script src="assets/home.js" defer></script>
+  <script src="assets/world-home.js" defer></script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -56,6 +57,17 @@
       <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></symbol>
       <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
       <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></symbol>
+      <!-- 怪的基本身體：用品牌的圓做出來，避開任何既有 IP -->
+      <symbol id="m-round" viewBox="0 0 64 64"><circle fill="var(--m-body)" cx="32" cy="34" r="24"/><circle fill="var(--m-eye)" cx="24" cy="30" r="6"/><circle fill="var(--m-eye)" cx="40" cy="30" r="6"/><circle fill="var(--m-pupil)" cx="25" cy="31" r="2.6"/><circle fill="var(--m-pupil)" cx="41" cy="31" r="2.6"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M24 44q8 5 16 0"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="44" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+      <symbol id="m-drop" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M32 8c10 12 22 20 22 32a22 22 0 0 1-44 0c0-12 12-20 22-32z"/><circle fill="var(--m-eye)" cx="25" cy="38" r="5.5"/><circle fill="var(--m-eye)" cx="39" cy="38" r="5.5"/><circle fill="var(--m-pupil)" cx="26" cy="39" r="2.4"/><circle fill="var(--m-pupil)" cx="40" cy="39" r="2.4"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M27 49h10"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="44" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="48">?</text></symbol>
+      <symbol id="m-twin" viewBox="0 0 64 64"><circle fill="var(--m-body)" cx="22" cy="36" r="17"/><circle fill="var(--m-body)" cx="42" cy="36" r="17"/><circle fill="var(--m-eye)" cx="20" cy="33" r="5"/><circle fill="var(--m-eye)" cx="44" cy="33" r="5"/><circle fill="var(--m-pupil)" cx="21" cy="34" r="2.2"/><circle fill="var(--m-pupil)" cx="45" cy="34" r="2.2"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M16 44h8M40 44h8"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="46">?</text></symbol>
+      <symbol id="m-cloud" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M18 50a12 12 0 0 1-2-24 16 16 0 0 1 31-4 11 11 0 0 1 3 28z"/><circle fill="var(--m-eye)" cx="26" cy="36" r="5"/><circle fill="var(--m-eye)" cx="40" cy="36" r="5"/><circle fill="var(--m-pupil)" cx="27" cy="37" r="2.2"/><circle fill="var(--m-pupil)" cx="41" cy="37" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="46">?</text></symbol>
+      <symbol id="m-bug" viewBox="0 0 64 64"><ellipse fill="var(--m-body)" cx="32" cy="36" rx="22" ry="18"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M14 30l-6-8M50 30l6-8M20 50l-4 6M44 50l4 6"/><circle fill="var(--m-eye)" cx="24" cy="33" r="5.5"/><circle fill="var(--m-eye)" cx="40" cy="33" r="5.5"/><circle fill="var(--m-pupil)" cx="25" cy="34" r="2.4"/><circle fill="var(--m-pupil)" cx="41" cy="34" r="2.4"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="46">?</text></symbol>
+      <symbol id="m-tri" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M32 10l24 44H8z"/><circle fill="var(--m-eye)" cx="25" cy="42" r="5"/><circle fill="var(--m-eye)" cx="39" cy="42" r="5"/><circle fill="var(--m-pupil)" cx="26" cy="43" r="2.2"/><circle fill="var(--m-pupil)" cx="40" cy="43" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="18">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="50">?</text></symbol>
+      <symbol id="m-cross" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M24 10h16v14h14v16H40v14H24V40H10V24h14z"/><circle fill="var(--m-eye)" cx="26" cy="32" r="5"/><circle fill="var(--m-eye)" cx="38" cy="32" r="5"/><circle fill="var(--m-pupil)" cx="27" cy="33" r="2.2"/><circle fill="var(--m-pupil)" cx="39" cy="33" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+      <symbol id="m-ring" viewBox="0 0 64 64"><path fill="var(--m-body)" fill-rule="evenodd" d="M32 8a24 24 0 1 0 0 48 24 24 0 0 0 0-48zm0 14a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/><circle fill="var(--m-eye)" cx="20" cy="26" r="4.5"/><circle fill="var(--m-eye)" cx="44" cy="26" r="4.5"/><circle fill="var(--m-pupil)" cx="21" cy="27" r="2"/><circle fill="var(--m-pupil)" cx="45" cy="27" r="2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+      <symbol id="tower" viewBox="0 0 24 32"><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M8 30V14h8v16z"/><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M5 14l7-8 7 8z"/><circle fill="var(--tw-lamp)" cx="12" cy="10" r="2.4"/></symbol>
+      <symbol id="p-kid" viewBox="0 0 64 64"><circle cx="32" cy="24" r="14" fill="currentColor"/><path d="M8 62c2-16 12-24 24-24s22 8 24 24z" fill="currentColor"/></symbol>
     </defs>
   </svg>
 
@@ -69,6 +81,10 @@
       </a>
       <nav class="nav-links" id="nav-links" aria-label="主要導覽">
         <a href="./" aria-current="page">產品</a>
+        <a href="#world">世界</a>
+        <a href="#how">怎麼運作</a>
+        <a href="#parents">家長</a>
+        <a href="#pricing">價格</a>
         <a href="teachers.html">老師招募</a>
         <button class="nav-theme-row" type="button" data-theme-toggle>
           <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
@@ -81,7 +97,7 @@
           <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
           <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
         </button>
-        <a class="btn btn-ghost btn-sm nav-app" href="app/">開啟 App（POC）</a>
+        <a class="btn btn-ghost btn-sm nav-app" href="world/">試玩 Demo</a>
         <button class="icon-btn nav-menu" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="開啟選單">
           <svg class="ico ico-open" aria-hidden="true"><use href="#i-menu"/></svg>
           <svg class="ico ico-close" aria-hidden="true"><use href="#i-close"/></svg>
@@ -90,614 +106,262 @@
     </div>
   </header>
 
-  <main id="main">
+    <main id="main">
 
-    <!-- ① 開場 -->
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">國二・國三數學　對準段考的 8 週小隊課</p>
-          <h1 id="hero-title" class="display hero-title"><span class="nb">孩子卡在哪，</span><br><span class="nb">就從哪裡開始。</span></h1>
-          <p class="lede">先找到孩子卡住的那一步，再和卡在同一步的隊友、同一位真人老師，一起走 8 週，對準學校的下一次段考。兩堂課之間，有小陪每天陪練。</p>
-          <div class="hero-cta">
-            <a class="btn btn-lg" href="app/">開啟 App 試玩（POC）<svg class="ico ico-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="link-arrow" href="#how">看它怎麼運作<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></a>
+    <!-- ① 開場：點一下收服 -->
+    <section class="w-hero" aria-labelledby="hero-title">
+      <div class="wrap w-hero-grid">
+        <div>
+          <p class="eyebrow">對準段考的國中數學 · 冒險小隊</p>
+          <h1 id="hero-title">被同一隻怪打倒過的人，<br><span class="ac">組隊回去打牠。</span></h1>
+          <p class="lede">卡點是怪，老師是嚮導，AI 教練小陪只問「你寫到哪一步」。3–6 人固定小隊，每週一趟遠征，每天 10 到 20 分鐘，8 週對準下一次段考。收服一隻怪的意思只有一個：隔幾天不給提示，還會。</p>
+          <div class="w-hero-cta">
+            <a class="btn btn-lg" href="world/">試玩冒險世界 Demo<svg class="ico ico-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn-ghost btn-lg" href="app/">兩分鐘偵察：孩子被哪隻怪打倒過</a>
           </div>
-          <ul class="hero-facts" aria-label="重點">
-            <li><b class="num">3–6</b><span>人固定小隊</span></li>
-            <li><b class="num">50</b><span>分鐘真人課／週</span></li>
-            <li><b class="num">8</b><span>週對準段考</span></li>
-          </ul>
+          <div class="w-hero-meta"><span><b>國二、國三</b>數學先行</span><span>家長只用 <b>LINE</b></span><span><b>22:30</b> 關燈</span><span>成就只數 <b>驗證過的學會</b></span></div>
         </div>
-
-        <div class="hero-visual">
-          <div class="hero-stage" data-hero>
-            <div class="hero-orbit" aria-hidden="true"></div>
-            <div class="hero-duo" aria-hidden="true"><i class="hd-a"></i><i class="hd-b"></i><span class="hd-lens"><b></b></span></div>
-            <span class="orb" data-orb aria-hidden="true" style="--x:74%;--y:5%;--s:30px;--c:var(--av-4);--dl:-1s"><i></i></span>
-            <span class="orb" data-orb aria-hidden="true" style="--x:88%;--y:20%;--s:22px;--c:var(--av-3);--dl:-3s"><i></i></span>
-            <span class="orb" data-orb aria-hidden="true" style="--x:7%;--y:26%;--s:26px;--c:var(--av-5);--dl:-2s"><i></i></span>
-            <span class="orb" data-orb aria-hidden="true" style="--x:9%;--y:79%;--s:34px;--c:var(--av-2);--dl:-4s"><i></i></span>
-            <span class="orb" data-orb aria-hidden="true" style="--x:10%;--y:97%;--s:22px;--c:var(--av-6);--dl:-5s"><i></i></span>
-            <span class="orb" data-orb aria-hidden="true" style="--x:27%;--y:96%;--s:26px;--c:var(--av-1);--dl:-2.5s"><i></i></span>
-            <div class="float-card fc-stuck" aria-hidden="true">
-              <span class="chip chip-stuck">卡住這一步</span>
-              <span class="math fc-math">−2x &gt; 6　⇒　x &gt; −3 ?</span>
+        <div>
+          <div class="w-stage" data-stage tabindex="0" role="button" aria-label="負號幽靈，點一下識破牠">
+            <div class="fogl" aria-hidden="true"></div><div class="fogl b" aria-hidden="true"></div><div class="ground" aria-hidden="true"></div>
+            <div class="w-bubble" aria-live="polite"></div>
+            <div class="w-squad" aria-hidden="true">
+              <span class="w-kid" style="color:var(--av-2)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+              <span class="w-kid" style="color:var(--av-4)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+              <span class="w-kid" style="color:var(--av-3)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+              <span class="w-kid" style="color:var(--av-5)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
             </div>
-            <div class="float-card fc-coach" aria-hidden="true">
-              <span class="duo duo-sm is-talking"><i></i><i></i></span>
-              <span>我先不給答案。兩邊同除以 −2，不等號會怎樣？</span>
+            <div class="w-hmon mon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path id="hbody" fill="var(--m-body)" d="M18 50a12 12 0 0 1-2-24 16 16 0 0 1 31-4 11 11 0 0 1 3 28z"/><circle fill="var(--m-eye)" cx="25" cy="34" r="5.5"/><circle fill="var(--m-eye)" cx="40" cy="34" r="5.5"/><circle class="pupil" fill="var(--m-pupil)" cx="26" cy="35" r="2.4"/><circle class="pupil" fill="var(--m-pupil)" cx="41" cy="35" r="2.4"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M27 45q5 3 10 0"/></svg>
             </div>
-            <div class="float-card fc-gold" aria-hidden="true">
-              <span class="chip chip-gold">已掌握</span>
-              <span class="fc-sub">隔 <b class="num">9</b> 天再測，還會</span>
-            </div>
-            <div class="confetti hero-confetti" data-confetti aria-hidden="true"></div>
+            <span class="w-hkid w-kid" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+            <div class="w-confetti" aria-hidden="true"></div>
+            <span class="w-hint">點一下牠，識破牠的騙術</span>
           </div>
-          <div class="hero-play">
-            <button class="btn btn-quiet btn-sm hero-nudge" type="button" data-hero-nudge>讓兩個圓靠近</button>
-            <p class="hero-status" data-hero-status aria-live="polite">把隊友拖進兩個圓中間，或點一下。</p>
-          </div>
+          <div class="w-stage-cap"><span>怪的台詞就是孩子剛才的想法。識破牠，牠就變成站在你身後的影子。</span><button type="button" data-next-mon hidden>再來一隻 →</button></div>
         </div>
       </div>
     </section>
 
     <!-- ② 三個痛 -->
-    <section class="section pains" aria-labelledby="pains-title">
+    <section class="section" aria-labelledby="pains-title">
       <div class="wrap">
-        <header class="sec-head">
-          <p class="eyebrow">你可能也遇過</p>
-          <h2 id="pains-title" class="h-section">不是不努力，<br>是卡在<span class="nb">沒人看見的那一步。</span></h2>
-        </header>
-        <ol class="pain-list">
-          <li class="pain reveal">
-            <div class="pain-art tilt"><img class="pain-ill" data-ill="pain-stuck" src="assets/illustrations/pain-stuck.svg" alt="" width="600" height="450" loading="lazy" decoding="async"></div>
-            <span class="pain-no num">01</span>
-            <h3 class="h-card">他說「我不會」，<br>但說不出是哪裡不會。</h3>
-            <p>再聽一次整章、再多寫幾頁題目，也未必解得開那真正卡住的一步。</p>
-          </li>
-          <li class="pain reveal d1">
-            <div class="pain-art tilt"><img class="pain-ill" data-ill="pain-unseen" src="assets/illustrations/pain-unseen.svg" alt="" width="600" height="450" loading="lazy" decoding="async"></div>
-            <span class="pain-no num">02</span>
-            <h3 class="h-card">一對一太貴，<br>大班又顧不到他。</h3>
-            <p>大班照著課本進度往前走，卡住的那一步沒人停下來；一對一顧得到，但每個月的費用讓人猶豫。</p>
-          </li>
-          <li class="pain reveal d2">
-            <div class="pain-art tilt"><img class="pain-ill" data-ill="pain-alone" src="assets/illustrations/pain-alone.svg" alt="" width="600" height="450" loading="lazy" decoding="async"></div>
-            <span class="pain-no num">03</span>
-            <h3 class="h-card">晚上一個人讀，<br>卡住了沒人可問。</h3>
-            <p>九點多回到家，題目卡住只能先放著；問 AI 很快拿到答案，隔天換個數字，又不會了。</p>
-          </li>
-        </ol>
+        <div class="sec-head">
+          <p class="eyebrow">為什麼孩子不想再寫數學</p>
+          <h2 id="pains-title" class="h-section">不是不努力，<br>是卡在沒人看見的那一步。</h2>
+        </div>
+        <div class="w-pains">
+          <div class="w-pain reveal"><img data-ill="pain-stuck" src="assets/illustrations/pain-stuck.svg" alt="" width="600" height="450" loading="lazy"><h3>同一步，錯第五次</h3><p>題目換了、數字換了，卡住的那一步沒換。沒有人告訴他，其實只有一步要補。</p><p class="ans">Tandelo：兩分鐘診斷找出那一步，把它取名為一隻怪。</p></div>
+          <div class="w-pain reveal d1"><img data-ill="pain-alone" src="assets/illustrations/pain-alone.svg" alt="" width="600" height="450" loading="lazy"><h3>晚上十點，一個人</h3><p>補習班下課了，家裡沒人會教，解題 App 只會給答案。</p><p class="ans">Tandelo：小陪只問「你寫到哪一步」，隊友在同一條路線上。</p></div>
+          <div class="w-pain reveal d2"><img data-ill="pain-unseen" src="assets/illustrations/pain-unseen.svg" alt="" width="600" height="450" loading="lazy"><h3>錯了，就覺得自己笨</h3><p>分數會掉、排名會掉，掉的是孩子對自己的看法。</p><p class="ans">Tandelo：錯不叫錯，叫被騙到。珊瑚色是卡住，不代表錯。</p></div>
+        </div>
       </div>
     </section>
 
-    <!-- ③ 怎麼運作 -->
-    <section class="section how" id="how" aria-labelledby="how-title">
+    <!-- ③ 世界 -->
+    <section class="section" id="world" aria-labelledby="world-title">
       <div class="wrap">
-        <header class="sec-head sec-head-split">
+        <div class="sec-head sec-head-split">
+          <div><p class="eyebrow">冒險世界</p><h2 id="world-title" class="h-section">每一個遊戲名詞，<br>都對到一個學習機制。</h2></div>
+          <p class="lede">先有機制，才有名字。遊戲語言蓋在教學上，沒有一個名詞是為了好玩而新加的功能，也沒有任何一種和學會無關的貨幣。</p>
+        </div>
+        <div class="w-map-grid">
+          <div class="w-mapc reveal"><span class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><span class="was">卡點（卡在哪一步）</span><span class="is">怪，用牠讓你犯的錯命名</span><span class="why">把錯誤具名化，孩子罵怪比罵自己健康。</span></span></div>
+          <div class="w-mapc reveal d1"><span class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></span><span><span class="was">隔 7–12 天不給提示再測通過</span><span class="is">收服：怪變成站在你身後的影子</span><span class="why">收服是驗證過的事件；影子牆就是證據牆。</span></span></div>
+          <div class="w-mapc reveal d2"><span class="w-kid" style="width:56px;height:56px;color:var(--pine)"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#p-kid"/></svg></span><span><span class="was">每週 50 分鐘真人小隊課</span><span class="is">遠征：嚮導帶隊，六幕走完</span><span class="why">老師本來就只帶三到六人、八週不換。</span></span></div>
+          <div class="w-mapc reveal"><span class="mon pine"><svg aria-hidden="true"><use href="#m-bug"/></svg></span><span><span class="was">一週的練習題組</span><span class="is">副本：三層加一隻 Boss，看小隊解題率</span><span class="why">不另外加量，每天最多三張任務卡。</span></span></div>
+          <div class="w-mapc reveal d1"><span class="mon asleep"><svg aria-hidden="true"><use href="#m-drop"/></svg></span><span><span class="was">之後又錯，回到練習清單</span><span class="is">影子睡著了，等你叫醒</span><span class="why">不扣分、不消失。金色不是永久等級。</span></span></div>
+          <div class="w-mapc reveal d2"><span class="mon fog"><svg aria-hidden="true"><use href="#m-tri"/></svg></span><span><span class="was">家長 LINE 週報</span><span class="is">營地來信：家人在營地等你回來</span><span class="why">他學會了什麼、下週做什麼、今晚可以問他一句。</span></span></div>
+        </div>
+
+        <h3 class="h-card" style="margin-top:56px">數理大陸的八隻怪 <span class="fine">翻開看牠怎麼騙人</span></h3>
+        <div class="w-dex">
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-round"/></svg></span><span class="where">乘法平原</span><h4>漏項獸</h4><p>把 (a+b)² 中間那兩塊偷走，讓你以為只剩 a² + b²。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「兩個平方，就這樣，沒別的了。」</p><span class="k">弱點</span><p class="weak">一塊邊長 a+b 的正方形，中間一定多出兩塊 ab。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span class="where">多項式林</span><h4>負號幽靈</h4><p>躲在括號前面，只讓第一項變號，後面的都放過。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「第一個歸我，後面的我不管。」</p><span class="k">弱點</span><p class="weak">負號要發給括號裡每一個人。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-bug"/></svg></span><span class="where">根號谷</span><h4>拆根蟲</h4><p>把 √(25 − 9) 咬成 √25 − √9。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「分開算比較快，相信我。」</p><span class="k">弱點</span><p class="weak">根號裡面要先算完，再開根號。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-twin"/></svg></span><span class="where">根號谷</span><h4>雙面根</h4><p>讓你以為 √(a²) 可以是負的。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「正的負的都可以，隨便你挑。」</p><span class="k">弱點</span><p class="weak">√ 開出來一定不是負的。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-tri"/></svg></span><span class="where">畢氏山</span><h4>斜邊迷霧</h4><p>把三角形轉個方向，你就認錯哪一邊是斜邊。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「右上那條就是斜邊，看都不用看。」</p><span class="k">弱點</span><p class="weak">斜邊永遠對著直角，先找直角再找斜邊。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-drop"/></svg></span><span class="where">分解洞窟</span><h4>平方差雙子</h4><p>一個加、一個減，牠讓你兩個都寫減。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「我們是雙胞胎，當然一樣。」</p><span class="k">弱點</span><p class="weak">平方差分解出來一個加、一個減。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-cross"/></svg></span><span class="where">分解洞窟</span><h4>十字符號怪</h4><p>十字交乘到最後一步，偷偷把符號換掉。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「數字對了就好，符號誰在看。」</p><span class="k">弱點</span><p class="weak">配好數字之後，把符號乘回去驗算一次。</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-ring"/></svg></span><span class="where">二次高原</span><h4>零的隱者</h4><p>你兩邊除以 x 的那一刻，牠把 x = 0 藏走。</p></span><span class="w-face back"><span class="k">口頭禪</span><p>「……」牠不說話。</p><span class="k">弱點</span><p class="weak">移項提出公因式，x 本身也可能是 0。</p></span></button></div>
+        </div>
+        <p class="w-dex-cap">怪的傳說卡五個欄位都是教學：出身是誤解的成因，騙術是誤解本身，口頭禪是錯的推理說出口，弱點是正確概念。由學科老師寫，AI 只幫忙潤稿。英文、國文、社會三片大陸的怪已有提案。</p>
+      </div>
+    </section>
+
+    <!-- ④ 怎麼運作 -->
+    <section class="section" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="sec-head sec-head-split">
+          <div><p class="eyebrow">一週怎麼走</p><h2 id="how-title" class="h-section">一週一趟遠征，<br>其餘六天各有一張任務卡。</h2></div>
+          <p class="lede">節奏不變：每週一次 50 分鐘真人課，課與課之間每天 10 到 20 分鐘。變的是每一天都知道自己為什麼要練這一格，而且知道隊友也在。</p>
+        </div>
+        <div class="w-week">
+          <div class="w-day exp reveal"><span class="d">週四</span><b>遠征</b><p>50 分鐘、六幕。嚮導帶隊打這週的怪。</p></div>
+          <div class="w-day reveal d1"><span class="d">週五</span><b>補刀＋副本開門</b><p>嚮導昨晚語音講的那隻怪是今天第一題。</p></div>
+          <div class="w-day reveal d2"><span class="d">週六</span><b>巡邏＋接力</b><p>每人 3 題，小陪隨時可問。Boss 接力開跑。</p></div>
+          <div class="w-day rest reveal d3"><span class="d">週日</span><b>營地來信</b><p>家長收到這週的 LINE。孩子不用做事。</p></div>
+          <div class="w-day gold reveal"><span class="d">週一</span><b>伏擊</b><p>到期的影子回來，沒有提示。結果只進自己的紀錄。</p></div>
+          <div class="w-day reveal d1"><span class="d">週二</span><b>結算</b><p>22:00 副本結算，全隊看到解題率。</p></div>
+          <div class="w-day reveal d2"><span class="d">週三</span><b>偵察＋整備</b><p>先鋒先試下一隻怪一題。嚮導收到課前一頁。</p></div>
+        </div>
+        <p class="fine" style="margin-top:14px">任務卡每天最多三張，22:30 之後不發、不亮、不推播。段考週不加量。哪天沒開，隔天卡上寫「回來了就好」。</p>
+
+        <div class="w-modes">
+          <div class="w-mode reveal"><span class="tag">純 AI</span><h3>AI 冒險世界</h3><p>三張任務卡、副本、對戰、小陪四層引導、家長週報。公會長由真人巡查員擔任。</p><span class="price">NT$299<small>／月</small></span></div>
+          <div class="w-mode reveal d1"><span class="tag">AI ＋ 真人巡查</span><h3>巡查版</h3><p>加一位真人巡查員：每週在公會牆留語音、抽查「為什麼」、段考前加開攻略會。</p><span class="price">NT$690–990<small>／月</small></span></div>
+          <div class="w-mode hi reveal d2"><span class="tag">真人小隊</span><h3>真人小隊季票</h3><p>真人嚮導、3–6 人固定小隊、每週 50 分鐘遠征、課後 30 秒語音。含 AI 世界。限額席位。</p><span class="price">NT$2,990<small>／8 週</small></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑤ 學會怎麼算 -->
+    <section class="section" id="learned" aria-labelledby="learned-title">
+      <div class="wrap">
+        <div class="w-band">
           <div>
-            <p class="eyebrow">怎麼運作</p>
-            <h2 id="how-title" class="h-section">一期 8 週，<br>每一週都從卡點出發。</h2>
+            <p class="eyebrow" style="color:#7ED3C0">學會怎麼算</p>
+            <h2 id="learned-title" class="h-section">答對不算數。<br>講得出來、<br>隔幾天還會，<br>才算收服。</h2>
+            <p class="lede">一隻怪有五種狀態。狀態會掉，事件不會消失：一個孩子這學期收服了 12 隻怪，那 12 次都是隔 7 到 12 天不給提示再測通過的。稱號、戰績、榜，只數這種事件。</p>
+            <div class="ctrl"><button type="button" data-state-prev>← 上一態</button><button type="button" data-state-next>下一態 →</button></div>
           </div>
-          <p class="lede">每週約 <b class="num">125</b> 分鐘：<b class="num">50</b> 分鐘真人小隊課，加上每天 <b class="num">10–20</b> 分鐘和小陪練習。和一般補習班一週的時間差不多，但每一分鐘都對準孩子自己的卡點。</p>
-        </header>
-
-        <div class="how-layout">
-          <div class="how-stage" data-how-stage aria-hidden="true">
-            <div class="how-art">
-              <img class="how-ill is-on" data-ill="step-diagnose" src="assets/illustrations/step-diagnose.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <img class="how-ill" data-ill="step-team" src="assets/illustrations/step-team.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <img class="how-ill" data-ill="step-class" src="assets/illustrations/step-class.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <img class="how-ill" data-ill="step-practice" src="assets/illustrations/step-practice.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <img class="how-ill" data-ill="step-retest" src="assets/illustrations/step-retest.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <img class="how-ill" data-ill="step-parent" src="assets/illustrations/step-parent.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <img class="how-ill" data-ill="step-exam" src="assets/illustrations/step-exam.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-            </div>
-            <div class="how-meter">
-              <p class="how-count"><b class="num" data-how-n>1</b><span class="num"> / 7</span><span class="how-title" data-how-title>診斷，找到卡點</span></p>
-              <span class="how-dots"><i class="is-on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-            </div>
-          </div>
-
-        <ol class="steps" data-steps>
-          <li class="step" data-step data-step-title="診斷，找到卡點">
-            <div class="step-rail"><span class="step-no num">1</span></div>
-            <div class="step-copy">
-              <span class="step-tag">兩分鐘</span>
-              <h3 class="step-title">診斷，找到卡點</h3>
-              <p>拍一張考卷、看三題，或直接用說的。小陪找出第一個卡點——是「除以負數，不等號要反向」這樣的一步，不是一整章。</p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-diagnose" src="assets/illustrations/step-diagnose.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-diag">
-                <div class="diag-line"><span class="math">−2x &gt; 6</span><span class="diag-ok"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span></div>
-                <div class="diag-line is-stuck"><span class="math">x &gt; −3</span><span class="chip chip-stuck">卡在這一步</span></div>
-                <p class="diag-note">兩邊同除以負數時，不等號沒有反向。</p>
-                <div class="diag-inputs" aria-hidden="true">
-                  <span><svg class="ico"><use href="#i-cam"/></svg>拍考卷</span>
-                  <span><svg class="ico"><use href="#i-mic"/></svg>用說的</span>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li class="step" data-step data-step-title="湊一支小隊">
-            <div class="step-rail"><span class="step-no num">2</span></div>
-            <div class="step-copy">
-              <span class="step-tag">3–6 人</span>
-              <h3 class="step-title">湊一支小隊</h3>
-              <p>依卡點、學校進度、段考日期和有空的時段，湊出 3–6 人的固定小隊。同一位老師、同一個時段，一起走 8 週；老師按下「接這一隊」才成班。</p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-team" src="assets/illustrations/step-team.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-team">
-                <div class="team-ring">
-                  <span class="mate t1">睿</span><span class="mate t2">晴</span><span class="mate t3">安</span><span class="mate t4">宇</span><span class="mate t5">恩</span>
-                  <span class="team-core chip chip-stuck">不等號反向</span>
-                </div>
-                <ul class="team-keys">
-                  <li>同一個卡點</li><li>同一次段考</li><li>同一個時段</li>
-                </ul>
-              </div>
-            </div>
-          </li>
-
-          <li class="step step-wide" data-step data-step-title="真人小隊課">
-            <div class="step-rail"><span class="step-no num">3</span></div>
-            <div class="step-copy">
-              <span class="step-tag">每週一次・50 分鐘</span>
-              <h3 class="step-title">真人小隊課，六段走完</h3>
-              <p>上課前，AI 依全隊這週的錯排好「這週要解的 3 題」，老師看過、確認才用。課堂一律照這六段走——點一段看看在做什麼。</p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-class" src="assets/illustrations/step-class.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-class" data-class>
-                <div class="class-bar" role="tablist" aria-label="小隊課六段">
-                  <button class="seg is-on" role="tab" aria-selected="true" aria-controls="seg-panel" data-min="5" data-name="暖身" data-desc="用一題上週的卡點熱身，看看誰還記得、誰又卡住了。" style="--w:5" aria-label="暖身，5 分鐘"><span class="num">5</span></button>
-                  <button class="seg" role="tab" aria-selected="false" aria-controls="seg-panel" tabindex="-1" data-min="10" data-name="大家常錯的" data-desc="老師拆解這一隊這週最多人卡住的那一步，用的是他們自己的錯題。" style="--w:10" aria-label="大家常錯的，10 分鐘"><span class="num">10</span></button>
-                  <button class="seg" role="tab" aria-selected="false" aria-controls="seg-panel" tabindex="-1" data-min="10" data-name="自己試試" data-desc="同一個觀念，依程度拿到不同難度的題，每個人都有剛好夠的挑戰。" style="--w:10" aria-label="自己試試，10 分鐘"><span class="num">10</span></button>
-                  <button class="seg" role="tab" aria-selected="false" aria-controls="seg-panel" tabindex="-1" data-min="5" data-name="再帶一次" data-desc="還卡住的人，老師換一個方式再帶一次；已經會的人挑戰變化題。" style="--w:5" aria-label="再帶一次，5 分鐘"><span class="num">5</span></button>
-                  <button class="seg seg-long" role="tab" aria-selected="false" aria-controls="seg-panel" tabindex="-1" data-min="15" data-name="講給隊友聽" data-desc="兩兩互講，說得出來才算懂。這是最長的一段——學會發生在開口的時候。" style="--w:15" aria-label="講給隊友聽，15 分鐘"><span class="num">15</span></button>
-                  <button class="seg" role="tab" aria-selected="false" aria-controls="seg-panel" tabindex="-1" data-min="5" data-name="我搞懂的" data-desc="每個人留一句「我今天搞懂的」，會出現在家長的週報裡。" style="--w:5" aria-label="我搞懂的，5 分鐘"><span class="num">5</span></button>
-                </div>
-                <div class="class-scale" aria-hidden="true"><span class="num">0</span><span class="num">25</span><span class="num">50 分</span></div>
-                <ol class="class-legend" aria-hidden="true">
-                  <li><b class="num">5</b>暖身</li><li><b class="num">10</b>大家常錯的</li><li><b class="num">10</b>自己試試</li><li><b class="num">5</b>再帶一次</li><li><b class="num">15</b>講給隊友聽</li><li><b class="num">5</b>我搞懂的</li>
-                </ol>
-                <div class="class-panel" id="seg-panel" role="tabpanel" aria-live="polite">
-                  <p class="class-panel-head"><b data-seg-name>暖身</b><span class="num" data-seg-min>5</span><span>分鐘</span></p>
-                  <p data-seg-desc>用一題上週的卡點熱身，看看誰還記得、誰又卡住了。</p>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li class="step" data-step data-step-title="每天和小陪練一格">
-            <div class="step-rail"><span class="step-no num">4</span></div>
-            <div class="step-copy">
-              <span class="step-tag">每天 10–20 分鐘</span>
-              <h3 class="step-title">每天和小陪練一格</h3>
-              <p>拍題問小陪，它會問你怎麼想、給提示，但不給答案；完全沒頭緒時，先用別的題目示範一步。最後用自己的話「說給我聽」30 秒。</p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-practice" src="assets/illustrations/step-practice.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-chat">
-                <p class="bubble bubble-me">這題我不會。</p>
-                <div class="coach">
-                  <span class="duo duo-sm is-talking"><i></i><i></i></span>
-                  <div><p class="coach-name">小陪</p><p class="coach-text">我先不給答案。你先說說看：兩邊同時除以一個負數時，你記得要注意什麼？</p></div>
-                </div>
-                <div class="say-pill">
-                  <svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg>
-                  <span>說給我聽</span>
-                  <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                  <span class="num">0:30</span>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li class="step" data-step data-step-title="過幾天，再測一次">
-            <div class="step-rail"><span class="step-no num">5</span></div>
-            <div class="step-copy">
-              <span class="step-tag">隔 7–12 天</span>
-              <h3 class="step-title">過幾天，再測一次</h3>
-              <p>不給任何提示，換個數字再考一次。還會，才算學會；忘了，就回到練習清單——不扣分，也不跟誰比。</p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-retest" src="assets/illustrations/step-retest.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-days">
-                <ol class="days" aria-label="第 0 天到第 12 天">
-                  <li class="day is-said"><span class="num">0</span></li>
-                  <li class="day"><span class="num">1</span></li><li class="day"><span class="num">2</span></li><li class="day"><span class="num">3</span></li>
-                  <li class="day"><span class="num">4</span></li><li class="day"><span class="num">5</span></li><li class="day"><span class="num">6</span></li>
-                  <li class="day is-window"><span class="num">7</span></li><li class="day is-window"><span class="num">8</span></li>
-                  <li class="day is-window is-test"><span class="num">9</span></li>
-                  <li class="day is-window"><span class="num">10</span></li><li class="day is-window"><span class="num">11</span></li><li class="day is-window"><span class="num">12</span></li>
-                </ol>
-                <div class="days-legend">
-                  <span class="chip chip-learned">第 0 天　說得出來</span>
-                  <span class="chip chip-gold">第 9 天　不給提示也會</span>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li class="step" data-step data-step-title="家長在 LINE 收到週報">
-            <div class="step-rail"><span class="step-no num">6</span></div>
-            <div class="step-copy">
-              <span class="step-tag">每週一份</span>
-              <h3 class="step-title">家長在 LINE 收到週報</h3>
-              <p>不用裝 App。每週一份：他學會了什麼、下週做什麼，還有今晚可以問他的一句話。<a class="inline-link" href="#line">看週報長什麼樣子</a></p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-parent" src="assets/illustrations/step-parent.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-report">
-                <p class="rep-row"><span class="rep-k">學會了</span><span>除以負數，不等號要反向</span></p>
-                <p class="rep-row"><span class="rep-k">下週</span><span>分數係數的不等式</span></p>
-                <p class="rep-row rep-ask"><span class="rep-k">今晚可以問他</span><span>「兩邊同乘 −1，不等號會怎樣？為什麼？」</span></p>
-              </div>
-            </div>
-          </li>
-
-          <li class="step" data-step data-step-title="段考前後對照">
-            <div class="step-rail"><span class="step-no num">7</span></div>
-            <div class="step-copy">
-              <span class="step-tag">第 8 週</span>
-              <h3 class="step-title">段考前後，攤開來對照</h3>
-              <p>段考後拍考卷上傳，對照這 8 週前後：哪些卡點翻過去了、哪些還要再練。第 4 週有一個結業點，可以續走、換時段，也可以先停。</p>
-            </div>
-            <div class="step-visual">
-              <img class="step-ill" data-ill="step-exam" src="assets/illustrations/step-exam.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
-              <div class="viz viz-compare">
-                <div class="cmp-col">
-                  <p class="cmp-h">開始前</p>
-                  <span class="chip chip-stuck">不等號反向</span><span class="chip chip-stuck">分數係數</span><span class="chip chip-stuck">移項變號</span><span class="chip chip-stuck">文字題列式</span>
-                </div>
-                <div class="cmp-arrow" aria-hidden="true"><svg class="ico"><use href="#i-arrow"/></svg></div>
-                <div class="cmp-col">
-                  <p class="cmp-h">段考後</p>
-                  <span class="chip chip-gold">不等號反向</span><span class="chip chip-gold">分數係數</span><span class="chip chip-learned">移項變號</span><span class="chip chip-stuck">文字題列式</span>
-                </div>
-                <p class="viz-caption">示意畫面・資料為虛構</p>
-              </div>
-            </div>
-          </li>
-        </ol>
-        </div>
-
-        <div class="screens">
-          <figure class="screen screen-wide reveal">
-            <img class="screen-img" data-ill="classroom-wide" src="assets/illustrations/classroom-wide.svg" alt="" width="1400" height="900" loading="lazy" decoding="async">
-            <figcaption><b>教室</b>白板、隊友列、六段進度，老師一列控制。</figcaption>
-          </figure>
-          <figure class="screen screen-phone reveal d1">
-            <img class="screen-img" data-ill="phone-between" src="assets/illustrations/phone-between.svg" alt="" width="600" height="1200" loading="lazy" decoding="async">
-            <figcaption><b>手機</b>今天、卡點地圖、說給我聽。</figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-
-    <!-- ④ 學會怎麼算 -->
-    <section class="section band learned" id="learned" aria-labelledby="learned-title">
-      <div class="wrap learned-grid">
-        <div class="learned-copy">
-          <p class="eyebrow eyebrow-band">「學會」怎麼算</p>
-          <h2 id="learned-title" class="h-section">答對不算數。<br>講得出來、<br>過幾天還會，<br>才算學會。</h2>
-          <ol class="rules">
-            <li>
-              <span class="rule-no num">1</span>
-              <div><h3>說給我聽</h3><p>用自己的話講 <b class="num">30</b> 秒：為什麼要這樣做。背答案講不出來。</p></div>
-            </li>
-            <li>
-              <span class="rule-no num">2</span>
-              <div><h3>隔 7–12 天，不給提示再測</h3><p>換個數字、換個情境也會用，才代表觀念留下來了。</p></div>
-            </li>
-          </ol>
-          <p class="learned-fine">金色不是永久等級。之後又錯了，會自動回到練習清單——這是證據紀錄，不是只升不降的遊戲分數。</p>
-        </div>
-
-        <div class="flip-stage" data-flip>
-          <div class="flip-wrap">
-            <img class="flip-burst" data-ill="celebrate-dots" src="assets/illustrations/celebrate-dots.svg" alt="" width="800" height="800" loading="lazy" decoding="async">
-            <div class="flip-card" data-state="stuck" role="button" tabindex="0" aria-describedby="flip-hint" aria-label="卡點卡：除以負數，不等號要反向。按一下翻到下一個狀態">
-              <div class="flip-face">
-                <span class="flip-state" data-flip-label>卡住</span>
-                <p class="flip-title">除以負數，不等號要反向</p>
-                <p class="math flip-math">−2x &gt; 6　⇒　x &lt; −3</p>
-                <p class="flip-when" data-flip-when>第 0 天・在小隊課上卡住</p>
-              </div>
-            </div>
-            <div class="confetti" data-confetti aria-hidden="true"></div>
-          </div>
-          <p class="flip-hint" id="flip-hint">用手指或滑鼠把卡片翻過去，也可以點一下。</p>
-          <p class="sr-only" data-flip-status aria-live="polite"></p>
-          <ol class="flip-track" aria-label="卡點的三種狀態">
-            <li class="ft ft-stuck is-on"><span class="ft-dot"></span><b>卡住</b><small>珊瑚色，不代表錯</small></li>
-            <li class="ft ft-said"><span class="ft-dot"></span><b>說得出來</b><small>綠色，當天通過</small></li>
-            <li class="ft ft-gold"><span class="ft-dot"></span><b>已掌握</b><small>金色，隔幾天還在</small></li>
-          </ol>
-          <button class="btn btn-quiet btn-sm flip-play" type="button" data-flip-play>
-            <svg class="ico" aria-hidden="true"><use href="#i-replay"/></svg>再翻一次
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ⑤ 比較 -->
-    <section class="section compare" aria-labelledby="compare-title">
-      <div class="wrap">
-        <header class="sec-head sec-head-split">
           <div>
-            <p class="eyebrow">差在哪裡</p>
-            <h2 id="compare-title" class="h-section">不是更小的補習班，<br>也不是 AI 家教。</h2>
-          </div>
-          <p class="lede">真人老師、同伴、每天的練習、看得見的學會證據——四件事要一起做到，才算數。選一個你熟悉的方式，和 Tandelo 並排看看。</p>
-        </header>
-
-        <div class="cmp" data-tabs>
-          <div class="cmp-tabs" role="tablist" aria-label="選擇比較對象">
-            <button role="tab" id="tab-big" aria-selected="true" aria-controls="panel-big" class="is-on">補習班大班</button>
-            <button role="tab" id="tab-one" aria-selected="false" aria-controls="panel-one" tabindex="-1">一對一家教</button>
-            <button role="tab" id="tab-ai" aria-selected="false" aria-controls="panel-ai" tabindex="-1">AI 學習 App</button>
-          </div>
-
-          <div class="cmp-panel" role="tabpanel" id="panel-big" aria-labelledby="tab-big">
-            <div class="cmp-grid">
-              <div class="cmp-headrow" aria-hidden="true"><span></span><span>補習班大班</span><span class="is-us">Tandelo</span></div>
-              <div class="cmp-row"><span class="cmp-k">從哪裡開始</span><span class="cmp-them">課本進度</span><span class="cmp-us">孩子卡住的那一步</span></div>
-              <div class="cmp-row"><span class="cmp-k">老師</span><span class="cmp-them">一位老師對一整班</span><span class="cmp-us">同一位老師帶 3–6 人，8 週不換</span></div>
-              <div class="cmp-row"><span class="cmp-k">同伴</span><span class="cmp-them">很多，程度不一</span><span class="cmp-us">卡在同一步的隊友，互相講給對方聽</span></div>
-              <div class="cmp-row"><span class="cmp-k">兩堂課之間</span><span class="cmp-them">回家寫講義</span><span class="cmp-us">每天和小陪練一格，不給答案</span></div>
-              <div class="cmp-row"><span class="cmp-k">怎麼算學會</span><span class="cmp-them">考卷分數</span><span class="cmp-us">講得出來＋隔幾天再測</span></div>
+            <div class="w-states" role="list">
+              <div class="w-state" role="listitem"><span class="mon fog"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>迷霧</b><small>還沒偵察到這一區。未知只是把「還沒學」畫出來。</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>還在附近</b><small>珊瑚色，卡住，不代表錯。這週的怪。</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon pine"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>打中了</b><small>綠色，用自己的話講得出來。等牠回來。</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon shadow"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>收服</b><small>金眼影子。隔 7 到 12 天不給提示也會。這是唯一的貨幣。</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon asleep"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>睡著了</b><small>之後又錯。不扣分、不消失，等你叫醒。</small></span></div>
             </div>
-          </div>
-          <div class="cmp-panel" role="tabpanel" id="panel-one" aria-labelledby="tab-one" hidden>
-            <div class="cmp-grid">
-              <div class="cmp-headrow" aria-hidden="true"><span></span><span>一對一家教</span><span class="is-us">Tandelo</span></div>
-              <div class="cmp-row"><span class="cmp-k">從哪裡開始</span><span class="cmp-them">看老師的判斷</span><span class="cmp-us">診斷與每天練習找出的卡點</span></div>
-              <div class="cmp-row"><span class="cmp-k">老師</span><span class="cmp-them">一對一，最貼身</span><span class="cmp-us">同一位老師帶 3–6 人，8 週不換</span></div>
-              <div class="cmp-row"><span class="cmp-k">同伴</span><span class="cmp-them">沒有</span><span class="cmp-us">有隊友一起，講給別人聽學得更牢</span></div>
-              <div class="cmp-row"><span class="cmp-k">兩堂課之間</span><span class="cmp-them">看老師另外安排</span><span class="cmp-us">每天和小陪練一格，不給答案</span></div>
-              <div class="cmp-row"><span class="cmp-k">費用</span><span class="cmp-them">每小時最高</span><span class="cmp-us">目標：每月一科不高於同級補習班</span></div>
-            </div>
-          </div>
-          <div class="cmp-panel" role="tabpanel" id="panel-ai" aria-labelledby="tab-ai" hidden>
-            <div class="cmp-grid">
-              <div class="cmp-headrow" aria-hidden="true"><span></span><span>AI 學習 App</span><span class="is-us">Tandelo</span></div>
-              <div class="cmp-row"><span class="cmp-k">從哪裡開始</span><span class="cmp-them">你問的那一題</span><span class="cmp-us">反覆出現的那個卡點</span></div>
-              <div class="cmp-row"><span class="cmp-k">真人</span><span class="cmp-them">沒有</span><span class="cmp-us">每週 50 分鐘，真人老師帶</span></div>
-              <div class="cmp-row"><span class="cmp-k">有人在等你</span><span class="cmp-them">沒有，想到才打開</span><span class="cmp-us">固定時段，隊友知道你今天要講哪一題</span></div>
-              <div class="cmp-row"><span class="cmp-k">答案</span><span class="cmp-them">常常直接給</span><span class="cmp-us">只問問題、給提示；最多示範一步</span></div>
-              <div class="cmp-row"><span class="cmp-k">怎麼算學會</span><span class="cmp-them">答對幾題</span><span class="cmp-us">講得出來＋隔幾天不給提示再測</span></div>
-            </div>
+            <p class="w-states-cap">資料模型一個欄位都不用動：就是原型裡的卡住、綠色、金色，加上「又錯回到清單」。</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ⑥ 家長 LINE 週報 -->
-    <section class="section line-sec" id="line" aria-labelledby="line-title">
-      <div class="wrap line-grid">
-        <div class="line-copy">
-          <p class="eyebrow">家長會收到什麼</p>
-          <h2 id="line-title" class="h-section">不問分數，<br>問<span class="nb">「這週搞懂了什麼」。</span></h2>
-          <p class="lede">家長只在 LINE 收訊息，不用裝 App。每週一份，三件事講清楚；家長不用重讀課本，也能聽懂孩子的進步。</p>
+    <!-- ⑥ 一起 -->
+    <section class="section" id="together" aria-labelledby="together-title">
+      <div class="wrap">
+        <div class="sec-head sec-head-split">
+          <div><p class="eyebrow">能一起</p><h2 id="together-title" class="h-section">團內合作，團間競爭，<br>沒有人被看見輸。</h2></div>
+          <p class="lede">對戰的單位永遠是小隊，比的是解題率和出題，不是誰算得快。隊友畫面不出現名字，榜只顯示前後各三隊，個人榜由孩子自己決定要不要上。</p>
+        </div>
+        <div class="w-together">
+          <div class="w-tg reveal"><span class="tag">PvE · 副本</span><h3>每週一個副本，看小隊解題率過關</h3><p>巡邏每人 3 題、Boss 接力每人 1 棒。求助不扣分，伏擊層不計分。未滿六成叫撤退，換一套題再打一次。</p>
+            <div class="w-rate"><div><span>60%</span><span class="bar"><i style="--v:.6"></i></span><span class="n">一星過關</span></div><div><span>75%</span><span class="bar"><i style="--v:.75"></i></span><span class="n">兩星 · 往上一條路線</span></div><div><span>90%</span><span class="bar"><i class="h" style="--v:.9"></i></span><span class="n">三星 · 全員出手</span></div></div></div>
+          <div class="w-tg reveal d1"><span class="tag">PvP · 對戰</span><h3>鏡像賽比解題率，出題戰比誰更懂怪</h3><p>只和同科、同路線、不同嚮導的小隊打。出題戰只能拿雙方都遠征過的怪出題：要先懂一隻怪怎麼騙人，才出得了好題。匿名投票，全隊同意才打真人，否則打幽靈隊。</p>
+            <div class="w-score"><div><b>3</b>答題分 · 隊伍的答案答對一題一分</div><div><b>3</b>出題分 · 對方答錯且確實在考那隻怪</div></div></div>
+          <div class="w-tg reveal d2"><span class="tag">公會 · 每月徽章公開賽</span><h3>達標就贏，不是只有前幾名</h3><p>每月最後一個週末打試煉副本：解題率八成以上、沒申報缺席的人全員出手，每位隊員各得一枚實體徽章吊飾，寄給家長。一學年十枚，湊成一本徽章冊。</p>
+            <div class="w-badge"><svg viewBox="0 0 48 48" aria-hidden="true"><circle fill="var(--honey)" stroke="#B8912A" stroke-width="2" cx="24" cy="24" r="20"/><circle fill="#FBEBC0" cx="24" cy="24" r="13"/><path fill="none" stroke="#7A5A08" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M17 24l4 4 10-10"/></svg><span><b>10 月 · 根號谷之月</b><small>全服收服加總達標，所有達標者的徽章升級金邊。沒有抽獎、不能用錢買。</small></span></div></div>
+          <div class="w-tg reveal d3"><span class="tag">世界地圖 · 燈塔</span><h3>一科一片大陸，一區一座燈塔</h3><p>全區的戰績加總點亮燈塔（合作），同路線的小隊爭奪守塔（每月結算、不衰減、不用防守）。地圖是幻想的，聯賽分區只到北、中、南、東。</p>
+            <div class="w-minimap"><svg viewBox="0 0 440 300" role="img" aria-label="數理大陸示意：六區各一座燈塔">
+              <path class="land" d="M70 90c30-60 120-80 190-60s110 50 150 100c30 45 20 90-20 120s-90 40-150 50-120-10-150-50S40 150 70 90z"/>
+              <text class="cn" x="92" y="70">數理大陸</text>
+              <circle class="glow" cx="161" cy="128" r="22"/><use href="#tower" class="tw t-us" x="150" y="112" width="22" height="30"/><text class="rl" x="161" y="162">乘法平原</text>
+              <circle class="glow" cx="266" cy="106" r="22"/><use href="#tower" class="tw t-o" x="255" y="90" width="22" height="30"/><text class="rl" x="266" y="140">多項式林</text>
+              <circle class="glow" cx="351" cy="168" r="22"/><use href="#tower" class="tw t-us" x="340" y="152" width="22" height="30"/><text class="rl" x="351" y="202">根號谷</text>
+              <use href="#tower" class="tw t-n" x="130" y="212" width="22" height="30"/><text class="rl" x="141" y="262">畢氏山</text>
+              <use href="#tower" class="tw t-n" x="240" y="232" width="22" height="30"/><text class="rl" x="251" y="282">分解洞窟</text>
+              <ellipse class="fogm" cx="330" cy="246" rx="46" ry="26"/><text class="rl fogt" x="330" y="251">?</text>
+            </svg></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑦ 家長 -->
+    <section class="section" id="parents" aria-labelledby="parents-title">
+      <div class="wrap w-parents">
+        <div>
+          <p class="eyebrow">家長只用 LINE</p>
+          <h2 id="parents-title" class="h-section">不問分數，<br>問「這週搞懂了什麼」。</h2>
+          <p class="lede">家長不裝 App。每週一封營地來信，三件事不變：他學會了什麼、下週做什麼、今晚可以問他一句。只多一個「我見證了」。孩子收服的怪會出現在信裡；卡住的永遠不會。</p>
           <ul class="ticks">
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span><b>他學會了什麼</b>——用孩子自己的話</span></li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span><b>下週做什麼</b>——對準哪一次段考</span></li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span><b>今晚可以問他這一句</b>——一句就好，不是考試</span></li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>好消息預設分享；卡住的事，由孩子決定要不要讓家人知道</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span><b>週報對得上段考。</b>每一層都寫「得分／題數」，家長自己算也對得上。</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span><b>分享卡孩子自己按。</b>沒有臉、沒有真名、沒有分數、沒有隊友的狀態。</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span><b>徽章寄給家長。</b>收件資料只用在寄送，寄出後 30 天刪除；13 歲以下由家長同意。</span></li>
           </ul>
         </div>
-
-        <div class="phone reveal" role="img" aria-label="LINE 週報示意：小睿這週翻過去 2 個卡點，今晚可以問他：兩邊同乘負一，不等號會怎樣？為什麼？">
-          <div class="phone-top">
-            <span class="lg-badge" aria-hidden="true">LINE</span>
-            <span class="phone-name">Tandelo 週報</span>
-            <span class="phone-time num">21:02</span>
-          </div>
-          <div class="phone-body">
-            <p class="line-date">星期五</p>
-            <div class="line-msg">
-              <span class="line-ava" aria-hidden="true"><span class="duo duo-sm"><i></i><i></i></span></span>
-              <div class="line-card">
-                <p class="lc-kicker">第 3 週・國二數學</p>
-                <p class="lc-title">小睿這週翻過去 <b class="num">2</b> 個卡點</p>
-                <div class="lc-block">
-                  <p class="lc-k">他學會了</p>
-                  <p>除以負數，不等號要反向。隔 9 天再測，不給提示也會。</p>
-                </div>
-                <div class="lc-block">
-                  <p class="lc-k">下週做什麼</p>
-                  <p>分數係數的一元一次不等式（對準 11 月段考）。</p>
-                </div>
-                <div class="lc-block lc-ask">
-                  <p class="lc-k">今晚可以問他</p>
-                  <p>「如果兩邊同乘 −1，不等號會怎樣？為什麼？」</p>
-                </div>
-                <span class="lc-btn">看 3 段重點回放</span>
-              </div>
-            </div>
-            <div class="line-msg line-me">
-              <p class="line-bubble">好，晚上問他。</p>
-            </div>
-            <div class="line-msg">
-              <span class="line-ava" aria-hidden="true"><span class="duo duo-sm"><i></i><i></i></span></span>
-              <p class="line-bubble line-bubble-in">段考後拍考卷上傳，就能看到這 8 週的前後對照。</p>
-            </div>
+        <div class="w-line reveal">
+          <div class="top"><i>T</i>Tandelo 營地</div>
+          <div class="body">
+            <div class="w-bub"><b>營地來信 · 星期二 21:02</b><br>小睿今晚收服了一隻怪：漏項獸（完全平方要有中間那一項）。第 9 天不給提示也會。<span class="q">今晚可以問他：「一塊邊長是 a+b 的正方形，為什麼比 a² + b² 多出兩塊長方形？」</span><div class="acts"><button type="button" data-witness>我見證了</button><button type="button">晚點問他</button></div><span class="t">已讀 21:05</span></div>
+            <div class="w-bub me">好，晚上問他。<span class="t">21:06</span></div>
+            <div class="w-bub" data-witness-echo hidden>隔天小睿的 App 首頁：「媽媽見證了這一次。」</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ⑦ 價格 -->
-    <section class="section pricing" id="pricing" aria-labelledby="pricing-title">
+    <!-- ⑧ 價格 -->
+    <section class="section" id="pricing" aria-labelledby="pricing-title">
       <div class="wrap">
-        <header class="sec-head sec-head-center">
+        <div class="sec-head">
           <p class="eyebrow">價格</p>
-          <h2 id="pricing-title" class="h-section">買的是小隊課次數，<br>成班才扣。</h2>
-          <p class="lede">每天和小陪練習、家長週報、段考前後對照，都包含在內。第一堂試上，不滿意不收費。</p>
-        </header>
-
-        <ul class="plans">
-          <li class="plan tilt reveal" data-plan data-name="先走半期・4 團" data-price="1790" data-per="448" data-note="走到第 4 週的結業點，再決定要不要續。">
-            <p class="plan-name">先走半期</p>
-            <p class="plan-qty"><b class="num">4</b> 團</p>
-            <p class="plan-price"><span class="cur">NT$</span><b class="num">1,790</b></p>
-            <p class="plan-per">平均每次約 <span class="num">448</span> 元</p>
-            <p class="plan-desc">走到第 4 週的結業點，再決定要不要續。</p>
-            <button class="plan-pick" type="button" data-plan-pick aria-pressed="false">選這個看看</button>
-          </li>
-          <li class="plan plan-main tilt reveal d1 is-picked" data-plan data-name="完整一期・8 團" data-price="2990" data-per="374" data-note="8 週一期，剛好包住一次段考。">
-            <span class="plan-flag">多數家庭選這個</span>
-            <p class="plan-name">完整一期</p>
-            <p class="plan-qty"><b class="num">8</b> 團<span class="beat" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></p>
-            <p class="plan-price"><span class="cur">NT$</span><b class="num">2,990</b></p>
-            <p class="plan-per">平均每次約 <span class="num">374</span> 元</p>
-            <p class="plan-desc">8 週一期，剛好包住一次段考：補洞、跟上學校、考前衝刺、考後訂正。</p>
-            <button class="plan-pick" type="button" data-plan-pick aria-pressed="true">已選這個</button>
-          </li>
-          <li class="plan tilt reveal d2" data-plan data-name="小隊＋一對一・8 團＋2 小時" data-price="5990" data-per="" data-note="小隊課照走，再加兩小時一對一。">
-            <p class="plan-name">小隊＋一對一</p>
-            <p class="plan-qty"><b class="num">8</b> 團＋一對一 <b class="num">2</b> 小時</p>
-            <p class="plan-price"><span class="cur">NT$</span><b class="num">5,990</b></p>
-            <p class="plan-per">適合段考前想多一點個別時間</p>
-            <p class="plan-desc">小隊課照走，再加兩小時一對一，由同一位老師帶。</p>
-            <button class="plan-pick" type="button" data-plan-pick aria-pressed="false">選這個看看</button>
-          </li>
-        </ul>
-
-        <div class="plan-sum" data-plan-sum>
-          <div class="plan-sum-copy">
-            <p class="plan-sum-k">你正在看的方案</p>
-            <p class="plan-sum-name" data-sum-name aria-live="polite">完整一期・8 團</p>
-            <p class="plan-sum-note" data-sum-note>8 週一期，剛好包住一次段考。</p>
-          </div>
-          <div class="plan-sum-nums">
-            <p class="plan-price plan-sum-total"><span class="cur">NT$</span><b class="num" data-sum-total>2,990</b></p>
-            <p class="plan-sum-per" data-sum-per-row>平均每次約 <b class="num" data-sum-per>374</b> 元</p>
-          </div>
+          <h2 id="pricing-title" class="h-section">一個世界，三個價格帶。<br>補一科的錢，買到一支小隊。</h2>
+          <p class="lede">免費就能偵察與收服第一隻怪。往上三層差的是有多少真人在旁邊，世界是同一個：真人小隊和 AI 小隊一起打公開賽。</p>
+          <div class="w-toggle" role="group" aria-label="計費週期"><button type="button" data-bill="month" class="on" aria-pressed="true">月繳</button><button type="button" data-bill="year" aria-pressed="false">年卡（約 83 折）</button></div>
         </div>
-
-        <div class="plus reveal">
-          <div class="plus-copy">
-            <p class="plan-name">Tandelo Plus</p>
-            <p>不上課也能每天和小陪練習、說給我聽、過幾天再測。每天有用量上限，22:30 後休息。</p>
-          </div>
-          <p class="plan-price plus-price"><span class="cur">NT$</span><b class="num">299</b><span class="per">／月</span></p>
+        <div class="w-tiers">
+          <div class="w-tier reveal"><span class="tag">免費</span><h3>偵察</h3><span class="price">NT$0</span><span class="alt">學校老師、補習班可免費開隊</span><ul><li>兩分鐘診斷：被哪隻怪打倒過</li><li>影子牆與傳說卡</li><li>每天一張任務卡</li><li>公會牆、徽章賽報名</li></ul><span class="for">給想先看看的家庭</span></div>
+          <div class="w-tier hi reveal d1"><span class="ribbon">最多人選</span><span class="tag">AI 世界</span><h3>冒險世界</h3><span class="price" data-month="NT$299<small>／月</small>" data-year="NT$2,990<small>／年</small>">NT$299<small>／月</small></span><span class="alt">第二個孩子 5 折</span><ul><li>每天三張任務卡、副本與對戰</li><li>小陪四層引導，不給答案</li><li>家長 LINE 營地來信</li><li>分享卡、稱號、世界地圖</li></ul><span class="for">給每天願意練 10 分鐘的孩子</span></div>
+          <div class="w-tier reveal d2"><span class="tag">AI ＋ 真人巡查</span><h3>巡查版</h3><span class="price" data-month="NT$690–990<small>／月</small>" data-year="NT$6,900–9,900<small>／年</small>">NT$690–990<small>／月</small></span><span class="alt">一位巡查員最多顧 60 個孩子</span><ul><li>含冒險世界全部</li><li>每週公會牆語音</li><li>抽查「為什麼」錄音</li><li>段考前魔王攻略會</li></ul><span class="for">給需要有人盯一下的孩子</span></div>
+          <div class="w-tier reveal d3"><span class="tag">真人小隊</span><h3>季票</h3><span class="price" data-month="NT$2,990<small>／8 週</small>" data-year="NT$2,990<small>／8 週</small>">NT$2,990<small>／8 週</small></span><span class="alt">限額席位 · 成班才扣款 · 第 4 週可停</span><ul><li>真人嚮導、3–6 人固定小隊</li><li>每週 50 分鐘遠征、六幕</li><li>課後 30 秒語音，隔天第一題就是那個卡點</li><li>含冒險世界全部</li></ul><span class="for">給對準下次段考的孩子</span></div>
         </div>
-
-        <div class="rules-grid">
-          <div class="rule-item"><b>開課前 48 小時截止</b><span>那時才確定成不成班。</span></div>
-          <div class="rule-item"><b>滿 4 人成班</b><span>只到 3 人改成 1 對 3，學費照人數調整。</span></div>
-          <div class="rule-item"><b>2 人以下不開</b><span>全額退回，或等下一隊、先用每日練習。</span></div>
-          <div class="rule-item"><b>成班才扣次數</b><span>沒成班的次數退回；隨時可退，沒上的退錢。</span></div>
-        </div>
-        <p class="fine price-note">以上為概念驗證的試算價格，正式價格以上線公告為準。家庭每月一科的支出，目標不高於同級補習班。</p>
+        <p class="w-price-note">2,990 折合每月約 1,500，落在實體單科大班的區間，比 6 人小班便宜一半。付費不改戰力、不改進度；沒有廣告、不對孩子推銷。這是概念驗證，價格為試算。</p>
       </div>
     </section>
 
-    <!-- ⑧ 安心 -->
-    <section class="section safe" aria-labelledby="safe-title">
+    <!-- ⑨ 安心 -->
+    <section class="section" aria-labelledby="safe-title">
       <div class="wrap">
-        <header class="sec-head">
-          <p class="eyebrow">安心</p>
-          <h2 id="safe-title" class="h-section">孩子的睡眠和心情，<br>比進度重要。</h2>
-        </header>
-        <ul class="safe-grid">
-          <li class="safe-item safe-night tilt reveal">
-            <svg class="ico safe-ico" aria-hidden="true"><use href="#i-moon"/></svg>
-            <h3 class="h-card"><span class="num">22:30</span> 關燈</h3>
-            <p>22:30 之後小陪不出聲、不推播。每天練習有上限，段考前也不加量。這個網站在 22:30 之後也會自動轉暗。</p>
-            <button class="btn btn-quiet btn-sm night-preview" type="button" data-theme-toggle>
-              <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
-              <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
-              <span data-theme-label>預覽 22:30 之後</span>
-            </button>
-          </li>
-          <li class="safe-item tilt reveal d1">
-            <svg class="ico safe-ico" aria-hidden="true"><use href="#i-board"/></svg>
-            <h3 class="h-card">只錄白板，不錄孩子</h3>
-            <p>課堂只錄白板與老師講解，剪成 3 段重點回放。孩子的影像與發言不錄、不能下載，一期結束 30 天後刪除。</p>
-          </li>
-          <li class="safe-item tilt reveal d2">
-            <svg class="ico safe-ico" aria-hidden="true"><use href="#i-door"/></svg>
-            <h3 class="h-card">隨時可以退出</h3>
-            <p>上過的照算、沒上的退。學完就可以先停一期，已經學會的卡點都會保留。</p>
-          </li>
-          <li class="safe-item tilt reveal d3">
-            <svg class="ico safe-ico" aria-hidden="true"><use href="#i-lock"/></svg>
-            <h3 class="h-card">個資由家長與孩子決定</h3>
-            <p>13 歲以下需要家長同意。小陪不拿孩子和同學比較；卡住的事，孩子決定要不要分享給家人。</p>
-          </li>
-        </ul>
-        <figure class="coach-strip reveal">
-          <img class="coach-strip-img" data-ill="coach-states" src="assets/illustrations/coach-states.svg" alt="" width="1200" height="300" loading="lazy" decoding="async">
-          <figcaption>
-            <p>小陪沒有臉，只有兩個圓的四個動作。22:30 之後，它就靜靜靠在一起。</p>
-            <ol><li>待命</li><li>在聽</li><li>說話</li><li>學會</li></ol>
-          </figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- ⑨ 常見問題 -->
-    <section class="section faq" id="faq" aria-labelledby="faq-title">
-      <div class="wrap faq-grid">
-        <header class="sec-head">
-          <p class="eyebrow">常見問題</p>
-          <h2 id="faq-title" class="h-section">家長最常問的。</h2>
-          <img class="faq-ill" data-ill="empty-no-team" src="assets/illustrations/empty-no-team.svg" alt="" width="600" height="450" loading="lazy" decoding="async">
-        </header>
-        <div class="faq-list">
-          <details>
-            <summary>現在可以報名嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>還不行。這是 Tandelo 的概念驗證（POC）網站，用來展示產品怎麼運作。頁面上的價格與規則都是試算，App 是示範模式，不會收費，也不會把資料寄出。</p>
-          </details>
-          <details>
-            <summary>先開哪些年級、哪些科目？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>先開國二、國三數學，理化之後加入。國三的小隊會對準會考。</p>
-          </details>
-          <details>
-            <summary>隊友都不認識，孩子會不會不敢開口？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>隊友是卡在同一步、段考日期相近的同學，大家的起點差不多。「講給隊友聽」是兩兩互講、有題目可以照著講；小陪和老師都不會拿孩子和隊友比較。</p>
-          </details>
-          <details>
-            <summary>小陪會不會讓孩子直接抄答案？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>不會。小陪只問問題、給提示；完全沒頭緒時，用別的題目示範一步。每次幫了多少都會記下來，過幾天再測時不給任何幫助。</p>
-          </details>
-          <details>
-            <summary>湊不成隊怎麼辦？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>開課前 48 小時截止。滿 4 人成班；只到 3 人改成 1 對 3、學費照人數調整；2 人以下不開，全額退回，也可以選擇等下一隊、改一對一，或先用每日練習。</p>
-          </details>
-          <details>
-            <summary>可以中途加入嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>只在第 1–3 週補人，因為前三週以補洞為主、追得上。加入前會先完成一包「追上進度」；第 4 週起就等下一期。</p>
-          </details>
-          <details>
-            <summary>請假或缺課怎麼辦？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>可以看課後重點回放，再請小陪補一格。8 週內缺超過 3 堂，會建議轉到下一期或改一對一，不收違約金——也保護隊友的節奏。</p>
-          </details>
-          <details>
-            <summary>家長需要裝 App 嗎？<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></summary>
-            <p>不用。週報、段考前後對照都在 LINE 收到；想旁聽第一堂試上，也可以在旁邊一起看。</p>
-          </details>
+        <div class="sec-head"><p class="eyebrow">護欄</p><h2 id="safe-title" class="h-section">孩子的睡眠和心情，<br>比進度重要。</h2></div>
+        <div class="w-guard">
+          <div class="w-g reveal"><span class="ico"><svg viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></span><span><b>22:30 關燈</b><p>任務卡不發、不亮、不推播，小陪只回「關燈中」。伺服器端強制。</p></span></div>
+          <div class="w-g reveal d1"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><circle cx="17" cy="10" r="2.6"/><path d="M3 19c.6-3.4 3-5 6-5s5.4 1.6 6 5M15.5 14.4c2.8 0 4.8 1.4 5.5 4.6"/></svg></span><span><b>隊友畫面不出現名字</b><p>未完成、答錯、求援，隊友看不到是誰。榜只顯示前後各三隊。</p></span></div>
+          <div class="w-g reveal d2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>不比較、不扣分</b><p>撤退不是失敗，睡著不是消失。金色不是永久等級，錯不代表笨。</p></span></div>
+          <div class="w-g reveal"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2"/></svg></span><span><b>地圖是幻想的</b><p>聯賽區只到北中南東，不到縣市、更不到學校。塔上只掛隊名與色塊。</p></span></div>
+          <div class="w-g reveal d1"><svg class="ico" style="width:40px;height:40px;border-radius:12px;background:var(--learned-bg);color:var(--brand);padding:9px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/></svg><span><b>戰績不能買、獎品沒有機率</b><p>戰績只從驗證過的學會來，每天有上限。徽章只綁達標公開賽，不綁付費。</p></span></div>
+          <div class="w-g reveal d2"><span class="ico"><svg viewBox="0 0 24 24"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg></span><span><b>小陪不給答案</b><p>只問、指、借、示範一步。每一句過洩漏檢查；AI 生成的題目有真人審。</p></span></div>
         </div>
       </div>
     </section>
 
-    <!-- 收尾 -->
-    <section class="closing" aria-labelledby="closing-title">
-      <div class="wrap closing-inner">
-        <img class="closing-ill" data-ill="hero-tandem" src="assets/illustrations/hero-tandem.svg" alt="" width="1200" height="800" loading="lazy" decoding="async">
-        <h2 id="closing-title" class="h-section">8 週後的段考，<br>和一個願意學的孩子。</h2>
-        <a class="link-arrow link-arrow-lg" href="app/">開啟 App 試玩（POC）<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <!-- ⑩ 常見問題 -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="wrap">
+        <div class="sec-head"><p class="eyebrow">家長最常問</p><h2 id="faq-title" class="h-section">這是遊戲，還是在學數學？</h2></div>
+        <div class="w-faq">
+          <details open><summary>玩遊戲會不會玩多於學？</summary><p>世界裡沒有和學會無關的事可以做。任務卡每天最多三張、每張 10 分鐘內，22:30 關燈。所有成就只數「隔幾天不給提示再測通過」的事件，不數登入、練習量、連續天數。孩子熬夜刷也刷不上去。</p></details>
+          <details><summary>小陪會不會直接給答案？</summary><p>不會。第一句永遠是「你寫到哪一步？」，之後只做四件事：問、指、借一個類似的例子、示範一步。超過第四層就停，把問題送給隊友或嚮導。每一句回覆都過答案洩漏檢查。</p></details>
+          <details><summary>我的孩子程度比較差，會不會拖累全隊？</summary><p>小隊是被同一隻怪打倒過的人組成的，全隊沒人需要羞恥。副本看的是全隊解題率，求助不扣分；隊友畫面不出現名字，看不到是誰卡住。要事先申報缺席也可以，配額會移出。</p></details>
+          <details><summary>對戰會不會讓孩子被看見輸？</summary><p>對戰只在隊伍之間，沒有個人對戰、沒有排名、沒有連勝紀錄。真人對戰要全隊匿名投票同意，否則打幽靈隊，沒有人知道是誰投的。</p></details>
+          <details><summary>實體徽章是抽獎嗎？要花錢嗎？</summary><p>不是抽獎，不能用錢買。每月徽章公開賽達到門檻就拿到，不是只有前幾名。寄給家長，收件資料寄出後 30 天刪除。</p></details>
+          <details><summary>真人小隊沒成班怎麼辦？</summary><p>滿 4 人成班，3 人改 1 對 3 學費照調，2 人以下不開全額退。第 4 週有中途營地，可停可續。</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑪ 收尾 -->
+    <section class="w-close" aria-labelledby="closing-title">
+      <div class="wrap w-close">
+        <div class="w-squad-static" aria-hidden="true">
+          <span class="w-kid" style="color:var(--av-2)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid" style="color:var(--av-4)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid g"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid" style="color:var(--av-3)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid" style="color:var(--av-5)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="mon shadow"><svg><use href="#m-round"/></svg></span>
+        </div>
+        <h2 id="closing-title" class="h-section">8 週後的段考，<br>和一個願意回去打怪的孩子。</h2>
+        <div class="cta">
+          <a class="btn btn-lg" href="world/">試玩冒險世界 Demo<svg class="ico ico-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ghost btn-lg" href="teachers.html">我想當嚮導</a>
+        </div>
+        <p class="w-docs">給想看全貌的人：<a href="strategy.html">策略與規劃 2.0</a><a href="plan.html">產品規劃書 1.0</a><a href="adventure.html">冒險小隊概念稿</a><a href="coach.html">AI 陪跑設計稿</a><a href="segment.html">核心用戶輪廓</a><a href="app/">App 原型</a></p>
       </div>
     </section>
   </main>
+
 
   <!-- ⑩ 頁尾 -->
   <footer class="site-foot">
@@ -712,7 +376,9 @@
       <nav class="foot-nav" aria-label="頁尾導覽">
         <a href="./">產品</a>
         <a href="teachers.html">老師招募</a>
-        <a href="app/">開啟 App（POC）</a>
+        <a href="world/">冒險世界 Demo</a>
+        <a href="app/">App 原型（POC）</a>
+        <a href="strategy.html">策略與規劃 2.0</a>
       </nav>
       <div class="poc-note">
         <h2>POC 說明</h2>

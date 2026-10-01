@@ -1,0 +1,201 @@
+{
+  "_note": "冒險世界的世界資料（0.2）。大陸＝科目、區域＝章節、怪＝卡點、一區一座燈塔。怪與地區名稱為提案，全部虛構；數學八隻怪的 id 沿用 content.json 的卡點 id。",
+  "continents": [
+    {"id": "math", "subject": "數學", "name": "數理大陸", "status": "live", "regions": ["mult", "poly", "sqrt", "pyth", "factor", "quad"]},
+    {"id": "english", "subject": "英文", "name": "西風港", "status": "proposal", "regions": ["tense-bay", "plural-reef", "prep-cape"]},
+    {"id": "chinese", "subject": "國文", "name": "字林", "status": "proposal", "regions": ["homophone-den", "zhi-fog", "rhetoric-grove"]},
+    {"id": "social", "subject": "社會", "name": "時光古道", "status": "proposal", "regions": ["era-canyon", "causal-cliff", "latlong-wild"]}
+  ],
+  "regions": [
+    {"id": "mult", "continent": "math", "name": "乘法平原", "chapter": "乘法公式", "lighthouse": {"id": "lh-mult", "name": "乘法平原燈塔", "threshold": 3000}},
+    {"id": "poly", "continent": "math", "name": "多項式林", "chapter": "多項式", "lighthouse": {"id": "lh-poly", "name": "多項式林燈塔", "threshold": 3000}},
+    {"id": "sqrt", "continent": "math", "name": "根號谷", "chapter": "平方根", "lighthouse": {"id": "lh-sqrt", "name": "根號谷燈塔", "threshold": 3000}},
+    {"id": "pyth", "continent": "math", "name": "畢氏山", "chapter": "畢氏定理", "lighthouse": {"id": "lh-pyth", "name": "畢氏山燈塔", "threshold": 3000}},
+    {"id": "factor", "continent": "math", "name": "分解洞窟", "chapter": "因式分解", "lighthouse": {"id": "lh-factor", "name": "分解洞窟燈塔", "threshold": 3000}},
+    {"id": "quad", "continent": "math", "name": "二次高原", "chapter": "一元二次方程式", "lighthouse": {"id": "lh-quad", "name": "二次高原燈塔", "threshold": 3000}},
+    {"id": "tense-bay", "continent": "english", "name": "時態海灣", "chapter": "時態", "lighthouse": {"id": "lh-tense-bay", "name": "時態海灣燈塔", "threshold": 3000}},
+    {"id": "plural-reef", "continent": "english", "name": "單複數礁", "chapter": "單複數與動詞變化", "lighthouse": {"id": "lh-plural-reef", "name": "單複數礁燈塔", "threshold": 3000}},
+    {"id": "prep-cape", "continent": "english", "name": "介係詞岬", "chapter": "介係詞", "lighthouse": {"id": "lh-prep-cape", "name": "介係詞岬燈塔", "threshold": 3000}},
+    {"id": "homophone-den", "continent": "chinese", "name": "音近字妖窟", "chapter": "字形字音字義", "lighthouse": {"id": "lh-homophone-den", "name": "音近字妖窟燈塔", "threshold": 3000}},
+    {"id": "zhi-fog", "continent": "chinese", "name": "之乎迷霧", "chapter": "文言虛字", "lighthouse": {"id": "lh-zhi-fog", "name": "之乎迷霧燈塔", "threshold": 3000}},
+    {"id": "rhetoric-grove", "continent": "chinese", "name": "修辭林", "chapter": "修辭", "lighthouse": {"id": "lh-rhetoric-grove", "name": "修辭林燈塔", "threshold": 3000}},
+    {"id": "era-canyon", "continent": "social", "name": "年代峽谷", "chapter": "歷史年代順序", "lighthouse": {"id": "lh-era-canyon", "name": "年代峽谷燈塔", "threshold": 3000}},
+    {"id": "causal-cliff", "continent": "social", "name": "因果斷崖", "chapter": "歷史因果", "lighthouse": {"id": "lh-causal-cliff", "name": "因果斷崖燈塔", "threshold": 3000}},
+    {"id": "latlong-wild", "continent": "social", "name": "經緯荒原", "chapter": "地理座標", "lighthouse": {"id": "lh-latlong-wild", "name": "經緯荒原燈塔", "threshold": 3000}}
+  ],
+  "shapes": ["m-round", "m-drop", "m-twin", "m-cloud", "m-bug", "m-tri", "m-cross", "m-ring"],
+  "monsters": [
+    {
+      "id": "sq-cross", "name": "漏項獸", "skill_id": "sq-cross", "region": "mult", "continent": "math", "shape": "m-round", "status": "live",
+      "title": "完全平方要有中間那一項",
+      "origin": "住在乘法平原的草叢裡。很多人第一次看到 (a+b)² 時，眼睛只看到 a 和 b 各自平方，牠就從那個「只看兩端」的習慣長出來。",
+      "trick": "把 (a+b)² 中間那兩塊 2ab 偷走，讓你以為只剩 a² + b²。",
+      "taunt": "兩個平方加起來就好了，中間沒有東西。",
+      "weakness": "平方是整個括號自己乘自己，a 和 b 會互相乘兩次，中間多出 2ab。",
+      "caught_line": "你居然把中間那兩塊找回來了。"
+    },
+    {
+      "id": "sign-dist", "name": "負號幽靈", "skill_id": "sign-dist", "region": "poly", "continent": "math", "shape": "m-drop", "status": "live",
+      "title": "減去括號，每一項都要變號",
+      "origin": "住在括號前面。很多人第一次學減法時，只把負號給了第一個數，牠就從那個習慣裡長出來。",
+      "trick": "讓你以為負號只碰括號裡的第一項，後面的都放過。",
+      "taunt": "第一個歸我，後面的我不管。",
+      "weakness": "負號要發給括號裡每一個人。",
+      "caught_line": "連第三項都被你看到了。"
+    },
+    {
+      "id": "sqrt-split", "name": "拆根蟲", "skill_id": "sqrt-split", "region": "sqrt", "continent": "math", "shape": "m-bug", "status": "live",
+      "title": "根號裡面要先算完",
+      "origin": "住在根號谷的岩縫裡。牠看多了「加法可以拆開算」，就以為根號也可以一項一項開。",
+      "trick": "把 √(25 − 9) 咬成 √25 − √9，讓你算出 2 而不是 4。",
+      "taunt": "根號底下的東西，分開開比較快。",
+      "weakness": "根號裡面要先算完再開根號；根號不能拆開加減。",
+      "caught_line": "你先算完裡面了，牠咬不下去。"
+    },
+    {
+      "id": "sqrt-abs", "name": "雙面根", "skill_id": "sqrt-abs", "region": "sqrt", "continent": "math", "shape": "m-ring", "status": "live",
+      "title": "√ 開出來一定不是負的",
+      "origin": "和拆根蟲住同一座谷。牠從「x² = 9 有兩個解」那一課溜出來，把方程式的兩個解和開根號的結果混在一起。",
+      "trick": "讓你以為 √(a²) 可以是負的，寫出 √9 = ±3。",
+      "taunt": "平方回去都一樣，正的負的隨你挑。",
+      "weakness": "√ 開出來一定不是負的；√(a²) = |a|。",
+      "caught_line": "你只留下正的那一面，牠另一面沒地方站了。"
+    },
+    {
+      "id": "pyth-hyp", "name": "斜邊迷霧", "skill_id": "pyth-hyp", "region": "pyth", "continent": "math", "shape": "m-tri", "status": "live",
+      "title": "先認出哪一邊是斜邊",
+      "origin": "課本裡的直角三角形總是直角在左下、斜邊在右上。牠就躲在那個習慣裡，只要三角形一轉，你就認錯邊。",
+      "trick": "把三角形轉個方向，讓你把最長的邊當成股。",
+      "taunt": "右上那條就是斜邊，看都不用看。",
+      "weakness": "斜邊永遠對著直角，先找直角再找斜邊。",
+      "caught_line": "你居然先找直角。"
+    },
+    {
+      "id": "factor-diff", "name": "平方差雙子", "skill_id": "factor-diff", "region": "factor", "continent": "math", "shape": "m-twin", "status": "live",
+      "title": "平方差：一個加、一個減",
+      "origin": "分解洞窟最裡面，一對長得一樣的雙胞胎。牠們看到 a² − b² 中間那個減號，就吵著兩個括號都要分到。",
+      "trick": "一個加、一個減，牠讓你兩個都寫減，變成 (a − b)(a − b)。",
+      "taunt": "外面是減號，裡面當然都是減號。",
+      "weakness": "平方差是一個加、一個減：(a + b)(a − b)，乘開以後中間項才會抵消。",
+      "caught_line": "你一個拆成加、一個拆成減，雙胞胎就分得出來了。"
+    },
+    {
+      "id": "factor-cross", "name": "十字符號怪", "skill_id": "factor-cross", "region": "factor", "continent": "math", "shape": "m-cross", "status": "live",
+      "title": "十字交乘要顧到符號",
+      "origin": "住在十字交乘的最後一步。前面的數字都湊對了，人一放鬆，牠就把符號換掉。",
+      "trick": "十字交乘到最後一步，偷偷把符號換掉，讓 (x − 2)(x + 3) 變成 (x + 2)(x − 3)。",
+      "taunt": "數字對了就好，正負號是小事。",
+      "weakness": "交叉相乘以後要相加等於中間項；把符號乘回去驗算一次。",
+      "caught_line": "你乘回去驗算了，牠換的符號當場露餡。"
+    },
+    {
+      "id": "quad-zero", "name": "零的隱者", "skill_id": "quad-zero", "region": "quad", "continent": "math", "shape": "m-cloud", "status": "live",
+      "title": "不能隨便兩邊除以 x",
+      "origin": "二次高原的霧裡。牠不出聲，只在你兩邊同除以 x 的那一刻，把 x = 0 收進袖子裡。",
+      "trick": "讓你把 x² = 5x 兩邊除以 x，只剩 x = 5，弄丟 x = 0。",
+      "taunt": "零又不值錢，丟了也沒人發現。",
+      "weakness": "不能隨便兩邊除以 x；移項提出 x，x(x − 5) = 0，兩個解都留著。",
+      "caught_line": "你把零留下來了，牠藏不住。"
+    },
+    {
+      "id": "en-tense", "name": "時光獸", "skill_id": null, "region": "tense-bay", "continent": "english", "shape": "m-round", "status": "proposal",
+      "title": "過去式和現在完成式不要混用",
+      "origin": "住在時態海灣。潮水一來一回，過去式和現在完成式就被牠攪在一起。",
+      "trick": "讓你在「已經做過、現在還有影響」的句子裡用過去式。",
+      "taunt": "反正都是以前的事，用 did 就好。",
+      "weakness": "現在完成式講的是「到現在為止」；看到 already、since、for，先想 have。",
+      "caught_line": "你聽到 since 就停下來了。"
+    },
+    {
+      "id": "en-missing-s", "name": "失蹤的 s", "skill_id": null, "region": "plural-reef", "continent": "english", "shape": "m-drop", "status": "proposal",
+      "title": "第三人稱單數動詞要加 s",
+      "origin": "住在單複數礁上，專門撿走第三人稱單數動詞尾巴的 s。",
+      "trick": "讓你寫出 He go to school every day。",
+      "taunt": "一個 s 而已，少了也看得懂。",
+      "weakness": "主詞是他、她、它一個人，現在式動詞要加 s。",
+      "caught_line": "牠撿走的 s 被你放回去了。"
+    },
+    {
+      "id": "en-prep", "name": "介係詞迷路怪", "skill_id": null, "region": "prep-cape", "continent": "english", "shape": "m-cross", "status": "proposal",
+      "title": "in、on、at 各管一種時間",
+      "origin": "住在介係詞岬的岔路口，把 in、on、at 的路標全部轉了方向。",
+      "trick": "讓你把時間介係詞放錯：at Monday、on 7 o'clock。",
+      "taunt": "in、on、at 都差不多，隨便選一個。",
+      "weakness": "at 用在時刻、on 用在日子、in 用在月份和年份；從小到大排。",
+      "caught_line": "你把路標轉回來了。"
+    },
+    {
+      "id": "zh-homophone", "name": "音近字妖", "skill_id": null, "region": "homophone-den", "continent": "chinese", "shape": "m-twin", "status": "proposal",
+      "title": "同音不同字，先想意思再下筆",
+      "origin": "住在字林入口的洞窟。牠耳朵很好、眼睛很差，聽到一樣的音就以為是同一個字。",
+      "trick": "讓你把「再」寫成「在」、「做」寫成「作」。",
+      "taunt": "念起來一樣，寫哪個都行。",
+      "weakness": "「再」是再一次、「在」是在哪裡；分不清就先想意思，不想讀音。",
+      "caught_line": "你先想意思才下筆，牠沒機會換字。"
+    },
+    {
+      "id": "zh-zhi", "name": "之乎迷霧", "skill_id": null, "region": "zhi-fog", "continent": "chinese", "shape": "m-cloud", "status": "proposal",
+      "title": "「之」要看前後接什麼",
+      "origin": "飄在文言文的句子之間。「之」一個字好幾種用法，牠把霧放進去，讓每一個「之」看起來都一樣。",
+      "trick": "讓你把當「的」用的「之」，當成「他」或「去」。",
+      "taunt": "之就是之，哪有那麼多種。",
+      "weakness": "看「之」前後接什麼：前名後名多半是「的」，前動後名多半是「他／它」。",
+      "caught_line": "你看了前後兩個字，霧就散了。"
+    },
+    {
+      "id": "zh-rhetoric", "name": "修辭變臉怪", "skill_id": null, "region": "rhetoric-grove", "continent": "chinese", "shape": "m-ring", "status": "proposal",
+      "title": "譬喻要有喻體，轉化沒有",
+      "origin": "住在修辭林深處。牠會換臉，譬喻和轉化在牠臉上長得一樣。",
+      "trick": "讓你把「風在唱歌」當成譬喻。",
+      "taunt": "有「像」沒「像」都是比喻啦。",
+      "weakness": "譬喻要有喻體，是「A 像 B」；轉化是把 A 直接當成人或物來寫。",
+      "caught_line": "你找不到喻體，就知道牠換了臉。"
+    },
+    {
+      "id": "so-anachronism", "name": "年代錯置怪", "skill_id": null, "region": "era-canyon", "continent": "social", "shape": "m-bug", "status": "proposal",
+      "title": "先畫時間軸，再排事件",
+      "origin": "住在年代峽谷兩側的岩層。牠把不同年代的事件搬到同一層，讓順序看起來都說得通。",
+      "trick": "讓你把事件的先後順序排反，把後面發生的排到前面。",
+      "taunt": "差幾年而已，順序不重要。",
+      "weakness": "先畫一條時間軸，把年份寫上去再排事件。",
+      "caught_line": "你畫了時間軸，牠搬的岩層就露出來了。"
+    },
+    {
+      "id": "so-causal", "name": "因果顛倒獸", "skill_id": null, "region": "causal-cliff", "continent": "social", "shape": "m-tri", "status": "proposal",
+      "title": "先發生的才可能是原因",
+      "origin": "住在因果斷崖邊。牠頭尾長得一樣，所以常常倒著走。",
+      "trick": "讓你把結果當成原因。",
+      "taunt": "反正兩件事有關係，誰先誰後都一樣。",
+      "weakness": "問自己「哪一件事先發生」；先發生的才可能是原因。",
+      "caught_line": "你先問了誰先發生，牠就轉不過身。"
+    },
+    {
+      "id": "so-latlong", "name": "經緯迷航", "skill_id": null, "region": "latlong-wild", "continent": "social", "shape": "m-cloud", "status": "proposal",
+      "title": "緯線橫著講南北，經線直著講東西",
+      "origin": "住在經緯荒原的風裡，把地圖上的線吹得橫豎不分。",
+      "trick": "讓你把經度和緯度讀反。",
+      "taunt": "橫的直的都是線，叫什麼無所謂。",
+      "weakness": "緯線橫著畫、講南北；經線直著畫、講東西；先看字再看線。",
+      "caught_line": "你先看字再看線，牠的風吹不動了。"
+    }
+  ],
+  "shadow_states": [
+    {"id": "fog", "name": "迷霧", "note": "還沒偵察到這一區"},
+    {"id": "near", "name": "還在附近", "note": "珊瑚色，卡住，不代表錯"},
+    {"id": "hit", "name": "打中了", "note": "綠色，說得出來，等牠回來"},
+    {"id": "captured", "name": "收服", "note": "金眼影子，隔幾天不給提示也會"},
+    {"id": "asleep", "name": "睡著了", "note": "之後又錯，等你叫醒，不扣分"}
+  ],
+  "routes": [
+    {"id": "plain", "name": "平原線", "order": 0, "note": "開季一律從這裡出發"},
+    {"id": "hills", "name": "丘陵線", "order": 1, "note": "副本 75% 以上就往上一條"},
+    {"id": "ridge", "name": "山徑線", "order": 2, "note": "題目換成更綜合的變化"},
+    {"id": "cloud", "name": "雲頂線", "order": 3, "note": "混入跨章節的怪；封頂"}
+  ],
+  "leagues": [
+    {"id": "north", "name": "北區"},
+    {"id": "central", "name": "中區"},
+    {"id": "south", "name": "南區"},
+    {"id": "east", "name": "東區"}
+  ]
+}

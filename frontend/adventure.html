@@ -1,0 +1,1782 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Tandelo 冒險小隊：把 8 週小隊課設計成一趟遠征的遊戲化概念稿。世界觀對照、一趟遠征怎麼走、小隊角色輪替、成就與分享、畫面示意、護欄與分期。概念驗證用。">
+<meta name="color-scheme" content="light dark">
+<title>Tandelo 冒險小隊概念稿</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Ccircle cx='21' cy='20' r='18' fill='%23F26B54'/%3E%3Ccircle cx='43' cy='20' r='18' fill='%230E5F52'/%3E%3Cpath d='M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z' fill='%230D281B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<script>
+/* 主題：手動選擇 > 22:30–06:00 自動轉暗 > 系統設定。放在最前面避免閃爍。 */
+(function(){
+  try{
+    var saved=localStorage.getItem('tandelo-adv-theme');
+    if(saved==='light'||saved==='dark'){document.documentElement.setAttribute('data-theme',saved);return;}
+    var h=new Date().getHours(), m=new Date().getMinutes();
+    if(h>22||(h===22&&m>=30)||h<6){document.documentElement.setAttribute('data-theme','dark');}
+  }catch(e){}
+})();
+</script>
+<style>
+/* ---------- Token（Tandelo 品牌視覺規範 v1.0） ---------- */
+:root{
+  --pine:#0E5F52; --pine-deep:#0A463D; --ink:#0D2B26;
+  --coral:#F26B54; --coral-deep:#D9523C; --coral-soft:#FDE7E1;
+  --honey:#F4C24D; --honey-soft:#FBEBC0;
+  --oat:#F6F4EE; --mint:#DCEFE8; --sand:#ECE9E1; --line:#D9D5CA; --mute:#5E6B67; --white:#FFFFFF;
+  --line-green:#06C755; --overlap:#0D281B;
+  --av-1:#DCEFE8; --av-2:#F9D3C9; --av-3:#FBE7B2; --av-4:#C9DDF8; --av-5:#DDD2F6; --av-6:#CFEBDD;
+
+  --bg:var(--oat); --bg-alt:var(--sand); --surface:var(--white); --surface-2:#FBFAF7;
+  --text:var(--ink); --text-mute:var(--mute); --rule:var(--line);
+  --brand:var(--pine); --brand-fill:var(--pine); --on-brand:var(--white);
+  --stuck:var(--coral); --stuck-text:#B8412D; --stuck-bg:var(--coral-soft);
+  --learned-bg:var(--mint); --mastered:var(--honey); --mastered-text:#7A5A08; --mastered-bg:var(--honey-soft);
+  --band:var(--pine-deep); --on-band:var(--oat); --on-band-mute:#B9D3CB;
+  --fog:#E3DFD3; --fog-text:#8A9793; --shadow-ink:#1B2B27;
+  --sea:#DCEAE6; --sea-line:#C9DDD7; --land:#FBFAF6; --land-edge:#D9D5CA; --sky:#4F7FD9;
+  --focus:#0E5F52;
+  --shadow-soft:0 1px 2px rgba(13,43,38,.04),0 12px 32px -12px rgba(13,43,38,.14);
+  --shadow-lift:0 2px 4px rgba(13,43,38,.05),0 24px 48px -20px rgba(13,43,38,.22);
+
+  --font-sans:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-num:"Outfit","Noto Sans TC",system-ui,sans-serif;
+  --font-math:"STIX Two Text","Times New Roman",serif;
+  --fs-body:15.5px; --lh-body:1.75;
+  --r-sm:12px; --r-btn:18px; --r-card:22px; --r-lg:26px; --r-pill:999px;
+  --ease:cubic-bezier(.2,.8,.2,1); --dur:.45s;
+  --gutter:clamp(16px,5vw,48px); --wrap:1120px; --measure:72ch;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1412; --bg-alt:#0F1917; --surface:#131D1A; --surface-2:#111A18;
+    --text:#EAF1EE; --text-mute:#9FB0AA; --rule:#1F2C28;
+    --brand:#7ED3C0; --brand-fill:#7ED3C0; --on-brand:#0C1412;
+    --stuck-text:#FF9A86; --stuck-bg:#3A1E18; --learned-bg:#16302A;
+    --mastered-text:#F4C24D; --mastered-bg:#332A12;
+    --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
+    --fog:#1C2624; --fog-text:#6F7F7A; --shadow-ink:#0A100E;
+    --sea:#0B1917; --sea-line:#12241F; --land:#16211E; --land-edge:#2A3A35; --sky:#8AB0F5;
+    --focus:#7ED3C0;
+    --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1412; --bg-alt:#0F1917; --surface:#131D1A; --surface-2:#111A18;
+  --text:#EAF1EE; --text-mute:#9FB0AA; --rule:#1F2C28;
+  --brand:#7ED3C0; --brand-fill:#7ED3C0; --on-brand:#0C1412;
+  --stuck-text:#FF9A86; --stuck-bg:#3A1E18; --learned-bg:#16302A;
+  --mastered-text:#F4C24D; --mastered-bg:#332A12;
+  --band:#0F2A25; --on-band:#EAF1EE; --on-band-mute:#A9BDB6;
+  --fog:#1C2624; --fog-text:#6F7F7A; --shadow-ink:#0A100E;
+  --sea:#0B1917; --sea-line:#12241F; --land:#16211E; --land-edge:#2A3A35; --sky:#8AB0F5;
+  --focus:#7ED3C0;
+  --shadow-soft:0 1px 2px rgba(0,0,0,.3),0 12px 32px -12px rgba(0,0,0,.5);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.3),0 24px 48px -20px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+/* ---------- 基礎 ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:120px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *,*::before,*::after{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+@supports (overflow-x:clip){body{overflow-x:clip}}
+img,svg{display:block;max-width:100%}
+a{color:var(--brand);text-decoration:none;text-underline-offset:.2em}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{margin:0;color:var(--text);font-weight:900;letter-spacing:-.01em;line-height:1.25}
+h1,h2,.quote,.lead{text-wrap:balance}
+p{margin:0}
+ul,ol{margin:0;padding-left:1.4em}
+li+li{margin-top:.35em}
+strong{font-weight:700}
+.num,.n{font-family:var(--font-num);font-weight:600;font-variant-numeric:tabular-nums}
+.math{font-family:var(--font-math);font-style:italic}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:10px}
+.skip-link{position:absolute;left:16px;top:-60px;background:var(--brand-fill);color:var(--on-brand);padding:10px 18px;border-radius:var(--r-btn);z-index:100;font-weight:700}
+.skip-link:focus{top:12px}
+.wrap{width:min(100% - 2*var(--gutter),var(--wrap));margin-inline:auto}
+
+/* ---------- 頂欄與目錄 ---------- */
+.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.top-row{display:flex;align-items:center;gap:14px;padding:12px 0 8px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--text);font-family:var(--font-num);font-weight:700;font-size:20px;letter-spacing:-.03em}
+.logo svg{width:38px;height:24px}
+.top-kicker{font-size:13px;color:var(--text-mute);margin-left:2px;font-weight:500}
+.spacer{flex:1}
+.theme-btn{border:0;background:var(--surface);color:var(--text);border-radius:var(--r-pill);padding:8px 14px;font-size:13px;font-weight:700;box-shadow:var(--shadow-soft);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.theme-btn .dot{width:12px;height:12px;border-radius:50%;background:var(--brand)}
+.toc{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;-ms-overflow-style:none;mask-image:linear-gradient(90deg,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent)}
+.toc::-webkit-scrollbar{display:none}
+.toc a{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--r-pill);font-size:13px;font-weight:700;color:var(--text-mute);background:transparent;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);white-space:nowrap}
+.toc a .n{font-size:12px;opacity:.75}
+.toc a:hover{background:var(--surface);text-decoration:none;color:var(--text)}
+.toc a.is-active{background:var(--brand-fill);color:var(--on-brand)}
+.toc a.is-active .n{opacity:1}
+
+/* ---------- Hero ---------- */
+.hero{padding:clamp(40px,8vw,96px) 0 clamp(32px,6vw,64px)}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.04em}
+.hero h1{font-size:clamp(32px,6.2vw,72px);line-height:1.1;margin:18px 0 22px;letter-spacing:-.02em;max-width:22ch}
+.hero h1 .accent{color:var(--stuck)}
+.hero .sub{font-size:clamp(17px,2.2vw,21px);color:var(--text-mute);max-width:42ch;line-height:1.6}
+.hero .meta{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--text-mute)}
+.hero .meta b{color:var(--text)}
+.duo{display:inline-block;width:56px;height:36px;vertical-align:middle}
+.howto{margin-top:34px;background:var(--surface);border-radius:var(--r-card);padding:20px 24px;box-shadow:var(--shadow-soft);max-width:70ch;font-size:14.5px;color:var(--text-mute)}
+.howto b{color:var(--text)}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
+@media (max-width:860px){.hero-grid{grid-template-columns:1fr}}
+.party{display:flex;align-items:flex-end;justify-content:center;gap:10px;padding:28px 12px 8px}
+.party .m{width:64px;height:64px}
+.party .m.guide{width:78px;height:78px}
+.party-cap{text-align:center;font-size:13px;color:var(--text-mute);margin-top:6px}
+
+/* ---------- 章節 ---------- */
+.ch{padding:clamp(44px,7vw,88px) 0;position:relative}
+.ch+.ch::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(100% - 2*var(--gutter),var(--wrap));height:1px;background:var(--rule)}
+.ch-head{display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;margin-bottom:clamp(22px,4vw,40px)}
+.ch-no{font-family:var(--font-num);font-weight:700;font-size:clamp(54px,9vw,104px);line-height:.85;color:var(--stuck);letter-spacing:-.04em}
+.ch-no.pine{color:var(--brand)}
+.ch-no.honey{color:var(--mastered)}
+.ch-head h2{font-size:clamp(26px,4.2vw,44px);letter-spacing:-.02em}
+.ch-head .kicker{font-size:13.5px;font-weight:700;color:var(--text-mute);margin-bottom:6px;letter-spacing:.03em}
+@media (max-width:560px){.ch-head{grid-template-columns:1fr;gap:6px}.ch-no{font-size:56px}}
+.lead{font-size:clamp(17px,2vw,20px);line-height:1.6;max-width:var(--measure);color:var(--text);margin-bottom:28px}
+.lead b{color:var(--brand)}
+h3{font-size:clamp(19px,2.4vw,24px);margin:40px 0 14px}
+.lead+h3,.ch-head+h3{margin-top:0}
+h4{font-size:16px;margin:22px 0 8px}
+.prose{max-width:var(--measure)}
+.prose p+p{margin-top:.9em}
+.prose ul,.prose ol{margin:.6em 0}
+.small{font-size:13.5px;color:var(--text-mute)}
+.note{font-size:13px;color:var(--text-mute);margin-top:12px;max-width:var(--measure)}
+
+/* ---------- 卡片、格線 ---------- */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--surface);border-radius:var(--r-card);padding:22px 24px;box-shadow:var(--shadow-soft)}
+.card h4{margin-top:0}
+.card.soft{background:var(--surface-2);box-shadow:none}
+.card.mint{background:var(--learned-bg);box-shadow:none}
+.card.coral{background:var(--stuck-bg);box-shadow:none}
+.card.honey{background:var(--mastered-bg);box-shadow:none}
+.card .who{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--text-mute);margin-bottom:8px}
+.card .say{font-size:17px;font-weight:700;line-height:1.5;margin-bottom:10px}
+.card .ico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:14px;background:var(--learned-bg);color:var(--brand)}
+.card .ico svg{width:24px;height:24px}
+.card .ico.coral{background:var(--stuck-bg);color:var(--stuck-text)}
+.card .ico.honey{background:var(--mastered-bg);color:var(--mastered-text)}
+.callout{border-radius:var(--r-lg);padding:24px 28px;margin:26px 0;background:var(--stuck-bg);position:relative;max-width:var(--measure)}
+.callout::before{content:"立場";position:absolute;top:-11px;left:22px;background:var(--stuck);color:#fff;font-size:12px;font-weight:900;padding:2px 12px;border-radius:var(--r-pill);letter-spacing:.06em}
+.callout.pine{background:var(--learned-bg)}
+.callout.pine::before{content:"判讀";background:var(--brand-fill);color:var(--on-brand)}
+.callout.honey{background:var(--mastered-bg)}
+.callout.honey::before{content:"誠實說";background:var(--mastered);color:#3B2A00}
+.callout.gov::before{content:"沙利曼";background:var(--ink);color:#fff}
+:root[data-theme="dark"] .callout.gov::before{background:#EAF1EE;color:#0C1412}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .callout.gov::before{background:#EAF1EE;color:#0C1412}}
+.callout p+p{margin-top:.7em}
+.quote{font-size:clamp(20px,3vw,30px);font-weight:900;line-height:1.35;letter-spacing:-.015em;max-width:26ch;margin:30px 0;padding-left:22px;border-left:5px solid var(--stuck);border-radius:3px}
+.quote.pine{border-color:var(--brand)}
+.band{background:var(--band);color:var(--on-band);border-radius:var(--r-lg);padding:clamp(24px,4vw,44px);margin:28px 0}
+.band h3,.band h4{color:var(--on-band);margin-top:0}
+.band .m{color:var(--on-band-mute)}
+.pill{display:inline-block;padding:3px 12px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;background:var(--surface-2);color:var(--text-mute)}
+.pill.ok{background:var(--learned-bg);color:var(--brand)}
+.pill.warn{background:var(--stuck-bg);color:var(--stuck-text)}
+.pill.gold{background:var(--mastered-bg);color:var(--mastered-text)}
+.pill.fog{background:var(--fog);color:var(--fog-text)}
+.steps{counter-reset:s;display:grid;gap:12px}
+.steps>li{list-style:none;position:relative;padding:16px 18px 16px 62px;background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-soft);counter-increment:s}
+.steps>li::before{content:counter(s);position:absolute;left:18px;top:16px;width:32px;height:32px;border-radius:50%;background:var(--brand-fill);color:var(--on-brand);font-family:var(--font-num);font-weight:700;display:grid;place-items:center;font-size:15px}
+.steps>li b{display:block;font-size:16px;margin-bottom:3px}
+.steps>li+li{margin-top:0}
+.steps>li .was{display:inline-block;margin-top:6px;font-size:12.5px;color:var(--text-mute)}
+.steps>li .was b{display:inline;font-size:12.5px;color:var(--brand)}
+
+/* ---------- 表格 ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;background:var(--surface);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--shadow-soft)}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:12px 14px;border-top:1px solid var(--rule)}
+.tbl thead th{border-top:0;background:var(--surface-2);font-size:12.5px;letter-spacing:.04em;color:var(--text-mute);font-weight:700}
+.tbl tbody th{font-weight:700;color:var(--text)}
+.tbl tr.hi td,.tbl tr.hi th{background:var(--learned-bg)}
+.tbl-wrap{margin:14px 0}
+@media (max-width:760px){
+  .tbl.cards thead{display:none}
+  .tbl.cards,.tbl.cards tbody,.tbl.cards tr,.tbl.cards td,.tbl.cards th{display:block}
+  .tbl.cards tr{padding:10px 16px 14px;border-top:1px solid var(--rule)}
+  .tbl.cards tr:first-child{border-top:0}
+  .tbl.cards td,.tbl.cards th{border:0;padding:5px 0}
+  .tbl.cards tbody th{font-size:16px;padding-bottom:6px}
+  .tbl.cards td::before{content:attr(data-l);display:block;font-size:11.5px;font-weight:700;color:var(--text-mute);letter-spacing:.05em;margin-bottom:1px}
+  .tbl.cards td:not([data-l])::before{content:none}
+}
+
+/* ---------- 怪 ---------- */
+.mon{width:56px;height:56px;flex:0 0 auto;
+  --m-body:var(--coral); --m-eye:#fff; --m-pupil:var(--ink); --m-feat:var(--coral-deep); --m-zz:transparent; --m-q:transparent}
+.mon svg{width:100%;height:100%;overflow:visible}
+.mon.pine{--m-body:var(--pine); --m-feat:var(--pine-deep)}
+.mon.honey{--m-body:var(--honey); --m-pupil:#3B2A00; --m-feat:#B8912A}
+.mon.shadow{--m-body:var(--shadow-ink); --m-eye:var(--honey); --m-pupil:var(--shadow-ink); --m-feat:#2C3E39}
+.mon.asleep{--m-body:var(--fog); --m-eye:transparent; --m-pupil:transparent; --m-feat:var(--fog-text); --m-zz:var(--fog-text)}
+.mon.fog{--m-body:var(--fog); --m-eye:transparent; --m-pupil:transparent; --m-feat:transparent; --m-q:var(--fog-text)}
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.mgrid{grid-template-columns:1fr}}
+.mcard{background:var(--surface);border-radius:var(--r-card);padding:18px 18px 16px;box-shadow:var(--shadow-soft);display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:start}
+.mcard b{display:block;font-size:16px;margin-bottom:2px}
+.mcard .where{font-size:12px;color:var(--text-mute);font-weight:700;letter-spacing:.04em}
+.mcard .does{font-size:13.5px;color:var(--text-mute);margin-top:6px;line-height:1.55}
+.mcard .skill{display:inline-block;margin-top:8px;font-size:12px;color:var(--brand);background:var(--learned-bg);padding:1px 9px;border-radius:var(--r-pill);font-weight:700}
+.mstates{display:flex;flex-wrap:wrap;gap:22px;margin-top:22px}
+.mstates>div{display:flex;align-items:center;gap:12px;font-size:13.5px}
+.mstates b{display:block}
+.mstates span{color:var(--text-mute);font-size:12.5px}
+
+/* ---------- 一週的節奏 ---------- */
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:14px 0 8px}
+@media (max-width:760px){.week{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:480px){.week{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.week>div{background:var(--surface);border-radius:var(--r-sm);padding:12px 12px 14px;box-shadow:var(--shadow-soft);min-height:118px}
+.week .d{font-family:var(--font-num);font-weight:700;font-size:12.5px;color:var(--text-mute);letter-spacing:.06em}
+.week b{display:block;font-size:15px;margin:6px 0 4px}
+.week p{font-size:12.5px;color:var(--text-mute);line-height:1.5}
+.week>div.exp{background:var(--stuck-bg)}
+.week>div.exp b{color:var(--stuck-text)}
+.week>div.rest{background:var(--surface-2);box-shadow:none}
+.week>div.gold{background:var(--mastered-bg)}
+.week>div.gold b{color:var(--mastered-text)}
+.acts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}
+@media (max-width:900px){.acts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.acts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.acts>div{background:var(--surface);border-radius:var(--r-sm);padding:12px;box-shadow:var(--shadow-soft)}
+.acts .min{font-family:var(--font-num);font-weight:700;font-size:22px;color:var(--stuck);line-height:1}
+.acts .min small{font-size:11px;color:var(--text-mute);margin-left:2px;font-weight:600}
+.acts b{display:block;font-size:14.5px;margin:8px 0 2px}
+.acts .was{font-size:12px;color:var(--brand);font-weight:700}
+.acts p{font-size:12.5px;color:var(--text-mute);line-height:1.5;margin-top:4px}
+
+/* ---------- 角色 ---------- */
+.role{background:var(--surface);border-radius:var(--r-card);padding:22px;box-shadow:var(--shadow-soft)}
+.role .badge{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--learned-bg);color:var(--brand);font-weight:900;font-size:18px;margin-bottom:12px}
+.role .badge.c{background:var(--stuck-bg);color:var(--stuck-text)}
+.role .badge.h{background:var(--mastered-bg);color:var(--mastered-text)}
+.role .badge.g{background:var(--sand);color:var(--ink)}
+:root[data-theme="dark"] .role .badge.g{background:#243430;color:#EAF1EE}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .role .badge.g{background:#243430;color:#EAF1EE}}
+.role h4{margin:0 0 4px;font-size:18px}
+.role .was{font-size:12.5px;color:var(--brand);font-weight:700;margin-bottom:8px}
+.role p{font-size:14px;color:var(--text-mute);line-height:1.6}
+.role .safe{margin-top:10px;font-size:12.5px;color:var(--text);background:var(--surface-2);padding:8px 10px;border-radius:10px}
+
+/* ---------- 手機示意 ---------- */
+.phones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin-top:8px}
+@media (max-width:1000px){.phones{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.phones{grid-template-columns:1fr}}
+.phone{background:var(--surface);border-radius:34px;padding:12px;box-shadow:var(--shadow-lift);border:1px solid var(--rule);max-width:320px;margin-inline:auto;width:100%}
+.screen{border-radius:24px;background:var(--bg);min-height:560px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;font-size:13.5px;line-height:1.5;overflow:hidden}
+.screen.night{background:#0C1412;color:#EAF1EE}
+.screen .sb{display:flex;justify-content:space-between;font-family:var(--font-num);font-size:11.5px;font-weight:600;color:var(--text-mute)}
+.screen .t{font-size:11.5px;font-weight:700;color:var(--text-mute);letter-spacing:.06em}
+.screen h5{margin:0;font-size:20px;line-height:1.25;font-weight:900;letter-spacing:-.01em}
+.screen .c{background:var(--surface);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-soft)}
+.screen .c.mint{background:var(--learned-bg);box-shadow:none}
+.screen .c.honey{background:var(--mastered-bg);box-shadow:none}
+.screen .c.fogc{background:var(--fog);box-shadow:none;color:var(--fog-text)}
+.screen .c.coral{background:var(--stuck-bg);box-shadow:none}
+.screen .row{display:flex;align-items:center;gap:10px}
+.screen .row .mon{width:36px;height:36px}
+.screen .row b{display:block;font-size:13.5px}
+.screen .row small{display:block;font-size:11.5px;color:var(--text-mute)}
+.screen .bar{height:8px;border-radius:99px;background:var(--rule);overflow:hidden;margin-top:6px}
+.screen .bar i{display:block;height:100%;background:var(--brand-fill);border-radius:99px}
+.screen .bar.gold i{background:var(--mastered)}
+.screen .btn{display:block;text-align:center;background:var(--brand-fill);color:var(--on-brand);border-radius:16px;padding:11px;font-weight:700;font-size:14px}
+.screen .btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.screen .btn.dark{background:var(--ink);color:#fff}
+.screen .fine{font-size:11.5px;color:var(--text-mute)}
+.screen .coach{display:flex;gap:8px;align-items:flex-start;background:var(--learned-bg);border-radius:16px;padding:10px 12px}
+.screen .coach .dot{width:26px;height:26px;border-radius:50%;background:var(--pine);flex:0 0 auto;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:900}
+.screen .coach p{font-size:13px}
+.screen .voice{display:flex;align-items:center;gap:8px;font-size:12.5px;background:var(--surface);border-radius:12px;padding:8px 10px}
+.screen .voice .wave{display:flex;gap:2px;align-items:center;height:16px}
+.screen .voice .wave i{width:3px;background:var(--stuck);border-radius:2px}
+.screen .grow{flex:1}
+.cap .title{font-size:11.5px;font-weight:700;color:var(--mastered-text);letter-spacing:.08em}
+.cap .big{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0 6px}
+.cap .big .mon{width:96px;height:96px}
+.cap .arrow{font-family:var(--font-num);color:var(--mastered-text);font-weight:700;font-size:12px;letter-spacing:.1em}
+.cap h5{text-align:center}
+.cap .ev{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center;background:var(--surface);border-radius:16px;padding:12px 10px}
+.cap .ev .n{font-size:22px;color:var(--mastered-text);line-height:1}
+.cap .ev small{display:block;font-size:11px;color:var(--text-mute);margin-top:4px}
+.cap .ev .to{color:var(--text-mute);font-family:var(--font-num);font-weight:700}
+.shadows{display:flex;gap:8px;flex-wrap:wrap}
+.shadows .mon{width:52px;height:52px}
+.title-chip{display:inline-flex;align-items:center;gap:6px;background:var(--mastered-bg);color:var(--mastered-text);padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.phone-cap{font-size:13px;color:var(--text-mute);margin-top:10px;text-align:center;line-height:1.5}
+.phone-cap b{color:var(--text);display:block}
+
+/* ---------- 分享卡與 LINE ---------- */
+.share{background:linear-gradient(160deg,var(--honey-soft),var(--surface) 70%);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow-lift);max-width:380px;aspect-ratio:4/5;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+:root[data-theme="dark"] .share{background:linear-gradient(160deg,#332A12,var(--surface) 70%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .share{background:linear-gradient(160deg,#332A12,var(--surface) 70%)}}
+.share .k{font-size:11.5px;font-weight:700;letter-spacing:.1em;color:var(--mastered-text)}
+.share h4{font-size:24px;margin:0;line-height:1.2}
+.share .who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mute)}
+.share .av{width:22px;height:22px;border-radius:50%;background:var(--av-1)}
+.share .mid{flex:1;display:flex;align-items:center;justify-content:center}
+.share .mid .mon{width:120px;height:120px}
+.share .ev{font-size:13.5px;line-height:1.5}
+.share .ev b{color:var(--mastered-text)}
+.share .foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-mute)}
+.share .foot svg{width:30px;height:19px}
+.line{background:#8CABD9;border-radius:var(--r-lg);padding:18px 14px;max-width:380px;display:flex;flex-direction:column;gap:10px}
+:root[data-theme="dark"] .line{background:#1E2A3A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .line{background:#1E2A3A}}
+.line .from{display:flex;gap:8px;align-items:flex-start}
+.line .from .av{width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:0 0 auto}
+.line .from .av svg{width:20px;height:13px}
+.line .bub{background:#fff;color:#111;border-radius:16px;padding:10px 12px;font-size:13.5px;line-height:1.55;max-width:88%}
+.line .bub b{display:block;margin-bottom:2px}
+.line .bub .q{background:#F2F2F2;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px}
+.line .bub .btns{display:flex;gap:6px;margin-top:10px}
+.line .bub .btns span{flex:1;text-align:center;border:1px solid #06C755;color:#06C755;border-radius:10px;padding:6px;font-size:12.5px;font-weight:700}
+.line .bub .btns span.on{background:#06C755;color:#fff}
+.line .me{align-self:flex-end;background:#8DE39C;color:#111;border-radius:16px;padding:8px 12px;font-size:13.5px}
+.line .time{font-size:10.5px;color:#fff;opacity:.9;align-self:flex-end}
+.line .back{align-self:flex-start;background:var(--learned-bg);color:var(--text);border-radius:16px;padding:8px 12px;font-size:13px;margin-top:4px;border:1px dashed var(--brand)}
+
+/* ---------- 護欄 ---------- */
+.dodont{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.dodont{grid-template-columns:1fr}}
+.dodont ul{list-style:none;padding:0}
+.dodont li{padding-left:30px;position:relative;font-size:14.5px;line-height:1.6}
+.dodont li::before{content:"";position:absolute;left:0;top:6px;width:18px;height:18px;border-radius:50%}
+.dodont .do li::before{background:var(--pine)}
+.dodont .dont li::before{background:var(--coral)}
+.dodont li+li{margin-top:.55em}
+.dodont h4{margin:0 0 12px;font-size:17px}
+
+/* ---------- 分期 ---------- */
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.phase{grid-template-columns:1fr}}
+.phase .card .no{font-family:var(--font-num);font-weight:700;font-size:13px;color:var(--stuck);letter-spacing:.08em}
+.phase .card h4{margin:6px 0 10px;font-size:19px}
+.phase .card ul{padding-left:1.2em;font-size:14px;color:var(--text)}
+.phase .card .kpi{margin-top:12px;font-size:12.5px;color:var(--text-mute);border-top:1px solid var(--rule);padding-top:10px}
+.phase .card .kpi b{color:var(--text)}
+.ask{display:grid;gap:12px;margin-top:16px}
+.ask>div{background:var(--surface);border-radius:var(--r-card);padding:18px 20px;box-shadow:var(--shadow-soft);display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.ask .q{width:34px;height:34px;border-radius:50%;background:var(--stuck);color:#fff;display:grid;place-items:center;font-family:var(--font-num);font-weight:700}
+.ask b{display:block;font-size:16px;margin-bottom:4px}
+.ask p{font-size:14px;color:var(--text-mute)}
+.ask p em{font-style:normal;color:var(--brand);font-weight:700}
+
+
+/* ---------- 段位、解題率、賽季 ---------- */
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:6px 0 18px;align-items:end}
+@media (max-width:560px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ladder>div{border-radius:var(--r-sm);padding:12px 14px;background:var(--surface);box-shadow:var(--shadow-soft)}
+.ladder>div:nth-child(2){padding-top:24px}.ladder>div:nth-child(3){padding-top:36px}.ladder>div:nth-child(4){padding-top:48px}
+.ladder .rk{display:inline-block;font-weight:900;font-size:17px;padding:2px 14px;border-radius:var(--r-pill)}
+.rk.b{background:var(--stuck-bg);color:var(--stuck-text)}
+.rk.s{background:var(--bg-alt);color:var(--text)}
+.rk.g{background:var(--mastered-bg);color:var(--mastered-text)}
+.rk.p{background:var(--learned-bg);color:var(--brand)}
+.ladder small{display:block;font-size:12.5px;color:var(--text-mute);margin-top:8px;line-height:1.5}
+.formula{background:var(--surface);border-radius:var(--r-card);padding:22px 24px;box-shadow:var(--shadow-soft)}
+.formula .eq{font-weight:900;font-size:clamp(17px,2.2vw,20px);margin-bottom:14px;line-height:1.4}
+.formula ul{list-style:none;padding:0;display:grid;gap:8px;font-size:14.5px}
+.formula li{margin:0;display:flex;gap:14px;align-items:baseline}
+.formula li b{font-family:var(--font-num);min-width:58px;color:var(--brand)}
+.formula .small{margin-top:14px}
+.worked{background:var(--surface-2);border-radius:var(--r-sm);padding:14px 18px;font-size:14px;margin-top:16px;max-width:var(--measure);line-height:1.7}
+.worked b{color:var(--brand)}
+.season{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin:14px 0 8px}
+@media (max-width:900px){.season{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:480px){.season{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.season>div{background:var(--surface);border-radius:var(--r-sm);padding:12px;box-shadow:var(--shadow-soft);min-height:100px}
+.season .w{font-family:var(--font-num);font-weight:700;font-size:12.5px;color:var(--text-mute);letter-spacing:.06em}
+.season b{display:block;font-size:14.5px;margin:6px 0 2px}
+.season p{font-size:12px;color:var(--text-mute);line-height:1.5}
+.season .pvp{background:var(--mastered-bg)} .season .pvp b{color:var(--mastered-text)}
+.season .boss{background:var(--stuck-bg)} .season .boss b{color:var(--stuck-text)}
+.phones.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:960px){.phones.three{grid-template-columns:1fr}}
+.screen .rate{text-align:center;padding:8px 0 0}
+.screen .rate .n{font-size:56px;line-height:1;color:var(--mastered-text);display:block;letter-spacing:-.03em}
+.screen .rate small{font-size:11.5px;color:var(--text-mute)}
+.screen .stars{text-align:center;font-size:22px;letter-spacing:6px;color:var(--mastered);line-height:1}
+.screen .stars .off{color:var(--rule)}
+.screen .stars small{display:block;font-size:12px;letter-spacing:0;color:var(--mastered-text);font-weight:700;margin-top:4px}
+.screen .kv{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0}
+.screen .kv span{color:var(--text-mute)}
+.screen .kv b{font-family:var(--font-num);white-space:nowrap}
+.screen .mx{font-family:var(--font-math);font-size:15px}
+.screen .relay{display:grid;gap:6px;font-size:12px}
+.screen .relay>div{display:grid;grid-template-columns:18px 30px 1fr 16px;gap:6px;align-items:center;padding:7px 8px;border-radius:10px;background:var(--surface-2)}
+.screen .relay .no{font-family:var(--font-num);font-weight:700;color:var(--text-mute)}
+.screen .relay .who{font-weight:700;font-size:11px}
+.screen .relay .st{font-weight:900;text-align:center;color:var(--brand)}
+.screen .relay .flag{background:var(--stuck-bg)}
+.screen .relay .flag .st{color:var(--stuck-text)}
+.screen .relay .me{background:var(--surface);outline:2px dashed var(--brand);outline-offset:-2px}
+.screen .btn.warn{background:transparent;color:var(--stuck-text);border:1.5px solid var(--stuck)}
+
+/* ---------- 世界地圖 ---------- */
+.worldmap{background:var(--surface);border-radius:var(--r-lg);padding:clamp(10px,2vw,18px);box-shadow:var(--shadow-soft);margin:18px 0 8px;overflow-x:auto}
+.worldmap svg{width:100%;min-width:640px;height:auto;display:block}
+.worldmap .sea{fill:var(--sea)}
+.worldmap .wave{fill:none;stroke:var(--sea-line);stroke-width:2;stroke-linecap:round}
+.worldmap .land{fill:var(--land);stroke:var(--land-edge);stroke-width:2}
+.worldmap .cn{font-family:var(--font-sans);font-weight:900;font-size:17px;fill:var(--text)}
+.worldmap .cs{font-family:var(--font-sans);font-weight:700;font-size:12px;fill:var(--text-mute)}
+.worldmap .rl{font-family:var(--font-sans);font-weight:700;font-size:12.5px;fill:var(--text);text-anchor:middle;paint-order:stroke;stroke:var(--land);stroke-width:4px;stroke-linejoin:round}
+.worldmap .rl.fogt{fill:var(--fog-text)}
+.worldmap .tw{--tw-line:var(--ink);--tw-lamp:#FFF8DC;--tw-body:var(--surface)}
+.worldmap .t-coral{--tw-body:var(--coral)}
+.worldmap .t-sky{--tw-body:var(--sky)}
+.worldmap .t-honey{--tw-body:var(--honey)}
+.worldmap .t-none{--tw-body:var(--surface);--tw-line:var(--text-mute);--tw-lamp:var(--rule)}
+.worldmap .fogm{fill:var(--fog);stroke:var(--fog-text);stroke-width:1.5;stroke-dasharray:3 3}
+.worldmap .fogq{font-family:var(--font-num);font-weight:700;font-size:13px;fill:var(--fog-text);text-anchor:middle}
+.maplegend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--text-mute);margin:10px 0 0}
+.maplegend span{display:inline-flex;align-items:center;gap:8px}
+.maplegend i{width:14px;height:14px;border-radius:4px;display:inline-block;border:1.5px solid var(--ink)}
+.maplegend i.c{background:var(--coral)} .maplegend i.s{background:var(--sky)} .maplegend i.h{background:var(--honey)}
+.maplegend i.n{background:var(--surface);border-color:var(--text-mute)} .maplegend i.f{background:var(--fog);border:1.5px dashed var(--fog-text)}
+.screen .rank{display:grid;gap:6px}
+.screen .rank>div{display:grid;grid-template-columns:20px 12px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--surface);font-size:12.5px}
+.screen .rank .p{font-family:var(--font-num);font-weight:700;color:var(--text-mute)}
+.screen .rank .dot{width:12px;height:12px;border-radius:50%}
+.screen .rank b{font-family:var(--font-num)}
+.screen .rank .mine{outline:2px solid var(--brand);outline-offset:-2px}
+
+/* ---------- 敘事 ---------- */
+.lore{background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-soft);padding:20px 22px;display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start}
+.lore .mon{width:64px;height:64px}
+.lore h4{margin:0 0 4px;font-size:19px}
+.lore .tag{margin-bottom:8px}
+.lore dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.lore dt{font-weight:700;color:var(--text-mute);white-space:nowrap}
+.lore dd{margin:0;line-height:1.6}
+.lore dd q{quotes:"「" "」";font-weight:700;color:var(--stuck-text)}
+.lore dd q.ok{color:var(--brand)}
+.beats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}
+@media (max-width:900px){.beats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.beats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beats>div{background:var(--surface);border-radius:var(--r-sm);padding:12px;box-shadow:var(--shadow-soft)}
+.beats b{display:block;font-size:14.5px;margin-bottom:4px}
+.beats .line{font-size:12.5px;color:var(--text);background:var(--surface-2);border-radius:8px;padding:6px 8px;margin:6px 0;line-height:1.5}
+.beats p{font-size:12px;color:var(--text-mute);line-height:1.5}
+.panels{display:grid;grid-template-columns:1fr;gap:8px}
+.panel{border-radius:14px;background:var(--surface);padding:12px;box-shadow:var(--shadow-soft);display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;min-height:64px}
+.panel .mon{width:44px;height:44px}
+.panel p{font-size:12.5px;line-height:1.5}
+.panel p b{display:block;font-size:11px;color:var(--text-mute);font-weight:700;letter-spacing:.04em}
+.panel.dark{background:var(--band);color:var(--on-band)}
+.panel.dark p{color:var(--on-band)} .panel.dark p b{color:var(--on-band-mute)}
+.taunt{display:flex;gap:10px;align-items:flex-start;background:var(--stuck-bg);border-radius:14px;padding:10px 12px}
+.taunt .mon{width:36px;height:36px}
+.taunt p{font-size:13px;line-height:1.5}
+.taunt p b{color:var(--stuck-text)}
+
+/* ---------- 頁尾 ---------- */
+footer{padding:48px 0 64px;color:var(--text-mute);font-size:13.5px}
+footer .sig{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:700;margin-bottom:10px}
+footer .sig svg{width:38px;height:24px}
+.back-top{display:inline-block;margin-top:14px;font-weight:700}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到內容</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 怪的基本身體：用品牌的圓做出來，避開任何既有 IP -->
+    <symbol id="m-round" viewBox="0 0 64 64"><circle fill="var(--m-body)" cx="32" cy="34" r="24"/><circle fill="var(--m-eye)" cx="24" cy="30" r="6"/><circle fill="var(--m-eye)" cx="40" cy="30" r="6"/><circle fill="var(--m-pupil)" cx="25" cy="31" r="2.6"/><circle fill="var(--m-pupil)" cx="41" cy="31" r="2.6"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M24 44q8 5 16 0"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="44" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+    <symbol id="m-drop" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M32 8c10 12 22 20 22 32a22 22 0 0 1-44 0c0-12 12-20 22-32z"/><circle fill="var(--m-eye)" cx="25" cy="38" r="5.5"/><circle fill="var(--m-eye)" cx="39" cy="38" r="5.5"/><circle fill="var(--m-pupil)" cx="26" cy="39" r="2.4"/><circle fill="var(--m-pupil)" cx="40" cy="39" r="2.4"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M27 49h10"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="44" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="48">?</text></symbol>
+    <symbol id="m-twin" viewBox="0 0 64 64"><circle fill="var(--m-body)" cx="22" cy="36" r="17"/><circle fill="var(--m-body)" cx="42" cy="36" r="17"/><circle fill="var(--m-eye)" cx="20" cy="33" r="5"/><circle fill="var(--m-eye)" cx="44" cy="33" r="5"/><circle fill="var(--m-pupil)" cx="21" cy="34" r="2.2"/><circle fill="var(--m-pupil)" cx="45" cy="34" r="2.2"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M16 44h8M40 44h8"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="46">?</text></symbol>
+    <symbol id="m-cloud" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M18 50a12 12 0 0 1-2-24 16 16 0 0 1 31-4 11 11 0 0 1 3 28z"/><circle fill="var(--m-eye)" cx="26" cy="36" r="5"/><circle fill="var(--m-eye)" cx="40" cy="36" r="5"/><circle fill="var(--m-pupil)" cx="27" cy="37" r="2.2"/><circle fill="var(--m-pupil)" cx="41" cy="37" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="46">?</text></symbol>
+    <symbol id="m-bug" viewBox="0 0 64 64"><ellipse fill="var(--m-body)" cx="32" cy="36" rx="22" ry="18"/><path fill="none" stroke="var(--m-feat)" stroke-width="3" stroke-linecap="round" d="M14 30l-6-8M50 30l6-8M20 50l-4 6M44 50l4 6"/><circle fill="var(--m-eye)" cx="24" cy="33" r="5.5"/><circle fill="var(--m-eye)" cx="40" cy="33" r="5.5"/><circle fill="var(--m-pupil)" cx="25" cy="34" r="2.4"/><circle fill="var(--m-pupil)" cx="41" cy="34" r="2.4"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="46">?</text></symbol>
+    <symbol id="m-tri" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M32 10l24 44H8z"/><circle fill="var(--m-eye)" cx="25" cy="42" r="5"/><circle fill="var(--m-eye)" cx="39" cy="42" r="5"/><circle fill="var(--m-pupil)" cx="26" cy="43" r="2.2"/><circle fill="var(--m-pupil)" cx="40" cy="43" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="18">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="50">?</text></symbol>
+    <symbol id="m-cross" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M24 10h16v14h14v16H40v14H24V40H10V24h14z"/><circle fill="var(--m-eye)" cx="26" cy="32" r="5"/><circle fill="var(--m-eye)" cx="38" cy="32" r="5"/><circle fill="var(--m-pupil)" cx="27" cy="33" r="2.2"/><circle fill="var(--m-pupil)" cx="39" cy="33" r="2.2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+    <symbol id="m-ring" viewBox="0 0 64 64"><path fill="var(--m-body)" fill-rule="evenodd" d="M32 8a24 24 0 1 0 0 48 24 24 0 0 0 0-48zm0 14a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/><circle fill="var(--m-eye)" cx="20" cy="26" r="4.5"/><circle fill="var(--m-eye)" cx="44" cy="26" r="4.5"/><circle fill="var(--m-pupil)" cx="21" cy="27" r="2"/><circle fill="var(--m-pupil)" cx="45" cy="27" r="2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" x="24" y="44">?</text></symbol>
+    <symbol id="tower" viewBox="0 0 24 32"><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M8 30V14h8v16z"/><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M5 14l7-8 7 8z"/><circle fill="var(--tw-lamp)" cx="12" cy="10" r="2.4"/></symbol>
+    <symbol id="p-kid" viewBox="0 0 64 64"><circle cx="32" cy="24" r="14" fill="currentColor"/><path d="M8 62c2-16 12-24 24-24s22 8 24 24z" fill="currentColor"/></symbol>
+    <symbol id="logo" viewBox="0 0 64 40"><circle cx="21" cy="20" r="18" fill="#F26B54"/><circle cx="43" cy="20" r="18" fill="#0E5F52"/><path d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z" fill="#0D281B"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <a class="logo" href="#top" aria-label="Tandelo 回到最上面">
+        <svg aria-hidden="true"><use href="#logo"/></svg>
+        Tandelo <span class="top-kicker">冒險小隊概念稿</span>
+      </a>
+      <span class="spacer"></span>
+      <button class="theme-btn" id="themeBtn" type="button" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span id="themeLabel">自動</span></button>
+    </div>
+    <nav class="toc" aria-label="章節目錄" id="toc">
+      <a href="#c0"><span class="n">00</span>一句話</a>
+      <a href="#c1"><span class="n">01</span>世界觀</a>
+      <a href="#c2"><span class="n">02</span>一趟遠征</a>
+      <a href="#c3"><span class="n">03</span>小隊角色</a>
+      <a href="#c4"><span class="n">04</span>成就與分享</a>
+      <a href="#c5"><span class="n">05</span>PvE 副本</a>
+      <a href="#c6"><span class="n">06</span>PvP 對戰</a>
+      <a href="#c7"><span class="n">07</span>公會與徽章</a>
+      <a href="#c8"><span class="n">08</span>世界地圖</a>
+      <a href="#c9"><span class="n">09</span>故事</a>
+      <a href="#c10"><span class="n">10</span>畫面</a>
+      <a href="#c11"><span class="n">11</span>護欄</a>
+      <a href="#c12"><span class="n">12</span>分期</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div id="top"></div>
+
+<!-- ============ Hero ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow"><svg class="duo" aria-hidden="true" style="width:34px;height:22px"><use href="#logo"/></svg>遊戲化體驗概念稿 · 版本 0.1 · 2026-09-30</p>
+        <h1>被同一隻怪打倒過的人，<br><span class="accent">組隊回去打牠。</span></h1>
+        <p class="sub">小隊不是一起上課的四個人，是一支冒險小隊。八週是一個賽季，段考是魔王，卡點是怪，老師是嚮導，小陪是隨行的系統，家人在營地等你回來。每週全隊打一個副本，用小隊解題率決定過關；同一條路線上的小隊還能對戰。國英數社四片大陸都能拓荒，學會的定義一個字不改：講得出來、隔幾天不給提示還會。</p>
+        <div class="meta"><span>建立在 <b>產品規劃書 1.0</b> 的八條設計原則之上</span><span>怪與地區名稱為提案，調性可調</span><span>示範人物一律虛構</span></div>
+      </div>
+      <div>
+        <div class="party" aria-label="一支四人小隊與嚮導的示意">
+          <svg class="m" style="color:var(--av-2)" aria-hidden="true"><use href="#p-kid"/></svg>
+          <svg class="m" style="color:var(--av-4)" aria-hidden="true"><use href="#p-kid"/></svg>
+          <svg class="m guide" style="color:var(--pine)" aria-hidden="true"><use href="#p-kid"/></svg>
+          <svg class="m" style="color:var(--av-3)" aria-hidden="true"><use href="#p-kid"/></svg>
+          <svg class="m" style="color:var(--av-5)" aria-hidden="true"><use href="#p-kid"/></svg>
+        </div>
+        <p class="party-cap">四葉小隊 · 嚮導林老師 · 第 3 週 · 對準 11/27 段考</p>
+      </div>
+    </div>
+    <div class="howto">
+      <b>這份稿子回答一件事</b>：Tandelo 能不能像動畫裡的冒險小隊那樣，一起拓荒、一起打怪，而且不違背「不比較、不扣分、22:30 關燈、金色不是永久等級」這幾條已經寫進規劃書的原則。答案是能，方法是把遊戲語言蓋在既有機制上，不新增任何一種和學會無關的貨幣。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 00 一句話 ============ -->
+<section class="ch" id="c0">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">00</div><div><div class="kicker">一句話與四根柱子</div><h2>有趣、有成就感、能分享、能一起</h2></div></div>
+    <p class="lead">Tandelo 的遊戲化不是「學習 App 加積分」，是<b>小隊打段考魔王的養成遊戲</b>。個人有變強的感覺，小隊一起打副本、和同路線的小隊對戰，公會給歸屬感，家人是見證者。所有成就都用「真的學會」當貨幣，所以家長看到不會皺眉。</p>
+    <div class="grid g4">
+      <div class="card">
+        <div class="ico coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 14l4-8 4 6 3-4 5 6z"/><path d="M4 18h16"/></svg></div>
+        <div class="who">有趣</div>
+        <p class="say">卡點是有名字、有故事的怪，每季一章主線，每週一個副本。</p>
+        <p class="small">怪的騙術就是孩子的誤解，牠出場的台詞就是錯的推理。故事長在教學裡，見第 09 章。</p>
+      </div>
+      <div class="card">
+        <div class="ico honey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></div>
+        <div class="who">有成就感</div>
+        <p class="say">收服的怪變成身後的影子，越多越壯觀。</p>
+        <p class="small">「收服時刻」取代原本 1.2 秒的翻頁動畫。稱號只數經過再測驗證的事件，不數練習量。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg></div>
+        <div class="who">能分享</div>
+        <p class="say">一鍵產出分享卡，傳到家人 LINE、隊伍牆、限動。</p>
+        <p class="small">只分享收服，卡住的永遠不出現在卡上。孩子自己按，沒有自動。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M12 20c0-3 3-5 6-5"/></svg></div>
+        <div class="who">能一起</div>
+        <p class="say">PvE 一起打副本，PvP 和同路線的小隊對戰。</p>
+        <p class="small">過關看小隊解題率。家人見證、公會每月一起拚徽章。對戰只在隊伍之間，沒有排名、沒有個人對戰。</p>
+      </div>
+    </div>
+
+    <blockquote class="quote pine">遊戲化是倍增器，不是引擎。引擎仍然是「老師課後 30 秒語音，隔天第一題就是那個卡點」。</blockquote>
+
+    <div class="callout honey">
+      <p><b>證據很薄，先講清楚。</b>合作打魔王在台灣課堂有 PaGamO 的先例、好友式連續天數有 Duolingo 的數據，但「冒險敘事」對 13 到 15 歲付費補習生的留存效果，目前查不到直接證據。這份稿子的每一項都要在 8 週試點用「三週留存」和「每週練習三天以上的比例」驗證，不對就拆。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 世界觀 ============ -->
+<section class="ch" id="c1">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">01</div><div><div class="kicker">世界觀對照</div><h2>每一個遊戲名詞，都對到一個既有機制</h2></div></div>
+    <p class="lead">規則只有一條：<b>先有機制，才有名字</b>。遊戲語言蓋在規劃書已經定義的八個節點上，沒有一個名詞是為了好玩而新加的功能。</p>
+
+    <div class="tbl-wrap">
+      <table class="tbl cards">
+        <thead><tr><th>Tandelo 原本的機制</th><th>冒險小隊的說法</th><th>為什麼可以這樣講</th></tr></thead>
+        <tbody>
+          <tr><th>國中數學的章節</th><td data-l="冒險小隊的說法">未拓荒的地區，蓋著迷霧</td><td data-l="為什麼可以這樣講">還沒診斷到的章節本來就是未知，迷霧只是把「未知」畫出來</td></tr>
+          <tr><th>卡點（卡在哪一步）</th><td data-l="冒險小隊的說法">怪，用牠讓你犯的錯命名</td><td data-l="為什麼可以這樣講">把錯誤具名化是教學上的老方法，孩子罵怪比罵自己健康</td></tr>
+          <tr><th>兩分鐘診斷</th><td data-l="冒險小隊的說法">偵察報告：你被哪隻怪打倒過</td><td data-l="為什麼可以這樣講">診斷結果本來就是「你卡在這一步」，不是分數</td></tr>
+          <tr class="hi"><th>依卡點湊隊</th><td data-l="冒險小隊的說法">被同一隻怪打倒過的人組隊</td><td data-l="為什麼可以這樣講">這是現有的配對邏輯，也是全隊沒人需要羞恥的原因</td></tr>
+          <tr><th>老師</th><td data-l="冒險小隊的說法">嚮導：帶隊、示範、不替你打</td><td data-l="為什麼可以這樣講">老師本來就只帶三到六人、八週不換</td></tr>
+          <tr><th>小陪</th><td data-l="冒險小隊的說法">隨行系統：只問你寫到哪一步</td><td data-l="為什麼可以這樣講">系統是介面語法，不是人格。第一句永遠是「你寫到哪一步？」</td></tr>
+          <tr><th>每週 50 分鐘小隊課</th><td data-l="冒險小隊的說法">遠征，六幕走完</td><td data-l="為什麼可以這樣講">六段課程結構一段不改，只換名字，見第 02 章</td></tr>
+          <tr><th>每天 10 到 20 分鐘陪練</th><td data-l="冒險小隊的說法">任務卡：補刀、偵察、叫醒影子</td><td data-l="為什麼可以這樣講">每天上限三件、22:30 關燈照舊。任務卡只是把「為什麼是今天這一格」寫出來</td></tr>
+          <tr class="hi"><th>一週的練習題組</th><td data-l="冒險小隊的說法">副本：三層加一隻 Boss，用小隊解題率決定過關</td><td data-l="為什麼可以這樣講">副本就是一週的任務卡排成一條路線，不另外加量，見第 05 章</td></tr>
+          <tr><th>說給我聽 30 秒</th><td data-l="冒險小隊的說法">冒險日誌</td><td data-l="為什麼可以這樣講">用自己的話講一遍，本來就是留紀錄</td></tr>
+          <tr><th>隔 7 到 12 天不給提示再測</th><td data-l="冒險小隊的說法">怪會回來，這次沒有嚮導在旁邊</td><td data-l="為什麼可以這樣講">再測不給任何幫助，正好是「自己一個人面對牠」。副本週在伏擊層，其他週用叫醒任務卡，結果只進個人紀錄</td></tr>
+          <tr class="hi"><th>已掌握（金色）</th><td data-l="冒險小隊的說法">收服：怪變成站在你身後的影子</td><td data-l="為什麼可以這樣講">收服是驗證過的事件，影子牆就是證據牆</td></tr>
+          <tr class="hi"><th>之後又錯，回到練習清單</th><td data-l="冒險小隊的說法">影子睡著了，等你叫醒</td><td data-l="為什麼可以這樣講">不扣分、不消失，只是換一種狀態。這句話守住「金色不是永久等級」</td></tr>
+          <tr><th>家長 LINE 週報</th><td data-l="冒險小隊的說法">營地來信</td><td data-l="為什麼可以這樣講">家長端內容不變：他學會了什麼、下週做什麼、今晚可以問他一句</td></tr>
+          <tr><th>第 4 週結業點前、第 7 週段考前</th><td data-l="冒險小隊的說法">小隊對戰：鏡像賽與出題戰，只和同路線的隊伍打</td><td data-l="為什麼可以這樣講">出題是「講給隊友聽」的進階版，只能拿自己收服過的怪出題，見第 06 章</td></tr>
+          <tr><th>段考與段考對照</th><td data-l="冒險小隊的說法">魔王戰與戰報</td><td data-l="為什麼可以這樣講">段考本來就是八週的終點，前後對照就是戰報</td></tr>
+          <tr><th>第 4 週結業點</th><td data-l="冒險小隊的說法">中途營地，可停可續</td><td data-l="為什麼可以這樣講">停止和續走一樣容易，是規劃書第七條原則</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>八隻怪，對到原型裡的八個卡點</h3>
+    <p class="prose small" style="margin-bottom:16px">名字用「牠讓你犯的錯」來取，讓孩子一看就知道要防什麼。調性目前偏「帥一點的可愛」，可以往帥或往可愛調。</p>
+    <div class="mgrid">
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><span class="where">乘法平原</span><b>漏項獸</b><p class="does">把 (a+b)² 中間那兩塊偷走，讓你以為只剩 a² + b²。</p><span class="skill">完全平方要有中間那一項</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><div><span class="where">多項式林</span><b>負號幽靈</b><p class="does">躲在括號前面，只讓第一項變號，後面的都放過。</p><span class="skill">減去括號，每一項都要變號</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-bug"/></svg></div><div><span class="where">根號谷</span><b>拆根蟲</b><p class="does">把 √(25 − 9) 咬成 √25 − √9。</p><span class="skill">根號裡面要先算完</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-twin"/></svg></div><div><span class="where">根號谷</span><b>雙面根</b><p class="does">讓你以為 √(a²) 可以是負的。</p><span class="skill">√ 開出來一定不是負的</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-tri"/></svg></div><div><span class="where">畢氏山</span><b>斜邊迷霧</b><p class="does">把三角形轉個方向，你就認錯哪一邊是斜邊。</p><span class="skill">先認出哪一邊是斜邊</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-drop"/></svg></div><div><span class="where">分解洞窟</span><b>平方差雙子</b><p class="does">一個加、一個減，牠讓你兩個都寫減。</p><span class="skill">平方差：一個加、一個減</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-cross"/></svg></div><div><span class="where">分解洞窟</span><b>十字符號怪</b><p class="does">十字交乘到最後一步，偷偷把符號換掉。</p><span class="skill">十字交乘要顧到符號</span></div></div>
+      <div class="mcard"><div class="mon"><svg aria-hidden="true"><use href="#m-ring"/></svg></div><div><span class="where">二次高原</span><b>零的隱者</b><p class="does">你兩邊除以 x 的那一刻，牠把 x = 0 藏走。</p><span class="skill">不能隨便兩邊除以 x</span></div></div>
+    </div>
+
+    <div class="mstates" aria-label="怪的四種狀態">
+      <div><div class="mon fog"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>迷霧</b><span>還沒偵察到這一區</span></div></div>
+      <div><div class="mon"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>還在附近</b><span>珊瑚色，卡住，不代表錯</span></div></div>
+      <div><div class="mon pine"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>打中了</b><span>綠色，說得出來，等牠回來</span></div></div>
+      <div><div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>收服</b><span>金眼影子，隔幾天不給提示也會</span></div></div>
+      <div><div class="mon asleep"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>睡著了</b><span>之後又錯，等你叫醒，不扣分</span></div></div>
+    </div>
+    <p class="note">四種狀態就是原型裡 stuck、green、gold 加上「又錯回到清單」，資料模型一個欄位都不用動。</p>
+
+    <h3>四片大陸，一科一片</h3>
+    <p class="prose small" style="margin-bottom:16px">每一科是一片大陸，每個卡點是一隻怪，命名規則都一樣：用牠讓你犯的錯來取。下面是國文、英文、社會的第一批提案。</p>
+    <div class="grid g4">
+      <div class="card"><div class="who">數學 · 數理大陸</div><p class="say">漏項獸、負號幽靈、零的隱者</p><p class="small">乘法平原、根號谷、分解洞窟等六區，已對到原型的八個卡點。</p></div>
+      <div class="card"><div class="who">英文 · 西風港</div><p class="say">時光獸、失蹤的 s、介係詞迷路怪</p><p class="small">過去式和現在完成式混用；第三人稱單數忘了加 s；in、on、at 放錯時間。</p></div>
+      <div class="card"><div class="who">國文 · 字林</div><p class="say">音近字妖、之乎迷霧、修辭變臉怪</p><p class="small">再和在、做和作寫混；文言的「之」分不清用法；譬喻和轉化分不清。</p></div>
+      <div class="card"><div class="who">社會 · 時光古道</div><p class="say">年代錯置怪、因果顛倒獸、經緯迷航</p><p class="small">把事件順序排錯；把結果當成原因；經度和緯度讀反。</p></div>
+    </div>
+    <p class="note">真人小隊課仍然數學先行。其他三片大陸先以副本與對戰開放，要不要也開真人課，列在第 12 章待決。</p>
+  </div>
+</section>
+
+<!-- ============ 02 一趟遠征 ============ -->
+<section class="ch" id="c2">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">02</div><div><div class="kicker">一趟遠征怎麼走</div><h2>一週一次遠征，其餘六天各有一張任務卡</h2></div></div>
+    <p class="lead">節奏不變：每週一次 50 分鐘真人課，課與課之間每天 10 到 20 分鐘。變的是<b>每一天都知道自己為什麼要練這一格</b>，而且知道隊友也在。</p>
+
+    <h3>一週的節奏（以週四上課為例）</h3>
+    <div class="week">
+      <div class="exp"><span class="d">週四</span><b>遠征</b><p>50 分鐘、六幕。嚮導帶隊打這週的怪。</p></div>
+      <div><span class="d">週五</span><b>補刀＋副本開門</b><p>嚮導昨晚語音講的那隻怪是今天第一題。晚上本週副本開門。</p></div>
+      <div><span class="d">週六</span><b>巡邏層＋接力開跑</b><p>巡邏每人 3 題，小陪和求援隨時可用。Boss 接力早上開跑，不設個人倒數。</p></div>
+      <div class="rest"><span class="d">週日</span><b>營地來信</b><p>家長收到這週的 LINE。孩子不用做事。</p></div>
+      <div class="gold"><span class="d">週一</span><b>伏擊層</b><p>到期的影子回來偷襲，沒有提示。結果只進自己的收服紀錄。</p></div>
+      <div><span class="d">週二</span><b>結算</b><p>接力 21:30 截止，22:00 副本結算，全隊看到解題率。</p></div>
+      <div><span class="d">週三</span><b>偵察＋整備</b><p>先鋒先試下一隻怪一題。嚮導收到課前一頁。</p></div>
+    </div>
+    <p class="note">副本的每一層都算在任務卡裡。任務卡每天最多三張，22:30 之後不發、不亮、不推播。段考週不加量。哪天沒開，隔天卡上寫「回來了就好」。</p>
+
+    <h3>遠征六幕，就是原本的六段課</h3>
+    <div class="acts">
+      <div><div class="min">5<small>分</small></div><b>整隊</b><span class="was">原本：暖身</span><p>上週那隻怪還在嗎？一題看看誰記得。</p></div>
+      <div><div class="min">10<small>分</small></div><b>偵察弱點</b><span class="was">原本：大家常錯的</span><p>嚮導拆解這週的怪：牠在哪一步把你們絆倒。</p></div>
+      <div><div class="min">10<small>分</small></div><b>各自出手</b><span class="was">原本：自己試試</span><p>每個人打一次，打不中沒關係，這是偵察。</p></div>
+      <div><div class="min">5<small>分</small></div><b>嚮導示範一擊</b><span class="was">原本：再帶一次</span><p>只示範那一步，不示範整題。</p></div>
+      <div><div class="min">15<small>分</small></div><b>合擊</b><span class="was">原本：講給隊友聽</span><p>兩兩互講。講得出來才算打中，這是遠征最重要的一幕。</p></div>
+      <div><div class="min">5<small>分</small></div><b>清點戰利品</b><span class="was">原本：我搞懂的</span><p>每人一句「我搞懂的」，書記整理進冒險日誌。</p></div>
+    </div>
+
+    <div class="callout pine">
+      <p><b>判讀：小隊課的教學設計一個字不動。</b>六幕只是把原本的六段翻譯成孩子願意講出口的語言。「合擊」放在 15 分鐘那段，是因為講給隊友聽本來就是整堂課的重心，遊戲語言只是把它變成隊伍裡最帥的一幕。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 小隊角色 ============ -->
+<section class="ch" id="c3">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">03</div><div><div class="kicker">小隊角色輪替</div><h2>冒險小隊有職業，但每週輪，不看程度</h2></div></div>
+    <p class="lead">動畫裡的小隊好看，是因為每個人有位置。Tandelo 的四個位置<b>每週輪換</b>，由系統排，嚮導可調，和誰比較會沒有關係。四到六人時，多的人兩人一組共用一個位置。</p>
+
+    <div class="grid g4">
+      <div class="role">
+        <div class="badge c">鋒</div>
+        <h4>先鋒</h4>
+        <div class="was">對應：課前自己試一題</div>
+        <p>週三第一個去試下一隻怪，回報「我卡在哪一步」。回報會進嚮導的課前一頁，讓全隊知道這週的怪長什麼樣。</p>
+        <div class="safe">先鋒本來就預期會被打倒。回報卡在哪一步是任務完成，不是失敗。</div>
+      </div>
+      <div class="role">
+        <div class="badge">攻</div>
+        <h4>主攻</h4>
+        <div class="was">對應：講給隊友聽</div>
+        <p>遠征的合擊那一幕，先由主攻開口講那一步，其他人接著兩兩互講。嚮導蓋章後，主攻的冒險日誌多一筆「講解」。</p>
+        <div class="safe">每個人都會輪到主攻，這一週不會的下一週就會了，因為全隊都被同一隻怪打倒過。</div>
+      </div>
+      <div class="role">
+        <div class="badge h">書</div>
+        <h4>書記</h4>
+        <div class="was">對應：我搞懂的</div>
+        <p>清點戰利品時，把每個人的「我搞懂的」整理成一句，送進隊伍的冒險日誌。這句話也會變成家長週報「他學會了什麼」的素材。</p>
+        <div class="safe">書記寫的是全隊的話，不評分、不排序。</div>
+      </div>
+      <div class="role">
+        <div class="badge g">備</div>
+        <h4>整備官</h4>
+        <div class="was">對應：小隊連續天數（原則④）</div>
+        <p>週三看整備條：全隊的任務卡亮了幾張。可以對全隊按一次「大家加油」，不點名任何人，內容固定，不能自己打字。</p>
+        <div class="safe">整備官看得到「亮了幾張」，看不到誰卡在哪、答對幾題。這是一起負責，不是互相監視。</div>
+      </div>
+    </div>
+
+    <h3>隊名由小隊自己取</h3>
+    <p class="prose">第一次遠征的整隊那一幕，嚮導帶大家取隊名，兩分鐘內決定，之後八週都用。分享卡、營地來信、公會牆上出現的是隊名和頭像色塊，不是孩子的真名。這是最便宜也最有效的「這是我們的隊」。</p>
+  </div>
+</section>
+
+<!-- ============ 04 成就與分享 ============ -->
+<section class="ch" id="c4">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no honey">04</div><div><div class="kicker">成就與分享</div><h2>成就只有一種貨幣：驗證過的收服</h2></div></div>
+    <p class="lead">狀態會掉，但事件不會消失。一個孩子這學期收服了 12 隻怪，那 12 次都是隔幾天不給提示再測通過的。所以<b>稱號可以存在</b>，條件是它只數驗證事件，不數練習量、不數登入天數、不數連續。</p>
+
+    <div class="grid g3">
+      <div class="card honey">
+        <div class="who">影子牆</div>
+        <p class="say">收服的怪站在你身後，越多越壯觀。</p>
+        <p class="small">睡著的影子留在牆上、變灰、標上叫醒的日期。沒有東西會消失。這面牆就是原型裡的卡點地圖，換了個講法。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">冒險日誌</div>
+        <p class="say">每一次「說給我聽」和「我搞懂的」都是一頁。</p>
+        <p class="small">用自己的話講的那 30 秒錄音可以重聽。第 8 週的戰報就是把日誌攤開來看。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">稱號</div>
+        <p class="say">只數三種事件：收服、叫醒、講解。</p>
+        <p class="small">例：第一次收服「初次拓荒」、叫醒三隻睡著的影子「守住的人」、主攻被嚮導蓋章三次「講解者」。隊伍級只數全隊累計的收服，例：全隊一起收服 20 隻「開拓者之旗」。不數練習量，也不數連續天數。名稱待女巫與霍爾定稿。</p>
+      </div>
+    </div>
+
+    <h3>分享卡與營地來信</h3>
+    <p class="prose" style="margin-bottom:18px">收服時刻結束後，孩子可以按三個鍵：傳到營地、放上隊伍牆、先收著。分享卡上沒有臉、沒有真名、沒有分數、沒有隊友的狀態，只有一隻被收服的怪和一行證據。</p>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="share" aria-label="分享卡示意">
+          <span class="k">收服 · 第 3 週</span>
+          <h4>漏項獸，收服。</h4>
+          <div class="who"><span class="av"></span>四葉小隊 · 小睿</div>
+          <div class="mid"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div></div>
+          <p class="ev">完全平方要有中間那一項<br><b>第 0 天</b> 在遠征中被打倒 · <b>第 9 天</b> 不給提示也會</p>
+          <div class="foot"><span>嚮導 林老師 · 對準 11/27 段考</span><svg aria-hidden="true"><use href="#logo"/></svg></div>
+        </div>
+        <p class="phone-cap"><b>分享卡</b>直式 4:5，適合 LINE 與限動。孩子自己按才產生。</p>
+      </div>
+      <div>
+        <div class="line" aria-label="家長 LINE 營地來信示意">
+          <div class="from">
+            <span class="av"><svg aria-hidden="true"><use href="#logo"/></svg></span>
+            <div class="bub"><b>營地來信 · 星期二 21:02</b>小睿今晚收服了一隻怪：漏項獸（完全平方要有中間那一項）。第 9 天不給提示也會。
+              <div class="q">今晚可以問他：「一塊邊長是 a+b 的正方形，為什麼比 a² + b² 多出兩塊長方形？」</div>
+              <div class="btns"><span class="on">我見證了</span><span>晚點問他</span></div>
+            </div>
+          </div>
+          <span class="time">已讀 21:05</span>
+          <div class="me">好，晚上問他。</div>
+          <div class="back">隔天小睿的 App 首頁：「媽媽見證了這一次。」</div>
+        </div>
+        <p class="phone-cap"><b>營地來信</b>家長端不裝 App、內容三件事不變，只多一個「我見證了」。原型的家長 reactions 欄位已經在了。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 PvE 副本 ============ -->
+<section class="ch" id="c5">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">05</div><div><div class="kicker">PvE · 副本與路線</div><h2>每週一個副本，用小隊解題率決定過關</h2></div></div>
+    <p class="lead">全隊一起打，過不過關看<b>小隊解題率</b>，不看誰最快、誰最強。副本就是一週的任務卡排成一條路線，不另外加量。收服的證據另外記：伏擊層的結果只進個人紀錄，<b>不算進全隊分數</b>，讓團隊壓力流不進北極星。</p>
+
+    <h3>路線與賽季</h3>
+    <div class="ladder" aria-label="四條路線，由淺到深">
+      <div><span class="rk b">平原線</span><small>開季一律從這裡出發</small></div>
+      <div><span class="rk s">丘陵線</span><small>副本 75% 以上就往上一條</small></div>
+      <div><span class="rk g">山徑線</span><small>題目換成更綜合的變化</small></div>
+      <div><span class="rk p">雲頂線</span><small>混入跨章節的怪</small></div>
+    </div>
+    <div class="grid g3">
+      <div class="card soft"><div class="who">一季就是一期</div><p class="say">8 週一季，開季從平原線出發。</p><p class="small">路線以科為單位，只決定題目範圍與對戰配對。它是這一季走到哪裡，不是能力標籤。</p></div>
+      <div class="card soft"><div class="who">往上走，不往下掉</div><p class="say">75% 以上，下一個副本往上一條。</p><p class="small">撤退就留在原路線。季中不會往回退，對戰輸贏也不影響路線。</p></div>
+      <div class="card soft"><div class="who">不掛在任何地方</div><p class="say">路線不出現在隊伍牆、分享卡、對手資訊上。</p><p class="small">家長不會看到「我家是平原線」，孩子也不會拿路線互相比。</p></div>
+    </div>
+
+    <h3>一個副本：三層加一隻 Boss</h3>
+    <div class="grid g3">
+      <div class="card">
+        <div class="who">第 1 層 · 巡邏 · 每人 3 題</div>
+        <p class="say">本週遠征那隻怪，換個樣子出現。</p>
+        <p class="small">小陪和求援隨時可以用，用了照樣算分。這一層是練習，不是證據。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">第 2 層 · 伏擊 · 到期的影子</div>
+        <p class="say">到了再測日期的怪，回來偷襲。</p>
+        <p class="small">沒有提示、不能求援，每個再測窗口只認第一次作答，還要錄一句「為什麼」。結果只記進自己的收服紀錄，不算進全隊分數。</p>
+      </div>
+      <div class="card coral">
+        <div class="who">第 3 層 · Boss 接力 · 每人 1 棒</div>
+        <p class="say">一題多步驟的大題，棒次由系統隨機排。</p>
+        <p class="small">每一棒只看「接到的那一步有沒有做對」。發現上一步不對可以按「這步怪怪的」，每人每場最多兩次。被退回的那一棒改對，照樣算對。</p>
+      </div>
+    </div>
+    <p class="note">國文、英文、社會的 Boss 接力改成長題組：一篇閱讀或一張史料，每人負責一個小題，後面的小題會用到前面的答案。</p>
+
+    <h3>小隊解題率怎麼算</h3>
+    <div class="grid g2" style="align-items:start">
+      <div class="formula">
+        <p class="eq">小隊解題率 ＝ 巡邏與接力答對的題數 ÷ 題數</p>
+        <ul>
+          <li><b>1 分</b><span>答對，不管有沒有問過小陪或求援</span></li>
+          <li><b>0 分</b><span>答錯，或沒有申報缺席卻沒作答</span></li>
+          <li><b>不計</b><span>伏擊層、申報缺席者的配額、24 小時沒接被跳過的那一棒</span></li>
+        </ul>
+        <p class="small">每人配額一樣：巡邏 3 題、接力 1 棒。五人隊的題數就是 20。強的人不能多答，慢的人也不會少算。</p>
+      </div>
+      <div class="tbl-wrap" style="margin:0">
+        <table class="tbl">
+          <thead><tr><th>小隊解題率</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><th class="n">未滿 60%</th><td>撤退，不扣分。24 小時後可以換一套題，重打巡邏和接力一次</td></tr>
+            <tr><th class="n">60% 以上</th><td>過關，一顆星</td></tr>
+            <tr class="hi"><th class="n">75% 以上</th><td>過關，兩顆星，下一個副本往上一條路線</td></tr>
+            <tr><th class="n">90% 以上</th><td>過關，三顆星，需要沒申報缺席的人全員出手</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="worked"><b>例：五人隊。</b>巡邏 15 題答對 12 題，其中 3 題是問過小陪或求援之後答對的，一樣算分。接力 5 棒對 4 棒。合計 16 ÷ 20 ＝ 80%，兩星過關，下一個副本走丘陵線。伏擊層另外叫醒了 2 隻影子，記進個人的收服紀錄，不在這 80% 裡。</p>
+
+    <h3>讓解題率公平、不傷人的九條細節</h3>
+    <ol class="steps">
+      <li><b>隊友畫面不出現名字。</b>凡是跟未完成、答錯、求援有關的地方，隊友看不到是誰，也看不到能推出是誰的人數。副本進行中只顯示「本週副本進行中」，結算才出現全隊的數字。</li>
+      <li><b>求助不扣分。</b>問過小陪或求援之後答對，一樣算 1 分。孩子不需要為了全隊分數硬撐著不問。「有求援」只有嚮導看得到。</li>
+      <li><b>求援不用等人。</b>按下求援，隊友收到的是匿名的「有一位隊友卡在負號幽靈」。30 分鐘沒人回應，自動播放嚮導預錄的 30 秒講解。回應的隊友記一筆「講解」。</li>
+      <li><b>不能互抄。</b>每人拿到同一隻怪的不同變體。每層隨機一題要附一句「為什麼」，用說的也可以。嚮導每週每隊固定抽查 3 段。</li>
+      <li><b>缺席要事先說。</b>本人或家長在副本開門 48 小時內申報，理由不公開，每人每季最多 2 次。申報的人移出題數；沒申報又沒作答，照算 0 分。這條是為了不讓任何人被勸「這週你就別打了」。</li>
+      <li><b>接力不綁人。</b>週六 08:00 開跑、週二 21:30 截止，不設個人倒數。某一棒 24 小時沒接，系統跳到下一棒，那一步由小陪示範，這一棒移出題數。</li>
+      <li><b>撤退不是失敗。</b>未滿 60% 叫撤退，沒有扣分。可以換一套題重打巡邏和接力一次，伏擊層不重打。絆倒全隊最多次的那隻怪，自動送進嚮導的課前一頁。</li>
+      <li><b>難度用第一次過關率校準。</b>目標是七成的隊伍第一次就過關。太多隊伍撤退，代表題太難，不代表孩子不夠努力。</li>
+      <li><b>時間跟著每日上限走。</b>副本週五晚上開、週二 22:00 結算，每人分三次坐下就打完，每次都算在當天三張任務卡裡。22:30 之後不推播、不開門。</li>
+    </ol>
+
+    <div class="phones three" style="margin-top:26px">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:38</span><span>今天 1 / 3</span></div>
+          <span class="t">本週副本 · 數學 · 平原線</span>
+          <h5>多項式林深處，<br>本週副本進行中。</h5>
+          <div class="c">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><div><b>第 1 層 · 巡邏</b><small>負號幽靈 · 你 3 / 3 完成</small></div></div>
+          </div>
+          <div class="c">
+            <div class="row"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>第 2 層 · 伏擊</b><small>1 隻影子到期 · 週一開放</small></div></div>
+          </div>
+          <div class="c">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-cross"/></svg></div><div><b>第 3 層 · Boss 接力</b><small>開跑中 · 你是第 4 棒</small></div></div>
+          </div>
+          <div class="c coral">
+            <b style="font-size:13px">有一位隊友卡在負號幽靈</b>
+            <p class="fine" style="margin-top:4px">你已經過了這層，可以錄 30 秒講給那位隊友聽。</p>
+          </div>
+          <div class="grow"></div>
+          <span class="btn">接下第 4 棒</span>
+          <p class="fine" style="text-align:center">結算之前，不顯示人數與分數。</p>
+        </div></div>
+        <p class="phone-cap"><b>副本路線</b>自己的進度看得到，隊友的只看得到「進行中」。求援是匿名的。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:24</span><span>接力 · 第 4 棒</span></div>
+          <span class="t">Boss 接力 · 多項式林的守衛</span>
+          <h5>第 3 棒交出來了，<br>輪到你。</h5>
+          <div class="c"><span class="fine">化簡</span><p class="mx">(2x + 3)² − (x − 1)(x + 1)</p></div>
+          <div class="relay">
+            <div><span class="no">1</span><span class="who"></span><span class="mx">4x² + 12x + 9</span><span class="st">✓</span></div>
+            <div><span class="no">2</span><span class="who"></span><span class="mx">x² − 1</span><span class="st">✓</span></div>
+            <div class="flag"><span class="no">3</span><span class="who"></span><span class="mx">4x² + 12x + 9 − x² − 1</span><span class="st">?</span></div>
+            <div class="me"><span class="no">4</span><span class="who">你</span><span class="fine">合併同類項</span><span class="st"></span></div>
+            <div><span class="no">5</span><span class="who"></span><span class="fine">檢查並交出答案</span><span class="st"></span></div>
+          </div>
+          <div class="grow"></div>
+          <span class="btn warn">這步怪怪的，退回第 3 棒</span>
+          <span class="btn ghost">沒問題，接著做第 4 棒</span>
+          <p class="fine" style="text-align:center">每人每場最多退回兩次。退回改對，照樣算對。</p>
+        </div></div>
+        <p class="phone-cap"><b>Boss 接力</b>第 3 棒被負號幽靈動了手腳。畫面只寫棒次，不寫是誰跑的。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen" style="background:var(--mastered-bg)">
+          <div class="sb"><span>22:00</span><span></span></div>
+          <span class="t">副本結算 · 多項式林深處</span>
+          <div class="rate"><span class="n num">80%</span><small>小隊解題率</small></div>
+          <div class="stars">★★<span class="off">★</span><small>兩星過關</small></div>
+          <div class="c">
+            <div class="kv"><span>巡邏</span><b>12 / 15</b></div>
+            <div class="kv"><span>Boss 接力（抓到負號幽靈 1 次）</span><b>4 / 5</b></div>
+            <div class="kv"><span>伏擊層叫醒的影子（不計分）</span><b>2 隻</b></div>
+          </div>
+          <div class="c"><b style="font-size:13px">你收服了漏項獸</b><p class="fine" style="margin-top:2px">這一行只有你看得到。</p></div>
+          <div class="c"><div class="kv"><span>下一個副本</span><b>丘陵線</b></div></div>
+          <div class="grow"></div>
+          <span class="btn dark">放上隊伍牆</span>
+          <p class="fine" style="text-align:center">負號幽靈絆倒全隊最多次，已送到林老師的課前一頁。</p>
+        </div></div>
+        <p class="phone-cap"><b>副本結算</b>每一層都寫「得分 / 題數」，家長自己算也對得上。示意畫面、資料為虛構。</p>
+      </div>
+    </div>
+
+    <h3>一季八週的行事曆</h3>
+    <div class="season">
+      <div><span class="w">W1</span><b>開季 · 副本</b><p>從平原線出發。</p></div>
+      <div><span class="w">W2</span><b>副本</b><p>補洞期。</p></div>
+      <div class="pvp"><span class="w">W3</span><b>出題戰</b><p>遠征時出題，當週作答。這週不開副本。</p></div>
+      <div class="pvp"><span class="w">W4</span><b>鏡像賽 · 結業點</b><p>出題戰揭曉，副本多一個對手。</p></div>
+      <div><span class="w">W5</span><b>副本</b><p>跟上學校進度。</p></div>
+      <div class="pvp"><span class="w">W6</span><b>出題戰</b><p>魔王前的模擬戰。這週不開副本。</p></div>
+      <div class="pvp"><span class="w">W7</span><b>鏡像賽</b><p>出題戰揭曉，總複習副本。</p></div>
+      <div class="boss"><span class="w">W8</span><b>魔王戰</b><p>段考週，不開副本、不加量。</p></div>
+    </div>
+    <p class="note">這裡的一週，是從這次遠征到下次遠征。出題戰在遠征時出題、隔幾天作答、下次遠征揭曉，所以 W3 的出題戰剛好在 W4 結業點揭曉。行事曆依每一隊學校實際的段考與模擬考日期倒推，碰到的那一週自動凍結副本。叫醒影子的任務卡不依附副本，沒有副本的週照發。</p>
+
+    <div class="grid g2" style="align-items:start">
+      <div class="callout pine" style="margin-top:18px">
+        <p><b>霍爾：解題率不碰北極星。</b>解題率只算巡邏和接力，給孩子遊戲的節奏感。北極星仍然是驗證過的收服，只在伏擊層和叫醒任務卡產生，而且不進全隊分數。團隊壓力流不進證據，家長看到的收服數字才可信。</p>
+      </div>
+      <div class="callout honey" style="margin-top:18px">
+        <p><b>卡西法：副本很吃題庫。</b>每人要拿不同變體，還要留重打、求援和鏡像賽的題。每隻怪的上線門檻是「隊伍人數 × 6 ＋ 4」題已審變體，六人隊要 40 題。數學用題目引擎可以達標，英文用句型模板，國文和社會要人工出題再乘上教科書版本。所以副本依題庫達標的順序開：數學、英文、社會、國文。還沒達標的大陸先只開任務卡。</p>
+      </div>
+    </div>
+    <div class="callout gov">
+      <p><b>嚮導的時間也有上限。</b>每位嚮導每週每隊的審核不超過 20 分鐘：抽查 3 段「為什麼」、點頭內容團隊先篩過的出題戰題目。超過這個時間，代表流程設計錯了，要改流程，不是要老師加班。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 PvP 小隊對戰 ============ -->
+<section class="ch" id="c6">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no honey">06</div><div><div class="kicker">PvP · 小隊對戰</div><h2>兩種對戰：鏡像賽比解題率，出題戰比誰更懂怪</h2></div></div>
+    <p class="lead">動畫裡最熱血的一幕是兩支隊伍對上。Tandelo 可以有，條件是<b>對戰的單位永遠是小隊，比的是解題率和出題，不是誰算得快</b>。一季四場，全部排在原本的節奏裡，不另外加量。</p>
+
+    <div class="callout">
+      <p><b>蕪菁頭先把數據擺出來。</b>國中生有 38.9% 怕因成績被看不起、42% 怕說錯話被截圖、19.2% 重度學習疲勞。這些數字反對的不是競爭，是「個人被看見輸」。所以規則只有一個方向：讓孩子被看見的是隊伍，隊伍被看見的是出的題有多好，而不是誰拖累了誰。</p>
+    </div>
+
+    <h3>兩種對戰</h3>
+    <div class="grid g2">
+      <div class="card honey">
+        <div class="who">鏡像賽 · 比小隊解題率</div>
+        <p class="say">兩隊打同一組題，看誰的解題率高。</p>
+        <p class="small">只比兩隊共同卡點的巡邏層，加一題共用的 Boss 接力。平手就記平手，永遠不看速度。鏡像賽就是當週的副本多了一個對手。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">出題戰 · 比誰更懂怪</div>
+        <p class="say">兩隊互相出題，只出雙方都遠征過的怪。</p>
+        <p class="small">系統取兩隊遠征過的怪的交集，不足三隻就改打幽靈隊。要先懂一隻怪怎麼騙人，才出得了好題。</p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card soft"><div class="who">配對</div><p class="say">同科、同路線、同年級、同教科書版本、不同嚮導。</p><p class="small">也參考近三個副本的解題率，避免有隊伍故意停在淺路線挑對手。配對池不夠時自動配幽靈隊，不告訴孩子原因。</p></div>
+      <div class="card soft"><div class="who">開關</div><p class="say">匿名投票，全隊同意才打真人對戰。</p><p class="small">只要有一票不同意，畫面只顯示「本季打幽靈隊」，沒有人知道是誰投的。幽靈隊是同路線隊伍的歷史平均；出題戰時由題庫的經典陷阱題代打。</p></div>
+      <div class="card soft"><div class="who">勝負的意義</div><p class="say">勝場換一枚隊旗徽記。</p><p class="small">純外觀，掛在隊伍牆上。不影響路線、不上任何榜、沒有連勝紀錄。</p></div>
+    </div>
+
+    <h3>出題戰怎麼打</h3>
+    <ol class="steps">
+      <li><b>配對：照上面的規則，系統配好兩支隊伍。</b>出題戰和鏡像賽用同一套配對，一季內不會重複遇到同一隊。<span class="was">對應：<b>依卡點與段考日期湊隊</b>的同一套配對邏輯</span></li>
+      <li><b>出題：從雙方都遠征過的怪裡挑三隻，每隻出一題。</b>全隊在遠征的合擊那一幕討論，書記寫下。題目先經內容團隊篩過，嚮導最後點頭。國英社用「陷阱模板」出題：選一隻怪、選牠的陷阱、填入句子或數字，系統先驗證格式。<span class="was">對應：<b>講給隊友聽</b>的進階版，出題是最深的學會</span></li>
+      <li><b>作答：每人先交一個候選答案，全隊用票數決定。</b>隊內只有候選答案和三句固定句：「同意」「我算出不同」「我不確定這一步」，沒有文字框。全員看過或時間到就自動交出，不列誰還沒看。遠征後三天內完成，算在當天任務卡裡。逾期未答算棄權，對方不拿出題分。<span class="was">對應：<b>每日任務卡</b>與每天上限三張</span></li>
+      <li><b>結果：下一次遠征的整隊那一幕揭曉。</b>嚮導帶大家看對方出的題是哪隻怪、我們為什麼中招。出題分由第三位嚮導或內容團隊判定，兩隊的嚮導都不判自己隊的題。對戰報告只有兩隊和兩位嚮導看得到。<span class="was">對應：<b>整隊 5 分鐘</b>與嚮導的課前一頁</span></li>
+    </ol>
+
+    <h3>出題戰的六分制</h3>
+    <div class="grid g3">
+      <div class="card honey">
+        <div class="who">答題分 · 三題</div>
+        <p class="say">隊伍的答案答對一題得一分。</p>
+        <p class="small">只有一個隊伍答案，所以只有隊伍得分。沒有人「害全隊輸」。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">出題分 · 三題</div>
+        <p class="say">對方答錯，而且判定這題確實在考那隻怪，得一分。</p>
+        <p class="small">出一題只是難、不是在考那隻怪的，不算。這條讓孩子把力氣花在「怎麼騙人」而不是「怎麼刁難」。</p>
+      </div>
+      <div class="card soft">
+        <div class="who">好題印記 · 不計分</div>
+        <p class="say">對方可以按「這題出得好」。</p>
+        <p class="small">出題的隊伍收到一枚「好題」印記，掛在隊伍牆上。不算進分數，所以不會被兩隊互按。</p>
+      </div>
+    </div>
+    <p class="note">六分制，出題和作答各三分，平手記平手。贏的隊伍在對戰報告上多一行「勝」，沒有積分榜、沒有連勝紀錄、沒有跨隊伍的排名。隊伍的戰績頁只列自己打過的每一場。</p>
+
+    <h3>一季四場，排在原本的節奏裡</h3>
+    <div class="grid g4">
+      <div class="card"><div class="who">第 3 週 · 出題戰</div><p class="say">補洞期打完，互相出題。</p><p class="small">W4 遠征揭曉，和結業點的「續走或先停」一起看。</p></div>
+      <div class="card"><div class="who">第 4 週 · 鏡像賽</div><p class="say">當週副本多一個對手。</p><p class="small">看前三週收服的怪站不站得住。</p></div>
+      <div class="card"><div class="who">第 6 週 · 出題戰</div><p class="say">魔王前的模擬戰。</p><p class="small">題目對準段考範圍，W7 遠征揭曉。</p></div>
+      <div class="card"><div class="who">第 7 週 · 鏡像賽</div><p class="say">段考前的總複習副本。</p><p class="small">配對避開第 4 週打過的隊伍。第 8 週段考週不加量。</p></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:22px;align-items:start">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:43</span><span>今天 2 / 3</span></div>
+          <span class="t">出題戰 · 第 3 週 · 數學</span>
+          <h5>星期三小隊出了三題，<br>我們一起答。</h5>
+          <div class="c">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-drop"/></svg></div><div><b>第 2 題 · 分解洞窟</b><small>對方拿平方差雙子出題</small></div></div>
+            <p class="mx" style="margin-top:8px">9x² − 4 = ?</p>
+          </div>
+          <div class="c mint">
+            <b style="font-size:13px">隊伍的候選答案</b>
+            <div class="kv" style="margin-top:6px"><span class="mx" style="color:var(--text)">(3x + 2)(3x − 2)</span><b>3 票</b></div>
+            <div class="kv"><span class="mx" style="color:var(--text)">(9x − 2)(x + 2)</span><b>1 票</b></div>
+            <p class="fine" style="margin-top:6px">同意 · 我算出不同 · 我不確定這一步</p>
+          </div>
+          <div class="grow"></div>
+          <span class="btn">投給這個答案</span>
+          <p class="fine" style="text-align:center">全員看過或時間到，就自動交出票數最多的答案。下次遠征揭曉。</p>
+        </div></div>
+        <p class="phone-cap"><b>出題戰作答</b>隊內只有候選答案和三句固定句，沒有文字框，也不列誰還沒看。示意畫面、資料為虛構。</p>
+      </div>
+      <div>
+        <div class="callout pine" style="margin-top:0">
+          <p><b>判讀：為什麼是出題戰，不是搶答戰。</b>搶答比的是速度，速度會把最慢的那個孩子曝光。出題比的是理解：要出一題能騙到人的題，得先想清楚那隻怪在哪一步騙人，這和北極星是同一個方向。</p>
+          <p>對戰的作答算在每日任務卡裡，不另外加量。對戰週的練習天數如果反而掉下來，就是設計錯了，第 12 章有這條驗證。</p>
+        </div>
+        <div class="callout gov">
+          <p><b>沙利曼：對戰多出三條線。</b>一、跨隊的互動只有題目和「這題出得好」，題目一律經內容團隊與嚮導審過；隊內只有候選答案和固定句。二、對戰報告不離開兩隊和兩位嚮導，公會牆只會出現「四葉小隊打了一場對戰」，不出現勝負，不出現對手。三、真人對戰用匿名投票決定，13 歲以下另需家長在 LINE 端同意。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 公會與徽章 ============ -->
+<section class="ch" id="c7">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">07</div><div><div class="kicker">公會與徽章</div><h2>每月一枚拿得到手的徽章，全公會一起拚</h2></div></div>
+    <p class="lead">小隊八週就解散，公會不會。這一章設計兩件事：<b>用戰績解鎖的公會獎勵</b>，以及<b>每月一次的徽章公開賽</b>，達標的小隊每人拿到一枚真的徽章吊飾。戰績怎麼拿來排名、搶燈塔，寫在第 08 章。</p>
+
+    <h3>公會是誰</h3>
+    <div class="grid g3">
+      <div class="card"><div class="who">真人公會</div><p class="say">一位嚮導名下的所有小隊。</p><p class="small">嚮導是公會長。公會跨季存在，續走的理由從「再報一期」變成「我還在這個公會」。</p></div>
+      <div class="card"><div class="who">AI 公會</div><p class="say">國英社的 AI 小隊，依大陸和年級組成。</p><p class="small">公會長是真人巡查員，每週在公會牆留一則語音。做法寫在 AI 陪跑設計稿。</p></div>
+      <div class="card"><div class="who">公會牆</div><p class="say">只放值得慶祝的事。</p><p class="small">收服次數、徽章、好題印記、「打了一場對戰」。不放分數、不放勝負、不放誰還沒完成。</p></div>
+    </div>
+
+    <h3>戰績：只從學會來，累積不會花掉</h3>
+    <div class="grid g2" style="align-items:start">
+      <div class="formula">
+        <p class="eq">戰績只從驗證過的學會事件來</p>
+        <ul>
+          <li><b>10 點</b><span>收服一隻怪</span></li>
+          <li><b>5 點</b><span>叫醒一隻睡著的影子</span></li>
+          <li><b>3 點</b><span>講解被嚮導抽查合格</span></li>
+          <li><b>5–12 點</b><span>副本過關，一到三星，全隊一份</span></li>
+        </ul>
+        <p class="small">不從登入、練習量、連續天數、付費、儲值或對戰勝負來。戰績的上限就是每天三張任務卡，熬夜刷不上去。個人戰績只有自己和家長看得到，小隊和公會看到的是加總與人均。數字為提案，試點再調。</p>
+      </div>
+      <div class="tbl-wrap" style="margin:0">
+        <table class="tbl">
+          <thead><tr><th>解鎖什麼</th><th>誰的戰績</th><th>門檻</th></tr></thead>
+          <tbody>
+            <tr><th>隊旗圖樣、地圖配色、影子外框</th><td>小隊累積，解鎖後全隊投票選用</td><td class="n">100–200</td></tr>
+            <tr><th>隊伍牆的季末合照框</th><td>小隊累積</td><td class="n">300</td></tr>
+            <tr class="hi"><th>魔王攻略會：段考前嚮導加開 30 分鐘直播答疑</th><td>公會人均</td><td class="n">60</td></tr>
+            <tr><th>實體徽章吊飾</th><td>不能用戰績換，只能在公開賽拿到</td><td class="n">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note">戰績用「累積到門檻就解鎖」，不用「花掉換東西」，所以解鎖獎勵不會讓排名往下掉。公會共享的獎勵是一場真人的課，這是故意的：最好的獎品是有人願意為你們多花時間，而且全公會的孩子一起受益。</p>
+    <div class="callout">
+      <p><b>蘇菲：為什麼戰績不能換實體。</b>戰績一旦能換東西寄到家，就會變成「刷戰績換獎品」，家長也可能幫忙刷。實體獎品只綁在公開賽，數量控制得住、條件查得到，每一枚都對得上一次真的學會。</p>
+    </div>
+
+    <h3>每月徽章公開賽</h3>
+    <p class="prose" style="margin-bottom:16px">每個月一枚主題徽章，對應當月的「月之魔王」。所有小隊都能報名，真人小隊和 AI 小隊一起打。一學年十枚，湊成一本徽章冊。</p>
+    <div class="grid g4">
+      <div class="card"><div class="who">什麼時候</div><p class="say">每月最後一個週六 09:00 到週日 20:00。</p><p class="small">避開各校段考週。週末白天打，不佔平日的任務卡，22:30 關燈照舊。</p></div>
+      <div class="card"><div class="who">打什麼</div><p class="say">一個特別副本：試煉副本。</p><p class="small">當月主題大陸的怪。題目由 AI 生成、內容團隊全部人審，每人不同變體，用過一次就退休。</p></div>
+      <div class="card honey"><div class="who">怎麼贏</div><p class="say">解題率 80% 以上，而且沒申報缺席的人全員出手。</p><p class="small">達到就贏，每位隊員各得一枚實體徽章吊飾。不是只有前幾名。</p></div>
+      <div class="card"><div class="who">公開什麼</div><p class="say">本月徽章牆，列出所有拿到徽章的隊名。</p><p class="small">隨機排序、不排名次、不寫分數。小隊也可以選擇不上牆。</p></div>
+    </div>
+
+    <h3>兩種贏法並排</h3>
+    <div class="tbl-wrap">
+      <table class="tbl cards">
+        <thead><tr><th></th><th>達標制（建議）</th><th>名額制</th></tr></thead>
+        <tbody>
+          <tr><th>誰拿到徽章</th><td data-l="達標制">所有達到門檻的小隊</td><td data-l="名額制">解題率前幾名的小隊</td></tr>
+          <tr><th>熱血感</th><td data-l="達標制">大家一起跟魔王打，每一隊都有機會</td><td data-l="名額制">最高，有真正的冠軍</td></tr>
+          <tr><th>對落後的隊伍</th><td data-l="達標制">看得到自己拿得到，會想再拚一次</td><td data-l="名額制">很快放棄，公開賽變成排行榜</td></tr>
+          <tr><th>代答的誘因</th><td data-l="達標制">有，靠複核擋</td><td data-l="名額制">很高，名次越前越值得代答</td></tr>
+          <tr><th>成本</th><td data-l="達標制">隨達標人數變動，用門檻控制</td><td data-l="名額制">固定</td></tr>
+          <tr class="hi"><th>和產品原則</th><td data-l="達標制">符合「不比較」</td><td data-l="名額制">違反「不做排行」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose small" style="margin-top:14px">想要冠軍的熱血感，但不變成排名，用這兩個加碼：</p>
+    <div class="grid g2" style="margin-top:10px">
+      <div class="card honey"><div class="who">全服目標</div><p class="say">所有參賽隊伍的收服次數加總，達到當月目標，全體達標者的徽章升級成金邊版。</p><p class="small">全平台一起推一條進度條，贏的是大家。</p></div>
+      <div class="card honey"><div class="who">出題賞</div><p class="say">每月從全平台的出題戰選出三題好題，收進下個月的試煉副本。</p><p class="small">出題的小隊得到一枚「出題者」徽章。被表揚的是題目的品質，不是分數。</p></div>
+    </div>
+
+    <h3>送出真的獎品之前，要先想好的四件事</h3>
+    <ol class="steps">
+      <li><b>擋代答。</b>試煉每人不同變體；每人隨機兩題要錄一句「為什麼」，AI 初篩、真人抽審。試煉成績明顯高於孩子近期的紀錄時，發徽章前由嚮導或巡查員複核。家長報名時勾選「由孩子本人作答」。</li>
+      <li><b>寄送與個資。</b>寄給家長，不寄給孩子。收件資料由家長在 LINE 端填寫，只用在寄送，寄出後 30 天刪除。不蒐集孩子本人的地址或電話。</li>
+      <li><b>控成本。</b>吊飾單價約 NT$30–80，含包材與寄送約 NT$100。以 500 個付費家庭、參賽率六成、達標率五成推估，每月約 150 枚、NT$1.5 萬，約等於每個付費家庭每月 NT$30。改成每季寄一次、三枚一起寄，運費還能再降；數位徽章當下就發。</li>
+      <li><b>法規先對齊。</b>得獎只看門檻與實力，不摻抽籤或機率，就不落入公平會「贈獎」的射倖定義；徽章也不綁付費，避免被當成附隨於付費服務的贈品。收件人資料依個資法第 8 條告知，13 到 15 歲屬限制行為能力人，由家長同意；個資法 2025 年 11 月公布修正，施行日待行政院另定，個資事故通報義務要先準備好。對家長不宣稱徽章對升學有幫助：國中沒有學習歷程檔案，基北區免試入學也不採計競賽。這幾條是城堡自行查證的摘要，正式上線前要請法務對照原文確認。</li>
+    </ol>
+    <div class="callout gov">
+      <p><b>沙利曼：實體獎品多出三條線。</b>一、公開賽不得有任何機率成分，戰績也不能用錢買，否則會碰到《網路連線遊戲服務定型化契約》的機率型商品揭露與兒少分級規定。二、《人工智慧基本法》已於 2026-01-14 施行，兒少最佳利益是原則，試煉副本由 AI 生成的題目要標示、要有真人審。三、徽章牆與分享卡上永遠是隊名和頭像色塊，沒有孩子的臉、真名、學校與地區。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 世界地圖 ============ -->
+<section class="ch" id="c8">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">08</div><div><div class="kicker">世界地圖、戰績與燈塔</div><h2>四片大陸，每區一座燈塔，拓荒的隊伍把旗插上去</h2></div></div>
+    <p class="lead">世界是這樣疊起來的：<b>一科一片大陸，一章一個區域，一個卡點一隻怪，一個區域一座燈塔</b>。拓荒累積戰績，戰績決定榜上的位置，也決定誰能把隊旗插上燈塔。地圖是幻想的，聯賽的分區才用真實的地理。</p>
+
+    <h3>地圖要用什麼地理：三種做法並排</h3>
+    <div class="tbl-wrap">
+      <table class="tbl cards">
+        <thead><tr><th></th><th>真實地域（台北市各區）</th><th>東西南北抽象分區</th><th>幻想大陸（建議）</th></tr></thead>
+        <tbody>
+          <tr><th>認同感</th><td data-l="真實地域">最強，孩子認得大安、士林</td><td data-l="東西南北">弱，四個方位沒有故事</td><td data-l="幻想大陸">中到強，靠怪與區域的命名累積</td></tr>
+          <tr><th>和學習內容的關係</th><td data-l="真實地域">沒有，章節塞進行政區是硬湊</td><td data-l="東西南北">沒有</td><td data-l="幻想大陸">區域就是章節，怪就是卡點，拓荒就是學會</td></tr>
+          <tr><th>兒少安全</th><td data-l="真實地域">守塔隊掛在真實區名上，等於公開孩子住哪、讀哪</td><td data-l="東西南北">安全</td><td data-l="幻想大陸">安全</td></tr>
+          <tr><th>公平</th><td data-l="真實地域">明星學區一定壓過其他區，地圖變成社經排名</td><td data-l="東西南北">公平</td><td data-l="幻想大陸">公平，區域只看課程</td></tr>
+          <tr><th>擴張</th><td data-l="真實地域">換一個縣市就要重畫，出國就作廢</td><td data-l="東西南北">可擴張但無感</td><td data-l="幻想大陸">全台、全世界同一張地圖</td></tr>
+          <tr class="hi"><th>怎麼用</th><td data-l="真實地域">只用來分聯賽區：北、中、南、東，對應各校段考時程與教科書版本</td><td data-l="東西南北">就是台灣的北中南東</td><td data-l="幻想大陸">主地圖</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout pine">
+      <p><b>判讀：兩個都要，但放在不同層。</b>地圖用幻想大陸，因為區域要對到章節，拓荒才等於學會。真實地理只用在聯賽分區：北、中、南、東四區，剛好就是你說的東西南北，而且對到規劃書「一縣市、一版本、兩時段測密度」的成班邏輯。孩子會說「我們是北區的四葉小隊，守著根號谷的燈塔」，兩種認同都有，卻不會暴露住在哪一區。</p>
+    </div>
+
+    <h3>世界地圖示意</h3>
+    <div class="worldmap"><svg viewBox="0 0 960 560" role="img" aria-label="Tandelo 世界地圖示意：四片大陸環繞內海，每個區域一座燈塔">
+  <rect class="sea" x="0" y="0" width="960" height="560" rx="18"/>
+  <path class="wave" d="M430 300q14-8 28 0t28 0M450 330q14-8 28 0t28 0M470 270q14-8 28 0t28 0M120 520q14-8 28 0t28 0M700 40q14-8 28 0t28 0"/>
+  <!-- 數理大陸 -->
+  <path class="land" d="M70 150c30-60 120-90 190-70s110 60 150 120c30 45 20 110-20 150s-90 50-150 60-120-10-150-60S40 210 70 150z"/>
+  <text class="cn" x="92" y="120">數理大陸</text><text class="cs" x="92" y="138">數學 · 六區</text>
+  <use href="#tower" class="tw t-coral" x="150" y="175" width="22" height="30"/><text class="rl" x="161" y="225">乘法平原</text>
+  <use href="#tower" class="tw t-sky" x="255" y="150" width="22" height="30"/><text class="rl" x="266" y="200">多項式林</text>
+  <use href="#tower" class="tw t-honey" x="340" y="215" width="22" height="30"/><text class="rl" x="351" y="265">根號谷</text>
+  <use href="#tower" class="tw t-none" x="130" y="300" width="22" height="30"/><text class="rl" x="141" y="350">畢氏山</text>
+  <use href="#tower" class="tw t-none" x="240" y="330" width="22" height="30"/><text class="rl" x="251" y="380">分解洞窟</text>
+  <ellipse class="fogm" cx="330" cy="350" rx="58" ry="34"/><text class="fogq" x="330" y="355">?</text><text class="rl fogt" x="330" y="405">二次高原</text>
+  <!-- 西風港 -->
+  <path class="land" d="M480 60c60-30 150-30 220 0s90 80 60 120-100 50-170 40-120-20-140-60 0-80 30-100z"/>
+  <text class="cn" x="500" y="52">西風港</text><text class="cs" x="500" y="70">英文</text>
+  <use href="#tower" class="tw t-sky" x="540" y="95" width="22" height="30"/><text class="rl" x="551" y="145">時態海灣</text>
+  <use href="#tower" class="tw t-none" x="640" y="120" width="22" height="30"/><text class="rl" x="651" y="170">單複數礁</text>
+  <ellipse class="fogm" cx="720" cy="120" rx="46" ry="28"/><text class="fogq" x="720" y="125">?</text><text class="rl fogt" x="720" y="168">介係詞燈塔</text>
+  <!-- 時光古道 -->
+  <path class="land" d="M790 190c40-20 100-10 120 30s10 90-30 110-90 10-110-30-20-90 20-110z"/>
+  <text class="cn" x="792" y="182">時光古道</text><text class="cs" x="792" y="200">社會</text>
+  <ellipse class="fogm" cx="840" cy="250" rx="50" ry="30"/><text class="fogq" x="840" y="255">?</text><text class="rl fogt" x="840" y="300">年代峽谷</text>
+  <use href="#tower" class="tw t-none" x="870" y="300" width="22" height="30"/>
+  <!-- 字林 -->
+  <path class="land" d="M540 330c50-40 150-40 230-10s110 80 80 130-110 70-190 60-140-30-160-80 0-70 40-100z"/>
+  <text class="cn" x="562" y="322">字林</text><text class="cs" x="562" y="340">國文</text>
+  <use href="#tower" class="tw t-none" x="600" y="360" width="22" height="30"/><text class="rl" x="611" y="410">音近字妖窟</text>
+  <ellipse class="fogm" cx="720" cy="420" rx="56" ry="32"/><text class="fogq" x="720" y="425">?</text><text class="rl fogt" x="720" y="472">之乎迷霧</text>
+  <ellipse class="fogm" cx="810" cy="370" rx="44" ry="26"/><text class="fogq" x="810" y="375">?</text><text class="rl fogt" x="810" y="414">修辭林</text>
+  <!-- 內海與航線 -->
+  <text class="cs" x="430" y="392" style="font-size:12px">內海 · 四片大陸的中間</text>
+</svg></div>
+    <div class="maplegend"><span><i class="c"></i>我們小隊守塔</span><span><i class="s"></i>其他小隊守塔</span><span><i class="h"></i>燈已點亮、無守塔隊</span><span><i class="n"></i>燈未點亮</span><span><i class="f"></i>迷霧，還沒偵察</span></div>
+    <p class="note">區域名稱為提案。國文、英文、社會的區域數量會依各版本的單元數決定，示意圖只畫了前幾區。</p>
+
+    <h3>戰績與三個榜</h3>
+    <p class="prose" style="margin-bottom:16px">戰績的來源寫在第 07 章：只從驗證過的收服、叫醒、講解和副本過關來，每天有上限。你要的「累積越多排名越靠前」在這裡，但排的是隊伍，個人榜由孩子自己決定要不要上。</p>
+    <div class="grid g3">
+      <div class="card honey">
+        <div class="who">隊伍榜 · 公開</div>
+        <p class="say">同聯賽區、同科、同路線的小隊，依本季戰績排。</p>
+        <p class="small">畫面只顯示自己前後各三隊，不顯示第幾名，也不顯示總隊數。季末重置，新隊伍下一季就能追上。</p>
+      </div>
+      <div class="card honey">
+        <div class="who">公會榜 · 公開</div>
+        <p class="say">同聯賽區的公會，依人均戰績排。</p>
+        <p class="small">用人均不用總和，小公會不吃虧。公會長的名字可以上榜，這是給老師的舞台。</p>
+      </div>
+      <div class="card soft">
+        <div class="who">個人拓荒榜 · 自己選</div>
+        <p class="say">預設關，孩子自己打開才會出現在公會內的榜上。</p>
+        <p class="small">上榜的只有稱號和隊名，例如「本月拓荒者 · 四葉小隊」。自己看得到自己在同路線裡的百分位，別人看不到。</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><b>蕪菁頭：排行榜對前 20% 的孩子有用，對其他人是反效果。</b>這是遊戲化研究裡最穩定的一個發現：公開排名會推動已經領先的人，但讓中後段的人放棄。所以隊伍榜只顯示「前後各三隊」，讓每一隊都看得到下一個目標；個人榜交給孩子自己開，因為敢上榜的人本來就是被排名推動的那群。</p>
+    </div>
+
+    <h3>燈塔：一種合作、一種爭奪</h3>
+    <div class="grid g2">
+      <div class="card mint">
+        <div class="who">點燈 · 全服合作</div>
+        <p class="say">同一區所有小隊的戰績加總，達到門檻就把燈點亮。</p>
+        <p class="small">點亮後，這一區的迷霧對所有人散開，怪的圖鑑和陷阱說明全部解鎖。這是拓荒的第一步，人人有份。</p>
+      </div>
+      <div class="card coral">
+        <div class="who">守塔 · 同路線爭奪</div>
+        <p class="say">每座塔有四層，一層對應一條路線。每月 1 日結算，該區當月戰績最高的小隊成為那一層的守塔隊。</p>
+        <p class="small">平原線的隊伍只跟平原線的隊伍爭，新手也守得到塔。並列就一起守。</p>
+      </div>
+    </div>
+    <h4>守塔的三條規則</h4>
+    <ol class="steps">
+      <li><b>守塔沒有義務，塔也不會被偷。</b>不衰減、不用防守、不用每天上線巡。下個月結算時換人，上個月的隊名刻進「歷代守塔隊」名冊，永遠留著。</li>
+      <li><b>守塔的特權是幫別人。</b>守塔隊選一句「這區的怪要注意什麼」，刻在塔上，全聯賽區在這一區打副本都看得到。塔上還掛守塔隊的隊旗，分享卡可以帶上「守塔隊」的印記。</li>
+      <li><b>戰績有每日上限，所以塔搶不出熬夜。</b>每人每天最多三張任務卡，一支五人隊一個月的戰績上限是固定的。搶塔比的是全隊每週三天以上都有出手，不是誰刷得兇。</li>
+    </ol>
+
+    <div class="grid g2" style="margin-top:22px;align-items:start">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:36</span><span>北區 · 數學</span></div>
+          <span class="t">根號谷 · 燈塔</span>
+          <h5>燈亮著，<br>四葉小隊守著平原線這一層。</h5>
+          <div class="c honey">
+            <div class="kv"><span>點燈進度 · 全北區</span><b>3,240 / 3,000</b></div>
+            <div class="bar gold"><i style="width:100%"></i></div>
+            <p class="fine" style="margin-top:6px">已點亮。這一區的圖鑑對所有人開放。</p>
+          </div>
+          <div class="c">
+            <b style="font-size:13px">塔上的話 · 四葉小隊</b>
+            <p class="fine" style="margin-top:4px">「根號裡面要先算完，拆根蟲最愛騙你先開根號。」</p>
+          </div>
+          <div class="c">
+            <b style="font-size:13px">本月爭奪 · 平原線層 · 到 10/31</b>
+            <div class="rank" style="margin-top:8px">
+              <div><span class="p">↑</span><span class="dot" style="background:var(--av-4)"></span><span>星期三小隊</span><b>412</b></div>
+              <div class="mine"><span class="p">·</span><span class="dot" style="background:var(--av-2)"></span><span>四葉小隊</span><b>396</b></div>
+              <div><span class="p">↓</span><span class="dot" style="background:var(--av-5)"></span><span>夜行小隊</span><b>371</b></div>
+            </div>
+            <p class="fine" style="margin-top:6px">只顯示你前後各三隊，不顯示名次。</p>
+          </div>
+          <div class="grow"></div>
+          <span class="btn ghost">看歷代守塔隊</span>
+        </div></div>
+        <p class="phone-cap"><b>燈塔頁</b>點燈是全區的，守塔是同路線的，榜只看前後。示意畫面、資料為虛構。</p>
+      </div>
+      <div>
+        <div class="callout honey" style="margin-top:0">
+          <p><b>誠實說：領土型玩法的兩個已知坑。</b>第一是「要一直守」，Pokémon GO 的道館讓人每天巡，這裡用月結算和不衰減避開。第二是「強隊永遠佔著」，這裡用四層塔、同路線爭奪，和季末重置避開。還有一個要在試點觀察的：塔被別隊拿走那一天，孩子會不會難過到不想打。所以名冊是永久的，被換掉的隊仍然刻在塔上。</p>
+        </div>
+        <div class="callout gov">
+          <p><b>沙利曼：地圖上不能出現真實地點。</b>聯賽區只到北、中、南、東四個字，不到縣市，更不到學校。守塔隊、榜、塔上的話都只掛隊名與頭像色塊。孩子自己開個人榜要在 App 內確認一次，13 歲以下需家長在 LINE 端同意。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 故事 ============ -->
+<section class="ch" id="c9">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no honey">09</div><div><div class="kicker">故事與敘事</div><h2>故事長在教學裡：怪的騙術就是誤解，識破牠就是學會</h2></div></div>
+    <p class="lead">敘事是第四個引擎。前面三個是關卡、隊伍、地圖，它們回答「做什麼」，故事回答<b>「為什麼要往前走」</b>。原則只有一條：故事不貼在教學外面，故事就是教學的形狀。怪的傳說是誤解的成因，怪的台詞是錯的推理，識破牠的那一刻就是概念變對的那一刻。</p>
+
+    <div class="callout honey">
+      <p><b>誠實說：故事有一種會害學習。</b>學習科學裡有一條很穩的發現：和內容無關的趣味細節會拉低理解，因為它搶走注意力。所以這一章的每一個故事元素都要通過同一個檢查：拿掉它，孩子會不會少學到一件事。拿掉沒差的，就不放。</p>
+    </div>
+
+    <h3>世界的前提：迷霧、怪與燈塔</h3>
+    <p class="prose">內海升起迷霧，蓋住四片大陸的路線，燈塔一座一座熄了。怪不是壞蛋，是從迷霧裡長出來的<b>錯誤的化身</b>：每一隻怪都有一套騙術，讓路過的人在某一步走錯。冒險小隊的工作是拓荒：識破怪的騙術，把牠收服成影子，燈就亮一格。魔王不是怪，是季末那一場考驗，證明這一季走過的路真的走通了。</p>
+    <p class="note">這個前提刻意把「錯」寫成外面的東西。孩子不是笨，是被騙了；學會不是變聰明，是識破。這和「珊瑚色不代表錯」是同一個立場。</p>
+
+    <h3>怪的傳說卡：一隻怪有五個欄位，每一個都是教學</h3>
+    <div class="grid g2">
+      <div class="lore">
+        <div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div>
+        <div>
+          <h4>負號幽靈</h4>
+          <span class="tag pos">多項式林</span>
+          <dl>
+            <dt>出身</dt><dd>住在括號前面。很多人第一次學減法時，只把負號給了第一個數，牠就從那個習慣裡長出來。</dd>
+            <dt>騙術</dt><dd>讓你以為負號只碰括號裡的第一項，後面的都放過。</dd>
+            <dt>口頭禪</dt><dd><q>第一個歸我，後面的我不管。</q>孩子一聽到這句，就知道自己剛剛在想什麼。</dd>
+            <dt>弱點</dt><dd><q class="ok">負號要發給括號裡每一個人。</q>這句就是影子站在你身後時說的話。</dd>
+            <dt>被識破時</dt><dd>牠會嘟囔<q>連第三項都被你看到了</q>，然後變成影子。</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="lore">
+        <div class="mon"><svg aria-hidden="true"><use href="#m-tri"/></svg></div>
+        <div>
+          <h4>斜邊迷霧</h4>
+          <span class="tag pos">畢氏山</span>
+          <dl>
+            <dt>出身</dt><dd>課本裡的直角三角形總是直角在左下、斜邊在右上。牠就躲在那個習慣裡，只要三角形一轉，你就認錯邊。</dd>
+            <dt>騙術</dt><dd>把三角形轉個方向，讓你把最長的邊當成股。</dd>
+            <dt>口頭禪</dt><dd><q>右上那條就是斜邊，看都不用看。</q></dd>
+            <dt>弱點</dt><dd><q class="ok">斜邊永遠對著直角，先找直角再找斜邊。</q></dd>
+            <dt>被識破時</dt><dd><q>你居然先找直角。</q></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <p class="note">五個欄位裡，出身是誤解的成因，騙術是誤解本身，口頭禪是錯的推理說出口，弱點是正確概念，被識破時是回饋。這張卡由學科老師寫，AI 只幫忙潤稿，因為口頭禪寫錯就等於教錯。</p>
+
+    <h3>怪會說話：答錯不叫答錯，叫被騙到</h3>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="taunt"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>負號幽靈</b>：你看，只有第一項變號。我就說後面的我不管。</p></div>
+        <p class="small" style="margin-top:10px">孩子犯了這隻怪的特定錯法時，出現的不是紅色的「錯」，是怪的一句台詞。台詞把錯的推理講出來，孩子當場聽見自己剛才的想法。這是回饋，也是這個世界最常出現的娛樂。</p>
+      </div>
+      <div>
+        <div class="taunt" style="background:var(--learned-bg)"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>影子 · 負號幽靈</b>：負號要發給每一個人。這句是你教我的。</p></div>
+        <p class="small" style="margin-top:10px">收服之後，影子站在身後，偶爾說一句弱點。孩子收集的不是怪，是一句一句自己識破過的規則。影子牆同時是知識卡牆。</p>
+      </div>
+    </div>
+
+    <h3>一季一章：主線用嚮導的信推進</h3>
+    <div class="grid g4">
+      <div class="card"><div class="who">第 1 到 2 週 · 啟程</div><p class="say">燈塔熄了，小隊出發。</p><p class="small">開季診斷變成「偵察報告」：你們這隊被哪三隻怪打倒過。第一封信介紹這三隻怪的傳說。</p></div>
+      <div class="card"><div class="who">第 3 到 4 週 · 遭遇</div><p class="say">第一支對手隊伍出現，中途營地。</p><p class="small">出題戰的信寫成「對面的小隊也在追同一隻怪」。結業點的信是：走到這裡，可以停，也可以續。</p></div>
+      <div class="card"><div class="who">第 5 到 7 週 · 深入</div><p class="say">迷霧最深的一區，魔王的影子出現。</p><p class="small">信裡開始預告魔王：牠會用你們這季遇過的所有怪的騙術。這就是段考範圍的敘事版。</p></div>
+      <div class="card honey"><div class="who">第 8 週 · 魔王戰與歸來</div><p class="say">段考之後，回到營地攤開日誌。</p><p class="small">戰報寫成「這一季你們識破了哪幾隻怪」。季末 AI 把隊伍日誌串成一頁故事，家長也看得懂。</p></div>
+    </div>
+    <p class="note">主線一季八封信，由嚮導的聲音講，每封 60 秒以內，遠征前播、任務卡裡可重聽。純 AI 與巡查模式由巡查員或小陪讀。信由內容團隊寫、AI 起草，一季一次，成本很低。</p>
+
+    <h3>遠征六幕是劇本：嚮導的課前一頁多一欄台詞</h3>
+    <div class="beats">
+      <div><b>整隊</b><div class="line">「上週的拆根蟲，還有人記得牠的口頭禪嗎？」</div><p>用怪的台詞回顧，不用「複習」兩個字。</p></div>
+      <div><b>偵察弱點</b><div class="line">「今天的怪是負號幽靈。牠說：第一個歸我，後面的我不管。牠在騙什麼？」</div><p>老師唸口頭禪，讓學生找騙術。這一幕是全堂最好玩的。</p></div>
+      <div><b>各自出手</b><div class="line">「每個人打一次，被騙到沒關係，偵察就是這樣。」</div><p>錯法回來會變成怪的台詞。</p></div>
+      <div><b>嚮導示範一擊</b><div class="line">「我只示範牠最會騙的那一步。」</div><p>老師只做一步，維持原則。</p></div>
+      <div><b>合擊</b><div class="line">「兩兩一組，把牠的弱點講給隊友聽。講得出來才算識破。」</div><p>講給隊友聽，變成識破的儀式。</p></div>
+      <div><b>清點戰利品</b><div class="line">「每人一句：你今天識破了什麼？」</div><p>書記寫進冒險日誌。</p></div>
+    </div>
+    <p class="note">台詞是選用的，老師可以照唸、改寫或不用。試點要量的是：用了台詞的隊伍，開口次數有沒有比較多。</p>
+
+    <h3>題目裡的故事：只在數學就是故事的時候</h3>
+    <div class="grid g3">
+      <div class="card mint"><div class="who">放</div><p class="say">畢氏山：要架一座橋跨過峽谷，橋要多長？</p><p class="small">情境就是題目本身，拿掉故事題就不成立。</p></div>
+      <div class="card coral"><div class="who">不放</div><p class="say">「勇者小明在森林裡遇到 (2x+3)²，請化簡。」</p><p class="small">故事和數學無關，只是加了閱讀量。這種一律不出。</p></div>
+      <div class="card"><div class="who">Boss 接力</div><p class="say">一題多步驟，陷阱藏在中間一棒。</p><p class="small">故事是「怪躲在第三棒」，題目本身還是乾淨的數學。</p></div>
+    </div>
+    <p class="note">規則寫死：題幹的故事最多兩行；閱讀弱的孩子可以按語音；每一題都要能在拿掉故事之後仍然成立。國文和社會例外，因為文本本來就是內容。</p>
+
+    <h3>孩子是作者：三個地方讓他們寫故事</h3>
+    <ol class="steps">
+      <li><b>出題戰就是寫怪的騙術。</b>選一隻怪、選牠的陷阱、填一個情境。孩子出的好題進題庫，署名是隊名，下個月的試煉副本可能出現「四葉小隊設計的陷阱」。</li>
+      <li><b>冒險日誌是隊伍的連載。</b>書記每週寫的「我們識破了什麼」，季末由 AI 串成一頁「四葉小隊第三季」，放上隊伍牆，也寄到家長的 LINE。家長第一次看到孩子的學習被寫成故事，而不是分數。</li>
+      <li><b>隊名、隊旗、塔上的話。</b>守塔隊刻在塔上的那一句，是他們對這一區的怪的理解。這是孩子寫給後來者的攻略，也是最短的教學。</li>
+    </ol>
+
+    <div class="phones three" style="margin-top:26px">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>19:58</span><span>第 3 週 · 遠征前</span></div>
+          <span class="t">嚮導的信 · 第三封</span>
+          <div class="panels">
+            <div class="panel"><div class="mon fog"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>多項式林深處</b>迷霧比上週更濃。你們上週打中的拆根蟲，這週會回來一次。</p></div>
+            <div class="panel"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>今天的怪</b>負號幽靈。牠只有一句話：「第一個歸我，後面的我不管。」</p></div>
+            <div class="panel dark"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-bug"/></svg></div><p><b>林老師</b>今晚先別急著算。先想牠在騙什麼。八點見。</p></div>
+          </div>
+          <div class="grow"></div>
+          <span class="btn ghost">跳過</span>
+          <span class="btn">聽林老師唸（0:48）</span>
+        </div></div>
+        <p class="phone-cap"><b>嚮導的信</b>三格、每格不到 40 字、可以跳過、可以用聽的。示意畫面、資料為虛構。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:44</span><span>補刀 · 第 2 題</span></div>
+          <div class="c"><span class="fine">你的答案</span><p class="mx">2x² + x − 3 − x² − 4x − 1</p></div>
+          <div class="taunt"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><p><b>負號幽靈</b>：你看，只有第一項變號。我就說後面的我不管。</p></div>
+          <div class="coach"><span class="dot">陪</span><p>牠剛剛講出你的想法了。括號裡有三項，負號要發給幾個？</p></div>
+          <div class="grow"></div>
+          <span class="btn">再寫一次</span>
+          <p class="fine" style="text-align:center">被騙到不扣分。識破牠才算數。</p>
+        </div></div>
+        <p class="phone-cap"><b>被騙到</b>錯法觸發怪的台詞，小陪接著問。回饋本身就是故事。</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen" style="background:var(--mastered-bg)">
+          <div class="sb"><span>21:40</span><span>第 8 週</span></div>
+          <span class="title" style="font-size:11.5px;font-weight:700;color:var(--mastered-text);letter-spacing:.08em">四葉小隊 · 第三季</span>
+          <h5>迷霧散了六格，<br>影子站了六隻。</h5>
+          <div class="c">
+            <p style="font-size:13px;line-height:1.7">第一週，四個人在乘法平原被漏項獸打倒。第三週，小隊識破了負號幽靈，書記寫下「負號要發給每一個人」。第六週，斜邊迷霧在畢氏山被小晴先找直角識破。第八週，魔王用了六隻怪的騙術，小隊識破了五隻。</p>
+          </div>
+          <div class="c"><div class="kv"><span>這一季收服</span><b>6 隻</b></div><div class="kv"><span>睡著等叫醒</span><b>1 隻</b></div></div>
+          <div class="grow"></div>
+          <span class="btn dark">傳到營地（家人）</span>
+        </div></div>
+        <p class="phone-cap"><b>季末故事</b>AI 把八週的日誌串成一頁，只寫識破了什麼，不寫分數。家長的段考對照有了敘事版。</p>
+      </div>
+    </div>
+
+    <h3>敘事的六條護欄</h3>
+    <div class="dodont">
+      <div class="card">
+        <ul class="do">
+          <h4>做</h4>
+          <li>每一個故事元素都要通過「拿掉它會少學一件事」的檢查。</li>
+          <li>任何敘事都可以一鍵跳過，練習永遠不被故事擋住。</li>
+          <li>信和格漫每格不超過 40 字，都有語音版。</li>
+          <li>語氣短、乾、帶一點幽默，嘲笑的是怪，永遠不是孩子。</li>
+          <li>調性先給二十位國二國三的孩子看過再定，他們說「尷尬」就改。</li>
+          <li>怪的傳說卡由學科老師寫，因為口頭禪寫錯就是教錯。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <ul class="dont">
+          <h4>不做</h4>
+          <li>和數學無關的情境題、裝飾用的角色對話。</li>
+          <li>用「怪要逃走了」「燈快熄了」這類焦慮句推進主線。</li>
+          <li>把段考寫成審判。魔王是考驗，不是懲罰。</li>
+          <li>裝可愛、賣萌、說教式的旁白。</li>
+          <li>需要看完才能練習的過場動畫。</li>
+          <li>22:30 之後推送任何故事。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:18px;align-items:start">
+      <div class="callout pine" style="margin-top:0">
+        <p><b>霍爾：敘事是最便宜的引擎。</b>一隻怪的傳說卡五個欄位，四十隻怪就是一季的內容量，由學科老師寫、AI 潤稿。一季八封信，一封 60 秒。格漫用品牌的圓形怪拼，不用手繪。收服時刻和季末故事全自動。整個敘事層的成本，比一科的題庫還低，但它決定孩子明天會不會再打開。</p>
+      </div>
+      <div class="callout" style="margin-top:0">
+        <p><b>蕪菁頭：這群孩子對「尷尬」的雷達很靈。</b>國二國三的孩子會把太熱血的旁白截圖去笑。所以語氣要像林老師本人會講的話，不像遊戲客服。試點第一件事不是量留存，是把嚮導的信和怪的口頭禪拿給二十個孩子看，問他們哪一句會想截圖。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 畫面 ============ -->
+<section class="ch" id="c10">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no">10</div><div><div class="kicker">畫面示意</div><h2>四個學生端畫面，全部蓋在現有原型上</h2></div></div>
+    <p class="lead">色彩用品牌既有的珊瑚、松綠、蜂蜜金，怪用品牌的圓做出來，不用任何既有 IP 的視覺。<b>示意畫面、資料為虛構</b>。</p>
+
+    <div class="phones">
+      <!-- 地圖 -->
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:40</span><span>示範模式</span></div>
+          <span class="t">四葉小隊的地圖 · 第 3 週</span>
+          <h5>三隻收服了，<br>負號幽靈還在附近。</h5>
+          <div class="c">
+            <div class="row"><div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div><div><b>乘法平原 · 漏項獸</b><small>你已收服 · 隊伍一起收服了 3 次</small></div></div>
+            <div class="bar"><i style="width:75%"></i></div>
+          </div>
+          <div class="c coral">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><div><b>多項式林 · 負號幽靈</b><small>還在附近 · 今晚補刀</small></div></div>
+          </div>
+          <div class="c">
+            <div class="row"><div class="mon pine"><svg aria-hidden="true"><use href="#m-bug"/></svg></div><div><b>根號谷 · 拆根蟲</b><small>打中了 · 10/12 牠會回來</small></div></div>
+          </div>
+          <div class="c fogc">
+            <div class="row"><div class="mon fog"><svg aria-hidden="true"><use href="#m-tri"/></svg></div><div><b style="color:var(--fog-text)">畢氏山</b><small style="color:var(--fog-text)">迷霧 · 下週遠征偵察</small></div></div>
+          </div>
+          <div class="grow"></div>
+          <p class="fine">隊伍只顯示收服了幾次，不顯示誰還沒有。全隊都被同一隻怪打倒過。</p>
+        </div></div>
+        <p class="phone-cap"><b>地圖</b>原型的卡點地圖加上地區、迷霧與隊伍拓荒進度。</p>
+      </div>
+
+      <!-- 任務卡 -->
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:41</span><span>今天 1 / 3</span></div>
+          <span class="t">今日任務 · 補刀</span>
+          <h5>負號幽靈，<br>今天第一題就是牠。</h5>
+          <div class="c">
+            <div class="row"><div class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></div><div><b>減去括號，每一項都要變號</b><small>多項式林 · 全隊昨天都在這裡摔了一跤</small></div></div>
+          </div>
+          <div class="voice"><span class="wave"><i style="height:6px"></i><i style="height:12px"></i><i style="height:16px"></i><i style="height:9px"></i><i style="height:13px"></i><i style="height:5px"></i></span><span>林老師 · 課後 30 秒</span><span class="grow"></span><span class="n">0:28</span></div>
+          <div class="coach"><span class="dot">陪</span><p>你寫到哪一步？把你算到的那一行給我看就好，我不會直接給答案。</p></div>
+          <div class="grow"></div>
+          <span class="btn">拍一題出手</span>
+          <span class="btn ghost">用說的</span>
+          <p class="fine" style="text-align:center">22:30 關燈。做完這張今天就可以收起來。</p>
+        </div></div>
+        <p class="phone-cap"><b>任務卡</b>把「為什麼是今天這一格」寫出來：嚮導的語音、小陪的第一句。</p>
+      </div>
+
+      <!-- 收服時刻 -->
+      <div>
+        <div class="phone"><div class="screen cap" style="background:var(--mastered-bg)">
+          <div class="sb"><span>20:52</span><span></span></div>
+          <span class="title">收服時刻</span>
+          <div class="big">
+            <div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div>
+            <span class="arrow">收服 · 站到你身後</span>
+          </div>
+          <h5>漏項獸，收服。</h5>
+          <div class="ev">
+            <div><span class="n">第 0 天</span><small>遠征中被打倒</small></div>
+            <span class="to">→</span>
+            <div><span class="n">第 9 天</span><small>不給提示也會</small></div>
+          </div>
+          <p class="fine" style="text-align:center">牠之後可能會回來。回來又贏，牠就一直站在這裡。</p>
+          <div class="grow"></div>
+          <span class="btn dark">傳到營地（家人）</span>
+          <span class="btn ghost">放上隊伍牆</span>
+          <p class="fine" style="text-align:center">先收著</p>
+        </div></div>
+        <p class="phone-cap"><b>收服時刻</b>全螢幕、只放證據。這是我們的「等級提升」，數字是日子，不是經驗值。</p>
+      </div>
+
+      <!-- 影子牆 -->
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>20:55</span><span></span></div>
+          <span class="t">身後的影子</span>
+          <h5>3 隻站著，<br>1 隻睡著了。</h5>
+          <div class="c">
+            <div class="shadows">
+              <div class="mon shadow"><svg aria-hidden="true"><use href="#m-round"/></svg></div>
+              <div class="mon shadow"><svg aria-hidden="true"><use href="#m-drop"/></svg></div>
+              <div class="mon shadow"><svg aria-hidden="true"><use href="#m-cross"/></svg></div>
+              <div class="mon asleep"><svg aria-hidden="true"><use href="#m-twin"/></svg></div>
+            </div>
+            <p class="fine" style="margin-top:8px">雙面根睡著了 · 10/12 叫醒牠</p>
+          </div>
+          <div class="c"><span class="title-chip">稱號 · 初次拓荒</span><p class="fine" style="margin-top:6px">再收服 2 隻：拓荒者</p></div>
+          <div class="c">
+            <b style="font-size:13px">冒險日誌 · 第 3 週</b>
+            <p class="fine" style="margin-top:4px">「平方是整個括號自己乘自己，x 和 3 會互相乘兩次。」小睿 · 0:31</p>
+          </div>
+          <div class="grow"></div>
+          <p class="fine">睡著的影子不會消失，也不扣任何東西。</p>
+        </div></div>
+        <p class="phone-cap"><b>影子牆</b>證據牆的另一種講法。稱號只數收服、叫醒、講解三種事件。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 護欄 ============ -->
+<section class="ch" id="c11">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no pine">11</div><div><div class="kicker">護欄</div><h2>做什麼、不做什麼，先寫死免得返工</h2></div></div>
+    <p class="lead">規劃書的三條護欄與八條原則全部沿用。下面是遊戲化這一層額外加的界線，每一條都對應一個已知會出事的地方。</p>
+
+    <div class="dodont">
+      <div class="card">
+        <ul class="do">
+          <h4>做</h4>
+          <li>怪用「牠讓你犯的錯」命名，孩子罵怪，不罵自己。</li>
+          <li>收服只認「隔 7 到 12 天不給提示再測通過」，和北極星同一個定義。</li>
+          <li>影子睡著不消失、不扣分，叫醒的日期寫在牆上。</li>
+          <li>隊伍進度只顯示數量，不顯示誰還沒收服。</li>
+          <li>隊友之間只有結構化動作：「等你」「我也卡過這一步」「你講的那次我聽懂了」。</li>
+          <li>對戰以隊伍為單位：出題經審過才送出、作答是全隊討論後交一個答案、結果只讓兩隊和兩位嚮導看到。</li>
+          <li>過關看小隊解題率。每人配額相同，個人解題率只有自己和嚮導看得到。</li>
+          <li>隊友畫面不出現和未完成、答錯、求援有關的名字，也不出現能推出是誰的人數。</li>
+          <li>收服只在伏擊層與叫醒任務卡產生，不進全隊分數，每個再測窗口只認第一次作答。</li>
+          <li>真人對戰用匿名投票，全隊同意才開，否則對手是幽靈隊。對戰輸贏不影響路線。</li>
+          <li>副本難度用「七成隊伍第一次就過關」校準，撤退不扣分。</li>
+          <li>公開賽採達標制：徽章牆只列拿到的隊名，隨機排序、不寫分數，小隊可以選擇不上牆。</li>
+          <li>隊伍榜只顯示前後各三隊、季末重置；守塔月結算、不衰減，歷代守塔隊永久留名。</li>
+          <li>怪的口頭禪就是錯的推理，由學科老師寫；所有敘事可跳過、有語音、每格不超過 40 字。</li>
+          <li>實體獎品寄給家長，收件資料寄出後 30 天刪除。</li>
+          <li>分享由孩子主動按，卡上沒有臉、真名、分數、隊友狀態。</li>
+          <li>任務卡每天最多三張，22:30 後不發、不亮、不推播，段考週不加量。</li>
+          <li>角色每週輪換，由系統排、嚮導可調，不看程度。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <ul class="dont">
+          <h4>不做</h4>
+          <li>個人經驗值、等級、能力點：任何和練習量掛勾的數字。</li>
+          <li>會斷掉的個人連續天數與懲罰區。</li>
+          <li>排行榜、個人對戰、跨隊伍的積分榜與連勝紀錄。</li>
+          <li>轉蛋、戰利品箱、隨機獎勵。</li>
+          <li>比速度的搶答、限時倒數，或任何會往回退路線的懲罰。</li>
+          <li>用練習量或連續天數算的稱號，個人或隊伍都一樣。</li>
+          <li>用戰績換實體獎品，或用名次決定誰拿到實體獎品。</li>
+          <li>用「銅、銀、金」這類金屬名做等級，或把路線掛在隊伍牆、分享卡上。</li>
+          <li>把真實縣市、學校放上地圖或榜；聯賽區只到北中南東。</li>
+          <li>會衰減、要防守、每天要巡的領土機制；預設開啟的個人排行榜。</li>
+          <li>和內容無關的情境題、需要看完才能練習的過場、焦慮句推進的主線。</li>
+          <li>未成年之間的自由文字聊天。</li>
+          <li>晚上發任務、用「怪要逃走了」之類的焦慮句催練習。</li>
+          <li>直接使用《我獨自升級》或任何作品的名稱、角色、視覺。</li>
+          <li>把遊戲語言放進家長端。營地來信只多一個「我見證了」。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout gov">
+      <p><b>治理四條，沙利曼先擋在前面。</b>一、13 歲以下的分享與公會牆功能需家長在 LINE 端明確同意才開，預設關。二、公會牆與隊伍牆上的內容只有分享卡與嚮導審過的冒險日誌句子，沒有自由輸入。三、《人工智慧基本法》把兒少列為高風險應用的優先考量，任何用焦慮驅動練習的文案在設計評審就要退回，不進試點。四、求援語音只能在那一題的頁面錄，只給求援的孩子聽一次，先經語音轉文字過濾，嚮導每週抽查，家長可以在 LINE 端關掉。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 分期 ============ -->
+<section class="ch" id="c12">
+  <div class="wrap">
+    <div class="ch-head"><div class="ch-no honey">12</div><div><div class="kicker">分期與待決</div><h2>三輪做完，每一輪都有一個要驗證的數字</h2></div></div>
+    <p class="lead">第一輪在現有 POC 原型上做個人的冒險與副本主循環，隊友先用示範資料。第二輪在試點用真的小隊打副本與對戰。第三輪開英文大陸與公會，國文和社會等題庫與版本備好再上。</p>
+
+    <div class="phase">
+      <div class="card">
+        <span class="no">第一輪 · POC 原型</span>
+        <h4>個人的冒險</h4>
+        <ul>
+          <li>八隻怪的命名、圖與傳說卡：出身、騙術、口頭禪、弱點</li>
+          <li>怪會說話：錯法觸發台詞，接小陪的第一句</li>
+          <li>任務卡：補刀、偵察、叫醒影子</li>
+          <li>收服時刻全螢幕</li>
+          <li>影子牆與稱號</li>
+          <li>分享卡產生器</li>
+          <li>營地來信的「我見證了」與隔天回饋</li>
+          <li>數學副本：三層加 Boss 接力、小隊解題率結算，隊友用示範資料</li>
+        </ul>
+        <div class="kpi"><b>驗證：</b>第三週仍每週練習三天以上的比例 ≥ 50%；家長「我見證了」點擊率 ≥ 60%；試玩者能不看說明講出「怎樣算過關」；二十位孩子試讀怪的台詞，說「尷尬」的不超過三位</div>
+      </div>
+      <div class="card">
+        <span class="no">第二輪 · 試點</span>
+        <h4>小隊的遠征</h4>
+        <ul>
+          <li>地圖的地區、迷霧與隊伍拓荒進度</li>
+          <li>整備條與「等你」</li>
+          <li>四個角色每週輪替，進老師的課前一頁</li>
+          <li>隊名、隊伍牆</li>
+          <li>遠征六幕進老師端課堂流程，課前一頁多一欄台詞</li>
+          <li>嚮導的信一季八封、季末故事自動生成</li>
+          <li>真小隊打數學副本：匿名求援、非同步接力、路線與缺席申報</li>
+          <li>小隊對戰：鏡像賽、出題戰、匿名投票與幽靈隊</li>
+        </ul>
+        <div class="kpi"><b>驗證：</b>副本第一次過關率接近 70%；伏擊層產生的收服數；對戰週的練習天數不低於非對戰週；對戰後一週再測通過率不掉</div>
+      </div>
+      <div class="card">
+        <span class="no">第三輪 · 續走</span>
+        <h4>四科與公會</h4>
+        <ul>
+          <li>戰績、解鎖與公會魔王攻略會</li>
+          <li>每月徽章公開賽，先用數學大陸辦兩個月</li>
+          <li>世界地圖、點燈與守塔，先開北區數學</li>
+          <li>副本依題庫達標順序開：英文、社會、國文。未達標的大陸先開任務卡</li>
+          <li>一位老師名下所有小隊組成一個公會，老師是公會長</li>
+          <li>魔王戰共同倒數、公會牆</li>
+          <li>公會總戰績只顯示「這個月一共收服幾隻」</li>
+          <li>續走的理由從「再報一期」變成「我還在這個公會」</li>
+        </ul>
+        <div class="kpi"><b>驗證：</b>8 週續購率 ≥ 50%；老師願意續帶 ≥ 6/8 位；英文副本的三週留存不低於數學</div>
+      </div>
+    </div>
+
+    <h3>十件要愛德華拍板的事</h3>
+    <div class="ask">
+      <div><span class="q">1</span><div><b>怪與地區的命名調性</b><p>目前是「帥一點的可愛」，例：漏項獸、負號幽靈、根號谷。往帥調會更像動畫，往可愛調家長更放心。<em>蘇菲建議：維持現在這一格，試點看孩子怎麼叫牠們再修。</em></p></div></div>
+      <div><span class="q">2</span><div><b>美術方向</b><p>用品牌的圓做出來的幾何怪（本稿），或手繪紙地圖風格。前者和現有品牌一致、成本低；後者更有冒險感，但要另開一套視覺系統。<em>蘇菲建議：第一輪用幾何怪，第二輪地圖再評估紙地圖。</em></p></div></div>
+      <div><span class="q">3</span><div><b>角色輪替要不要進第一輪</b><p>角色是小隊感的核心，但要動老師流程。<em>蘇菲建議：第一輪先在任務卡上「預告」角色（例：你這週是先鋒），真正輪替第二輪再上。</em></p></div></div>
+      <div><span class="q">4</span><div><b>真人對戰預設開還是關</b><p>預設開，對戰氣氛最熱；預設關、匿名投票全隊同意才開，最安全，但可能很多隊一直打幽靈隊。<em>蘇菲建議：預設關，開季第一週匿名投票。看得出大家敢打，再改預設。</em></p></div></div>
+      <div><span class="q">5</span><div><b>國英社要不要開真人小隊課</b><p>只做遊戲層的話，國英社的小隊沒有真人嚮導，由小陪帶隊、內容團隊審題、出題戰只用陷阱模板，可以放進 Plus 方案當留存。開真人課就要招三科老師、備三科版本，規模完全不同。<em>蘇菲建議：先只做遊戲層、放進 Plus，數學試點的續購率過了 50% 再決定。</em></p></div></div>
+      <div><span class="q">6</span><div><b>等級叫「路線」還是「銅銀金」</b><p>你提過「同樣白銀級的隊伍對戰」。金屬名最直覺，但依診斷定段會變成能力分班的標籤，也和「金色＝收服」撞名。<em>蘇菲建議：用平原線、丘陵線這類路線名，開季一律從平原線出發，配對照樣是「同一條路線」，體驗和同級對戰一樣。</em></p></div></div>
+      <div><span class="q">7</span><div><b>公開賽用達標制還是名額制</b><p>你說的是「勝利的小隊拿到真的獎品」。名額制最熱血，但會變成排行榜，也最容易引來代答。<em>蘇菲建議：達標制，加上「全服目標」和「出題賞」補熱血感。先辦兩個月，看參賽率和複核退件率再決定。</em></p></div></div>
+      <div><span class="q">8</span><div><b>地圖用幻想大陸，還是台北市真實地圖</b><p>真實地圖認同感最強，但區域對不到章節、會暴露孩子住哪、明星學區會壓過其他區、換縣市要重畫。<em>蘇菲建議：主地圖用幻想大陸，真實地理只用來分北中南東四個聯賽區。</em></p></div></div>
+      <div><span class="q">9</span><div><b>個人排行榜要不要開</b><p>你提的「戰績越多排越前面」在隊伍榜和公會榜都做了。個人榜的證據是對前 20% 有用、對其他人反效果。<em>蘇菲建議：個人榜預設關、孩子自己開，只顯示稱號與隊名。試點看開榜比例再決定要不要放大。</em></p></div></div>
+      <div><span class="q">10</span><div><b>敘事的調性與主線題材</b><p>目前是「迷霧、怪、燈塔」的拓荒故事，語氣走林老師本人會講的話，不走熱血旁白。另一個方向是更動漫化的世界觀與角色，認同感更強，但尷尬風險與美術成本都高。<em>蘇菲建議：維持拓荒故事與老師的聲音，先拿給二十個孩子試讀，再決定要不要往動漫化走一格。</em></p></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="sig"><svg aria-hidden="true"><use href="#logo"/></svg>Tandelo 概念驗證（POC）· Edward Tseng · 2026</div>
+    <p>本概念稿為產品規劃用途，所有人物、隊名、示範資料一律虛構；怪與地區名稱為提案。本頁不被搜尋引擎收錄，不收集任何資料，主題偏好只存在你的裝置。</p>
+    <a class="back-top" href="#top">回到最上面 ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var btn=document.getElementById('themeBtn'), label=document.getElementById('themeLabel');
+  var KEY='tandelo-adv-theme';
+  function current(){ return root.getAttribute('data-theme')||'auto'; }
+  function render(){
+    var c=current();
+    label.textContent = c==='dark'?'深色':(c==='light'?'淺色':'自動');
+    btn.setAttribute('aria-pressed', c!=='auto');
+    btn.setAttribute('aria-label','切換配色，目前：'+label.textContent);
+  }
+  btn.addEventListener('click',function(){
+    var c=current(), next = c==='auto'?'dark':(c==='dark'?'light':'auto');
+    if(next==='auto'){ root.removeAttribute('data-theme'); try{localStorage.removeItem(KEY);}catch(e){} }
+    else { root.setAttribute('data-theme',next); try{localStorage.setItem(KEY,next);}catch(e){} }
+    render();
+  });
+  render();
+
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  var toc=document.getElementById('toc');
+  function setActive(id){
+    links.forEach(function(a){
+      var on=a.getAttribute('href')==='#'+id;
+      a.classList.toggle('is-active',on);
+      if(on){ a.setAttribute('aria-current','true'); var l=a.offsetLeft-toc.clientWidth/2+a.offsetWidth/2; toc.scrollTo({left:l,behavior:'smooth'}); }
+      else a.removeAttribute('aria-current');
+    });
+  }
+  if('IntersectionObserver' in window){
+    var visible={};
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ visible[e.target.id]=e.isIntersecting?e.intersectionRatio:0; });
+      var best=null,bv=0;
+      secs.forEach(function(s){ if((visible[s.id]||0)>bv){bv=visible[s.id];best=s.id;} });
+      if(best) setActive(best);
+    },{rootMargin:'-30% 0px -55% 0px',threshold:[0,.1,.25,.5]});
+    secs.forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
