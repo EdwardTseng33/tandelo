@@ -5,21 +5,35 @@
 這是一個**概念驗證（POC）**：品牌網站、老師招募頁、可操作的 App 原型（學生、家長 LINE、老師三條流程），以及一個小的後端 API。所有示範資料都是虛構的；沒有後端時，資料只留在使用者自己的裝置。
 
 - 網站（Pages）：<https://edwardtseng33.github.io/tandelo/>（離線示範模式，不連後端）
+- 冒險世界 Demo：<https://edwardtseng33.github.io/tandelo/world/>
 - 架構說明：[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+## 頁面導覽
+
+| 頁 | 內容 |
+|---|---|
+| `index.html` | 首頁 2.0：冒險世界定位、點一下收服的主視覺、八隻怪圖鑑、一週節奏、三個價格帶、家長 LINE、護欄、FAQ |
+| `strategy.html` | 策略與規劃 2.0：市場、國內外競品定位矩陣、商業模式與毛利槓桿、產品輪廓架構、技術架構、POC 12 週計畫、待拍板 |
+| `plan.html` | 產品規劃書 1.0 |
+| `adventure.html`、`coach.html`、`segment.html` | 冒險小隊概念稿、AI 陪跑設計稿、核心用戶輪廓 |
+| `world/` | 冒險世界高保真 Demo：今天、巡邏、Boss 接力、伏擊→收服時刻、結算、出題戰、影子牆、地圖與燈塔、公會與徽章賽、營地來信、小陪 |
+| `app/` | App 原型（學生、家長 LINE、老師三條流程） |
+| `teachers.html` | 老師招募 |
 
 ## 架構
 
 ```
 tandelo/
-├─ frontend/            純靜態：index.html、teachers.html、plan.html、adventure.html、coach.html、segment.html、app/、assets/
-├─ docs/research/       調研報告：教育遊戲化的年齡與性別偏好、核心用戶族群選擇
+├─ frontend/            純靜態：index.html（首頁 2.0）、teachers.html、plan.html、adventure.html、coach.html、segment.html、strategy.html、app/、world/、assets/
+│   ├─ world/           冒險世界高保真 Demo（hash 路由、localStorage、11 個場景）
+├─ docs/research/       調研報告：教育遊戲化的年齡與性別偏好、核心用戶族群選擇、國際 Top players、台灣市場、商業模式標竿
 │   ├─ config.js        window.TANDELO_API_BASE（Pages 留空＝離線；Docker 由 nginx 注入 '/api'）
 │   ├─ app/js/api.js    後端連線包裝：isOnline()、request()、syncState()
 │   ├─ nginx.conf       靜態伺服＋gzip＋快取標頭＋ /api 反向代理
 │   └─ Dockerfile       nginx:alpine，非 root，healthcheck
 ├─ backend/             Python 3.12 + FastAPI + SQLAlchemy 2 + SQLite（DATABASE_URL 可換 Postgres）
 │   ├─ app/             main.py、api/、services/、models.py、schemas.py、core/、data/content.json
-│   ├─ tests/           pytest（26 個）
+│   ├─ tests/           pytest（63 個）
 │   └─ Dockerfile       多階段、非 root、healthcheck
 ├─ docker-compose.yml   frontend:8080、backend:8000、可選 postgres profile
 ├─ scripts/smoke.sh     對 compose 起來的服務跑一條完整流程
@@ -105,6 +119,14 @@ make logs / make down
 | POST / GET | `/teacher-applications` | 招募表單；列表需 `X-Admin-Token` |
 | GET | `/teachers`、`/teachers/{id}/earnings?tier=&teams=&size=` | 老師清單、收入試算（45／52／60%、保底 600） |
 | POST | `/coach/reply`、`/coach/explain` | 小陪規則回覆（22:30–06:00 回「關燈中」）、說給我聽評分 |
+| GET | `/world/map` | 冒險世界：四片大陸、區域與燈塔、怪的傳說卡、路線、聯賽區 |
+| GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 影子狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
+| GET | `/students/{id}/record`、`/teams/{id}/record` | 戰績（收服 10、叫醒 5、講解 3、副本 5／8／12）；小隊只回加總、人均與解鎖 |
+| POST | `/teams/{id}/dungeons` | 開副本（22:30–06:00 回 423；路線只升不降） |
+| POST | `/dungeons/{id}/answers`、`/dungeons/{id}/absences`、`/dungeons/{id}/settle` | 巡邏／接力／伏擊作答（求助照算）、缺席申報（每季 2 次、48 小時內）、結算（小隊解題率→星數） |
+| POST | `/matches/mirror`、`/matches/duel` | 鏡像賽（只比解題率）、出題戰（六分制）；投票未全數同意或交集不足三隻→幽靈隊 |
+| GET / POST | `/leagues/{league}/regions/{region_id}/tower`、`/towers/settle` | 燈塔（點燈進度、守塔隊、歷代名冊）；月結算需 `X-Admin-Token` |
+| GET | `/leagues/{league}/board?team_id=&subject=&route=` | 隊伍榜：只回我前後各三隊，不含名次與總數 |
 
 ## 說明
 

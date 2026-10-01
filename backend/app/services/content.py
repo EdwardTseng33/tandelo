@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "content.json"
+WORLD_PATH = Path(__file__).resolve().parent.parent / "data" / "world.json"
 
 DAYS = ["一", "二", "三", "四", "五", "六", "日"]
 
@@ -14,6 +15,25 @@ DAYS = ["一", "二", "三", "四", "五", "六", "日"]
 def content() -> Dict[str, Any]:
     with DATA_PATH.open("r", encoding="utf-8") as fh:
         return json.load(fh)
+
+
+@lru_cache
+def world() -> Dict[str, Any]:
+    """冒險世界資料（app/data/world.json）：大陸、區域、燈塔、怪的傳說卡、路線、聯賽區。"""
+    with WORLD_PATH.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def monsters() -> Dict[str, Any]:
+    return {m["id"]: m for m in world()["monsters"]}
+
+
+def regions() -> Dict[str, Any]:
+    return {r["id"]: r for r in world()["regions"]}
+
+
+def league_ids() -> List[str]:
+    return [lg["id"] for lg in world()["leagues"]]
 
 
 def skills() -> Dict[str, Any]:

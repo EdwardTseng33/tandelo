@@ -2,7 +2,7 @@
 
 import datetime as _dt
 import re
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -96,6 +96,7 @@ class MemberOut(BaseModel):
 
 class TeamOut(BaseModel):
     id: int
+    name: str = ""
     subject: str
     grade: str
     slot_id: str
@@ -302,3 +303,185 @@ class CoachReplyOut(BaseModel):
     hint_level: int
     done: bool
     ok: Optional[bool] = None
+
+
+# ——— 冒險世界（0.2）———
+class MonsterCard(BaseModel):
+    """怪的傳說卡：五個欄位每一個都是教學（出身＝成因、騙術＝誤解、口頭禪＝錯的推理、弱點＝正確概念、被識破時＝回饋）。"""
+
+    id: str
+    name: str
+    skill_id: Optional[str]
+    region: str
+    continent: str
+    shape: str
+    status: str
+    title: str
+    origin: str
+    trick: str
+    taunt: str
+    weakness: str
+    caught_line: str
+
+
+class WorldMapOut(BaseModel):
+    continents: List[Dict[str, Any]]
+    regions: List[Dict[str, Any]]
+    lighthouses: List[Dict[str, Any]]
+    monsters: List[MonsterCard]
+    shadow_states: List[Dict[str, Any]]
+    routes: List[Dict[str, Any]]
+    leagues: List[Dict[str, Any]]
+
+
+class ShadowOut(BaseModel):
+    student_id: int
+    monster_id: str
+    name: str
+    region: str
+    state: str
+    captured_at: Optional[_dt.datetime] = None
+    woke_at: Optional[_dt.datetime] = None
+
+
+class ShadowEventIn(BaseModel):
+    event: str = Field(pattern=r"^(diagnosed_stuck|explained_ok|retest_passed|wrong_again|woken)$")
+
+
+class ShadowEventOut(ShadowOut):
+    previous_state: str
+    record_kind: Optional[str]
+    points: int
+    today_count: int
+    daily_cap: int
+
+
+class RecordEventOut(ORM):
+    id: int
+    student_id: Optional[int]
+    team_id: Optional[int]
+    kind: str
+    points: int
+    region_id: Optional[str]
+    created_at: _dt.datetime
+
+
+class StudentRecordOut(BaseModel):
+    student_id: int
+    nickname: str
+    total: int
+    events: List[RecordEventOut]
+
+
+class TeamRecordOut(BaseModel):
+    team_id: int
+    name: str
+    size: int
+    total: int
+    per_capita: float
+    guild_per_capita: float
+    route: str
+    unlocks: Dict[str, Any]
+
+
+class DungeonOpenIn(BaseModel):
+    week: int = Field(ge=1, le=8)
+    subject: Optional[str] = Field(default=None, max_length=20)
+    region_id: Optional[str] = Field(default=None, max_length=24)
+    time: Optional[str] = Field(default=None, pattern=r"^\d{2}:\d{2}$", description="示範用：覆蓋現在時間（HH:MM），關燈時段不開門")
+
+
+class DungeonOut(BaseModel):
+    id: int
+    team_id: int
+    week: int
+    route: str
+    subject: str
+    region_id: Optional[str]
+    status: str
+    rate: Optional[float]
+    stars: int
+    opened_at: _dt.datetime
+    settled_at: Optional[_dt.datetime]
+    answers: int
+    absences: List[int]
+
+
+class DungeonAnswerIn(BaseModel):
+    student_id: int
+    layer: str = Field(default="patrol", pattern=r"^(patrol|relay|ambush)$")
+    correct: bool
+    helped: bool = False  # 問過小陪或求援；照樣算分，只有嚮導看得到
+
+
+class DungeonAbsenceIn(BaseModel):
+    student_id: int
+
+
+class DungeonSettleIn(BaseModel):
+    skipped_relays: int = Field(default=0, ge=0, le=6, description="24 小時沒接被跳過的棒數，移出分母")
+
+
+class DungeonSettleOut(DungeonOut):
+    result: Dict[str, Any]
+    next_route: str
+
+
+class MirrorMatchIn(BaseModel):
+    team_a_id: int
+    team_b_id: Optional[int] = None  # 空＝幽靈隊
+    week: int = Field(ge=1, le=8)
+    rate_a: Optional[float] = Field(default=None, ge=0, le=1, description="不給就用該週已結算副本的解題率")
+    rate_b: Optional[float] = Field(default=None, ge=0, le=1, description="幽靈隊＝同路線隊伍的歷史平均，由呼叫端給")
+    votes_a: Optional[List[bool]] = None  # 匿名投票；有一票不同意就打幽靈隊
+    votes_b: Optional[List[bool]] = None
+
+
+class DuelMatchIn(BaseModel):
+    team_a_id: int
+    team_b_id: Optional[int] = None
+    week: int = Field(ge=1, le=8)
+    answers_a_correct: List[bool] = Field(min_length=3, max_length=3)
+    answers_b_correct: List[bool] = Field(min_length=3, max_length=3)
+    setting_valid_a: List[bool] = Field(min_length=3, max_length=3)
+    setting_valid_b: List[bool] = Field(min_length=3, max_length=3)
+    forfeit_a: bool = False
+    forfeit_b: bool = False
+    votes_a: Optional[List[bool]] = None
+    votes_b: Optional[List[bool]] = None
+
+
+class MatchOut(BaseModel):
+    id: int
+    kind: str
+    week: int
+    team_a_id: int
+    team_b_id: Optional[int]
+    ghost: bool
+    result: Dict[str, Any]
+
+
+class TowerOut(BaseModel):
+    league: str
+    region_id: str
+    region_name: str
+    lighthouse: Dict[str, Any]
+    month: Optional[str]
+    keepers: Dict[str, List[Dict[str, Any]]]
+    hall_of_fame: List[Dict[str, Any]]
+
+
+class TowerSettleIn(BaseModel):
+    month: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$", description="結算哪一個月（YYYY-MM）")
+
+
+class TowerSettleOut(BaseModel):
+    month: str
+    settled: List[Dict[str, Any]]
+
+
+class BoardOut(BaseModel):
+    league: str
+    subject: str
+    route: str
+    entries: List[Dict[str, Any]]

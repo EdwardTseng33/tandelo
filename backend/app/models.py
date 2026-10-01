@@ -7,7 +7,7 @@ import datetime as _dt
 import json
 from typing import Any, List, Optional
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -107,6 +107,7 @@ class Team(Base):
     __tablename__ = "teams"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(40), default="")  # 隊名（冒險世界的榜、守塔名冊用）；空字串＝尚未取名
     subject: Mapped[str] = mapped_column(String(20), default="數學")
     grade: Mapped[str] = mapped_column(String(10), default="國二")
     slot_id: Mapped[str] = mapped_column(String(12))
@@ -235,3 +236,95 @@ class ParentReport(Base):
     week_end: Mapped[_dt.date] = mapped_column(Date)
     body_json: Mapped[str] = mapped_column(Text, default="{}")
     created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+
+
+# ——— 冒險世界（0.2）：影子、戰績、副本、對戰、公會、守塔 ———
+class Shadow(Base):
+    """影子：一位學生對一隻怪的狀態（fog／near／hit／captured／asleep）。規則在 services/world.py。"""
+
+    __tablename__ = "shadows"
+    __table_args__ = (UniqueConstraint("student_id", "monster_id", name="uq_shadow"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey("students.id"), index=True)
+    monster_id: Mapped[str] = mapped_column(String(24))
+    state: Mapped[str] = mapped_column(String(12), default="fog")
+    captured_at: Mapped[Optional[_dt.datetime]] = mapped_column(DateTime, nullable=True)
+    woke_at: Mapped[Optional[_dt.datetime]] = mapped_column(DateTime, nullable=True)
+    updated_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
+
+
+class RecordEvent(Base):
+    """戰績事件：只從驗證過的學會來（收服 10、叫醒 5、講解 3、副本 5／8／12）。
+    個人事件有 student_id；副本過關是全隊一份，只有 team_id。region_id 用來點燈與守塔。"""
+
+    __tablename__ = "record_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[Optional[int]] = mapped_column(ForeignKey("students.id"), nullable=True, index=True)
+    team_id: Mapped[Optional[int]] = mapped_column(ForeignKey("teams.id"), nullable=True, index=True)
+    kind: Mapped[str] = mapped_column(String(16))
+    points: Mapped[int] = mapped_column(Integer, default=0)
+    region_id: Mapped[Optional[str]] = mapped_column(String(24), nullable=True)
+    created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class Dungeon(Base):
+    """副本：一隊一週一個；巡邏 3 題＋接力 1 棒＋伏擊層（不計分）。status：open／settled／retreat。"""
+
+    __tablename__ = "dungeons"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"), index=True)
+    week: Mapped[int] = mapped_column(Integer)
+    route: Mapped[str] = mapped_column(String(12), default="plain")
+    subject: Mapped[str] = mapped_column(String(20), default="數學")
+    region_id: Mapped[Optional[str]] = mapped_column(String(24), nullable=True)
+    status: Mapped[str] = mapped_column(String(12), default="open")
+    rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    stars: Mapped[int] = mapped_column(Integer, default=0)
+    opened_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+    settled_at: Mapped[Optional[_dt.datetime]] = mapped_column(DateTime, nullable=True)
+    answers_json: Mapped[str] = mapped_column(Text, default="[]")
+    absences_json: Mapped[str] = mapped_column(Text, default="[]")
+
+
+class Match(Base):
+    """小隊對戰：mirror（鏡像賽）或 duel（出題戰）。team_b_id 空＝幽靈隊。結果只有兩隊和兩位嚮導看得到。"""
+
+    __tablename__ = "matches"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    team_a_id: Mapped[int] = mapped_column(ForeignKey("teams.id"), index=True)
+    team_b_id: Mapped[Optional[int]] = mapped_column(ForeignKey("teams.id"), nullable=True, index=True)
+    kind: Mapped[str] = mapped_column(String(8))
+    week: Mapped[int] = mapped_column(Integer)
+    result_json: Mapped[str] = mapped_column(Text, default="{}")
+    created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class Guild(Base):
+    """公會：一位嚮導名下所有小隊；league 是聯賽區（north／central／south／east），只到這四個字。"""
+
+    __tablename__ = "guilds"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id"), index=True)
+    name: Mapped[str] = mapped_column(String(40))
+    league: Mapped[str] = mapped_column(String(10), default="north")
+
+    teacher: Mapped[Teacher] = relationship()
+
+
+class TowerKeeper(Base):
+    """守塔名冊：某聯賽區某區域的燈塔，某一層（路線）在某月由哪一隊守。並列各一列；永久留著、不衰減。"""
+
+    __tablename__ = "tower_keepers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    league: Mapped[str] = mapped_column(String(10), index=True)
+    region_id: Mapped[str] = mapped_column(String(24), index=True)
+    route: Mapped[str] = mapped_column(String(12))
+    team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
+    month: Mapped[str] = mapped_column(String(7))  # YYYY-MM
+    records: Mapped[int] = mapped_column(Integer, default=0)
