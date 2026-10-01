@@ -4,6 +4,7 @@ import { load, save, defaultState, isLightsOut, fmtLong, addDays, fmtMD, setSave
 import { isConfigured, isOnline, onStatusChange, probe, syncState } from './api.js';
 import { parseHash, homeFor, toHash } from './router.js';
 import { esc, icon } from './ui.js';
+import { enhance, reduced, buzz, ceremony, lightsOutCurtain } from './fx.js';
 import * as common from './screens/common.js';
 import * as onboard from './screens/onboard.js';
 import * as student from './screens/student.js';
@@ -23,13 +24,14 @@ const TABS = {
     ['s/home', '今天', 'home'], ['s/squad', '小隊', 'users'], ['s/practice', '練習', 'mic', true], ['s/map', '卡點', 'route'], ['s/me', '我', 'user'],
   ],
   teacher: [
-    ['t/offer', '接班', 'bell'], ['t/prep', '課前', 'book'], ['t/room', '教室', 'video'], ['t/income', '收入', 'coin'], ['settings', '設定', 'gear'],
+    ['t/offer', '接班', 'bell'], ['t/prep', '課前一頁', 'book'], ['t/room', '教室', 'video'], ['t/income', '收入', 'coin'], ['settings', '設定', 'gear'],
   ],
 };
 const ROLE_NAME = { student: '學生', parent: '家長', teacher: '老師' };
 
 let state = load();
-const cur = { key: null, params: [], screen: null, cleanup: null };
+const cur = { key: null, params: [], screen: null, cleanup: null, dir: 'fwd' };
+const trail = []; // 走過的畫面，用來判斷這次是前進還是返回（決定滑動方向）
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -48,7 +50,8 @@ function ctx() {
     state, params: cur.params, key: cur.key,
     today: state.clock.date,
     night: isLightsOut(state.clock.time),
-    go, update, rerender, remount, toast, sheet, closeSheet, burst,
+    go, update, rerender, remount, toast, sheet, closeSheet, burst, buzz,
+    ceremony: (opts) => ceremony(app, { burst, ...opts }),
   };
 }
 
@@ -64,12 +67,23 @@ function update(fn, opts = {}) {
   if (!opts.silent) rerender(opts);
 }
 
+let wasNight = null; // 上一次畫面是不是關燈；由 false 變 true 時播「關燈」
+let curtainOn = false;
 function applyTheme() {
   const night = isLightsOut(state.clock.time) && state.role === 'student';
   const theme = night ? 'dark' : state.theme === 'auto' ? (darkMQ.matches ? 'dark' : 'light') : state.theme;
+  const turningOff = night && wasNight === false && document.documentElement.dataset.theme !== 'dark';
+  wasNight = night;
+  app.dataset.role = state.role || 'none';
+  if (turningOff && !curtainOn) {
+    // 夜色由上而下蓋滿之後才換深色；這段時間先維持原本的亮度
+    curtainOn = true;
+    lightsOutCurtain(app, () => { curtainOn = false; applyTheme(); });
+    return;
+  }
+  if (curtainOn && night) return;
   document.documentElement.dataset.theme = theme;
   app.dataset.night = night ? '1' : '0';
-  app.dataset.role = state.role || 'none';
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', theme === 'dark' ? '#0C1412' : '#F6F4EE');
 }
@@ -89,7 +103,7 @@ function tabBar() {
   const list = TABS[state.role];
   if (!list || scr.tabs === false) return '';
   const active = scr.tab || cur.key;
-  return `<nav class="tabbar" aria-label="主選單">${list.map(([k, label, ic, center]) => `<button class="tab ${center ? 'center' : ''} ${active === k ? 'on' : ''}" data-go="${k}" ${active === k ? 'aria-current="page"' : ''}>${center ? `<b>${icon(ic)}</b>` : icon(ic)}<span>${label}</span></button>`).join('')}</nav>`;
+  return `<nav class="tabbar" aria-label="主選單"><a class="nav-brand wm" href="../" aria-label="回到 Tandelo 網站"><span class="dots"><i></i><i></i></span><span class="nav-word">Tandelo</span></a>${list.map(([k, label, ic, center]) => `<button class="tab ${center ? 'center' : ''} ${active === k ? 'on' : ''}" data-go="${k}" ${active === k ? 'aria-current="page"' : ''}>${center ? `<b>${icon(ic)}</b>` : icon(ic)}<span>${label}</span></button>`).join('')}</nav>`;
 }
 
 function renderPanel() {
@@ -131,7 +145,9 @@ function render({ nav = false, focusTitle = false, focusSel = null, keepScrollBo
   const c = ctx();
   applyTheme();
   // 桌機外殼：手機框＋說明面板只給學生端非教室畫面；教室與老師端全寬（平板／桌機優先）
-  if (shell) shell.classList.toggle('wide', cur.key === 's/class' || state.role === 'teacher');
+  const wide = cur.key === 's/class' || (state.role === 'teacher' && cur.key !== 'welcome');
+  if (shell) shell.classList.toggle('wide', wide);
+  app.dataset.wide = wide ? '1' : '0';
   sb.innerHTML = statusBar();
   const active = document.activeElement;
   const fid = !nav && active && view.contains(active) && active.id ? active.id : null;
@@ -141,7 +157,7 @@ function render({ nav = false, focusTitle = false, focusSel = null, keepScrollBo
     console.error(err);
     html = `<div class="pad"><h1 class="hero s" tabindex="-1">這一頁出了點狀況。</h1><p class="sub">示範資料可能不一致，可以重設後再試。</p><button class="btn" data-act="askReset">重設示範資料</button></div>`;
   }
-  view.innerHTML = `<div class="screen ${nav ? 'enter' : ''}" data-screen="${esc(cur.key)}">${html}</div>`;
+  view.innerHTML = `<div class="screen ${nav ? `enter ${cur.dir}` : ''}" data-screen="${esc(cur.key)}">${html}</div>`;
   const tb = tabBar();
   tabs.innerHTML = tb;
   tabs.hidden = !tb;
@@ -158,6 +174,8 @@ function render({ nav = false, focusTitle = false, focusSel = null, keepScrollBo
     try { focusEl.focus({ preventScroll: !(focusSel && !keepScrollBottom) }); } catch { /* 忽略 */ }
   }
   renderPanel();
+  enhance(view, { nav });
+  if (cur.screen.after) { try { cur.screen.after(c, { nav }); } catch (err) { console.error(err); } }
 }
 function rerender(opts = {}) { render(opts); }
 function remount() {
@@ -174,7 +192,15 @@ function route() {
   const scr = SCREENS[k];
   if (cur.cleanup) { cur.cleanup(); cur.cleanup = null; }
   closeSheet();
+  const prevKey = cur.key;
   cur.key = k; cur.params = params; cur.screen = scr;
+  const id = location.hash;
+  const tabKeys = (TABS[state.role] || []).map((t) => t[0]);
+  if (trail.length > 1 && trail[trail.length - 2] === id) { trail.pop(); cur.dir = 'back'; } else {
+    if (trail[trail.length - 1] !== id) trail.push(id);
+    if (trail.length > 40) trail.shift();
+    cur.dir = tabKeys.includes(k) && tabKeys.includes(prevKey) ? 'tab' : 'fwd';
+  }
   if (scr.guard) {
     const to = scr.guard(ctx());
     if (to && to !== k) { location.replace(toHash(to)); return; }
@@ -212,12 +238,19 @@ function closeSheet() {
   if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
 }
 
-function burst() {
+/** 慶祝：品牌色小圓點向外散開。at＝某個元素（從它的中心散開），不給就從畫面中間 */
+function burst(at) {
   if (reduceMotion.matches) return;
   const colors = ['#0E5F52', '#F26B54', '#F4C24D', '#DCEFE8'];
   const box = document.createElement('div');
   box.className = 'burst';
-  for (let i = 0; i < 18; i++) {
+  if (at && at.getBoundingClientRect && at.isConnected) {
+    const a = at.getBoundingClientRect(); const b = app.getBoundingClientRect();
+    box.style.left = `${a.left + a.width / 2 - b.left}px`;
+    box.style.top = `${a.top + a.height / 2 - b.top}px`;
+  }
+  const lite = (navigator.deviceMemory && navigator.deviceMemory <= 4) ? 3 : 1; // 低記憶體裝置少放幾顆
+  for (let i = 0; i < 18; i += lite) {
     const d = document.createElement('i');
     const a = (Math.PI * 2 * i) / 18;
     const r = 80 + (i % 3) * 36;
@@ -261,6 +294,7 @@ document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-go],[data-act]');
   if (!t || t.matches('form') || !(app.contains(t) || (panel && panel.contains(t)))) return;
   if (t.disabled) return;
+  buzz(8);
   if (t.dataset.go) { e.preventDefault(); go(t.dataset.go); return; }
   run(t.dataset.act, t, e);
 });

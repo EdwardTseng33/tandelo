@@ -1,12 +1,16 @@
 // 學生：今天、小隊、卡點地圖、我
 
-import { esc, icon, mt, coach, avatar, money, statusLabel, backBar } from '../ui.js';
+import { esc, icon, mt, coach, avatar, duo, money, statusLabel, backBar } from '../ui.js';
 import { SKILLS, SKILL_ORDER, CHAPTERS, syllabus, slotLabel, parseSlot, TEACHER, SEGMENTS } from '../content.js';
 import {
   fmtLong, fmtMD, fmtMDW, daysBetween, lessonDates, minutesUntil, countdownLabel, activeDays, PLANS, isRetestReady, refundIfQuit,
 } from '../state.js';
 import { homeLine, todayPlan } from '../coach.js';
-import { scheduleList } from './onboard.js';
+import { scheduleList, crewDots } from './onboard.js';
+import { starmapHtml, glyph } from '../starmap.js';
+import { reduced } from '../fx.js';
+
+const mapUi = { mode: 'star', sel: null, replay: null, t: null };
 
 export function lessonInfo(state) {
   const st = state.student;
@@ -58,6 +62,25 @@ function mapDots(st) {
   return `<div class="mapdots">${SKILL_ORDER.map((k) => `<span class="node-dot" data-s="${(st.skills[k] || {}).status || 'unknown'}" title="${esc(SKILLS[k].title)}"></span>`).join('')}</div>`;
 }
 
+/** 一個卡點的說明與下一步（星圖下方展開，或清單模式的底部面板） */
+function nodeBody(ctx, k) {
+  const sk = SKILLS[k];
+  const s = ctx.state.student.skills[k] || { status: 'unknown' };
+  let act = '';
+  if (s.status === 'stuck') act = `<button class="btn block" data-go="s/ask/${k}">拍一題問小陪</button>`;
+  else if (s.status === 'learning') act = `<button class="btn block" data-go="s/explain/${k}">說給我聽</button>`;
+  else if (s.status === 'green') act = `<button class="btn block" data-go="s/retest/${k}">${isRetestReady(s, ctx.today) ? '現在再測' : `${fmtMD(s.retestDue)} 再測`}</button>`;
+  else if (s.status === 'ok' || s.status === 'unknown') act = `<button class="btn ghost block" data-go="s/ask/${k}">想練也可以：拍一題問小陪</button>`;
+  else if (s.status === 'gold') act = `<button class="btn ghost block" data-act="replayFlip" data-k="${k}">${icon('refresh')}再看一次「翻過去」</button>`;
+  return `<span class="pill ${s.status === 'gold' ? 'h' : s.status === 'stuck' ? 'c' : 'g'}">${statusLabel(s.status)}</span>
+    <h2 class="h2">${esc(sk.title)}</h2>
+    <p class="body"><span class="lbl">為什麼會錯</span>${mt(sk.why)}</p>
+    ${s.hints ? `<p class="fine left">到目前用了 ${s.hints} 次提示或示範，我都記下來了。</p>` : ''}
+    ${s.status === 'gold' ? `<p class="body">${fmtMD(s.masteredAt)} 翻過去的。之後如果又錯，會自動回到練習清單。</p>` : ''}
+    ${act}`;
+}
+function nodePanel(ctx, k) { return `<div class="card nodepanel" data-s="${(ctx.state.student.skills[k] || {}).status || 'unknown'}">${nodeBody(ctx, k)}</div>`; }
+
 export const screens = {
   's/home': {
     tab: 's/home',
@@ -76,7 +99,7 @@ export const screens = {
         <h1 class="hero" tabindex="-1">${greet}</h1>
         ${coach(homeLine(state), { night })}
         ${night ? `<div class="card lights">
-            ${icon('moon', 'big')}<div><b>22:30 關燈了</b><p class="body">練習入口先收起來，剩下的我明天排。這一條爸媽也不能關。</p></div>
+            ${duo('sleep', 'l')}<div><b>22:30 關燈了</b><p class="body">練習入口先收起來，剩下的我明天排。這一條爸媽也不能關。</p></div>
           </div>` : ''}
         ${nextLessonCard(ctx)}
         ${night ? '' : `<section>
@@ -120,6 +143,7 @@ export const screens = {
         <div class="abar"><span class="abar-t">我的小隊</span><span class="pill h">第 ${L.week} 週</span></div>
         <h1 class="sr" tabindex="-1">我的小隊</h1>
         ${nextLessonCard(ctx)}
+        ${sq.status === 'formed' ? `<button class="crest" data-act="replayCeremony" aria-label="再看一次成班的那一刻"><span class="crest-dots" aria-hidden="true">${sq.members.map((mm) => avatar(mm, 'xs')).join('')}</span><span><b>${esc(SKILLS[st.diag.stuck[0] || L.skill].short)}隊</b><small>${sq.members.length} 人 · ${TEACHER.name} · 點一下再看一次成班</small></span>${icon('play', 'chev')}</button>` : ''}
         ${confirmed ? `<div class="card"><b>第 ${prep && prep.week} 週${TEACHER.name}確認的 3 題</b><ol class="list num3">${confirmed.map((t) => `<li>${mt(t)}</li>`).join('')}</ol><small class="fine left">用你們這週真的錯的題和問的問題排的。</small></div>` : ''}
         <h2 class="h3">這一期 · 對準 ${fmtMD(st.examDate)} 段考</h2>
         ${scheduleList(st, sq, { compact: true, doneWeeks: st.lessons.length, lessons: L.planLessons })}
@@ -142,6 +166,7 @@ export const screens = {
       </div>`;
     },
     on: {
+      replayCeremony(ctx) { ctx.ceremony({ members: crewDots(ctx.state.squad), title: '成班了', sub: `${TEACHER.name}接下這一隊` }); },
       ask(ctx) {
         const el = document.getElementById('qIn');
         const v = (el && el.value.trim()) || '';
@@ -156,47 +181,64 @@ export const screens = {
     tab: 's/map',
     guard: (ctx) => (ctx.state.student.diag.done ? null : 's/start'),
     meta: { title: '卡點地圖', tips: ['顏色：珊瑚＝卡住、綠＝說得出來（等再測）、金＝過 7–12 天不給提示還會。', '點任何一個點，看下一步要做什麼。'] },
+    enter(ctx) {
+      const f = ctx.state.student.flip;
+      if (f) { mapUi.mode = 'star'; mapUi.sel = f; }
+    },
     mount(ctx) {
-      if (!ctx.state.student.flip) return null;
-      const t = setTimeout(() => ctx.update((s) => { s.student.flip = null; }, { silent: true }), 1200);
-      return () => clearTimeout(t);
+      const k = ctx.state.student.flip;
+      if (!k) return null;
+      // 翻過去 0.7 秒 → 翻完的瞬間圓點散開
+      const t1 = setTimeout(() => { ctx.burst(document.querySelector(`#star-${k} .star-dot`)); ctx.buzz([12, 50, 18]); }, reduced() ? 0 : 900);
+      const t = setTimeout(() => ctx.update((s) => { s.student.flip = null; }, { silent: true }), 1500);
+      return () => { clearTimeout(t); clearTimeout(t1); clearTimeout(mapUi.t); mapUi.replay = null; };
     },
     render(ctx) {
       const st = ctx.state.student;
       const gold = SKILL_ORDER.filter((k) => st.skills[k] && st.skills[k].status === 'gold').length;
-      return `<div class="pad pbt">
-        <div class="abar"><span class="abar-t">卡點地圖</span></div>
-        <h1 class="hero s" tabindex="-1">${gold ? `${gold} 個點，<br>你真的會了。` : '一步一步，<br>把卡點翻過去。'}</h1>
-        <div class="legend"><span><i data-s="stuck"></i>卡住</span><span><i data-s="learning"></i>練習中</span><span><i data-s="green"></i>說得出來</span><span><i data-s="gold"></i>已掌握</span></div>
-        ${CHAPTERS.map((c) => `<section class="chap"><h2 class="chap-h">${esc(c.name)}</h2>
+      const focus = mapUi.sel || st.diag.stuck[0] || SKILL_ORDER[0];
+      const legend = `<div class="legend shapes">${[['stuck', '卡住'], ['learning', '練習中'], ['green', '說得出來'], ['gold', '已掌握']].map(([s, n]) => `<span>${glyph(s)}${n}</span>`).join('')}</div>`;
+      const list = () => CHAPTERS.map((c) => `<section class="chap"><h2 class="chap-h">${esc(c.name)}</h2>
           ${SKILL_ORDER.filter((k) => SKILLS[k].chapter === c.id).map((k) => {
     const s = st.skills[k] || { status: 'unknown' };
     const sub = s.status === 'green' ? `${fmtMD(s.retestDue)} 再測` : statusLabel(s.status);
-    return `<button class="node ${st.flip === k ? 'flip' : ''}" data-s="${s.status}" data-act="nodeInfo" data-k="${k}">
+    return `<button class="node" data-s="${s.status}" data-act="nodeInfo" data-k="${k}">
               <span class="node-dot" data-s="${s.status}">${s.status === 'gold' ? icon('star') : s.status === 'green' || s.status === 'ok' ? icon('check') : ''}</span>
               <span><b>${esc(SKILLS[k].title)}</b><small>${esc(sub)}</small></span>${icon('chev', 'chev')}</button>`;
-  }).join('')}</section>`).join('')}
+  }).join('')}</section>`).join('');
+      return `<div class="pad pbt">
+        <div class="abar"><span class="abar-t">卡點地圖</span>
+          <div class="seg mini" role="group" aria-label="檢視方式"><button data-act="mapMode" data-v="star" aria-pressed="${mapUi.mode === 'star'}">${icon('route')}星圖</button><button data-act="mapMode" data-v="list" aria-pressed="${mapUi.mode === 'list'}">${icon('list')}清單</button></div></div>
+        <h1 class="hero s" tabindex="-1">${gold ? `${gold} 個點，<br>你真的會了。` : '一步一步，<br>把卡點翻過去。'}</h1>
+        ${legend}
+        ${mapUi.mode === 'star'
+    ? `${starmapHtml({ skills: st.skills, sel: mapUi.sel, flip: st.flip || mapUi.replay, focus, labelOf: statusLabel, examLabel: `段考 ${fmtMD(st.examDate)}` })}
+           <div id="nodePanel" aria-live="polite">${mapUi.sel ? nodePanel(ctx, mapUi.sel) : '<p class="fine">點一顆星，看下一步要做什麼。</p>'}</div>`
+    : list()}
         <p class="jquote">金色不是獎盃，是紀錄：之後又錯，它會回到練習清單。</p>
       </div>`;
     },
     on: {
+      mapMode(ctx, el) { mapUi.mode = el.dataset.v; ctx.rerender(); },
+      replayFlip(ctx, el) {
+        const k = el.dataset.k;
+        ctx.closeSheet();
+        mapUi.mode = 'star'; mapUi.sel = k;
+        mapUi.replay = k; ctx.rerender();
+        clearTimeout(mapUi.t);
+        mapUi.t = setTimeout(() => {
+          ctx.burst(document.querySelector(`#star-${k} .star-dot`)); ctx.buzz([12, 50, 18]);
+          mapUi.t = setTimeout(() => { mapUi.replay = null; }, 500);
+        }, reduced() ? 0 : 900);
+      },
       nodeInfo(ctx, el) {
         const k = el.dataset.k;
-        const sk = SKILLS[k];
-        const s = ctx.state.student.skills[k] || { status: 'unknown' };
-        let act = '';
-        if (s.status === 'stuck') act = `<button class="btn block" data-go="s/ask/${k}" data-act="closeSheet">拍一題問小陪</button>`;
-        else if (s.status === 'learning') act = `<button class="btn block" data-go="s/explain/${k}">說給我聽</button>`;
-        else if (s.status === 'green') act = `<button class="btn block" data-go="s/retest/${k}">${isRetestReady(s, ctx.today) ? '現在再測' : `${fmtMD(s.retestDue)} 再測`}</button>`;
-        else if (s.status === 'ok' || s.status === 'unknown') act = `<button class="btn ghost block" data-go="s/ask/${k}">想練也可以：拍一題問小陪</button>`;
-        ctx.sheet(`<div class="sheet-c">
-          <span class="pill ${s.status === 'gold' ? 'h' : s.status === 'stuck' ? 'c' : 'g'}">${statusLabel(s.status)}</span>
-          <h2 class="h2">${esc(sk.title)}</h2>
-          <p class="body"><span class="lbl">為什麼會錯</span>${mt(sk.why)}</p>
-          ${s.hints ? `<p class="fine left">到目前用了 ${s.hints} 次提示或示範，我都記下來了。</p>` : ''}
-          ${s.status === 'gold' ? `<p class="body">${fmtMD(s.masteredAt)} 翻過去的。之後如果又錯，會自動回到練習清單。</p>` : ''}
-          ${act}
-        </div>`, sk.title);
+        if (mapUi.mode === 'star') {
+          mapUi.sel = mapUi.sel === k ? null : k;
+          ctx.rerender();
+          return;
+        }
+        ctx.sheet(`<div class="sheet-c">${nodeBody(ctx, k)}</div>`, SKILLS[k].title);
       },
     },
   },

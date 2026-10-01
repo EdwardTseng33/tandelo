@@ -3,11 +3,56 @@
 import { esc, icon, m, mt, coach, duo, avatar, money, backBar, steps } from '../ui.js';
 import {
   DIAG_QUESTIONS, UNSURE, diagnose, SKILLS, SKILL_ORDER, CHAPTERS, GOALS, DAYS, SLOT_TIMES, slotEnabled, slotId,
-  slotLabel, pickBestSlot, parseSlot, buildSquad, syllabus, PHASES, TEACHER, slotDemand,
+  slotLabel, pickBestSlot, parseSlot, buildSquad, syllabus, PHASES, TEACHER, slotDemand, AVATAR_COLORS,
 } from '../content.js';
+import { reduced } from '../fx.js';
 import { daysBetween, fmtMDW, fmtMD, firstLessonDate, lessonDates, PLANS, PLUS_PRICE, planTotal, isLightsOut } from '../state.js';
 
-const ui = { qi: 0, plan: '8', plus: false, matchPhase: 'search' };
+const ui = { qi: 0, plan: '8', plus: false, matchPhase: 'search', busy: false, qAnim: '', prevP: 0 };
+
+/** 成班儀式用的成員小圓 */
+export function crewDots(sq) {
+  return sq.members.map((mm) => ({ bg: AVATAR_COLORS[mm.color % AVATAR_COLORS.length], label: mm.isMe ? '你' : mm.name.slice(-1) }));
+}
+
+// ——— 診斷結果的路徑圖：一條八步的路，只有卡住的那一步有缺口 ———
+const PATH_XY = [[60, 50], [142, 50], [224, 50], [306, 50], [306, 122], [224, 122], [142, 122], [60, 122]];
+function pathArt(st) {
+  const stuck = new Set(st.diag.stuck);
+  const status = (k) => (stuck.has(k) ? 'stuck' : (st.skills[k] || {}).status === 'ok' ? 'ok' : 'unknown');
+  const segs = SKILL_ORDER.slice(1).map((k, i) => {
+    const [x1, y1] = PATH_XY[i]; const [x2, y2] = PATH_XY[i + 1];
+    const d = i === 3 ? `M${x1} ${y1} C ${x1 + 46} ${y1}, ${x2 + 46} ${y2}, ${x2} ${y2}` : `M${x1} ${y1} L${x2} ${y2}`;
+    const cls = stuck.has(k) ? 'gap' : status(k) === 'ok' && status(SKILL_ORDER[i]) !== 'unknown' ? 'ok' : '';
+    return `<path class="pa-seg ${cls}" d="${d}"/>`;
+  }).join('');
+  const firstGap = SKILL_ORDER.findIndex((k) => stuck.has(k));
+  let walker = '';
+  if (firstGap >= 0) {
+    // 兩個圓停在缺口前：你現在在這裡
+    const [gx, gy] = PATH_XY[firstGap];
+    const [px, py] = firstGap > 0 ? PATH_XY[firstGap - 1] : [gx - 44, gy];
+    const wx = firstGap === 4 ? gx + 34 : (gx + px) / 2; const wy = (gy + py) / 2;
+    walker = `<g class="pa-me" transform="translate(${wx.toFixed(0)} ${wy.toFixed(0)})"><circle cx="-4" cy="0" r="6" fill="#F26B54"/><circle cx="4" cy="0" r="6" fill="#0E5F52" opacity=".9"/></g>`;
+  }
+  const nodes = SKILL_ORDER.map((k, i) => {
+    const [x, y] = PATH_XY[i]; const s = status(k);
+    const up = i % 2 === 0; // 相鄰的標籤一上一下，才不會疊在一起
+    const body = s === 'stuck'
+      ? `<circle r="12" fill="var(--coral-l)"/><circle r="12" fill="none" stroke="var(--coral)" stroke-width="5" stroke-linecap="round" stroke-dasharray="58 18" transform="rotate(-60)"/>`
+      : s === 'ok' ? '<circle r="11" fill="var(--pine)"/><path d="M-5 .5l3.4 3.4L5.2 -3.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
+        : '<circle r="10" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>';
+    const label = s === 'stuck' ? `<text class="pa-l" y="${up ? -22 : 30}" text-anchor="${i === 3 || i === 4 ? 'end' : i === 0 || i === 7 ? 'start' : 'middle'}" x="${i === 3 || i === 4 ? 12 : i === 0 || i === 7 ? -12 : 0}">${esc(SKILLS[k].short)}</text>` : '';
+    return `<g class="pa-n ${s}" style="--i:${i}" transform="translate(${x} ${y})"><g class="pa-pop">${body}</g>${label}</g>`;
+  }).join('');
+  const n = stuck.size;
+  const alt = n ? `一條八步的路，只有 ${n} 處缺口：${[...stuck].map((k) => SKILLS[k].short).join('、')}。其他的路是通的。` : '一條八步的路，全部是通的。';
+  return `<figure class="patha"><svg viewBox="0 0 362 164" role="img" aria-label="${esc(alt)}">
+      <path class="pa-seg ${n ? '' : 'ok'}" d="M60 122 L26 122"/>
+      ${segs}${nodes}${walker}
+      <path class="pa-flag" d="M18 132v-22M18 110.5h11l-2.4 3.8 2.4 3.8H18"/><text class="pa-cap" x="20" y="150" text-anchor="middle">段考</text>
+    </svg><figcaption class="fine left">${n ? `八步裡只有${n === 1 ? '一' : '兩'}處缺口。補上它，後面的路就通了。` : '八步都是通的。'}</figcaption></figure>`;
+}
 
 function scheduleList(st, sq, { compact = false, doneWeeks = 0, lessons = 8 } = {}) {
   const sy = syllabus(st.diag.stuck.length ? st.diag.stuck : ['sq-cross'], st.grade).slice(0, lessons);
@@ -22,6 +67,21 @@ function scheduleList(st, sq, { compact = false, doneWeeks = 0, lessons = 8 } = 
   return `<ol class="weeks ${compact ? 'compact' : ''}">${rows}<li class="wk-exam">${icon('flag')}<span>學校段考 ${fmtMDW(st.examDate)}</span></li></ol>`;
 }
 export { scheduleList };
+
+function advance(ctx) {
+  if (ui.qi < DIAG_QUESTIONS.length - 1) { ui.qi += 1; ui.qAnim = 'in'; ctx.rerender({ focusTitle: true }); return; }
+  const r = diagnose(ctx.state.student.diag.answers);
+  ctx.update((s) => {
+    const d = s.student.diag;
+    d.done = true; d.stuck = r.stuck; d.allClear = r.allClear; d.correct = r.correct;
+    s.student.started = true;
+    s.student.skills = {};
+    for (const k of SKILL_ORDER) if (r.status[k]) s.student.skills[k] = { status: r.status[k], hints: 0 };
+    s.squad = null; s.student.joined = false; s.student.plan = null; s.student.lessons = [];
+    s.teacher.sessions = []; s.teacher.prep = null; s.teacher.room = null;
+  }, { silent: true });
+  ctx.go('s/result');
+}
 
 export const screens = {
   's/start': {
@@ -75,39 +135,48 @@ export const screens = {
       const ans = st.diag.answers[q.id];
       return `<div class="pad pb">
         <div class="abar">${ui.qi === 0 ? `<button class="iconbtn" data-go="s/start" aria-label="返回">${icon('back')}</button>` : `<button class="iconbtn" data-act="prevQ" aria-label="上一題">${icon('back')}</button>`}<span class="abar-t">2 / 2 · 你卡在哪</span><span class="abar-r num">${ui.qi + 1} / ${DIAG_QUESTIONS.length}</span></div>
-        <div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${DIAG_QUESTIONS.length}" aria-valuenow="${ui.qi}"><i style="width:${(ui.qi / DIAG_QUESTIONS.length) * 100}%"></i></div>
+        <div class="duoprog" id="duoprog" role="progressbar" aria-label="診斷進度" aria-valuemin="0" aria-valuemax="${DIAG_QUESTIONS.length}" aria-valuenow="${ui.qi}" style="--p:${ui.prevP}"><span class="dp a"><i></i></span><span class="dp b"><i></i></span></div>
+        <div class="qcard ${ui.qAnim}" id="qcard">
         <p class="eyebrow">${esc(CHAPTERS.find((c) => c.id === SKILLS[q.skill].chapter).name)}</p>
         <h1 class="qtitle" tabindex="-1">${/[一-鿿]/.test(q.q) ? mt(q.q) : m(q.q)}</h1>
         <div class="opts" role="group" aria-label="選項">
           ${q.opts.map((o, i) => `<button class="opt ${ans === i ? 'sel' : ''}" data-act="answer" data-i="${i}" id="opt-${i}">${/[一-鿿]/.test(o.t) ? mt(o.t) : m(o.t)}</button>`).join('')}
         </div>
         <button class="btn ghost s block" data-act="answer" data-i="${UNSURE}" id="opt-u">不確定</button>
+        </div>
         <p class="fine">這只是初步。不是考試，沒有分數；之後每天的練習會讓我越來越準。</p>
       </div>`;
     },
+    enter() { ui.busy = false; ui.qAnim = ''; ui.prevP = ui.qi / DIAG_QUESTIONS.length; },
+    after() {
+      // 兩個圓隨進度靠攏：先畫在上一題的位置，下一格再移到這一題
+      const p = ui.qi / DIAG_QUESTIONS.length;
+      const el = document.getElementById('duoprog');
+      ui.prevP = p; ui.qAnim = '';
+      if (el) requestAnimationFrame(() => el.style.setProperty('--p', p));
+    },
     on: {
       answer(ctx, el) {
+        if (ui.busy) return;
         const q = DIAG_QUESTIONS[ui.qi];
         const i = Number(el.dataset.i);
         ctx.update((s) => { s.student.diag.answers[q.id] = i; }, { silent: true });
-        if (ui.qi < DIAG_QUESTIONS.length - 1) { ui.qi += 1; ctx.rerender({ focusTitle: true }); return; }
-        const r = diagnose(ctx.state.student.diag.answers);
-        ctx.update((s) => {
-          const d = s.student.diag;
-          d.done = true; d.stuck = r.stuck; d.allClear = r.allClear; d.correct = r.correct;
-          s.student.started = true;
-          s.student.skills = {};
-          for (const k of SKILL_ORDER) if (r.status[k]) s.student.skills[k] = { status: r.status[k], hints: 0 };
-          s.squad = null; s.student.joined = false; s.student.plan = null; s.student.lessons = [];
-          s.teacher.sessions = []; s.teacher.prep = null; s.teacher.room = null;
-        }, { silent: true });
-        ctx.go('s/result');
+        const card = document.getElementById('qcard');
+        if (card && !reduced()) {
+          // 作答後這張卡滑出去，下一題再滑進來
+          ui.busy = true;
+          el.classList.add('sel'); card.classList.add('out');
+          setTimeout(() => { ui.busy = false; if (location.hash.includes('s/diag')) advance(ctx); }, 300);
+          return;
+        }
+        advance(ctx);
       },
-      prevQ(ctx) { ui.qi = Math.max(0, ui.qi - 1); ctx.rerender({ focusTitle: true }); },
+      prevQ(ctx) { if (ui.busy) return; ui.qi = Math.max(0, ui.qi - 1); ui.qAnim = 'in-back'; ctx.rerender({ focusTitle: true }); },
     },
   },
 
   's/result': {
+
     tabs: false,
     guard: (ctx) => (ctx.state.student.diag.done ? null : 's/start'),
     meta: { title: '診斷結果', tips: ['卡點是「卡在哪一步」，不是整章。', '這裡的結果會出現在家長 LINE 的第一張卡片。'] },
@@ -121,6 +190,7 @@ export const screens = {
       return `<div class="pad pb">
         <span class="pill g">${d.correct ?? 0} / ${DIAG_QUESTIONS.length} 題 · 初步結果</span>
         <h1 class="hero m" tabindex="-1">${headline}</h1>
+        ${pathArt(st)}
         ${sk.map((s, i) => `<div class="card stuckcard">
           <div class="stuck-h"><span class="node-dot" data-s="stuck" aria-hidden="true"></span><div><small class="eyebrow">卡點 ${i + 1} · ${esc(CHAPTERS.find((c) => c.id === s.chapter).name)}</small><b>${esc(s.title)}</b></div></div>
           <p class="body"><span class="lbl">為什麼會錯</span>${mt(s.why)}</p>
@@ -185,16 +255,26 @@ export const screens = {
     meta: { title: 'AI 湊隊', tips: ['隊友只顯示暱稱與頭像，名字和聲音要第一堂大家都同意才公開。', '第 4 週有一個結業點，可以停也可以續走。'] },
     mount(ctx) {
       if (ui.matchPhase === 'found') return null;
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const t = setTimeout(() => { ui.matchPhase = 'found'; ctx.rerender({ focusTitle: true }); }, reduce ? 200 : 2100);
-      return () => clearTimeout(t);
+      const still = reduced();
+      const n = ctx.state.squad.members.length - 1;
+      const closeAt = n * 480 + 650; // 最後一顆進來的時候
+      const t1 = still ? null : setTimeout(() => { ctx.burst(document.querySelector('.gather')); ctx.buzz([10, 40, 16]); }, closeAt + 420);
+      const t = setTimeout(() => { ui.matchPhase = 'found'; ctx.rerender({ focusTitle: true }); }, still ? 200 : closeAt + 1150);
+      return () => { clearTimeout(t); clearTimeout(t1); };
     },
     render(ctx) {
       const st = ctx.state.student;
       const sq = ctx.state.squad;
       if (ui.matchPhase !== 'found') {
         return `<div class="pad center-col">
-          <div class="searching">${duo('listen', 'xl')}<span class="orbit" aria-hidden="true">${sq.members.slice(1).map((mm, i) => `<i style="--i:${i};--av:${['#F9D3C9', '#FBE7B2', '#C9DDF8', '#DDD2F6'][i % 4]}"></i>`).join('')}</span></div>
+          <div class="gather" style="--n:${sq.members.length - 1}" aria-hidden="true">
+            <i class="g-big a"><b></b></i><i class="g-big b"><b></b></i>
+            ${sq.members.slice(1).map((mm, i, arr) => {
+    const a = [-150, -28, 152, 30, -90, 90][i % 6] * Math.PI / 180;
+    const ty = (i - (arr.length - 1) / 2) * 21;
+    return `<span class="g-m" style="--i:${i};--av:${AVATAR_COLORS[mm.color % AVATAR_COLORS.length]};--fx:${(Math.cos(a) * 150).toFixed(0)}px;--fy:${(Math.sin(a) * 120).toFixed(0)}px;--tx:${i % 2 ? 5 : -5}px;--ty:${ty.toFixed(0)}px"><i></i></span>`;
+  }).join('')}
+          </div>
           <h1 class="hero s" tabindex="-1">我在幫你找隊友</h1>
           <ul class="seek" aria-live="polite">
             <li>找跟你卡在同一步的人</li>
@@ -206,7 +286,7 @@ export const screens = {
       const main = SKILLS[st.diag.stuck[0]];
       return `<div class="pad pb">
         ${backBar('小隊邀請', 's/when')}
-        <div class="mtl"><span class="ok">${icon('check')}湊好隊</span><span class="ok">${icon('check')}時段對上</span><span class="now">等你加入</span></div>
+        <div class="mtl"><span class="ok">${icon('check')}湊好隊</span><span class="ok">${icon('check')}時段對上</span><span class="now">等你加入</span><button class="replay" data-act="replayMatch">${icon('refresh')}再看一次</button></div>
         <h1 class="hero m" tabindex="-1">找到跟你卡在<br>同一步的人。</h1>
         <p class="sub">${esc(st.grade)}上數學 · ${esc(sq.members.length)} 人小隊 · 對準 ${fmtMD(st.examDate)} 段考</p>
         <div class="avs big">${sq.members.map((mm) => `<div class="avcap">${avatar(mm, 'l')}<small>${mm.isMe ? '你' : esc(mm.name)}</small></div>`).join('')}</div>
@@ -225,6 +305,9 @@ export const screens = {
           <p class="fine">滿 4 人成班、3 人改 1 對 3、2 人以下不開全額退。</p>
         </div>
       </div>`;
+    },
+    on: {
+      replayMatch(ctx) { ui.matchPhase = 'search'; ctx.remount(); },
     },
   },
 
@@ -293,6 +376,7 @@ export const screens = {
       return `<div class="pad pb">
         <div class="center-col tight">${duo(formed ? 'joy' : 'talk', 'l')}</div>
         <h1 class="hero m center" tabindex="-1">${formed ? '成班了。' : '意願送出了。'}</h1>
+        ${formed ? `<div class="center-col"><button class="replay" data-act="replayCeremony">${icon('refresh')}再看一次成班</button></div>` : ''}
         <ol class="timeline">
           <li class="done"><span class="d">${icon('check')}</span><div><b>你按了「我想加入」</b><small>${esc(plan.name)} · 成班才扣次數，沒成班全額退</small></div></li>
           <li class="done"><span class="d">${icon('check')}</span><div><b>付款完成（示範）</b><small>沒有收任何錢</small></div></li>
@@ -310,8 +394,9 @@ export const screens = {
       toTeacher(ctx) { ctx.update((s) => { s.role = 'teacher'; }, { silent: true }); ctx.go('t/offer'); },
       autoAccept(ctx) {
         ctx.update((s) => { s.squad.status = 'formed'; s.squad.acceptedAt = s.clock.date; });
-        ctx.burst();
+        ctx.ceremony({ members: crewDots(ctx.state.squad), title: '成班了', sub: `${TEACHER.name}接下這一隊` });
       },
+      replayCeremony(ctx) { ctx.ceremony({ members: crewDots(ctx.state.squad), title: '成班了', sub: `${TEACHER.name}接下這一隊` }); },
     },
   },
 };

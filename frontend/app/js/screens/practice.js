@@ -4,6 +4,9 @@ import { esc, icon, m, mt, coach, duo, backBar } from '../ui.js';
 import { SKILLS, SKILL_ORDER } from '../content.js';
 import { TIERS, newSession, answer, hint, helpCount, tierForStep, evaluateExplanation, focusSkill, todayPlan } from '../coach.js';
 import { fmtMD, fmtMDW, daysBetween, retestDays, retestDue, isRetestReady, dailyDone, DAILY_CAP } from '../state.js';
+import { recorderHtml } from '../recorder.js';
+import { glyph } from '../starmap.js';
+import { reduced } from '../fx.js';
 
 const ui = {
   ask: { phase: 'pick', skill: null, session: null, logged: false },
@@ -124,9 +127,10 @@ const ask = {
       <div class="shotmini sm"><span class="paper">${fx(sk.coach.photo)}</span><div><b>${mt(sk.coach.prompt)}</b><small>第 ${Math.min(s.step + 1, steps.length)} / ${steps.length} 步</small></div></div>
       <h1 class="sr" tabindex="-1">和小陪一起解題</h1>
       <div class="bubbles" aria-live="polite">
-        ${s.msgs.map((msg) => (msg.who === 'me'
-    ? `<div class="bub me">${fx(msg.text)}</div>`
-    : `<div class="bub coach ${msg.kind || ''}">${msg.kind === 'hint' ? '<span class="bub-tag">提示</span>' : msg.kind === 'demo' ? '<span class="bub-tag">示範一步</span>' : ''}${mt(msg.text)}</div>`)).join('')}
+        ${s.msgs.map((msg, mi) => (msg.who === 'me'
+    ? `<div class="bub me ${mi >= s.msgs.length - 2 ? 'pop' : ''}">${fx(msg.text)}</div>`
+    : `<div class="bub coach ${msg.kind || ''}">${msg.kind === 'hint' ? '<span class="bub-tag">提示</span>' : msg.kind === 'demo' ? '<span class="bub-tag">示範一步</span>' : ''}<span ${mi === s.msgs.length - 1 ? `data-type="ask-${mi}"` : ''}>${mt(msg.text)}</span></div>`)).join('')}
+        <span class="chat-duo" aria-hidden="true">${duo(s.done ? 'joy' : 'idle', 's')}</span>
       </div>
       ${s.done ? `<div class="card honey">
           <b>你自己解完了</b>
@@ -212,21 +216,18 @@ const explain = {
       </div>`;
     }
     return `<div class="pad pb">${backBar('說給我聽', 's/practice')}
-      ${coach(sk.explain.prompt, { night: ctx.night, mode: e.typing ? 'listen' : 'talk' })}
+      ${coach(sk.explain.prompt, { night: ctx.night, mode: 'talk' })}
       <h1 class="sr" tabindex="-1">說給我聽：${esc(sk.title)}</h1>
-      <div class="rec">
-        <div class="ring30" id="ring30" style="--p:${Math.min(1, e.text.length / 90)}"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><circle class="fg" cx="32" cy="32" r="28"/></svg><span class="num">30</span><small>秒</small></div>
-        <label class="sr" for="exText">用你自己的話講</label>
-        <textarea class="input ta" id="exText" rows="4" maxlength="240" placeholder="用你自己的話講，30 秒就好。打字也可以。" data-input="exType">${esc(e.text)}</textarea>
-      </div>
+      ${recorderHtml({ id: 'exRec', target: 'exText', sample: sk.explain.sample, secs: 30, micIcon: icon('mic'), hint: '按住說話，放開就停' })}
+      <label class="sr" for="exText">用你自己的話講</label>
+      <textarea class="input ta" id="exText" rows="3" maxlength="240" placeholder="用你自己的話講，30 秒就好。打字也可以。" data-input="exType">${esc(e.text)}</textarea>
       <div class="btnrow">
-        <button class="btn ghost s" data-act="fakeVoice" ${e.typing ? 'disabled' : ''}>${icon('mic')}示範語音</button>
-        <button class="btn s" data-act="evaluate" ${e.typing ? 'disabled' : ''}>講完了</button>
+        <button class="btn s" data-act="evaluate">送出，講完了</button>
       </div>
-      <p class="fine left">不會錄音，也不留你的原話，只留下面三個勾。</p>
-      ${res ? `<div class="card ${res.pass ? 'mint' : ''}">
+      <p class="fine left">示範：不會開麥克風，也不留你的原話；按住時用示範句代替，只留下面三個勾。</p>
+      ${res ? `<div class="card ${res.pass ? 'mint' : ''}" id="exRes">
           <b>${res.pass ? '我聽懂了' : '再補一句'}</b>
-          <ul class="concepts">${SKILLS[e.skill].explain.concepts.map((c) => `<li class="${res.hits.includes(c.label) ? 'hit' : ''}">${res.hits.includes(c.label) ? icon('check') : '<i class="dot"></i>'}${esc(c.label)}</li>`).join('')}</ul>
+          <ul class="concepts ${e.fresh ? 'seq' : ''}">${SKILLS[e.skill].explain.concepts.map((c, ci) => `<li class="${res.hits.includes(c.label) ? 'hit' : ''}" style="--i:${ci}">${res.hits.includes(c.label) ? `<span class="cdot on">${icon('check')}</span>` : '<span class="cdot"></span>'}${esc(c.label)}</li>`).join('')}</ul>
           <p class="body">${mt(res.feedback)}</p>
           ${res.pass ? '<button class="btn block" data-act="toTransfer">換一題試試</button>' : ''}
         </div>` : ''}
@@ -234,31 +235,17 @@ const explain = {
     </div>`;
   },
   on: {
-    exType(ctx, el) {
-      ui.ex.text = el.value;
-      const ring = document.getElementById('ring30');
-      if (ring) ring.style.setProperty('--p', Math.min(1, el.value.length / 90));
-    },
-    fakeVoice(ctx) {
-      const e = ui.ex;
-      const full = SKILLS[e.skill].explain.sample;
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce) { e.text = full; ctx.rerender(); return; }
-      e.text = ''; let i = 0;
-      ctx.rerender();
-      e.typing = setInterval(() => {
-        i += 3; e.text = full.slice(0, i);
-        const ta = document.getElementById('exText'); if (ta) ta.value = e.text;
-        const ring = document.getElementById('ring30'); if (ring) ring.style.setProperty('--p', Math.min(1, i / full.length));
-        if (i >= full.length) { clearInterval(e.typing); e.typing = null; ctx.rerender(); }
-      }, 45);
-    },
+    exType(ctx, el) { ui.ex.text = el.value; },
     evaluate(ctx) {
       const ta = document.getElementById('exText');
       if (ta) ui.ex.text = ta.value;
       ui.ex.result = evaluateExplanation(ui.ex.skill, ui.ex.text);
       ui.ex.attempts += 1;
-      ctx.rerender({ focusSel: '.card b' });
+      // 送出後，關鍵概念一個一個亮起（只在剛送出的這一次）
+      ui.ex.fresh = true;
+      ctx.rerender({ focusSel: '#exRes b' });
+      ui.ex.fresh = false;
+      ctx.buzz(ui.ex.result.pass ? [10, 40, 16] : 10);
     },
     toTransfer(ctx) { ui.ex.phase = 'transfer'; ctx.rerender({ focusTitle: true }); },
     transfer(ctx, el) {
@@ -295,7 +282,9 @@ const retest = {
     if (r.pick !== null) {
       const ok = r.pick === sk.retest.ok;
       return `<div class="pad pb">${backBar('過幾天再測', 's/practice')}
-        <div class="flipstage"><span class="bignode ${ok ? 'flip' : ''}" data-s="${ok ? 'gold' : 'stuck'}">${icon(ok ? 'star' : 'refresh')}</span></div>
+        <div class="flipstage">${ok
+    ? `<span class="bignode flip" data-s="gold"><span class="flipper"><span class="face front">${glyph('green')}</span><span class="face back">${glyph('gold')}</span></span></span>`
+    : `<span class="bignode" data-s="stuck">${icon('refresh')}</span>`}</div>
         <h1 class="hero s center" tabindex="-1">${ok ? `翻過去了：<br>${esc(sk.title)}` : '沒關係。'}</h1>
         ${coach(ok ? `隔了 ${s.gap || 7} 天、不給提示，你還會。這一點變成金色；之後如果又錯，它會回到練習清單。` : '我知道要再陪你走一次了。它回到練習清單，下次我們換個方式。', { night: ctx.night, mode: ok ? 'joy' : 'talk' })}
         <div class="dock"><button class="btn block" data-go="s/map">看卡點地圖</button><button class="btn ghost block" data-go="s/home">回今天</button></div>
@@ -347,8 +336,8 @@ const retest = {
         x.gap = daysBetween(x.explainedAt, s.clock.date);
         if (ok) { x.status = 'gold'; x.masteredAt = s.clock.date; s.student.flip = k; } else { x.status = 'stuck'; x.retestDue = null; x.fails = (x.fails || 0) + 1; x.hints = 0; }
       }, { silent: true });
-      if (ok) setTimeout(() => ctx.burst(), 450);
       ctx.rerender({ focusTitle: true });
+      if (ok) setTimeout(() => { ctx.burst(document.querySelector('.bignode')); ctx.buzz([12, 50, 18]); }, reduced() ? 0 : 880);
     },
   },
 };

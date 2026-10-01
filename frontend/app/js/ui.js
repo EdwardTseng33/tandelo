@@ -33,11 +33,11 @@ export function icon(name, cls = '') { return `<svg class="i ${cls}" aria-hidden
 /** 小陪：兩個圓。mode：idle 待命呼吸／listen 在聽浮起／talk 說話一縮一放／joy 學會一起跳／sleep 關燈 */
 export function duo(mode = 'idle', size = '') { return `<span class="duo ${size}" data-mode="${mode}" aria-hidden="true"><i></i><i></i></span>`; }
 
-export function coach(text, { mode = 'talk', label = '小陪', night = false, id = '' } = {}) {
+export function coach(text, { mode = 'talk', label = '小陪', night = false, id = '', slot = 'coach' } = {}) {
   if (night || text == null) {
     return `<div class="coach quiet" ${id ? `id="${id}"` : ''}>${duo('sleep')}<div><div class="coach-n">${esc(label)}</div><div class="coach-m">22:30 之後我不出聲。明天見。</div></div></div>`;
   }
-  return `<div class="coach" ${id ? `id="${id}"` : ''}>${duo(mode)}<div><div class="coach-n">${esc(label)}<span class="demo-tag">示範模式</span></div><div class="coach-m">${mt(text)}</div></div></div>`;
+  return `<div class="coach" ${id ? `id="${id}"` : ''}>${duo(mode)}<div><div class="coach-n">${esc(label)}<span class="demo-tag">示範模式</span></div><div class="coach-m" data-type="${slot}">${mt(text)}</div></div></div>`;
 }
 
 export function avatar(member, size = '') {
