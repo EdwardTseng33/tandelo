@@ -1,0 +1,36 @@
+[project]
+name = "tandelo-backend"
+version = "0.1.0"
+description = "Tandelo 概念驗證後端：FastAPI + SQLAlchemy 2 + SQLite（可換 Postgres）"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "Edward Tseng" }]
+dependencies = [
+  "fastapi==0.115.6",
+  "uvicorn[standard]==0.32.1",
+  "sqlalchemy==2.0.36",
+  "pydantic==2.10.3",
+  "pydantic-settings==2.6.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.4", "httpx==0.28.1", "ruff==0.8.4"]
+postgres = ["psycopg[binary]==3.2.3"]
+
+[tool.uv]
+dev-dependencies = ["pytest==8.3.4", "httpx==0.28.1", "ruff==0.8.4"]
+
+[tool.ruff]
+line-length = 160
+target-version = "py39"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["UP006", "UP007", "UP035", "B008"]  # 3.9 相容：保留 typing.List / Optional；FastAPI 的 Depends() 慣例
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

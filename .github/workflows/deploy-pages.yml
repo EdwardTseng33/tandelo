@@ -1,0 +1,44 @@
+# 部署前端到 GitHub Pages（官方 Actions 流程）。
+# 需要在 GitHub 設定：Settings → Pages → Build and deployment → Source 改成「GitHub Actions」。
+# 沒有任何 secret；Pages 版前端 config.js 留空＝離線示範模式。
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: 不把 Docker 相關檔案放上 Pages
+        run: |
+          rm -f frontend/Dockerfile frontend/nginx.conf frontend/docker-entrypoint.sh frontend/.dockerignore
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,109 @@
+# CI：PR 與 push 都跑。後端 ruff＋pytest；前端 HTML 標籤檢查＋node --check＋禁字；兩個 docker build（不 push）。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: 後端 ruff＋pytest
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - name: 安裝相依
+        run: pip install -r requirements-dev.txt
+      - name: ruff（lint＋format）
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: pytest
+        run: python -m pytest
+
+  frontend:
+    name: 前端檢查
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: node --check 全部 JS
+        run: |
+          set -euo pipefail
+          for f in $(find frontend -name '*.js'); do node --check "$f"; done
+          echo "node --check：全部通過"
+      - name: HTML 標籤檢查（doctype、noindex、viewport、lang、落款、成對標籤）
+        run: |
+          set -euo pipefail
+          for f in frontend/index.html frontend/teachers.html frontend/plan.html frontend/app/index.html; do
+            grep -qi '<!doctype html>' "$f" || { echo "$f 缺 doctype"; exit 1; }
+            grep -q 'name="robots" content="noindex' "$f" || { echo "$f 缺 noindex"; exit 1; }
+            grep -q 'name="viewport"' "$f" || { echo "$f 缺 viewport"; exit 1; }
+            grep -q 'lang="zh-Hant' "$f" || { echo "$f 缺 lang"; exit 1; }
+            for tag in html head body script section main nav; do
+              o=$(grep -o "<${tag}[ >]" "$f" | wc -l | tr -d ' ' || true); c=$(grep -o "</${tag}>" "$f" | wc -l | tr -d ' ' || true)
+              [ "$o" -eq "$c" ] || { echo "$f <$tag> 開 $o 關 $c 不成對"; exit 1; }
+            done
+          done
+          for f in frontend/index.html frontend/teachers.html frontend/plan.html; do
+            grep -q 'Tandelo 概念驗證（POC）· Edward Tseng · 2026' "$f" || { echo "$f 缺落款"; exit 1; }
+          done
+          echo "HTML 檢查：通過"
+      - name: 禁字檢查（公開內容不得出現內部名稱）
+        run: |
+          set -euo pipefail
+          if grep -rn --include='*.html' --include='*.js' --include='*.css' --include='*.md' --include='*.py' --include='*.json' --include='*.yml' --include='*.toml' -E '萬通|OneClass|南一' frontend backend docs README.md docker-compose.yml; then
+            echo "禁字出現，請移除"; exit 1
+          fi
+          echo "禁字檢查：0 筆"
+
+  docker:
+    name: Docker build（不 push）
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    strategy:
+      matrix:
+        service: [frontend, backend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.service }}
+          push: false
+          load: true
+          tags: tandelo-${{ matrix.service }}:ci
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,scope=${{ matrix.service }},mode=max
+      - name: 映像能啟動並通過健康檢查
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.service }}" = "backend" ]; then
+            docker run -d --name tandelo-ci -p 8000:8000 tandelo-backend:ci
+            for i in $(seq 1 20); do curl -fsS http://localhost:8000/health && break; sleep 2; done
+            curl -fsS http://localhost:8000/api/v1/health | grep -q '"ok":true'
+          else
+            docker run -d --name tandelo-ci -p 8080:8080 -e BACKEND_HOST=127.0.0.1 -e BACKEND_PORT=9 tandelo-frontend:ci
+            for i in $(seq 1 20); do curl -fsS http://localhost:8080/healthz && break; sleep 2; done
+            curl -fsS http://localhost:8080/ | grep -q Tandelo
+            curl -fsS http://localhost:8080/config.js | grep -q "'/api'"
+          fi
+          docker logs tandelo-ci
+          docker rm -f tandelo-ci

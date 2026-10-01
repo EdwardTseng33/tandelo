@@ -1,0 +1,336 @@
+// main.js — 啟動、路由、事件分派、主題與關燈、桌機說明面板
+
+import { load, save, defaultState, isLightsOut, fmtLong, addDays, fmtMD, setSaveHook } from './state.js';
+import { isConfigured, isOnline, onStatusChange, probe, syncState } from './api.js';
+import { parseHash, homeFor, toHash } from './router.js';
+import { esc, icon } from './ui.js';
+import { enhance, reduced, buzz, ceremony, lightsOutCurtain } from './fx.js';
+import * as common from './screens/common.js';
+import * as onboard from './screens/onboard.js';
+import * as student from './screens/student.js';
+import * as practice from './screens/practice.js';
+import * as classroom from './screens/classroom.js';
+import * as exam from './screens/exam.js';
+import * as parent from './screens/parent.js';
+import * as teacher from './screens/teacher.js';
+
+const SCREENS = {
+  ...common.screens, ...onboard.screens, ...student.screens, ...practice.screens,
+  ...classroom.screens, ...exam.screens, ...parent.screens, ...teacher.screens,
+};
+
+const TABS = {
+  student: [
+    ['s/home', '今天', 'home'], ['s/squad', '小隊', 'users'], ['s/practice', '練習', 'mic', true], ['s/map', '卡點', 'route'], ['s/me', '我', 'user'],
+  ],
+  teacher: [
+    ['t/offer', '接班', 'bell'], ['t/prep', '課前一頁', 'book'], ['t/room', '教室', 'video'], ['t/income', '收入', 'coin'], ['settings', '設定', 'gear'],
+  ],
+};
+const ROLE_NAME = { student: '學生', parent: '家長', teacher: '老師' };
+
+let state = load();
+const cur = { key: null, params: [], screen: null, cleanup: null, dir: 'fwd' };
+const trail = []; // 走過的畫面，用來判斷這次是前進還是返回（決定滑動方向）
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+
+const $ = (s) => document.querySelector(s);
+const app = $('#app');
+const sb = $('#sb');
+const view = $('#view');
+const tabs = $('#tabs');
+const overlay = $('#overlay');
+const panel = $('#panel');
+const shell = $('.shell');
+const toastEl = $('#toast');
+
+function ctx() {
+  return {
+    state, params: cur.params, key: cur.key,
+    today: state.clock.date,
+    night: isLightsOut(state.clock.time),
+    go, update, rerender, remount, toast, sheet, closeSheet, burst, buzz,
+    ceremony: (opts) => ceremony(app, { burst, ...opts }),
+  };
+}
+
+function go(path) {
+  const h = toHash(path);
+  if (location.hash === h) route(); else location.hash = h;
+}
+
+/** 修改狀態：直接在原物件上改，存到 localStorage，再重畫（silent 則不重畫） */
+function update(fn, opts = {}) {
+  fn(state);
+  save(state);
+  if (!opts.silent) rerender(opts);
+}
+
+let wasNight = null; // 上一次畫面是不是關燈；由 false 變 true 時播「關燈」
+let curtainOn = false;
+function applyTheme() {
+  const night = isLightsOut(state.clock.time) && state.role === 'student';
+  const theme = night ? 'dark' : state.theme === 'auto' ? (darkMQ.matches ? 'dark' : 'light') : state.theme;
+  const turningOff = night && wasNight === false && document.documentElement.dataset.theme !== 'dark';
+  wasNight = night;
+  app.dataset.role = state.role || 'none';
+  if (turningOff && !curtainOn) {
+    // 夜色由上而下蓋滿之後才換深色；這段時間先維持原本的亮度
+    curtainOn = true;
+    lightsOutCurtain(app, () => { curtainOn = false; applyTheme(); });
+    return;
+  }
+  if (curtainOn && night) return;
+  document.documentElement.dataset.theme = theme;
+  app.dataset.night = night ? '1' : '0';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#0C1412' : '#F6F4EE');
+}
+
+function apiLabel() { return (typeof window !== 'undefined' && window.TANDELO_API_BASE) || ''; }
+
+function statusBar() {
+  const night = isLightsOut(state.clock.time);
+  return `<button class="sb-time num" data-go="settings" aria-label="示範時間 ${esc(fmtLong(state.clock.date))} ${esc(state.clock.time)}，點一下到設定">${night ? icon('moon') : ''}${esc(state.clock.time)}<small>${esc(fmtMD(state.clock.date))}</small></button>
+    <span class="sb-demo">示範模式</span>
+    <span class="sb-sync ${isOnline() ? 'on' : ''}" title="${isConfigured() ? '後端網址：' + esc(apiLabel()) : '沒有設定後端，資料只在這台裝置'}">${isOnline() ? '已同步' : '離線示範'}</span>
+    <button class="iconbtn sb-gear" data-go="settings" aria-label="設定">${icon('gear')}</button>`;
+}
+
+function tabBar() {
+  const scr = cur.screen;
+  const list = TABS[state.role];
+  if (!list || scr.tabs === false) return '';
+  const active = scr.tab || cur.key;
+  return `<nav class="tabbar" aria-label="主選單"><a class="nav-brand wm" href="../" aria-label="回到 Tandelo 網站"><span class="dots"><i></i><i></i></span><span class="nav-word">Tandelo</span></a>${list.map(([k, label, ic, center]) => `<button class="tab ${center ? 'center' : ''} ${active === k ? 'on' : ''}" data-go="${k}" ${active === k ? 'aria-current="page"' : ''}>${center ? `<b>${icon(ic)}</b>` : icon(ic)}<span>${label}</span></button>`).join('')}</nav>`;
+}
+
+function renderPanel() {
+  if (!panel) return;
+  const meta = (cur.screen && cur.screen.meta) || { title: '', tips: [] };
+  const night = isLightsOut(state.clock.time);
+  panel.innerHTML = `<div class="panel-in">
+    <a class="wm" href="../" aria-label="回到 Tandelo 網站">Tandelo<span class="dots"><i></i><i></i></span></a>
+    <p class="panel-tag">App 概念驗證（POC）· 示範模式</p>
+    <section class="pn-now">
+      <small>${state.role ? `${ROLE_NAME[state.role]} · ` : ''}現在這一頁</small>
+      <h2>${esc(meta.title)}</h2>
+      <ul>${(meta.tips || []).map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+    </section>
+    <section>
+      <h3>切換身分</h3>
+      <div class="pn-roles">${['student', 'parent', 'teacher'].map((r) => `<button data-act="pickRole" data-role="${r}" aria-pressed="${state.role === r}">${ROLE_NAME[r]}</button>`).join('')}</div>
+    </section>
+    <section>
+      <h3>示範時間</h3>
+      <p class="pn-clock"><b class="num">${esc(state.clock.time)}</b> ${esc(fmtLong(state.clock.date))}${night ? '<span class="pill">已關燈</span>' : ''}</p>
+      <div class="pn-quick">
+        <button data-act="setClock" data-time="20:40">20:40</button>
+        <button data-act="setClock" data-time="22:31">22:31 關燈</button>
+        <button data-act="shiftDays" data-days="1">往後 1 天</button>
+        <button data-act="shiftDays" data-days="7">往後 7 天</button>
+      </div>
+    </section>
+    <section class="pn-foot">
+      <button data-act="askReset">重設示範資料</button>
+      <button data-go="about">關於這個 POC</button>
+      <a href="../">回到網站</a>
+    </section>
+    <p class="sign">Tandelo 概念驗證（POC）· Edward Tseng · 2026<br>資料只存在這台裝置，不會送到任何伺服器。</p>
+  </div>`;
+}
+
+function render({ nav = false, focusTitle = false, focusSel = null, keepScrollBottom = false, top = false } = {}) {
+  const c = ctx();
+  applyTheme();
+  // 桌機外殼：手機框＋說明面板只給學生端非教室畫面；教室與老師端全寬（平板／桌機優先）
+  const wide = cur.key === 's/class' || (state.role === 'teacher' && cur.key !== 'welcome');
+  if (shell) shell.classList.toggle('wide', wide);
+  app.dataset.wide = wide ? '1' : '0';
+  sb.innerHTML = statusBar();
+  const active = document.activeElement;
+  const fid = !nav && active && view.contains(active) && active.id ? active.id : null;
+  const scroll = view.scrollTop;
+  let html;
+  try { html = cur.screen.render(c); } catch (err) {
+    console.error(err);
+    html = `<div class="pad"><h1 class="hero s" tabindex="-1">這一頁出了點狀況。</h1><p class="sub">示範資料可能不一致，可以重設後再試。</p><button class="btn" data-act="askReset">重設示範資料</button></div>`;
+  }
+  view.innerHTML = `<div class="screen ${nav ? `enter ${cur.dir}` : ''}" data-screen="${esc(cur.key)}">${html}</div>`;
+  const tb = tabBar();
+  tabs.innerHTML = tb;
+  tabs.hidden = !tb;
+  app.classList.toggle('has-tabs', !!tb);
+  if (nav || top) view.scrollTop = 0;
+  else if (keepScrollBottom) view.scrollTop = view.scrollHeight;
+  else view.scrollTop = scroll;
+  let focusEl = null;
+  if (focusSel) focusEl = view.querySelector(focusSel);
+  else if (nav || focusTitle) focusEl = view.querySelector('h1[tabindex="-1"]');
+  else if (fid) focusEl = document.getElementById(fid);
+  if (focusEl) {
+    if (focusEl.matches('b')) { focusEl.setAttribute('tabindex', '-1'); }
+    try { focusEl.focus({ preventScroll: !(focusSel && !keepScrollBottom) }); } catch { /* 忽略 */ }
+  }
+  renderPanel();
+  enhance(view, { nav });
+  if (cur.screen.after) { try { cur.screen.after(c, { nav }); } catch (err) { console.error(err); } }
+}
+function rerender(opts = {}) { render(opts); }
+function remount() {
+  if (cur.cleanup) { cur.cleanup(); cur.cleanup = null; }
+  render();
+  if (cur.screen.mount) cur.cleanup = cur.screen.mount(ctx()) || null;
+}
+
+function route() {
+  const { key, params, role } = parseHash(location.hash);
+  let k = key || homeFor(state.role, state);
+  if (!SCREENS[k]) k = homeFor(state.role, state);
+  if (role && state.role !== role) { state.role = role; save(state); }
+  const scr = SCREENS[k];
+  if (cur.cleanup) { cur.cleanup(); cur.cleanup = null; }
+  closeSheet();
+  const prevKey = cur.key;
+  cur.key = k; cur.params = params; cur.screen = scr;
+  const id = location.hash;
+  const tabKeys = (TABS[state.role] || []).map((t) => t[0]);
+  if (trail.length > 1 && trail[trail.length - 2] === id) { trail.pop(); cur.dir = 'back'; } else {
+    if (trail[trail.length - 1] !== id) trail.push(id);
+    if (trail.length > 40) trail.shift();
+    cur.dir = tabKeys.includes(k) && tabKeys.includes(prevKey) ? 'tab' : 'fwd';
+  }
+  if (scr.guard) {
+    const to = scr.guard(ctx());
+    if (to && to !== k) { location.replace(toHash(to)); return; }
+  }
+  if (scr.enter) scr.enter(ctx());
+  render({ nav: true });
+  if (scr.mount) cur.cleanup = scr.mount(ctx()) || null;
+}
+
+// ——— 提示、面板、慶祝小圓點 ———
+let toastTimer = null;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+}
+
+let lastFocus = null;
+function sheet(html, label = '對話框') {
+  lastFocus = document.activeElement;
+  overlay.innerHTML = `<div class="scrim" data-act="closeSheet"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(label)}"><span class="grab" aria-hidden="true"></span>${html}</div>`;
+  overlay.hidden = false;
+  requestAnimationFrame(() => {
+    overlay.classList.add('open');
+    const f = overlay.querySelector('.sheet button, .sheet a, .sheet input');
+    if (f) f.focus();
+  });
+}
+function closeSheet() {
+  if (overlay.hidden) return;
+  overlay.classList.remove('open');
+  overlay.hidden = true;
+  overlay.innerHTML = '';
+  if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+}
+
+/** 慶祝：品牌色小圓點向外散開。at＝某個元素（從它的中心散開），不給就從畫面中間 */
+function burst(at) {
+  if (reduceMotion.matches) return;
+  const colors = ['#0E5F52', '#F26B54', '#F4C24D', '#DCEFE8'];
+  const box = document.createElement('div');
+  box.className = 'burst';
+  if (at && at.getBoundingClientRect && at.isConnected) {
+    const a = at.getBoundingClientRect(); const b = app.getBoundingClientRect();
+    box.style.left = `${a.left + a.width / 2 - b.left}px`;
+    box.style.top = `${a.top + a.height / 2 - b.top}px`;
+  }
+  const lite = (navigator.deviceMemory && navigator.deviceMemory <= 4) ? 3 : 1; // 低記憶體裝置少放幾顆
+  for (let i = 0; i < 18; i += lite) {
+    const d = document.createElement('i');
+    const a = (Math.PI * 2 * i) / 18;
+    const r = 80 + (i % 3) * 36;
+    d.style.setProperty('--x', `${Math.cos(a) * r}px`);
+    d.style.setProperty('--y', `${Math.sin(a) * r}px`);
+    d.style.background = colors[i % colors.length];
+    box.appendChild(d);
+  }
+  app.appendChild(box);
+  setTimeout(() => box.remove(), 1000);
+}
+
+// ——— 全域動作 ———
+const GLOBAL = {
+  ...common.actions,
+  closeSheet() { closeSheet(); },
+  askReset(c) {
+    sheet(`<div class="sheet-c"><h2 class="h2">重設示範資料？</h2><p class="body">會清掉這台裝置上的示範資料（學生、家長、老師三邊一起），回到一開始。</p>
+      <button class="btn block" data-act="doReset">重設</button><button class="btn ghost block" data-act="closeSheet">先不要</button></div>`, '重設示範資料');
+  },
+  doReset() {
+    state = defaultState();
+    save(state);
+    closeSheet();
+    toast('已重設。這是概念驗證，資料只留在你的裝置。');
+    if (location.hash === '#/welcome') route(); else location.hash = '#/welcome';
+  },
+  setClock(c, el) { update((s) => { s.clock.time = el.dataset.time; }); toast(`示範時間：${el.dataset.time}`); },
+  shiftDays(c, el) { const n = Number(el.dataset.days); update((s) => { s.clock.date = addDays(s.clock.date, n); }); toast(`示範日期往後 ${n} 天：${fmtMD(state.clock.date)}`); },
+  setDate(c, el) { if (el.value) update((s) => { s.clock.date = el.value; }); },
+  setTime(c, el) { if (el.value) update((s) => { s.clock.time = el.value; }); },
+  setTheme(c, el) { update((s) => { s.theme = el.dataset.theme; }); },
+};
+
+function run(act, el, e) {
+  const h = (cur.screen && cur.screen.on && cur.screen.on[act]) || GLOBAL[act];
+  if (h) h(ctx(), el, e);
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-go],[data-act]');
+  if (!t || t.matches('form') || !(app.contains(t) || (panel && panel.contains(t)))) return;
+  if (t.disabled) return;
+  buzz(8);
+  if (t.dataset.go) { e.preventDefault(); go(t.dataset.go); return; }
+  run(t.dataset.act, t, e);
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('form[data-act]');
+  if (!f) return;
+  e.preventDefault();
+  run(f.dataset.act, f, e);
+});
+document.addEventListener('input', (e) => { const t = e.target.closest('[data-input]'); if (t) run(t.dataset.input, t, e); });
+document.addEventListener('change', (e) => { const t = e.target.closest('[data-change]'); if (t) run(t.dataset.change, t, e); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !overlay.hidden) { e.preventDefault(); closeSheet(); return; }
+  if (e.key === 'Tab' && !overlay.hidden) {
+    const f = [...overlay.querySelectorAll('.sheet button:not([disabled]), .sheet a, .sheet input')];
+    if (!f.length) return;
+    const first = f[0]; const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+window.addEventListener('hashchange', route);
+darkMQ.addEventListener?.('change', () => applyTheme());
+// 別的分頁改了資料就重讀；身分照這個分頁的網址（不回存），避免兩個分頁不同身分時互相改來改去
+window.addEventListener('storage', (e) => {
+  if (e.key !== 'tandelo-poc-v1') return;
+  state = load();
+  const { role } = parseHash(location.hash);
+  if (role) state.role = role;
+  route();
+});
+
+// 後端（可有可無）：有設定就探測一次，連得上就把每次存檔同步過去；狀態一變就更新狀態列小標
+if (isConfigured()) {
+  setSaveHook(syncState);
+  onStatusChange(() => { sb.innerHTML = statusBar(); });
+  probe().then((ok) => { if (ok) syncState(state); });
+}
+
+route();
