@@ -15,16 +15,21 @@
     var confetti = stage.querySelector('.w-confetti');
     var nextBtn = document.querySelector('[data-next-mon]');
     var MONS = [
-      { name: '負號幽靈', taunt: '第一個歸我，後面的我不管。', weak: '負號要發給括號裡每一個人。', d: 'M18 50a12 12 0 0 1-2-24 16 16 0 0 1 31-4 11 11 0 0 1 3 28z' },
-      { name: '漏項獸', taunt: '兩個平方，就這樣，沒別的了。', weak: '完全平方要有中間那一項。', d: 'M32 10a24 24 0 1 1 0 48 24 24 0 0 1 0-48z' },
-      { name: '拆根蟲', taunt: '分開算比較快，相信我。', weak: '根號裡面要先算完。', d: 'M32 18a22 18 0 1 1 0 36 22 18 0 0 1 0-36z' },
-      { name: '斜邊迷霧', taunt: '右上那條就是斜邊，看都不用看。', weak: '斜邊永遠對著直角。', d: 'M32 10l24 44H8z' },
-      { name: '平方差雙子', taunt: '我們是雙胞胎，當然一樣。', weak: '平方差：一個加、一個減。', d: 'M32 8c10 12 22 20 22 32a22 22 0 0 1-44 0c0-12 12-20 22-32z' }
+      { name: '負號幽靈', sym: 'm-cloud', taunt: '第一個歸我，後面的我不管。', weak: '負號要發給括號裡每一個人。' },
+      { name: '漏項獸', sym: 'm-round', taunt: '兩個平方，就這樣，沒別的了。', weak: '完全平方要有中間那一項。' },
+      { name: '拆根蟲', sym: 'm-bug', taunt: '分開算比較快，相信我。', weak: '根號裡面要先算完。' },
+      { name: '斜邊迷霧', sym: 'm-tri', taunt: '右上那條就是斜邊，看都不用看。', weak: '斜邊永遠對著直角。' },
+      { name: '平方差雙子', sym: 'm-drop', taunt: '我們是雙胞胎，當然一樣。', weak: '平方差：一個加、一個減。' }
     ];
     var cur = 0, phase = 0, timer = null;
     function setMon(i) {
       cur = i % MONS.length; var m = MONS[cur];
-      body.setAttribute('d', m.d);
+      var sym = document.getElementById(m.sym);
+      if (sym && body) {
+        body.innerHTML = sym.innerHTML;
+        pupils = body.querySelectorAll('circle[fill="var(--m-pupil)"]');
+        for (var k = 0; k < pupils.length; k++) pupils[k].classList.add('pupil');
+      }
       bubble.innerHTML = '<b>' + m.name + '</b>：「' + m.taunt + '」';
       stage.classList.remove('p1', 'p2'); phase = 0;
       stage.setAttribute('aria-label', m.name + '，點一下識破牠');
@@ -59,7 +64,14 @@
         if (nextBtn) nextBtn.hidden = false;
       }, reduce ? 50 : 1600);
     }
-    stage.addEventListener('pointermove', function (e) { look(e.clientX, e.clientY); });
+    stage.addEventListener('pointermove', function (e) {
+      look(e.clientX, e.clientY);
+      if (reduce) return;
+      var r = stage.getBoundingClientRect();
+      stage.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+      stage.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+    });
+    stage.addEventListener('pointerleave', function () { stage.style.setProperty('--px', 0); stage.style.setProperty('--py', 0); });
     stage.addEventListener('pointerleave', function () { for (var i = 0; i < pupils.length; i++) pupils[i].style.transform = ''; });
     stage.addEventListener('click', function () { if (phase === 2) { setMon(cur + 1); if (nextBtn) nextBtn.hidden = true; } else capture(); });
     stage.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stage.click(); } });

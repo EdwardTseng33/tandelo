@@ -95,6 +95,7 @@ SCREENS.home = () => {
   </button>
   ${S.witnessed ? `<div class="witness"><span class="heart">${SVG.heart}</span><span>媽媽見證了這一次。<small class="meta" style="display:block">昨晚的營地來信 · 漏項獸</small></span></div>` : ''}
   <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><div class="dots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < S.cards ? 'on' : ''}"></i>`).join('')}</div></div>
+  ${S.cards >= 3 ? `<div class="stop"><span class="moon" aria-hidden="true"></span><span><b>今天三張都亮了，夠了。</b><small>沒有第四張。明天早上六點再發，晚安。</small></span></div>` : ''}
   ${todays.map((t) => `<button class="task ${t.done ? 'done' : ''}" data-go="${t.go}"><span class="mon ${t.done ? 'shadow' : (t.id === 'wake' ? 'asleep' : '')}" aria-hidden="true"><svg><use href="#${t.mon.shape}"/></svg></span><span class="grow"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small><span class="why">${esc(t.why)}</span></span><span class="go">${t.done ? SVG.check : SVG.chev}</span></button>`).join('')}
   <p class="note">每天最多三張。22:30 之後不發、不亮、不推播。哪天沒開，隔天卡上寫「回來了就好」。</p>
   <div class="sect"><h3>整備條</h3><span class="meta">全隊這週</span></div>
@@ -121,7 +122,7 @@ SCREENS.shadows = () => {
   return `
   ${hd('影子牆', `收服的怪站在你身後 · ${esc(D.SQUAD.me.nick)}`, false)}
   <div class="wall"><div class="stars"></div><div class="count">收服 <b>${caps.length}</b> 隻 · 睡著 ${asleep.length}</div>
-    <div class="shadows">${caps.map((m) => monSvg(m, 'shadow blink')).join('')}${asleep.map((m) => monSvg(m, 'asleep')).join('')}</div>
+    <div class="shadows">${[...caps.map((m) => ({ m, cls: 'shadow blink' })), ...asleep.map((m) => ({ m, cls: 'asleep' }))].map((o, i, arr) => { const n = arr.length; const spread = Math.min(220, 70 * (n - 1)); const sx = n === 1 ? 0 : -spread / 2 + (spread / (n - 1)) * i; const sy = 8 + Math.abs(sx) * 0.18; return monSvg(o.m, o.cls, `style="--sx:${sx}px;--sy:${sy}px;--ss:${1 - Math.abs(sx) / 600};--sd:${i * 0.12}s"`); }).join('')}</div>
     <div class="you"><span class="kid">${kid}</span><small>${esc(D.SQUAD.me.nick)} · ${esc(D.SQUAD.name)}</small></div>
   </div>
   <div class="sect"><h3>數理大陸 · 八隻怪</h3><span class="meta">點一隻看傳說卡</span></div>
@@ -267,9 +268,8 @@ SCREENS.map = () => {
   ${hd('世界地圖', `${esc(D.SQUAD.league)} · 數理大陸`, false)}
   <div class="leagues">${['北區', '中區', '南區', '東區'].map((l) => `<button class="${l === D.SQUAD.league ? 'on' : ''}" ${l === D.SQUAD.league ? '' : 'disabled'}>${l}</button>`).join('')}</div>
   <div class="map"><svg viewBox="0 0 440 420" role="img" aria-label="數理大陸地圖：六個區域各一座燈塔">
-    <path class="wave" d="M30 30q12-7 24 0t24 0M380 60q12-7 24 0t24 0M60 390q12-7 24 0t24 0M360 380q12-7 24 0t24 0"/>
-    <path class="land" d="M70 120c30-60 120-90 190-70s110 60 150 120c30 45 20 110-20 150s-90 50-150 60-120-10-150-60S40 180 70 120z"/>
-    <text class="cn" x="92" y="92">數理大陸</text><text class="cs" x="92" y="108">數學 · 六區</text>
+    ${D.MAP_TERRAIN}
+    <text class="cn" x="96" y="96">數理大陸</text><text class="cs" x="96" y="112">數學 · 六區</text>
     ${R.map((r) => r.light === 'fog'
       ? `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}，迷霧" data-region="${r.id}"><ellipse class="fogm" cx="${r.x}" cy="${r.y}" rx="52" ry="30"/><text class="fogq" x="${r.x}" y="${r.y + 5}">?</text><text class="rl fogt" x="${r.x}" y="${r.y + 52}">${esc(r.name)}</text></g>`
       : `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}燈塔" data-region="${r.id}"><circle class="ring" cx="${r.x}" cy="${r.y}" r="34"/><circle class="glow ${r.light === 'lit' ? 'on' : ''}" cx="${r.x}" cy="${r.y - 4}" r="26"/><use href="#tower" class="tw ${cls(r)}" x="${r.x - 11}" y="${r.y - 20}" width="22" height="30"/>${r.keeper === 'us' ? `<path class="flag" d="M${r.x + 10} ${r.y - 22}v-12l10 4-10 4"/>` : ''}<text class="rl" x="${r.x}" y="${r.y + 34}">${esc(r.name)}</text></g>`).join('')}
@@ -360,12 +360,14 @@ SCREENS.camp = () => `
 let chat = [];
 SCREENS.coach = () => `
   ${hd('小陪', '隨行系統 · 第一句永遠是「你寫到哪一步？」')}
-  <div class="chat">${chat.length ? chat.map((c) => `<div class="msg ${c.by}">${c.lvl ? `<span class="lvl">${esc(c.lvl)}</span>` : ''}${esc(c.text)}</div>`).join('') : `<div class="msg c"><span class="lvl">小陪 · 問</span>你寫到哪一步？</div>`}</div>
+  <p style="margin:-6px 0 12px"><span class="ai-tag"><i></i>AI 生成的引導 · 題目與傳說卡有真人審</span></p>
+  <div class="chat">${chat.length ? chat.map((c) => `<div class="msg ${c.by}">${c.lvl ? `<span class="lvl">${esc(c.lvl)}</span>` : ''}${esc(c.text)}${c.by === 'c' ? '<button class="report" data-act="report">這句怪怪的，回報</button>' : ''}</div>`).join('') : `<div class="msg c"><span class="lvl">小陪 · 問</span>你寫到哪一步？<button class="report" data-act="report">這句怪怪的，回報</button></div>`}</div>
   <div class="chat-in"><div class="chips">${['我把括號拆開了', '我卡在合併', '我不知道從哪開始', '我算出 2x − 3'].map((t) => `<button class="chip" data-say-coach="${esc(t)}">${esc(t)}</button>`).join('')}</div>
   <p class="note">沒有文字框。小陪只問、指、借、示範一步，不給整題答案。22:30 之後只回「關燈中」。</p></div>`;
 
 SCREENS.settings = () => `
   ${hd('示範設定', '時間、深淺色、個人榜、對戰投票')}
+  <div class="ios-tip ${/iP(hone|ad|od)/.test(navigator.userAgent) && !window.navigator.standalone ? 'on' : ''}"><b>加到主畫面</b>：Safari 底下的「分享」→「加入主畫面」。之後會像 App 一樣全螢幕開啟。</div>
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
     <div class="setrow"><span>深色模式<small>22:30 後自動轉暗</small></span><button class="switch ${document.documentElement.getAttribute('data-theme') === 'dark' ? 'on' : ''}" data-act="theme" role="switch" aria-label="深色模式"></button></div>
@@ -477,6 +479,7 @@ document.addEventListener('click', (e) => {
   if (a === 'letter') { S.letterPlayed = true; save(); const l = t; l.classList.add('playing'); setTimeout(() => go('letter'), 450); return; }
   if (a === 'cheer') { S.cheered = true; save(); toast('「大家加油」送給全隊了，不點名任何人'); return rerender(); }
   if (a === 'help') { S.helpAnswered = true; save(); addRecord('explain', '講解給隊友（匿名）', 0); toast('30 秒講解送出去了'); return rerender(); }
+  if (a === 'report') { toast('已回報給內容團隊，謝謝你'); return; }
   if (a === 'sos') { toast('隊友收到匿名求援：「有一位隊友卡在負號幽靈」。30 分鐘沒人回就播嚮導的 30 秒。'); return; }
   if (a === 'next') {
     const q = D.PATROL[S.patrol.i];
