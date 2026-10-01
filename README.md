@@ -11,7 +11,7 @@
 
 ```
 tandelo/
-├─ frontend/            純靜態：index.html、teachers.html、plan.html、app/、assets/
+├─ frontend/            純靜態：index.html、teachers.html、plan.html、adventure.html、coach.html、app/、assets/
 │   ├─ config.js        window.TANDELO_API_BASE（Pages 留空＝離線；Docker 由 nginx 注入 '/api'）
 │   ├─ app/js/api.js    後端連線包裝：isOnline()、request()、syncState()
 │   ├─ nginx.conf       靜態伺服＋gzip＋快取標頭＋ /api 反向代理
