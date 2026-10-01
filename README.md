@@ -16,7 +16,7 @@
 | `strategy.html` | 策略與規劃 2.0：市場、國內外競品定位矩陣、商業模式與毛利槓桿、產品輪廓架構、技術架構、POC 12 週計畫、待拍板 |
 | `plan.html` | 產品規劃書 1.0 |
 | `adventure.html`、`coach.html`、`segment.html` | 冒險小隊概念稿、AI 陪跑設計稿、核心用戶輪廓 |
-| `world/` | 冒險世界高保真 Demo：今天、巡邏、Boss 接力、伏擊→收服時刻、結算、出題戰、影子牆、地圖與燈塔、公會與徽章賽、營地來信、小陪 |
+| `world/` | 冒險世界高保真 Demo：今天、巡邏、Boss 接力、伏擊→收服時刻、結算、出題戰、圖鑑、地圖與燈塔、公會與徽章賽、營地來信、小陪 |
 | `app/` | App 原型（學生、家長 LINE、老師三條流程） |
 | `teachers.html` | 老師招募 |
 
@@ -122,7 +122,7 @@ make logs / make down
 | GET | `/teachers`、`/teachers/{id}/earnings?tier=&teams=&size=` | 老師清單、收入試算（45／52／60%、保底 600） |
 | POST | `/coach/reply`、`/coach/explain` | 小陪規則回覆（22:30–06:00 回「關燈中」）、說給我聽評分 |
 | GET | `/world/map` | 冒險世界：四片大陸、區域與燈塔、怪的傳說卡、路線、聯賽區 |
-| GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 影子狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
+| GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 夥伴狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
 | GET | `/students/{id}/record`、`/teams/{id}/record` | 戰績（收服 10、叫醒 5、講解 3、副本 5／8／12）；小隊只回加總、人均與解鎖 |
 | POST | `/teams/{id}/dungeons` | 開副本（22:30–06:00 回 423；路線只升不降） |
 | POST | `/dungeons/{id}/answers`、`/dungeons/{id}/absences`、`/dungeons/{id}/settle` | 巡邏／接力／伏擊作答（求助照算）、缺席申報（每季 2 次、48 小時內）、結算（小隊解題率→星數） |

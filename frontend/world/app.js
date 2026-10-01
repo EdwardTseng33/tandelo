@@ -79,7 +79,7 @@ SCREENS.home = () => {
     { id: 'relay', mon: mon('factor-cross'), title: 'Boss 接力 · 第 4 棒', sub: S.relay.done ? '你的那一棒交出去了' : '開跑中 · 前三棒已完成', why: '一題多步驟，你只負責接到的那一步。', done: S.relay.done, go: 'relay' },
     S.clock === 'mon' || S.clock === 'tue' || S.clock === 'night'
       ? { id: 'ambush', mon: mon('sqrt-split'), title: '伏擊 · 拆根蟲回來了', sub: S.ambush.done ? (S.ambush.passed ? '收服了' : '牠還在附近，不扣分') : '沒有提示 · 只認第一次', why: '第 7 到 12 天，自己一個人面對牠。', done: S.ambush.done, go: 'ambush' }
-      : { id: 'wake', mon: mon('diff-sq'), title: '叫醒影子 · 平方差雙子', sub: S.wake.done ? '叫醒了' : '上週又錯了一次 · 不扣分', why: '睡著的影子不會消失，等你叫醒。', done: S.wake.done, go: 'wake' },
+      : { id: 'wake', mon: mon('diff-sq'), title: '叫醒夥伴 · 平方差雙子', sub: S.wake.done ? '叫醒了' : '上週又錯了一次 · 不扣分', why: '睡著的夥伴不會消失，等你叫醒。', done: S.wake.done, go: 'wake' },
   ];
   const lit = 9 + S.cards;
   return `
@@ -120,7 +120,7 @@ SCREENS.shadows = () => {
   const caps = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured');
   const asleep = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'asleep');
   return `
-  ${hd('影子牆', `收服的怪站在你身後 · ${esc(D.SQUAD.me.nick)}`, false)}
+  ${hd('怪物圖鑑', `收服的夥伴站在你身後 · ${esc(D.SQUAD.me.nick)}`, false)}
   <div class="wall"><div class="stars"></div><div class="count">收服 <b>${caps.length}</b> 隻 · 睡著 ${asleep.length}</div>
     <div class="shadows">${[...caps.map((m) => ({ m, cls: 'shadow blink' })), ...asleep.map((m) => ({ m, cls: 'asleep' }))].map((o, i, arr) => { const n = arr.length; const spread = Math.min(220, 70 * (n - 1)); const sx = n === 1 ? 0 : -spread / 2 + (spread / (n - 1)) * i; const sy = 8 + Math.abs(sx) * 0.18; return monSvg(o.m, o.cls, `style="--sx:${sx}px;--sy:${sy}px;--ss:${1 - Math.abs(sx) / 600};--sd:${i * 0.12}s"`); }).join('')}</div>
     <div class="you"><span class="kid">${kid}</span><small>${esc(D.SQUAD.me.nick)} · ${esc(D.SQUAD.name)}</small></div>
@@ -132,7 +132,7 @@ SCREENS.shadows = () => {
   <div class="titles">${D.TITLES.map((t) => `<div class="title ${t.earned ? '' : 'off'}"><span class="badge">${t.team ? SVG.flag : SVG.title}</span><span><b>${esc(t.name)}</b><small>${esc(t.rule)}${t.team ? ' · 隊伍級' : ''}</small></span><span class="pr">${t.earned ? '已獲得' : `${t.progress[0]} / ${t.progress[1]}`}</span></div>`).join('')}</div>
   <div class="sect"><h3>冒險日誌</h3><button data-go="record">看戰績</button></div>
   <div class="card"><div class="row">${av(1, 'me')}<div class="grow"><b>「負號要發給括號裡每一個人。」</b><small>說給我聽 · 0:28 · 10/09</small></div><button class="btn sm soft">重聽</button></div></div>
-  <p class="note">狀態會掉，但事件不會消失。睡著的影子留在牆上、變灰、標上叫醒的日期。沒有東西會消失。</p>`;
+  <p class="note">狀態會掉，但事件不會消失。睡著的夥伴留在牆上、變灰、標上叫醒的日期。沒有東西會消失。</p>`;
 };
 
 SCREENS.record = () => `
@@ -140,7 +140,7 @@ SCREENS.record = () => `
   <div class="card"><div class="settle"><div class="big num">${myPoints()}</div><div class="lbl">本季累積 · 只從驗證過的學會來</div></div></div>
   <div class="card">${S.records.slice().reverse().map((r) => `<div class="kv"><span>${esc(r.label)}<span class="meta" style="margin-left:6px">${esc(r.when)}</span></span><b>+${r.pts}</b></div>`).join('')}</div>
   <div class="card flat"><h3>怎麼算</h3>
-    <div class="kv"><span>收服一隻怪</span><b>10</b></div><div class="kv"><span>叫醒一隻睡著的影子</span><b>5</b></div><div class="kv"><span>講解被嚮導抽查合格</span><b>3</b></div><div class="kv"><span>副本過關（一到三星，全隊一份）</span><b>5–12</b></div>
+    <div class="kv"><span>收服一隻怪</span><b>10</b></div><div class="kv"><span>叫醒一隻睡著的夥伴</span><b>5</b></div><div class="kv"><span>講解被嚮導抽查合格</span><b>3</b></div><div class="kv"><span>副本過關（一到三星，全隊一份）</span><b>5–12</b></div>
     <p class="note">不從登入、練習量、連續天數、付費或對戰勝負來。每天三張任務卡就是上限，熬夜刷不上去。</p></div>`;
 
 SCREENS.dungeon = () => {
@@ -152,7 +152,7 @@ SCREENS.dungeon = () => {
   ${hd('本週副本', `${esc(D.SQUAD.subject)} · ${esc(r.name)} · 第 ${D.SQUAD.week} 週`, false)}
   <div class="dg-hero"><div class="fogbg"></div><span class="eyebrow">多項式林</span><h2>${esc(D.DUNGEON.name)}</h2><p>${S.settled ? '已結算 · 80% 兩星過關' : '本週副本進行中 · 結算之前不顯示人數與分數'}</p>${monSvg(m, S.settled ? 'shadow' : 'bob')}</div>
   <button class="layer ${patrolSt}" data-go="play"><span class="n">1</span><span><b>巡邏 · 每人 3 題</b><small>本週遠征那隻怪，換個樣子出現。小陪和求援隨時可用。</small></span><span class="st">${S.patrol.finished ? '3 / 3' : `${S.patrol.done} / 3`}</span></button>
-  <button class="layer ${ambushOpen ? (S.ambush.done ? 'done' : '') : 'lock'}" data-go="${ambushOpen ? 'ambush' : 'dungeon'}" ${ambushOpen ? '' : 'data-locked="1"'}><span class="n">2</span><span><b>伏擊 · 到期的影子</b><small>${ambushOpen ? '拆根蟲回來了。沒有提示、不能求援。' : '1 隻影子到期 · 週一開放'}</small></span><span class="st">${S.ambush.done ? (S.ambush.passed ? '收服' : '沒中') : (ambushOpen ? '開放' : '週一')}</span></button>
+  <button class="layer ${ambushOpen ? (S.ambush.done ? 'done' : '') : 'lock'}" data-go="${ambushOpen ? 'ambush' : 'dungeon'}" ${ambushOpen ? '' : 'data-locked="1"'}><span class="n">2</span><span><b>伏擊 · 到期的夥伴</b><small>${ambushOpen ? '拆根蟲回來了。沒有提示、不能求援。' : '1 隻夥伴到期 · 週一開放'}</small></span><span class="st">${S.ambush.done ? (S.ambush.passed ? '收服' : '沒中') : (ambushOpen ? '開放' : '週一')}</span></button>
   <button class="layer ${S.relay.done ? 'done' : ''}" data-go="relay"><span class="n">3</span><span><b>Boss 接力 · 每人 1 棒</b><small>${S.relay.done ? '你的第 4 棒交出去了，等第 5 棒。' : '開跑中 · 你是第 4 棒'}</small></span><span class="st">${S.relay.done ? '已接' : '第 4 棒'}</span></button>
   ${!S.helpAnswered ? `<div class="help">${monSvg(m)}<div><b>有一位隊友卡在負號幽靈</b><small>你已經過了這層，可以錄 30 秒講給那位隊友聽。</small><button class="btn sm coral" data-act="help">錄 30 秒講給他聽</button></div></div>` : `<div class="card mint"><div class="row"><span class="av a1 me"></span><div class="grow"><b>你的 30 秒講解送出去了</b><small>隊友收到的是匿名的。你的日誌多一筆「講解」。</small></div></div></div>`}
   <p class="rule-line">結算之前，不顯示人數與分數。求援是匿名的。</p>
@@ -206,7 +206,7 @@ SCREENS.ambush = () => {
   const a = D.AMBUSH; const m = mon(a.monster);
   if (S.ambush.done) return `${hd('伏擊 · 結果', '只記進你的收服紀錄')}<div class="card ${S.ambush.passed ? 'honey' : 'coral'}"><div class="row">${monSvg(m, S.ambush.passed ? 'shadow' : '')}<div class="grow"><b>${S.ambush.passed ? '拆根蟲，收服。' : '拆根蟲還在附近。'}</b><small>${S.ambush.passed ? '第 9 天不給提示也會。' : '不扣分，回到練習清單，下週再來。'}</small></div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button></div>`;
   return `
-  ${hd('伏擊', '到期的影子回來了 · 沒有提示')}
+  ${hd('伏擊', '到期的夥伴回來了 · 沒有提示')}
   <div class="card coral"><div class="row">${monSvg(m, 'shake')}<div class="grow"><b>${esc(m.name)}回來了</b><small>第 9 天。這次沒有嚮導在旁邊，小陪也不出聲。只認第一次作答。</small></div></div></div>
   <div class="qcard"><p class="stem"><span class="mx">${esc(a.stem)}</span></p>
     <div class="opts">${a.options.map((o, i) => `<button class="opt ${play.apick === i ? 'pick' : ''}" data-aopt="${i}"><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div></div>
@@ -217,9 +217,9 @@ SCREENS.ambush = () => {
 
 SCREENS.wake = () => {
   const m = mon('diff-sq');
-  if (S.wake.done) return `${hd('叫醒影子', '平方差雙子')}<div class="card honey"><div class="row">${monSvg(m, 'shadow')}<div class="grow"><b>平方差雙子醒了。</b><small>再站回你身後。戰績 +5。</small></div></div></div><div class="btns"><button class="btn" data-go="home">回到今天</button></div>`;
+  if (S.wake.done) return `${hd('叫醒夥伴', '平方差雙子')}<div class="card honey"><div class="row">${monSvg(m, 'shadow')}<div class="grow"><b>平方差雙子醒了。</b><small>再站回你身後。戰績 +5。</small></div></div></div><div class="btns"><button class="btn" data-go="home">回到今天</button></div>`;
   return `
-  ${hd('叫醒影子', '平方差雙子 · 分解洞窟')}
+  ${hd('叫醒夥伴', '平方差雙子 · 分解洞窟')}
   <div class="card"><div class="row">${monSvg(m, 'asleep')}<div class="grow"><b>上週又錯了一次，睡著了。</b><small>不扣分、不消失，只是換一種狀態。今天可以叫醒。</small></div></div></div>
   <div class="qcard"><p class="stem"><span class="mx">x² − 49 = ?</span></p>
     <div class="opts">${['(x + 7)(x − 7)', '(x − 7)(x − 7)', '(x + 7)(x + 7)', '(x − 49)(x + 1)'].map((o, i) => `<button class="opt ${play.wpick === i ? (i === 0 ? 'ok' : 'trap') : ''}" data-wopt="${i}" ${play.wpick === 0 ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
@@ -234,7 +234,7 @@ SCREENS.settle = () => `
     <div class="stars" aria-label="兩星過關">${[1, 2].map(() => `<svg class="on" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.1 1.2 6.1L12 17l-5.4 3 1.2-6.1L3.3 9.8l6.1-.7z"/></svg>`).join('')}<svg class="off" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.1 1.2 6.1L12 17l-5.4 3 1.2-6.1L3.3 9.8l6.1-.7z"/></svg></div>
     <div class="lbl"><b>兩星過關</b> · 下一個副本往上一條</div></div>
     <div class="divider"></div>
-    <div class="kv"><span>巡邏</span><b>12 / 15</b></div><div class="kv"><span>Boss 接力（抓到負號幽靈 1 次）</span><b>4 / 5</b></div><div class="kv"><span>伏擊層叫醒的影子（不計分）</span><b>2 隻</b></div>
+    <div class="kv"><span>巡邏</span><b>12 / 15</b></div><div class="kv"><span>Boss 接力（抓到負號幽靈 1 次）</span><b>4 / 5</b></div><div class="kv"><span>伏擊層叫醒的夥伴（不計分）</span><b>2 隻</b></div>
     <p class="note">合計 16 ÷ 20 ＝ 80%。問過小陪或求援之後答對的 3 題一樣算分。每一層都寫「得分 / 題數」，家長自己算也對得上。</p></div>
   <div class="private">${monSvg(mon('sq-expand'), 'shadow')}<div><b>你收服了漏項獸</b><small>這一行只有你看得到。</small></div></div>
   <div class="card mint"><div class="kv" style="border:0"><span>下一個副本</span><b>${esc(D.ROUTES[D.ROUTES.plain.next].name)}</b></div><p class="note">路線只決定題目範圍與對戰配對，不出現在隊伍牆、分享卡、對手資訊上。</p></div>
@@ -277,7 +277,7 @@ SCREENS.map = () => {
   <div class="maplegend"><span><i class="u"></i>我們守塔</span><span><i class="o"></i>其他小隊守塔</span><span><i class="l"></i>燈已點亮</span><span><i class="n"></i>燈未點亮</span><span><i class="f"></i>迷霧</span></div>
   <div class="regions">${R.map((r) => `<button class="region" data-region="${r.id}"><span class="tw ${r.light === 'fog' ? 'none' : (r.keeper === 'us' ? 'us' : (r.keeper === 'other' ? 'other' : (r.light === 'lit' ? 'lit' : 'none')))}">${towerSvg}</span><span><b>${esc(r.name)}</b><small>${r.light === 'fog' ? '迷霧 · 還沒偵察到這一區' : (r.light === 'lit' ? `已點亮 · ${r.keeper === 'us' ? '四葉小隊守著平原線這一層' : (r.keeper === 'other' ? '星期三小隊守著平原線這一層' : '尚無守塔隊')}` : `點燈進度 ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</small></span><span class="pct">${r.light === 'fog' ? '' : `${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}`}</span></button>`).join('')}</div>
   <p class="note" style="margin-top:14px">地圖是幻想的，聯賽的分區才用真實的地理：北、中、南、東，只到這四個字，不到縣市，更不到學校。</p>
-  <div class="sect"><h3>其他大陸</h3><span class="meta">下一季開放</span></div>
+  <div class="sect"><h3>其他大陸</h3><span class="meta">依題庫達標順序開：英文、社會、國文</span></div>
   <div class="card flat"><div class="stack">${[['西風港', '英文 · 時光獸、失蹤的 s、介係詞迷路怪'], ['字林', '國文 · 音近字妖、之乎迷霧、修辭變臉怪'], ['時光古道', '社會 · 年代錯置怪、因果顛倒獸、經緯迷航']].map(([n, t]) => `<div class="row"><span class="mon sm fog"><svg><use href="#m-round"/></svg></span><div class="grow"><b style="font-size:14px">${n}</b><small>${t}</small></div></div>`).join('')}</div></div>`;
 };
 
@@ -341,7 +341,7 @@ SCREENS.share = (id) => {
   <div class="share"><span class="corner"></span><div class="top"><span>收服 · 第 ${D.SQUAD.week} 週</span><svg class="logo" viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg></div>
     <div class="mid">${monSvg(m, 'shadow')}<h3>${esc(m.name)}，收服。</h3><span class="team">${esc(D.SQUAD.name)} · ${esc(D.SQUAD.me.nick)}</span></div>
     <p class="ev"><b>${esc(m.weakness)}</b><br>第 0 天 在遠征中被打倒 · 第 9 天 不給提示也會<br>嚮導 ${esc(D.SQUAD.guide)} · ${esc(D.SQUAD.examLabel)}</p></div>
-  <div class="btns"><button class="btn" data-go="camp">傳到營地 · 看家長收到什麼</button><button class="btn ghost" data-go="shadows">回到影子牆</button></div>
+  <div class="btns"><button class="btn" data-go="camp">傳到營地 · 看家長收到什麼</button><button class="btn ghost" data-go="shadows">回到圖鑑</button></div>
   <p class="note">只分享收服，卡住的永遠不出現在卡上。孩子自己按，沒有自動。</p>`;
 };
 
@@ -349,12 +349,12 @@ SCREENS.camp = () => `
   ${hd('營地來信', '家長端 · LINE · 不裝 App')}
   <div class="line-top"><span class="ic">T</span>Tandelo 營地</div>
   <div class="line-body">
-    <div class="bub"><b>營地來信 · ${esc(D.CAMP.time)}</b><br>${esc(D.CAMP.text)}<span class="q">${esc(D.CAMP.ask)}</span>
+    <div class="bub"><b>營地來信 · ${esc(D.CAMP.time)}</b><br>${esc(D.CAMP.text)}<br>${esc(D.CAMP.chase)}<span class="q">${esc(D.CAMP.ask)}</span>
       <div class="acts"><button class="${S.witnessed ? 'on' : ''}" data-act="witness">${S.witnessed ? '已見證' : '我見證了'}</button><button>晚點問他</button></div><span class="t">已讀 21:05</span></div>
     <div class="bub me">好，晚上問他。<span class="t">21:06</span></div>
     ${S.wallPosts.length ? `<div class="bub"><b>營地來信 · 剛剛</b><br>小睿的小隊這週副本過關了：解題率 80%，兩星。下一個副本走丘陵線。<span class="t">剛剛</span></div>` : ''}
   </div>
-  <p class="note">家長端內容三件事不變：他學會了什麼、下週做什麼、今晚可以問他一句。只多一個「我見證了」。隔天孩子的首頁會出現「媽媽見證了這一次」。</p>
+  <p class="note">家長端四件事：他學會了什麼、還在追哪隻怪、誰負責、今晚可以問他一句。還沒解決的卡點不會被藏起來；只有孩子自己按的分享卡才只放收服。只多一個「我見證了」。隔天孩子的首頁會出現「媽媽見證了這一次」。</p>
   <div class="btns"><button class="btn ghost" data-go="home">回到孩子的畫面</button></div>`;
 
 let chat = [];
@@ -378,7 +378,7 @@ SCREENS.settings = () => `
   <div class="btns"><button class="btn warn" data-act="reset">重設示範資料</button></div>`;
 
 // ---------- 路由與渲染 ----------
-const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['shadows', '影子', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
+const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['shadows', '夥伴', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
 const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower']);
 const DARK = new Set([]);
 const view = $('#view'); const tabsEl = $('#tabs'); const sbEl = $('#sb'); const toastEl = $('#toast');

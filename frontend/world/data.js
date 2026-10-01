@@ -114,7 +114,7 @@ export const MONSTERS = [
   },
 ];
 
-// 我的影子狀態：fog 迷霧 / near 還在附近 / hit 打中了 / captured 收服 / asleep 睡著了
+// 我的夥伴狀態：fog 迷霧 / near 還在附近 / hit 打中了 / captured 收服 / asleep 睡著了
 export const INITIAL_SHADOWS = {
   'sq-expand': { state: 'captured', day0: '10/02', dayN: '10/11', days: 9 },
   'sign-dist': { state: 'near', note: '這週的怪 · 今晚補刀' },
@@ -132,7 +132,7 @@ export const STATE_LABEL = {
 
 export const TITLES = [
   { id: 'first', name: '初次拓荒', rule: '第一次收服', earned: true },
-  { id: 'keeper', name: '守住的人', rule: '叫醒三隻睡著的影子', earned: false, progress: [1, 3] },
+  { id: 'keeper', name: '守住的人', rule: '叫醒三隻睡著的夥伴', earned: false, progress: [1, 3] },
   { id: 'explainer', name: '講解者', rule: '主攻被嚮導蓋章三次', earned: false, progress: [1, 3] },
   { id: 'flag', name: '開拓者之旗', rule: '全隊一起收服 20 隻', team: true, earned: false, progress: [11, 20] },
 ];
@@ -196,7 +196,7 @@ export const RELAY = {
   flags: 2,
 };
 
-// 伏擊層：到期的影子回來。沒有提示、不能求援、只認第一次。
+// 伏擊層：到期的夥伴回來。沒有提示、不能求援、只認第一次。
 export const AMBUSH = {
   monster: 'sqrt-split',
   stem: '√(169 − 25) = ?',
@@ -253,7 +253,7 @@ export const GUILD = {
   unlocks: [
     { name: '隊旗圖樣', at: 100, who: 'squad' },
     { name: '地圖配色', at: 150, who: 'squad' },
-    { name: '影子外框', at: 200, who: 'squad' },
+    { name: '夥伴外框', at: 200, who: 'squad' },
     { name: '季末合照框', at: 300, who: 'squad' },
     { name: '魔王攻略會 · 段考前加開 30 分鐘', at: 60, who: 'guild' },
   ],
@@ -291,6 +291,7 @@ export const LETTER = {
 export const CAMP = {
   time: '星期二 21:02',
   text: '小睿今晚收服了一隻怪：漏項獸（完全平方要有中間那一項）。第 9 天不給提示也會。',
+  chase: '還在追：負號幽靈（這週遠征的怪），林老師週四處理。',
   ask: '今晚可以問他：「一塊邊長是 a+b 的正方形，為什麼比 a² + b² 多出兩塊長方形？」',
   witnessed: true,
 };
