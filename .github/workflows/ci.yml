@@ -96,14 +96,14 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ matrix.service }}" = "backend" ]; then
-            docker run -d --name t -p 8000:8000 tandelo-backend:ci
+            docker run -d --name tandelo-ci -p 8000:8000 tandelo-backend:ci
             for i in $(seq 1 20); do curl -fsS http://localhost:8000/health && break; sleep 2; done
             curl -fsS http://localhost:8000/api/v1/health | grep -q '"ok":true'
           else
-            docker run -d --name t -p 8080:8080 -e BACKEND_HOST=127.0.0.1 -e BACKEND_PORT=9 tandelo-frontend:ci
+            docker run -d --name tandelo-ci -p 8080:8080 -e BACKEND_HOST=127.0.0.1 -e BACKEND_PORT=9 tandelo-frontend:ci
             for i in $(seq 1 20); do curl -fsS http://localhost:8080/healthz && break; sleep 2; done
             curl -fsS http://localhost:8080/ | grep -q Tandelo
             curl -fsS http://localhost:8080/config.js | grep -q "'/api'"
           fi
-          docker logs t
-          docker rm -f t
+          docker logs tandelo-ci
+          docker rm -f tandelo-ci
