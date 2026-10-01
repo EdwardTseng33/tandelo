@@ -110,22 +110,33 @@
           </ul>
         </div>
 
-        <div class="hero-stage" aria-hidden="true">
-          <div class="orbit">
-            <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span><span class="orb o4"></span><span class="orb o5"></span>
+        <div class="hero-visual">
+          <div class="hero-stage" data-hero>
+            <div class="hero-orbit" aria-hidden="true"></div>
+            <div class="hero-duo" aria-hidden="true"><i class="hd-a"></i><i class="hd-b"></i><span class="hd-lens"><b></b></span></div>
+            <span class="orb" data-orb aria-hidden="true" style="--x:74%;--y:5%;--s:30px;--c:var(--av-4);--dl:-1s"><i></i></span>
+            <span class="orb" data-orb aria-hidden="true" style="--x:88%;--y:20%;--s:22px;--c:var(--av-3);--dl:-3s"><i></i></span>
+            <span class="orb" data-orb aria-hidden="true" style="--x:7%;--y:26%;--s:26px;--c:var(--av-5);--dl:-2s"><i></i></span>
+            <span class="orb" data-orb aria-hidden="true" style="--x:9%;--y:79%;--s:34px;--c:var(--av-2);--dl:-4s"><i></i></span>
+            <span class="orb" data-orb aria-hidden="true" style="--x:10%;--y:97%;--s:22px;--c:var(--av-6);--dl:-5s"><i></i></span>
+            <span class="orb" data-orb aria-hidden="true" style="--x:27%;--y:96%;--s:26px;--c:var(--av-1);--dl:-2.5s"><i></i></span>
+            <div class="float-card fc-stuck" aria-hidden="true">
+              <span class="chip chip-stuck">卡住這一步</span>
+              <span class="math fc-math">−2x &gt; 6　⇒　x &gt; −3 ?</span>
+            </div>
+            <div class="float-card fc-coach" aria-hidden="true">
+              <span class="duo duo-sm is-talking"><i></i><i></i></span>
+              <span>我先不給答案。兩邊同除以 −2，不等號會怎樣？</span>
+            </div>
+            <div class="float-card fc-gold" aria-hidden="true">
+              <span class="chip chip-gold">已掌握</span>
+              <span class="fc-sub">隔 <b class="num">9</b> 天再測，還會</span>
+            </div>
+            <div class="confetti hero-confetti" data-confetti aria-hidden="true"></div>
           </div>
-          <div class="hero-duo"><i></i><i></i></div>
-          <div class="float-card fc-stuck">
-            <span class="chip chip-stuck">卡住這一步</span>
-            <span class="math fc-math">−2x &gt; 6　⇒　x &gt; −3 ?</span>
-          </div>
-          <div class="float-card fc-coach">
-            <span class="duo duo-sm is-talking"><i></i><i></i></span>
-            <span>我先不給答案。兩邊同除以 −2，不等號會怎樣？</span>
-          </div>
-          <div class="float-card fc-gold">
-            <span class="chip chip-gold">已掌握</span>
-            <span class="fc-sub">隔 <b class="num">9</b> 天再測，還會</span>
+          <div class="hero-play">
+            <button class="btn btn-quiet btn-sm hero-nudge" type="button" data-hero-nudge>讓兩個圓靠近</button>
+            <p class="hero-status" data-hero-status aria-live="polite">把隊友拖進兩個圓中間，或點一下。</p>
           </div>
         </div>
       </div>
@@ -140,16 +151,19 @@
         </header>
         <ol class="pain-list">
           <li class="pain reveal">
+            <div class="pain-art tilt"><img class="pain-ill" data-ill="pain-stuck" src="assets/illustrations/pain-stuck.svg" alt="" width="600" height="450" loading="lazy" decoding="async"></div>
             <span class="pain-no num">01</span>
             <h3 class="h-card">他說「我不會」，<br>但說不出是哪裡不會。</h3>
             <p>再聽一次整章、再多寫幾頁題目，也未必解得開那真正卡住的一步。</p>
           </li>
           <li class="pain reveal d1">
+            <div class="pain-art tilt"><img class="pain-ill" data-ill="pain-unseen" src="assets/illustrations/pain-unseen.svg" alt="" width="600" height="450" loading="lazy" decoding="async"></div>
             <span class="pain-no num">02</span>
             <h3 class="h-card">一對一太貴，<br>大班又顧不到他。</h3>
             <p>大班照著課本進度往前走，卡住的那一步沒人停下來；一對一顧得到，但每個月的費用讓人猶豫。</p>
           </li>
           <li class="pain reveal d2">
+            <div class="pain-art tilt"><img class="pain-ill" data-ill="pain-alone" src="assets/illustrations/pain-alone.svg" alt="" width="600" height="450" loading="lazy" decoding="async"></div>
             <span class="pain-no num">03</span>
             <h3 class="h-card">晚上一個人讀，<br>卡住了沒人可問。</h3>
             <p>九點多回到家，題目卡住只能先放著；問 AI 很快拿到答案，隔天換個數字，又不會了。</p>
@@ -169,8 +183,25 @@
           <p class="lede">每週約 <b class="num">125</b> 分鐘：<b class="num">50</b> 分鐘真人小隊課，加上每天 <b class="num">10–20</b> 分鐘和小陪練習。和一般補習班一週的時間差不多，但每一分鐘都對準孩子自己的卡點。</p>
         </header>
 
+        <div class="how-layout">
+          <div class="how-stage" data-how-stage aria-hidden="true">
+            <div class="how-art">
+              <img class="how-ill is-on" data-ill="step-diagnose" src="assets/illustrations/step-diagnose.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+              <img class="how-ill" data-ill="step-team" src="assets/illustrations/step-team.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+              <img class="how-ill" data-ill="step-class" src="assets/illustrations/step-class.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+              <img class="how-ill" data-ill="step-practice" src="assets/illustrations/step-practice.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+              <img class="how-ill" data-ill="step-retest" src="assets/illustrations/step-retest.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+              <img class="how-ill" data-ill="step-parent" src="assets/illustrations/step-parent.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+              <img class="how-ill" data-ill="step-exam" src="assets/illustrations/step-exam.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
+            </div>
+            <div class="how-meter">
+              <p class="how-count"><b class="num" data-how-n>1</b><span class="num"> / 7</span><span class="how-title" data-how-title>診斷，找到卡點</span></p>
+              <span class="how-dots"><i class="is-on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            </div>
+          </div>
+
         <ol class="steps" data-steps>
-          <li class="step" data-step>
+          <li class="step" data-step data-step-title="診斷，找到卡點">
             <div class="step-rail"><span class="step-no num">1</span></div>
             <div class="step-copy">
               <span class="step-tag">兩分鐘</span>
@@ -178,6 +209,7 @@
               <p>拍一張考卷、看三題，或直接用說的。小陪找出第一個卡點——是「除以負數，不等號要反向」這樣的一步，不是一整章。</p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-diagnose" src="assets/illustrations/step-diagnose.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-diag">
                 <div class="diag-line"><span class="math">−2x &gt; 6</span><span class="diag-ok"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span></div>
                 <div class="diag-line is-stuck"><span class="math">x &gt; −3</span><span class="chip chip-stuck">卡在這一步</span></div>
@@ -190,7 +222,7 @@
             </div>
           </li>
 
-          <li class="step" data-step>
+          <li class="step" data-step data-step-title="湊一支小隊">
             <div class="step-rail"><span class="step-no num">2</span></div>
             <div class="step-copy">
               <span class="step-tag">3–6 人</span>
@@ -198,6 +230,7 @@
               <p>依卡點、學校進度、段考日期和有空的時段，湊出 3–6 人的固定小隊。同一位老師、同一個時段，一起走 8 週；老師按下「接這一隊」才成班。</p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-team" src="assets/illustrations/step-team.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-team">
                 <div class="team-ring">
                   <span class="mate t1">睿</span><span class="mate t2">晴</span><span class="mate t3">安</span><span class="mate t4">宇</span><span class="mate t5">恩</span>
@@ -210,7 +243,7 @@
             </div>
           </li>
 
-          <li class="step step-wide" data-step>
+          <li class="step step-wide" data-step data-step-title="真人小隊課">
             <div class="step-rail"><span class="step-no num">3</span></div>
             <div class="step-copy">
               <span class="step-tag">每週一次・50 分鐘</span>
@@ -218,6 +251,7 @@
               <p>上課前，AI 依全隊這週的錯排好「這週要解的 3 題」，老師看過、確認才用。課堂一律照這六段走——點一段看看在做什麼。</p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-class" src="assets/illustrations/step-class.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-class" data-class>
                 <div class="class-bar" role="tablist" aria-label="小隊課六段">
                   <button class="seg is-on" role="tab" aria-selected="true" aria-controls="seg-panel" data-min="5" data-name="暖身" data-desc="用一題上週的卡點熱身，看看誰還記得、誰又卡住了。" style="--w:5" aria-label="暖身，5 分鐘"><span class="num">5</span></button>
@@ -239,7 +273,7 @@
             </div>
           </li>
 
-          <li class="step" data-step>
+          <li class="step" data-step data-step-title="每天和小陪練一格">
             <div class="step-rail"><span class="step-no num">4</span></div>
             <div class="step-copy">
               <span class="step-tag">每天 10–20 分鐘</span>
@@ -247,6 +281,7 @@
               <p>拍題問小陪，它會問你怎麼想、給提示，但不給答案；完全沒頭緒時，先用別的題目示範一步。最後用自己的話「說給我聽」30 秒。</p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-practice" src="assets/illustrations/step-practice.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-chat">
                 <p class="bubble bubble-me">這題我不會。</p>
                 <div class="coach">
@@ -263,7 +298,7 @@
             </div>
           </li>
 
-          <li class="step" data-step>
+          <li class="step" data-step data-step-title="過幾天，再測一次">
             <div class="step-rail"><span class="step-no num">5</span></div>
             <div class="step-copy">
               <span class="step-tag">隔 7–12 天</span>
@@ -271,6 +306,7 @@
               <p>不給任何提示，換個數字再考一次。還會，才算學會；忘了，就回到練習清單——不扣分，也不跟誰比。</p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-retest" src="assets/illustrations/step-retest.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-days">
                 <ol class="days" aria-label="第 0 天到第 12 天">
                   <li class="day is-said"><span class="num">0</span></li>
@@ -288,7 +324,7 @@
             </div>
           </li>
 
-          <li class="step" data-step>
+          <li class="step" data-step data-step-title="家長在 LINE 收到週報">
             <div class="step-rail"><span class="step-no num">6</span></div>
             <div class="step-copy">
               <span class="step-tag">每週一份</span>
@@ -296,6 +332,7 @@
               <p>不用裝 App。每週一份：他學會了什麼、下週做什麼，還有今晚可以問他的一句話。<a class="inline-link" href="#line">看週報長什麼樣子</a></p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-parent" src="assets/illustrations/step-parent.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-report">
                 <p class="rep-row"><span class="rep-k">學會了</span><span>除以負數，不等號要反向</span></p>
                 <p class="rep-row"><span class="rep-k">下週</span><span>分數係數的不等式</span></p>
@@ -304,7 +341,7 @@
             </div>
           </li>
 
-          <li class="step" data-step>
+          <li class="step" data-step data-step-title="段考前後對照">
             <div class="step-rail"><span class="step-no num">7</span></div>
             <div class="step-copy">
               <span class="step-tag">第 8 週</span>
@@ -312,6 +349,7 @@
               <p>段考後拍考卷上傳，對照這 8 週前後：哪些卡點翻過去了、哪些還要再練。第 4 週有一個結業點，可以續走、換時段，也可以先停。</p>
             </div>
             <div class="step-visual">
+              <img class="step-ill" data-ill="step-exam" src="assets/illustrations/step-exam.svg" alt="" width="480" height="360" loading="lazy" decoding="async">
               <div class="viz viz-compare">
                 <div class="cmp-col">
                   <p class="cmp-h">開始前</p>
@@ -327,6 +365,18 @@
             </div>
           </li>
         </ol>
+        </div>
+
+        <div class="screens">
+          <figure class="screen screen-wide reveal">
+            <img class="screen-img" data-ill="classroom-wide" src="assets/illustrations/classroom-wide.svg" alt="" width="1400" height="900" loading="lazy" decoding="async">
+            <figcaption><b>教室</b>白板、隊友列、六段進度，老師一列控制。</figcaption>
+          </figure>
+          <figure class="screen screen-phone reveal d1">
+            <img class="screen-img" data-ill="phone-between" src="assets/illustrations/phone-between.svg" alt="" width="600" height="1200" loading="lazy" decoding="async">
+            <figcaption><b>手機</b>今天、卡點地圖、說給我聽。</figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
@@ -350,22 +400,27 @@
         </div>
 
         <div class="flip-stage" data-flip>
-          <div class="flip-card" data-state="stuck" aria-live="polite">
-            <div class="flip-face">
-              <span class="flip-state" data-flip-label>卡住</span>
-              <p class="flip-title">除以負數，不等號要反向</p>
-              <p class="math flip-math">−2x &gt; 6　⇒　x &lt; −3</p>
-              <p class="flip-when" data-flip-when>第 0 天・在小隊課上卡住</p>
+          <div class="flip-wrap">
+            <img class="flip-burst" data-ill="celebrate-dots" src="assets/illustrations/celebrate-dots.svg" alt="" width="800" height="800" loading="lazy" decoding="async">
+            <div class="flip-card" data-state="stuck" role="button" tabindex="0" aria-describedby="flip-hint" aria-label="卡點卡：除以負數，不等號要反向。按一下翻到下一個狀態">
+              <div class="flip-face">
+                <span class="flip-state" data-flip-label>卡住</span>
+                <p class="flip-title">除以負數，不等號要反向</p>
+                <p class="math flip-math">−2x &gt; 6　⇒　x &lt; −3</p>
+                <p class="flip-when" data-flip-when>第 0 天・在小隊課上卡住</p>
+              </div>
             </div>
             <div class="confetti" data-confetti aria-hidden="true"></div>
           </div>
+          <p class="flip-hint" id="flip-hint">用手指或滑鼠把卡片翻過去，也可以點一下。</p>
+          <p class="sr-only" data-flip-status aria-live="polite"></p>
           <ol class="flip-track" aria-label="卡點的三種狀態">
             <li class="ft ft-stuck is-on"><span class="ft-dot"></span><b>卡住</b><small>珊瑚色，不代表錯</small></li>
             <li class="ft ft-said"><span class="ft-dot"></span><b>說得出來</b><small>綠色，當天通過</small></li>
             <li class="ft ft-gold"><span class="ft-dot"></span><b>已掌握</b><small>金色，隔幾天還在</small></li>
           </ol>
           <button class="btn btn-quiet btn-sm flip-play" type="button" data-flip-play>
-            <svg class="ico" aria-hidden="true"><use href="#i-replay"/></svg>看它翻過去
+            <svg class="ico" aria-hidden="true"><use href="#i-replay"/></svg>再翻一次
           </button>
         </div>
       </div>
@@ -488,29 +543,44 @@
         </header>
 
         <ul class="plans">
-          <li class="plan reveal">
+          <li class="plan tilt reveal" data-plan data-name="先走半期・4 團" data-price="1790" data-per="448" data-note="走到第 4 週的結業點，再決定要不要續。">
             <p class="plan-name">先走半期</p>
             <p class="plan-qty"><b class="num">4</b> 團</p>
             <p class="plan-price"><span class="cur">NT$</span><b class="num">1,790</b></p>
             <p class="plan-per">平均每次約 <span class="num">448</span> 元</p>
             <p class="plan-desc">走到第 4 週的結業點，再決定要不要續。</p>
+            <button class="plan-pick" type="button" data-plan-pick aria-pressed="false">選這個看看</button>
           </li>
-          <li class="plan plan-main reveal d1">
+          <li class="plan plan-main tilt reveal d1 is-picked" data-plan data-name="完整一期・8 團" data-price="2990" data-per="374" data-note="8 週一期，剛好包住一次段考。">
             <span class="plan-flag">多數家庭選這個</span>
             <p class="plan-name">完整一期</p>
-            <p class="plan-qty"><b class="num">8</b> 團</p>
+            <p class="plan-qty"><b class="num">8</b> 團<span class="beat" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></p>
             <p class="plan-price"><span class="cur">NT$</span><b class="num">2,990</b></p>
             <p class="plan-per">平均每次約 <span class="num">374</span> 元</p>
             <p class="plan-desc">8 週一期，剛好包住一次段考：補洞、跟上學校、考前衝刺、考後訂正。</p>
+            <button class="plan-pick" type="button" data-plan-pick aria-pressed="true">已選這個</button>
           </li>
-          <li class="plan reveal d2">
+          <li class="plan tilt reveal d2" data-plan data-name="小隊＋一對一・8 團＋2 小時" data-price="5990" data-per="" data-note="小隊課照走，再加兩小時一對一。">
             <p class="plan-name">小隊＋一對一</p>
             <p class="plan-qty"><b class="num">8</b> 團＋一對一 <b class="num">2</b> 小時</p>
             <p class="plan-price"><span class="cur">NT$</span><b class="num">5,990</b></p>
             <p class="plan-per">適合段考前想多一點個別時間</p>
             <p class="plan-desc">小隊課照走，再加兩小時一對一，由同一位老師帶。</p>
+            <button class="plan-pick" type="button" data-plan-pick aria-pressed="false">選這個看看</button>
           </li>
         </ul>
+
+        <div class="plan-sum" data-plan-sum>
+          <div class="plan-sum-copy">
+            <p class="plan-sum-k">你正在看的方案</p>
+            <p class="plan-sum-name" data-sum-name aria-live="polite">完整一期・8 團</p>
+            <p class="plan-sum-note" data-sum-note>8 週一期，剛好包住一次段考。</p>
+          </div>
+          <div class="plan-sum-nums">
+            <p class="plan-price plan-sum-total"><span class="cur">NT$</span><b class="num" data-sum-total>2,990</b></p>
+            <p class="plan-sum-per" data-sum-per-row>平均每次約 <b class="num" data-sum-per>374</b> 元</p>
+          </div>
+        </div>
 
         <div class="plus reveal">
           <div class="plus-copy">
@@ -538,7 +608,7 @@
           <h2 id="safe-title" class="h-section">孩子的睡眠和心情，<br>比進度重要。</h2>
         </header>
         <ul class="safe-grid">
-          <li class="safe-item safe-night reveal">
+          <li class="safe-item safe-night tilt reveal">
             <svg class="ico safe-ico" aria-hidden="true"><use href="#i-moon"/></svg>
             <h3 class="h-card"><span class="num">22:30</span> 關燈</h3>
             <p>22:30 之後小陪不出聲、不推播。每天練習有上限，段考前也不加量。這個網站在 22:30 之後也會自動轉暗。</p>
@@ -548,22 +618,29 @@
               <span data-theme-label>預覽 22:30 之後</span>
             </button>
           </li>
-          <li class="safe-item reveal d1">
+          <li class="safe-item tilt reveal d1">
             <svg class="ico safe-ico" aria-hidden="true"><use href="#i-board"/></svg>
             <h3 class="h-card">只錄白板，不錄孩子</h3>
             <p>課堂只錄白板與老師講解，剪成 3 段重點回放。孩子的影像與發言不錄、不能下載，一期結束 30 天後刪除。</p>
           </li>
-          <li class="safe-item reveal d2">
+          <li class="safe-item tilt reveal d2">
             <svg class="ico safe-ico" aria-hidden="true"><use href="#i-door"/></svg>
             <h3 class="h-card">隨時可以退出</h3>
             <p>上過的照算、沒上的退。學完就可以先停一期，已經學會的卡點都會保留。</p>
           </li>
-          <li class="safe-item reveal d3">
+          <li class="safe-item tilt reveal d3">
             <svg class="ico safe-ico" aria-hidden="true"><use href="#i-lock"/></svg>
             <h3 class="h-card">個資由家長與孩子決定</h3>
             <p>13 歲以下需要家長同意。小陪不拿孩子和同學比較；卡住的事，孩子決定要不要分享給家人。</p>
           </li>
         </ul>
+        <figure class="coach-strip reveal">
+          <img class="coach-strip-img" data-ill="coach-states" src="assets/illustrations/coach-states.svg" alt="" width="1200" height="300" loading="lazy" decoding="async">
+          <figcaption>
+            <p>小陪沒有臉，只有兩個圓的四個動作。22:30 之後，它就靜靜靠在一起。</p>
+            <ol><li>待命</li><li>在聽</li><li>說話</li><li>學會</li></ol>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
@@ -573,6 +650,7 @@
         <header class="sec-head">
           <p class="eyebrow">常見問題</p>
           <h2 id="faq-title" class="h-section">家長最常問的。</h2>
+          <img class="faq-ill" data-ill="empty-no-team" src="assets/illustrations/empty-no-team.svg" alt="" width="600" height="450" loading="lazy" decoding="async">
         </header>
         <div class="faq-list">
           <details>
@@ -614,7 +692,7 @@
     <!-- 收尾 -->
     <section class="closing" aria-labelledby="closing-title">
       <div class="wrap closing-inner">
-        <span class="duo duo-lg is-idle" aria-hidden="true"><i></i><i></i></span>
+        <img class="closing-ill" data-ill="hero-tandem" src="assets/illustrations/hero-tandem.svg" alt="" width="1200" height="800" loading="lazy" decoding="async">
         <h2 id="closing-title" class="h-section">8 週後的段考，<br>和一個願意學的孩子。</h2>
         <a class="link-arrow link-arrow-lg" href="app/">開啟 App 試玩（POC）<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
@@ -643,6 +721,7 @@
     </div>
     <div class="wrap foot-base">
       <p>Tandelo 概念驗證（POC）· Edward Tseng · 2026</p>
+      <button class="foot-toggle" type="button" data-cursor-toggle aria-pressed="true" hidden>游標小圓：開</button>
     </div>
   </footer>
 </body>

@@ -113,7 +113,7 @@
             </div>
             <p class="tc-title">國二數學・不等式小隊</p>
             <div class="tc-mates" aria-label="5 位隊友">
-              <span class="mate">睿</span><span class="mate">晴</span><span class="mate">安</span><span class="mate">宇</span><span class="mate">恩</span>
+              <span class="mate" style="--i:0">睿</span><span class="mate" style="--i:1">晴</span><span class="mate" style="--i:2">安</span><span class="mate" style="--i:3">宇</span><span class="mate" style="--i:4">恩</span>
             </div>
             <div class="tc-stuck">
               <p class="tc-k">這一隊卡在</p>
@@ -132,9 +132,14 @@
               <span class="tc-take-idle">接這一隊</span>
               <span class="tc-take-done"><span class="duo duo-sm"><i></i><i></i></span>成班了，週三見</span>
             </button>
+            <div class="tc-ritual" aria-hidden="true">
+              <span class="tc-ritual-duo"><i></i><i></i></span>
+              <span class="tc-ritual-text">成班了</span>
+            </div>
             <div class="confetti" data-confetti aria-hidden="true"></div>
+            <p class="sr-only" data-take-status aria-live="polite"></p>
           </div>
-          <p class="viz-caption">接班卡示意・點點看</p>
+          <p class="viz-caption">接班卡示意・按「接這一隊」看成班的那一刻</p>
         </div>
       </div>
     </section>
@@ -144,19 +149,19 @@
       <div class="wrap">
         <h2 id="claims-title" class="sr-only">為什麼來帶小隊</h2>
         <ul class="claims">
-          <li class="claim reveal">
+          <li class="claim tilt reveal">
             <svg class="ico claim-ico" aria-hidden="true"><use href="#i-users"/></svg>
             <p class="claim-num"><b class="num">3–6</b><span>人</span></p>
             <h3 class="h-card">一堂帶一整隊</h3>
             <p>固定小隊、同一個時段。8 週看著同一群孩子，一個一個把卡點翻過去。</p>
           </li>
-          <li class="claim reveal d1">
+          <li class="claim tilt reveal d1">
             <svg class="ico claim-ico" aria-hidden="true"><use href="#i-coin"/></svg>
             <p class="claim-num"><b class="num">45–60</b><span>%</span></p>
             <h3 class="h-card">學費分潤，每堂保底 600</h3>
             <p>依等級分潤，和保底取高。各種人數下的收入寫在接班卡上，接之前就知道。</p>
           </li>
-          <li class="claim reveal d2">
+          <li class="claim tilt reveal d2">
             <svg class="ico claim-ico" aria-hidden="true"><use href="#i-clock"/></svg>
             <p class="claim-num"><b class="num">10</b><span>分＋</span><b class="num">30</b><span>秒</span></p>
             <h3 class="h-card">備課很輕</h3>
@@ -231,10 +236,10 @@
             <figure class="cr-bars">
               <figcaption>同樣等級與團數，不同人數的每月估算</figcaption>
               <div class="bars" data-bars>
-                <div class="bar" data-n="3"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">3 人</span></div>
-                <div class="bar" data-n="4"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">4 人</span></div>
-                <div class="bar is-on" data-n="5"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">5 人</span></div>
-                <div class="bar" data-n="6"><span class="bar-v num"></span><span class="bar-fill"></span><span class="bar-k num">6 人</span></div>
+                <div class="bar" data-n="3"><span class="bar-v num"></span><span class="bar-track"><span class="bar-fill"></span></span><span class="bar-k num">3 人</span></div>
+                <div class="bar" data-n="4"><span class="bar-v num"></span><span class="bar-track"><span class="bar-fill"></span></span><span class="bar-k num">4 人</span></div>
+                <div class="bar is-on" data-n="5"><span class="bar-v num"></span><span class="bar-track"><span class="bar-fill"></span></span><span class="bar-k num">5 人</span></div>
+                <div class="bar" data-n="6"><span class="bar-v num"></span><span class="bar-track"><span class="bar-fill"></span></span><span class="bar-k num">6 人</span></div>
               </div>
             </figure>
           </div>
@@ -246,42 +251,53 @@
     <!-- 老師的一週 -->
     <section class="section week-sec" aria-labelledby="week-title">
       <div class="wrap">
-        <header class="sec-head">
-          <p class="eyebrow">老師的一週</p>
-          <h2 id="week-title" class="h-section">行政交給系統，<br>你只要教。</h2>
-        </header>
-        <ol class="week">
-          <li class="wk reveal">
+        <div class="week-head">
+          <header class="sec-head">
+            <p class="eyebrow">老師的一週</p>
+            <h2 id="week-title" class="h-section">行政交給系統，<br>你只要教。</h2>
+            <p class="lede">接班卡、課前一頁、收入明細，都在同一個桌面上。往右滑，看一週怎麼過。</p>
+          </header>
+          <img class="week-ill" data-ill="teacher-desk" src="assets/illustrations/teacher-desk.svg" alt="" width="1200" height="800" loading="lazy" decoding="async">
+        </div>
+        <div class="week-wrap" data-week>
+        <ol class="week" tabindex="0" aria-label="老師的一週時間軸，可左右捲動">
+          <li class="wk tilt reveal">
             <p class="wk-when">有新小隊時</p>
             <h3 class="wk-title">接班卡</h3>
             <p>系統依卡點、段考和時段湊好隊。看過人數、時段、收入，按「接這一隊」才成班。</p>
             <div class="wk-mock"><span class="mk-row"><b class="num">5</b> 人・<span class="num">週三 19:30</span></span><span class="mk-btn">接這一隊</span></div>
           </li>
-          <li class="wk reveal d1">
+          <li class="wk tilt reveal d1">
             <p class="wk-when">上課前一晚</p>
             <h3 class="wk-title">課前一頁</h3>
             <p>這一隊這週要解的 3 題，依他們自己的錯排好。你看過、確認才用，也可以換題。</p>
             <div class="wk-mock"><span class="mk-line"><i class="mk-dot"></i>第 1 題　除以負數</span><span class="mk-line"><i class="mk-dot"></i>第 2 題　分數係數</span><span class="mk-line"><i class="mk-dot"></i>第 3 題　變化題</span></div>
           </li>
-          <li class="wk reveal d2">
+          <li class="wk tilt reveal d2">
             <p class="wk-when">上課 50 分鐘</p>
             <h3 class="wk-title">教室</h3>
             <p>照六段走：暖身、大家常錯的、自己試試、再帶一次、講給隊友聽、我搞懂的。提示在旁，你決定。</p>
             <div class="wk-mock"><span class="mk-bar" aria-hidden="true"><i style="--w:5"></i><i style="--w:10"></i><i style="--w:10"></i><i style="--w:5"></i><i style="--w:15"></i><i style="--w:5"></i></span></div>
           </li>
-          <li class="wk reveal d3">
+          <li class="wk tilt reveal d3">
             <p class="wk-when">下課後</p>
             <h3 class="wk-title">課後紀錄</h3>
             <p>留 30 秒語音，說說今天誰卡住、誰翻過去。AI 整理成家長週報和下週的課前一頁。</p>
             <div class="wk-mock"><span class="mk-rec"><svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="num">0:30</span></span></div>
           </li>
-          <li class="wk reveal">
+          <li class="wk tilt reveal">
             <p class="wk-when">每月 1 日</p>
             <h3 class="wk-title">自動出帳</h3>
             <p>每一堂的人數、分潤與保底都列在明細裡。不用自己對帳，也不用追款。</p>
             <div class="wk-mock"><span class="mk-row">本月明細</span><span class="mk-sum num">24 堂</span></div>
           </li>
         </ol>
+          <div class="week-nav">
+            <span class="week-prog" aria-hidden="true"><i data-week-prog></i></span>
+            <button class="icon-btn week-btn" type="button" data-week-prev aria-label="上一段"><svg class="ico week-prev-ico" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <button class="icon-btn week-btn" type="button" data-week-next aria-label="下一段"><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -527,6 +543,7 @@
     </div>
     <div class="wrap foot-base">
       <p>Tandelo 概念驗證（POC）· Edward Tseng · 2026</p>
+      <button class="foot-toggle" type="button" data-cursor-toggle aria-pressed="true" hidden>游標小圓：開</button>
     </div>
   </footer>
 </body>

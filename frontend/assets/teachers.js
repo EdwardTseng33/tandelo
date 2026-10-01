@@ -1,27 +1,60 @@
-/* Tandelo 老師招募頁：接班卡示意、收入試算器、報名表（只存在本機，不寄出）。 */
+/* Tandelo 老師招募頁：接班卡的成班儀式、收入試算器、一週時間軸、報名表（只存在本機，不寄出）。 */
 (function () {
   'use strict';
 
   var T = window.Tandelo || { reduceMotion: function () { return false; }, confetti: function () {} };
   var fmt = function (n) { return Math.round(n).toLocaleString('en-US'); };
 
-  /* ---------- 接班卡示意 ---------- */
+  /* ---------- 接班卡：成班的儀式（約 2.4 秒） ----------
+     隊友小圓依序亮起（1.2）→ 兩個圓合上（0.6）→ 圓點散開、「成班了」浮現（0.6）。
+     減少動態時直接顯示結果。再按一次可以還原重看。 */
   var take = document.querySelector('[data-take]');
   if (take) {
     var card = take.closest('[data-takecard]');
+    var mates = Array.prototype.slice.call(card.querySelectorAll('.tc-mates .mate'));
+    var takeStatus = card.querySelector('[data-take-status]');
+    var takeTimers = [];
+    var later = function (fn, ms) { takeTimers.push(setTimeout(fn, ms)); };
+    var resetTake = function () {
+      takeTimers.forEach(clearTimeout);
+      takeTimers = [];
+      card.classList.remove('is-forming', 'is-closing', 'is-formed');
+      mates.forEach(function (m) { m.classList.remove('is-lit'); });
+    };
+    var finishTake = function () {
+      take.setAttribute('aria-pressed', 'true');
+      take.disabled = false;
+      if (takeStatus) takeStatus.textContent = '成班了，週三見。';
+    };
     take.addEventListener('click', function () {
       var on = take.getAttribute('aria-pressed') !== 'true';
-      take.setAttribute('aria-pressed', on ? 'true' : 'false');
-      var duo = take.querySelector('.duo');
-      if (on) {
-        if (duo) { duo.classList.remove('is-celebrate'); void duo.offsetWidth; duo.classList.add('is-celebrate'); }
-        T.confetti(card.querySelector('[data-confetti]'));
+      resetTake();
+      if (!on) {
+        take.setAttribute('aria-pressed', 'false');
+        if (takeStatus) takeStatus.textContent = '已還原，可以再按一次。';
+        return;
       }
+      if (T.reduceMotion()) {
+        mates.forEach(function (m) { m.classList.add('is-lit'); });
+        finishTake();
+        return;
+      }
+      take.disabled = true;
+      card.classList.add('is-forming');
+      mates.forEach(function (m, i) { later(function () { m.classList.add('is-lit'); }, 120 + i * 220); });
+      later(function () { card.classList.add('is-closing'); }, 1250);
+      later(function () {
+        card.classList.add('is-formed');
+        T.confetti(card.querySelector('[data-confetti]'), 16, 90);
+        finishTake();
+      }, 1850);
+      later(function () { card.classList.remove('is-forming', 'is-closing', 'is-formed'); take.focus(); }, 3300);
     });
   }
 
   /* ---------- 收入試算器 ----------
-     每位學生每堂學費＝8 團 NT$2,990 ÷ 8；每堂收入＝學費合計 × 分潤，和保底 600 取高；一個月以 4.3 週計。 */
+     每位學生每堂學費＝8 團 NT$2,990 ÷ 8；每堂收入＝學費合計 × 分潤，和保底 600 取高；一個月以 4.3 週計。
+     每月估算用里程表滾動；其他數字跳動補間；長條只動 transform。 */
   var calc = document.querySelector('[data-calc]');
   if (calc) {
     var PER_STUDENT = 2990 / 8;
@@ -34,8 +67,8 @@
     var out = function (k) { return calc.querySelector('[data-out="' + k + '"]'); };
     var bars = Array.prototype.slice.call(calc.querySelectorAll('.bar'));
     var monthEl = out('month');
-    var shown = parseInt(monthEl.textContent.replace(/,/g, ''), 10) || 0;
-    var raf = 0;
+    var roll = T.roll || function (el, v) { el.textContent = fmt(v); };
+    var count = T.count || function (el, v, pre) { el.textContent = (pre || '') + fmt(v); };
 
     var rate = function () {
       var r = calc.querySelector('input[name="level"]:checked');
@@ -43,22 +76,6 @@
     };
     var perSession = function (n, r) { return Math.max(Math.round(n * PER_STUDENT * r), FLOOR); };
     var monthly = function (n, r, t) { return Math.round(perSession(n, r) * t * WEEKS / 10) * 10; };
-
-    var countTo = function (target) {
-      cancelAnimationFrame(raf);
-      if (T.reduceMotion()) { shown = target; monthEl.textContent = fmt(target); return; }
-      var from = shown, start = null, dur = 450;
-      var step = function (ts) {
-        if (start === null) start = ts;
-        var k = Math.min(1, (ts - start) / dur);
-        var e = 1 - Math.pow(1 - k, 3);
-        shown = from + (target - from) * e;
-        monthEl.textContent = fmt(shown);
-        if (k < 1) raf = requestAnimationFrame(step);
-        else { shown = target; monthEl.textContent = fmt(target); }
-      };
-      raf = requestAnimationFrame(step);
-    };
 
     var fill = function (input) {
       var min = +input.min, max = +input.max, v = +input.value;
@@ -80,18 +97,18 @@
       fill(teams);
       fill(size);
 
-      out('tuition').textContent = 'NT$' + fmt(tuition);
-      out('share').textContent = 'NT$' + fmt(share);
-      out('per').textContent = 'NT$' + fmt(per);
+      count(out('tuition'), Math.round(tuition), 'NT$');
+      count(out('share'), share, 'NT$');
+      count(out('per'), per, 'NT$');
       out('floor').hidden = share >= FLOOR;
       out('hours').textContent = '每週 ' + t + ' 堂・約 ' + (hours % 1 === 0 ? hours : hours.toFixed(1)) + ' 小時';
-      countTo(monthly(n, r, t));
+      roll(monthEl, monthly(n, r, t));
 
       var values = bars.map(function (b) { return monthly(+b.getAttribute('data-n'), r, t); });
       var max = Math.max.apply(null, values);
       bars.forEach(function (b, i) {
         b.classList.toggle('is-on', +b.getAttribute('data-n') === n);
-        b.querySelector('.bar-v').textContent = fmt(values[i]);
+        count(b.querySelector('.bar-v'), values[i]);
         b.querySelector('.bar-fill').style.setProperty('--h', (values[i] / max * 100).toFixed(1) + '%');
       });
     };
@@ -99,6 +116,56 @@
     calc.addEventListener('input', render);
     calc.addEventListener('change', render);
     render();
+  }
+
+  /* ---------- 老師的一週：可左右滑動的時間軸 ----------
+     手指滑、滑鼠拖、方向鍵、左右按鈕都可以；下方進度線跟著走。 */
+  var week = document.querySelector('[data-week]');
+  if (week) {
+    var rail = week.querySelector('.week');
+    var prog = week.querySelector('[data-week-prog]');
+    var prev = week.querySelector('[data-week-prev]');
+    var next = week.querySelector('[data-week-next]');
+    var wkTick = false;
+    var syncWeek = function () {
+      wkTick = false;
+      var maxScroll = rail.scrollWidth - rail.clientWidth;
+      var p = maxScroll > 0 ? rail.scrollLeft / maxScroll : 1;
+      var shown = rail.scrollWidth > 0 ? rail.clientWidth / rail.scrollWidth : 1;
+      if (prog) prog.style.setProperty('--p', Math.min(1, shown + (1 - shown) * p).toFixed(3));
+      if (prev) prev.disabled = rail.scrollLeft <= 2;
+      if (next) next.disabled = rail.scrollLeft >= maxScroll - 2;
+    };
+    var onWeekScroll = function () { if (!wkTick) { wkTick = true; requestAnimationFrame(syncWeek); } };
+    var stepBy = function (dir) {
+      var first = rail.querySelector('.wk');
+      var w = first ? first.getBoundingClientRect().width + 16 : 300;
+      rail.scrollBy({ left: dir * w, behavior: T.reduceMotion() ? 'auto' : 'smooth' });
+    };
+    rail.addEventListener('scroll', onWeekScroll, { passive: true });
+    window.addEventListener('resize', onWeekScroll);
+    if (prev) prev.addEventListener('click', function () { stepBy(-1); });
+    if (next) next.addEventListener('click', function () { stepBy(1); });
+
+    /* 滑鼠拖曳捲動（觸控用原生捲動就好） */
+    var wd = null;
+    rail.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'mouse' || e.button) return;
+      wd = { x: e.clientX, left: rail.scrollLeft, moved: false };
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!wd) return;
+      var dx = e.clientX - wd.x;
+      if (Math.abs(dx) > 5 && !wd.moved) { wd.moved = true; rail.classList.add('is-drag'); }
+      if (wd.moved) rail.scrollLeft = wd.left - dx;
+    });
+    window.addEventListener('pointerup', function () {
+      if (!wd) return;
+      var moved = wd.moved;
+      wd = null;
+      if (moved) setTimeout(function () { rail.classList.remove('is-drag'); }, 0);
+    });
+    syncWeek();
   }
 
   /* ---------- 報名表：前端驗證，送出後只存在 localStorage ---------- */
