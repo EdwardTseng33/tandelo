@@ -12,7 +12,7 @@
 
 | 頁 | 內容 |
 |---|---|
-| `index.html` | 首頁 2.0：冒險世界定位、點一下收服的主視覺、八隻怪圖鑑、一週節奏、三個價格帶、家長 LINE、護欄、FAQ |
+| `index.html`、`en.html` | 首頁（中、英）：首屏先說給誰、解決什麼、怎麼服務，一題示範，冒險世界定位、點一下收服的主視覺、八隻怪圖鑑、一週節奏、三個價格帶、家長 LINE、護欄、FAQ |
 | `strategy.html` | 策略與規劃 2.0：市場、國內外競品定位矩陣、商業模式與毛利槓桿、產品輪廓架構、技術架構、POC 12 週計畫、待拍板 |
 | `plan.html` | 產品規劃書 1.0 |
 | `adventure.html`、`coach.html`、`segment.html` | 冒險小隊概念稿、AI 陪跑設計稿、核心用戶輪廓 |
@@ -25,7 +25,7 @@
 ```
 tandelo/
 ├─ frontend/            純靜態：index.html（首頁 2.0）、teachers.html、plan.html、adventure.html、coach.html、segment.html、strategy.html、app/、world/、assets/
-│   ├─ world/           冒險世界高保真 Demo（hash 路由、localStorage、11 個場景、PWA manifest）
+│   ├─ world/           冒險世界 Demo（可操作 POC、11 個場景、PWA manifest；art/ 為 codex 美術掛載點）
 │   ├─ assets/monsters-defs.svg、worldmap-terrain.svg  八隻怪 v2 與數理大陸地形（由 illustrations/_src/*.py 產生）
 ├─ docs/research/       調研報告：教育遊戲化的年齡與性別偏好、核心用戶族群選擇、國際 Top players、台灣市場、商業模式標竿、2026 設計趨勢與規範
 ├─ docs/design-audit-2026.md  2026 設計規範稽核（50 項，對首頁與 Demo 逐項）；docs/codex-image-brief.md 給本地 codex 的向量圖需求單

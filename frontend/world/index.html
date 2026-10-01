@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@500;600;700&family=STIX+Two+Text:ital,wght@0,500;1,500&display=swap">
 <link rel="stylesheet" href="../assets/brand.css">
 <link rel="stylesheet" href="world.css">
+<link rel="stylesheet" href="art/art.css" onerror="this.remove()">
 <script>
   (function () { try { var s = JSON.parse(localStorage.getItem('tandelo.world.v1') || 'null'); if (s && s.theme) document.documentElement.setAttribute('data-theme', s.theme); } catch (e) {} })();
 </script>
@@ -44,8 +45,7 @@
 
 <div class="stage">
   <aside class="panel" aria-label="示範導覽">
-    <h1>Tandelo 冒險世界<small>高保真 Demo · 第 3 週 · 四葉小隊 · 示範資料全部虛構，只存在你的裝置</small></h1>
-    <p>被同一隻怪打倒過的人，組隊回去打牠。左邊是孩子的手機。每一個畫面都對到一個既有機制：怪＝卡點、收服＝再測通過、副本＝一週的任務卡、燈塔＝章節。</p>
+    <h1>Tandelo 冒險世界<small>POC · 可操作 · 資料虛構</small></h1>
     <div class="scenes" id="panel-scenes">
       <button data-go="home"><i>1</i><span>今天<small> · 三張任務卡、嚮導的信、整備條</small></span></button>
       <button data-go="play"><i>2</i><span>巡邏作答<small> · 怪的台詞、小陪四層引導</small></span></button>
@@ -60,7 +60,7 @@
       <button data-go="coach"><i>11</i><span>小陪<small> · 問、指、借、示範一步</small></span></button>
       <button data-go="settings"><i>⚙</i><span>示範設定<small> · 時間快轉、關燈、深色、投票</small></span></button>
     </div>
-    <p class="fine">伏擊層要把時間快轉到「週一 19:10」才會開；「週二 22:40」看關燈。這份 Demo 對應 <a href="../adventure.html">冒險小隊概念稿</a>、<a href="../coach.html">AI 陪跑設計稿</a> 與 <a href="../strategy.html">策略與規劃 2.0</a>。後端規則在 backend/app/services/world.py。</p>
+    <p class="fine"><a href="../">首頁</a> · <a href="../strategy.html">策略 2.1</a></p>
   </aside>
 
   <div class="shell" id="app">

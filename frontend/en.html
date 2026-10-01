@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Tandelo | Online math practice with guided support and small-group tutoring (concept)</title>
+  <meta name="description" content="Make sense of math, together. Short daily practice with AI hints that start from the step your child wrote, optional small-group tutoring with a teacher, and delayed no-hint checks. Parents get a weekly report.">
+  <meta name="theme-color" content="#F6F4EE" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0C1412" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Tandelo">
+  <meta property="og:title" content="Tandelo | Make sense of math, together.">
+  <meta property="og:description" content="Online math practice with guided support and optional small-group tutoring. Delayed no-hint checks show whether a child can really solve it alone.">
+  <meta property="og:image" content="https://edwardtseng33.github.io/tandelo/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://edwardtseng33.github.io/tandelo/en.html">
+  <link rel="alternate" hreflang="zh-Hant-TW" href="https://edwardtseng33.github.io/tandelo/">
+  <link rel="alternate" hreflang="en" href="https://edwardtseng33.github.io/tandelo/en.html">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@500;600;700&family=STIX+Two+Text:ital,wght@1,500&display=swap">
+  <link rel="stylesheet" href="assets/brand.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/world-home.css">
+  <script>
+    /* 在畫面出現前決定深淺色：手動選過就照選的；沒選過且在 22:30–06:00 之間自動轉暗 */
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      try {
+        var t = localStorage.getItem('tandelo.theme');
+        if (!t) {
+          var d = new Date(), m = d.getHours() * 60 + d.getMinutes();
+          if (m >= 1350 || m < 360) { t = 'dark'; root.setAttribute('data-night', ''); }
+        }
+        if (t === 'dark' || t === 'light') root.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <script src="config.js"></script>
+  <script src="assets/site.js" defer></script>
+  <script src="assets/world-home.js" defer></script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-board" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="11.5" rx="2.5"/><path d="M8 20l2.5-4M16 20l-2.5-4M7.5 9.5l3 2 2.5-3 3.5 3"/></symbol>
+      <symbol id="i-door" viewBox="0 0 24 24"><path d="M14 4.5H7.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H14"/><path d="M11 12h9M17 8.5l3.5 3.5-3.5 3.5"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2"/></symbol>
+      <symbol id="i-cam" viewBox="0 0 24 24"><rect x="3.5" y="7" width="17" height="12.5" rx="3"/><circle cx="12" cy="13.2" r="3.4"/><path d="M8.5 7l1.4-2.5h4.2L15.5 7"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+      <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></symbol>
+      <!-- 怪的基本身體：用品牌的圓做出來，避開任何既有 IP -->
+      <symbol id="m-round" viewBox="0 0 64 64"><rect fill="var(--m-feat)" x="8" y="22" width="11" height="8" rx="2" transform="rotate(-18 13 26)"/><rect fill="var(--m-feat)" x="45" y="22" width="11" height="8" rx="2" transform="rotate(18 51 26)"/><circle fill="var(--m-body)" cx="32" cy="35" r="23"/><path fill="var(--m-body)" d="M14 22l4-10 7 8zM50 22l-4-10-7 8z"/><circle fill="var(--m-eye)" cx="24" cy="32" r="5.6"/><circle fill="var(--m-eye)" cx="40" cy="32" r="5.6"/><circle fill="var(--m-pupil)" cx="24.8" cy="32.9" r="2.5"/><circle fill="var(--m-pupil)" cx="40.8" cy="32.9" r="2.5"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M23 44q9 7 18 0"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M18 26l6-3M46 26l-6-3"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="46">?</text></symbol>
+      <symbol id="m-drop" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M20 10c8 10 16 16 16 26a16 16 0 0 1-32 0c0-10 8-16 16-26z"/><path fill="var(--m-body)" d="M44 10c8 10 16 16 16 26a16 16 0 0 1-32 0c0-10 8-16 16-26z"/><circle fill="var(--m-eye)" cx="16" cy="36" r="4.2"/><circle fill="var(--m-pupil)" cx="17" cy="37" r="1.9"/><circle fill="var(--m-eye)" cx="40" cy="36" r="4.2"/><circle fill="var(--m-pupil)" cx="41" cy="37" r="1.9"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M16 46h8M44 46h8M48 42v8"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="50" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="46">?</text></symbol>
+      <symbol id="m-twin" viewBox="0 0 64 64"><circle fill="var(--m-body)" cx="22" cy="36" r="17"/><circle fill="var(--m-body)" cx="42" cy="36" r="17"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M32 22v28"/><circle fill="var(--m-eye)" cx="17" cy="33" r="5"/><circle fill="var(--m-pupil)" cx="18" cy="34" r="2.2"/><circle fill="var(--m-eye)" cx="47" cy="40" r="5"/><circle fill="var(--m-pupil)" cx="48" cy="39" r="2.2"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M13 44q5 4 10 0"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M39 30q5-4 10 0"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M22 15v-4M20 13h4M44 60v-4M42 58h4"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="50" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="46">?</text></symbol>
+      <symbol id="m-cloud" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M14 56V30a18 18 0 0 1 36 0v26l-6-5-6 5-6-5-6 5-6-5z"/><circle fill="var(--m-eye)" cx="25" cy="31" r="5.2"/><circle fill="var(--m-eye)" cx="39" cy="31" r="5.2"/><circle fill="var(--m-pupil)" cx="25.8" cy="31.9" r="2.3"/><circle fill="var(--m-pupil)" cx="39.8" cy="31.9" r="2.3"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M20 23l8-2M36 21l8 2"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M27 42h10"/><rect fill="var(--m-feat)" x="42" y="40" width="16" height="4" rx="2" transform="rotate(-20 50 42)"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="48" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="44">?</text></symbol>
+      <symbol id="m-bug" viewBox="0 0 64 64"><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M12 30l-7-6M12 38l-8 1M14 46l-6 6M52 30l7-6M52 38l8 1M50 46l6 6"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2" d="M22 20l-6-10 4 12M42 20l6-10-4 12"/><ellipse fill="var(--m-body)" cx="32" cy="38" rx="21" ry="17"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M32 22v8"/><circle fill="var(--m-eye)" cx="24" cy="36" r="5.2"/><circle fill="var(--m-eye)" cx="40" cy="36" r="5.2"/><circle fill="var(--m-pupil)" cx="24.8" cy="36.9" r="2.3"/><circle fill="var(--m-pupil)" cx="40.8" cy="36.9" r="2.3"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M26 47l3 2 3-2 3 2 3-2"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="16">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="46">?</text></symbol>
+      <symbol id="m-tri" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M32 9l25 46H7z"/><path fill="var(--m-feat)" opacity=".55" d="M18 20a7 7 0 0 1 12-4 8 8 0 0 1 14 2 6 6 0 0 1 4 10H16a6 6 0 0 1 2-8z"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 3" d="M14 50L44 20"/><circle fill="var(--m-eye)" cx="25" cy="44" r="5"/><circle fill="var(--m-eye)" cx="39" cy="44" r="5"/><circle fill="var(--m-pupil)" cx="25.8" cy="44.9" r="2.2"/><circle fill="var(--m-pupil)" cx="39.8" cy="44.9" r="2.2"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M28 52h8"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="48" y="18">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="50">?</text></symbol>
+      <symbol id="m-cross" viewBox="0 0 64 64"><path fill="var(--m-body)" d="M23 8h18v15h15v18H41v15H23V41H8V23h15z"/><circle fill="var(--m-eye)" cx="26" cy="31" r="5.5"/><circle fill="var(--m-pupil)" cx="27" cy="32" r="2.5"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M36 31h8"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="M27 41q5 4 10 0"/><path fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M30 13l4 4M34 13l-4 4M12 29l4 4M16 29l-4 4M48 29l4 4M52 29l-4 4M30 48l4 4M34 48l-4 4"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="46" y="14">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="42">?</text></symbol>
+      <symbol id="m-ring" viewBox="0 0 64 64"><path fill="var(--m-body)" fill-rule="evenodd" d="M32 6a25 25 0 1 0 0 50 25 25 0 0 0 0-50zm0 15a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/><path fill="var(--m-feat)" opacity=".6" d="M12 24a22 22 0 0 1 40 0q-10-7-20-7t-20 7z"/><circle fill="var(--m-eye)" cx="26" cy="31" r="3.6"/><circle fill="var(--m-pupil)" cx="27" cy="32" r="1.7"/><circle fill="var(--m-eye)" cx="38" cy="31" r="3.6"/><circle fill="var(--m-pupil)" cx="39" cy="32" r="1.7"/><ellipse fill="none" stroke="var(--m-feat)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" cx="46" cy="57" rx="4" ry="5"/><text fill="var(--m-zz)" font-family="Outfit,sans-serif" font-weight="700" font-size="14" x="50" y="12">z</text><text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="40">?</text></symbol>
+      <symbol id="tower" viewBox="0 0 24 32"><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M8 30V14h8v16z"/><path fill="var(--tw-body)" stroke="var(--tw-line)" stroke-width="1.5" stroke-linejoin="round" d="M5 14l7-8 7 8z"/><circle fill="var(--tw-lamp)" cx="12" cy="10" r="2.4"/></symbol>
+      <symbol id="p-kid" viewBox="0 0 64 64"><circle cx="32" cy="24" r="14" fill="currentColor"/><path d="M8 62c2-16 12-24 24-24s22 8 24 24z" fill="currentColor"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-nav">
+    <div class="wrap nav-inner">
+      <a class="brand-lockup" href="./" aria-label="Tandelo home">
+        <svg class="brand-mark" viewBox="0 0 64 40" aria-hidden="true"><circle class="c-a" cx="21" cy="20" r="18"/><circle class="c-b" cx="43" cy="20" r="18"/><path class="c-ov" d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z"/></svg>
+        <span class="wordmark">Tandelo</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main navigation">
+        <a href="en.html" aria-current="page">Product</a>
+        <a href="#try">Try it</a>
+        <a href="#learned">How it works</a>
+        <a href="#parents">Parents</a>
+        <a href="#pricing">Plans</a>
+        <a href="#world">The world</a>
+        <a href="./" lang="zh-Hant-TW" hreflang="zh-Hant-TW">中文</a>
+        <a href="teachers.html" lang="zh-Hant-TW">Teach with us</a>
+        <button class="nav-theme-row" type="button" data-theme-toggle>
+          <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <span data-theme-label>Dark mode</span>
+        </button>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
+          <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm nav-app" href="world/#/play">Try a math task</a>
+        <button class="icon-btn nav-menu" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <svg class="ico ico-open" aria-hidden="true"><use href="#i-menu"/></svg>
+          <svg class="ico ico-close" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+    <main id="main">
+
+    <section class="w-hero" aria-labelledby="hero-title">
+      <div class="wrap w-hero-grid">
+        <div>
+          <p class="eyebrow">Math support for ages 12–15 | AI practice and small-group tutoring</p>
+          <h1 id="hero-title">Make sense of math,<br><span class="ac">together.</span></h1>
+          <p class="lede">Ten minutes of practice a day. AI hints start from the step your child wrote. Add a teacher and a team of 3–6 if they need one. A few days later, a no-hint check shows what really stuck.</p>
+          <div class="w-hero-cta">
+            <a class="btn btn-lg" href="world/#/play">Try a math task (demo)<svg class="ico ico-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn-ghost btn-lg" href="#pricing">Compare plans</a>
+          </div>
+          <div class="w-hero-meta"><span>Concept demo · pricing and rules under validation</span></div>
+        </div>
+        <div>
+          <div class="w-stage" data-stage tabindex="0" role="button" aria-label="The Minus Ghost. Tap to see through it.">
+            <svg class="w-vista" viewBox="0 0 520 520" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+  <defs><radialGradient id="w-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFF3C4" stop-opacity=".9"/><stop offset="1" stop-color="#FFF3C4" stop-opacity="0"/></radialGradient></defs>
+  <g class="pl pl-far"><path class="sea" d="M-40 330q60-18 120-6t120 2 120-4 140 10v240H-40z"/><path class="far" d="M-40 342c40-34 110-60 190-56s110 26 160 22 110-30 170-18v60H-40z"/>
+    <g class="lh"><circle class="beam" cx="372" cy="238" r="70" fill="url(#w-glow)"/><path class="beam-cone" d="M372 238L240 150 250 210z"/><path class="lh-body" d="M364 300V252h16v48z"/><path class="lh-cap" d="M360 252l12-14 12 14z"/><circle class="lamp" cx="372" cy="246" r="4"/></g></g>
+  <g class="pl pl-mid"><path class="mid" d="M-40 400c50-40 120-58 200-46s120 40 200 30 110-36 200-22v120H-40z"/>
+    <path class="tree" d="M110 352l-10 18h7v6h6v-6h7zM142 342l-12 20h8v7h8v-7h8zM448 360l-10 18h7v6h6v-6h7z"/><path class="peak" d="M28 380l26-44 26 44z"/></g>
+  <g class="pl pl-near"><path class="near" d="M-40 470c80-28 160-30 280-14s200 2 320-10v120H-40z"/><path class="grass" d="M70 462l4-10M78 466l5-9M300 452l3-10M312 455l5-9M420 462l4-10"/></g>
+</svg>
+            <div class="fogl" aria-hidden="true"></div><div class="fogl b" aria-hidden="true"></div>
+            <div class="w-bubble" aria-live="polite"></div>
+            <div class="w-squad" aria-hidden="true">
+              <span class="w-kid" style="color:var(--av-2)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+              <span class="w-kid" style="color:var(--av-4)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+              <span class="w-kid" style="color:var(--av-3)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+              <span class="w-kid" style="color:var(--av-5)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+            </div>
+            <div class="w-hmon mon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" id="hbody"></svg>
+            </div>
+            <span class="w-hkid w-kid" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+            <div class="w-confetti" aria-hidden="true"></div>
+            <span class="w-hint">Tap the monster</span>
+          </div>
+          <div class="w-stage-cap"><span>Tap to see through its trick.</span><button type="button" data-next-mon hidden>Next one →</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="pains-title">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Who it is for</p>
+          <h2 id="pains-title" class="h-section">Not a lack of effort.<br>Stuck on a step nobody sees.</h2>
+          <p class="lede">Students aged 12–15 whose math grades sit in the middle.</p>
+        </div>
+        <div class="w-pains">
+          <div class="w-pain reveal"><img data-ill="pain-stuck" src="assets/illustrations/pain-stuck.svg" alt="" width="600" height="450" loading="lazy"><h3>Same step, fifth time</h3><p>The problem changes. The stuck step does not.</p><p class="ans">Find the step first, then fix it.</p></div>
+          <div class="w-pain reveal d1"><img data-ill="pain-alone" src="assets/illustrations/pain-alone.svg" alt="" width="600" height="450" loading="lazy"><h3>Ten at night, alone</h3><p>Nobody to ask. Solver apps just hand over answers.</p><p class="ans">AI picks up from the step you wrote.</p></div>
+          <div class="w-pain reveal d2"><img data-ill="pain-unseen" src="assets/illustrations/pain-unseen.svg" alt="" width="600" height="450" loading="lazy"><h3>Wrong, so I must be dumb</h3><p>What drops is how a child sees themselves.</p><p class="ans">Not wrong. Tricked by a monster.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="try" aria-labelledby="try-title">
+      <div class="wrap">
+        <div class="sec-head sec-head-split">
+          <div><p class="eyebrow">One problem shows it</p><h2 id="try-title" class="h-section">Stuck. A hint.<br>Solved it yourself.</h2></div>
+          <p class="lede">Pick an answer.</p>
+        </div>
+        <div class="w-try" data-try>
+          <div class="w-try-q">
+            <p class="w-try-stem">Simplify: <span class="mx">(3x + 2) − (x − 5)</span></p>
+            <div class="w-try-opts">
+              <button type="button" class="w-opt" data-try-opt="0"><i>A</i><span class="mx">2x + 7</span></button>
+              <button type="button" class="w-opt" data-try-opt="1"><i>B</i><span class="mx">2x − 3</span></button>
+              <button type="button" class="w-opt" data-try-opt="2"><i>C</i><span class="mx">4x − 3</span></button>
+              <button type="button" class="w-opt" data-try-opt="3"><i>D</i><span class="mx">2x − 7</span></button>
+            </div>
+          </div>
+          <div class="w-try-side">
+            <div class="w-try-msg" data-try-msg><span class="mon sm"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><p><b>The Minus Ghost</b> is near this one. Its catchphrase: "The first one is mine. The rest, not my problem."</p></div>
+            <div class="w-try-coach" data-try-coach hidden><span class="face" aria-hidden="true"><svg viewBox="0 0 64 40"><use href="#logo"/></svg></span><p data-try-coach-text></p></div>
+            <p class="w-try-note" data-try-note>Pick an answer first.</p>
+          </div>
+        </div>
+        <p class="fine" style="margin-top:14px"><a class="inline-link" href="world/#/play">Try a few more →</a></p>
+      </div>
+    </section>
+
+    <section class="section" id="learned" aria-labelledby="learned-title">
+      <div class="wrap">
+        <div class="w-band">
+          <div>
+            <p class="eyebrow" style="color:#7ED3C0">How it works</p>
+            <h2 id="learned-title" class="h-section">Got it right?<br>Try again in a few days,<br>without hints.</h2>
+            <p class="lede">Learned means: 7 to 12 days later, no hints, still solved. Miss it again and nothing is deducted.</p>
+            <div class="ctrl"><button type="button" data-state-prev>← Previous</button><button type="button" data-state-next>Next →</button></div>
+          </div>
+          <div>
+            <div class="w-states" role="list">
+              <div class="w-state" role="listitem"><span class="mon fog"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>Fog</b><small>Not met yet</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>Nearby</b><small>Stuck. Not wrong.</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon pine"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>Hit</b><small>Can explain it. It will come back.</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon shadow"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>Caught</b><small>Solved days later, no hints</small></span></div>
+              <div class="w-state" role="listitem"><span class="mon asleep"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span><b>Asleep</b><small>Missed again. Wake it up.</small></span></div>
+            </div>
+          </div>
+        </div>
+        <h3 class="h-card" style="margin-top:40px">Three plans. The difference is how much of a human is beside them.</h3>
+        <div class="w-modes">
+          <div class="w-mode reveal"><span class="tag">System only</span><h3>AI practice</h3><p>Short practice, AI hints, delayed checks, weekly report. No teacher.</p><span class="price">US$9<small>/month</small></span></div>
+          <div class="w-mode reveal d1"><span class="tag">AI + a teacher watching</span><h3>Teacher check-ins</h3><p>Adds one teacher: a voice note every week, spot checks on "why".</p><span class="price">US$22–31<small>/month</small></span></div>
+          <div class="w-mode hi reveal d2"><span class="tag">Small-group</span><h3>8-week small-group course</h3><p>Same teacher and teammates, 50 minutes a week, a 30-second voice note after class.</p><span class="price">US$93<small>/8 weeks</small></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="parents" aria-labelledby="parents-title">
+      <div class="wrap w-parents">
+        <div>
+          <p class="eyebrow">For parents</p>
+          <h2 id="parents-title" class="h-section">Not "what was the score".<br>"What did you figure out this week".</h2>
+          <p class="lede">One message a week: what passed the check, what is still being worked on, and one question to ask tonight.</p>
+          <ul class="ticks">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>No app to install; arrives in your messaging app</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Unsolved steps are never hidden</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Share cards are sent by the child, never automatically</span></li>
+          </ul>
+        </div>
+        <div class="w-line reveal">
+          <div class="top"><i>T</i>Tandelo Camp</div>
+          <div class="body">
+            <div class="w-bub"><b>Camp letter · Tuesday 21:02</b><br>Rui caught a monster tonight: the Term Thief (a perfect square has a middle term). Day 9, no hints, still solved.<br>Still chasing: the Minus Ghost. Teacher Lin takes it on Thursday.<span class="q">Ask tonight: "A square with side a+b: why is it bigger than a² + b² by two rectangles?"</span><div class="acts"><button type="button" data-witness>I saw this</button><button type="button">Ask later</button></div><span class="t">Read 21:05</span></div>
+            <div class="w-bub me">Will ask tonight.<span class="t">21:06</span></div>
+            <div class="w-bub" data-witness-echo hidden>Next morning on Rui's screen: "Mom saw this one."</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing" aria-labelledby="pricing-title">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Plans</p>
+          <h2 id="pricing-title" class="h-section">Three plans.<br>The difference is how much of a human is beside them.</h2>
+          <p class="lede">Practice, hints, checks and the weekly report are the same in all three. Live teaching is only in the 8-week plan.</p>
+          <div class="w-toggle" role="group" aria-label="Billing period"><button type="button" data-bill="month" class="on" aria-pressed="true">Monthly</button><button type="button" data-bill="year" aria-pressed="false">Yearly (about 17% off)</button></div>
+        </div>
+        <div class="w-tiers">
+          <div class="w-tier reveal"><span class="tag">Free</span><h3>Have a look</h3><span class="price">US$0</span><span class="alt">Just looking</span><ul><li>A few problems to find the stuck step</li><li>One short practice a day</li><li>The monster codex</li></ul><span class="for">Teachers and tutoring centers can open a team for free</span></div>
+          <div class="w-tier reveal d1"><span class="tag">System only</span><h3>AI practice</h3><span class="price" data-month="US$9<small>/month</small>" data-year="US$90<small>/year</small>">US$9<small>/month</small></span><span class="alt">For kids who can practice on their own</span><ul><li>Three short practices a day, dungeons and matches</li><li>AI hints, never the whole answer</li><li>Delayed checks and the weekly report</li></ul><span class="for">No teacher</span></div>
+          <div class="w-tier reveal d2"><span class="tag">AI + a teacher watching</span><h3>Teacher check-ins</h3><span class="price" data-month="US$22–31<small>/month</small>" data-year="US$220–310<small>/year</small>">US$22–31<small>/month</small></span><span class="alt">For kids who need someone to look in weekly</span><ul><li>Everything in AI practice</li><li>A teacher's voice note every week</li><li>Spot checks on "why"; help requests answered</li></ul><span class="for">No weekly class</span></div>
+          <div class="w-tier hi reveal d3"><span class="tag">Small-group</span><h3>8-week small-group course</h3><span class="price" data-month="US$93<small>/8 weeks</small>" data-year="US$93<small>/8 weeks</small>">US$93<small>/8 weeks</small></span><span class="alt">For kids who need a steady teacher and teammates</span><ul><li>A 50-minute live class every week</li><li>A 30-second voice note after class; tomorrow's first problem follows it</li><li>Everything in AI practice</li></ul><span class="for">Charged only when 4 sign up · stop after week 4</span></div>
+        </div>
+        <p class="w-price-note">Paying never changes progress or power. No ads. Concept demo; prices and rules under validation. Shown in US dollars for reference.</p>
+      </div>
+    </section>
+
+    <section class="section" id="world" aria-labelledby="world-title">
+      <div class="wrap">
+        <div class="sec-head sec-head-split">
+          <div><p class="eyebrow">For the kids · the adventure world</p><h2 id="world-title" class="h-section">Everyone beaten by the same monster,<br>goes back as a team.</h2></div>
+          <p class="lede">Stuck steps are monsters. Teachers are guides. Caught monsters stand behind you.</p>
+        </div>
+        <div class="w-dex">
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-round"/></svg></span><span class="where">Multiplication Plains</span><h4>Term Thief</h4><p>Steals the two middle pieces of (a+b)², so you think only a² + b² is left.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"Two squares. That is all there is."</p><span class="k">Weakness</span><p class="weak">A square with side a+b always has two extra ab rectangles.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-cloud"/></svg></span><span class="where">Polynomial Woods</span><h4>Minus Ghost</h4><p>Hides in front of the bracket and flips only the first term.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"The first one is mine. The rest, not my problem."</p><span class="k">Weakness</span><p class="weak">The minus sign goes to everyone in the bracket.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-bug"/></svg></span><span class="where">Root Valley</span><h4>Root Splitter</h4><p>Bites √(25 − 9) into √25 − √9.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"Splitting is faster, trust me."</p><span class="k">Weakness</span><p class="weak">Finish inside the root first, then take the root.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-twin"/></svg></span><span class="where">Root Valley</span><h4>Two-Faced Root</h4><p>Makes you think √(a²) can be negative.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"Positive or negative, your pick."</p><span class="k">Weakness</span><p class="weak">A square root is never negative.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-tri"/></svg></span><span class="where">Pythagoras Peak</span><h4>Hypotenuse Fog</h4><p>Rotates the triangle until you pick the wrong hypotenuse.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"Top right is the hypotenuse, no need to look."</p><span class="k">Weakness</span><p class="weak">The hypotenuse faces the right angle. Find the right angle first.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-drop"/></svg></span><span class="where">Factoring Caves</span><h4>Square-Difference Twins</h4><p>One plus, one minus. It makes you write minus twice.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"We are twins, of course we match."</p><span class="k">Weakness</span><p class="weak">A difference of squares factors into one plus and one minus.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-cross"/></svg></span><span class="where">Factoring Caves</span><h4>Cross-Sign Fiend</h4><p>Swaps a sign at the last step of cross-multiplication.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"Numbers are right, who checks signs."</p><span class="k">Weakness</span><p class="weak">After matching numbers, multiply the signs back to check.</p></span></button></div>
+          <div class="w-card3d"><button type="button" aria-pressed="false"><span class="w-face"><span class="mon"><svg aria-hidden="true"><use href="#m-ring"/></svg></span><span class="where">Quadratic Plateau</span><h4>Zero Hermit</h4><p>The moment you divide both sides by x, it hides x = 0.</p></span><span class="w-face back"><span class="k">Catchphrase</span><p>"…" It says nothing.</p><span class="k">Weakness</span><p class="weak">Move terms and factor out; x itself can be 0.</p></span></button></div>
+        </div>
+        <p class="w-dex-cap">English, social studies and Chinese monsters come next.</p>
+        <div class="w-week" style="margin-top:40px">
+          <div class="w-day exp reveal"><span class="d">THU</span><b>Expedition</b><p>50 minutes with the guide.</p></div>
+          <div class="w-day reveal d1"><span class="d">FRI</span><b>Follow-up</b><p>Last night's voice note is today's first problem.</p></div>
+          <div class="w-day reveal d2"><span class="d">SAT</span><b>Patrol + relay</b><p>3 problems each. Boss relay starts.</p></div>
+          <div class="w-day rest reveal d3"><span class="d">SUN</span><b>Camp letter</b><p>Parents get the weekly message.</p></div>
+          <div class="w-day gold reveal"><span class="d">MON</span><b>Ambush</b><p>A due monster returns. No hints.</p></div>
+          <div class="w-day reveal d1"><span class="d">TUE</span><b>Settle</b><p>The team sees its solve rate.</p></div>
+          <div class="w-day reveal d2"><span class="d">WED</span><b>Scout</b><p>One teammate tries next week's monster.</p></div>
+        </div>
+        <div class="w-together">
+          <div class="w-tg reveal"><span class="tag">PvE · dungeon</span><h3>Dungeons: the team's solve rate clears it</h3><p>3 problems and 1 relay leg each. Asking for help costs nothing.</p>
+            <div class="w-rate"><div><span>60%</span><span class="bar"><i style="--v:.6"></i></span><span class="n">1 star</span></div><div><span>75%</span><span class="bar"><i style="--v:.75"></i></span><span class="n">2 stars · next route</span></div><div><span>90%</span><span class="bar"><i class="h" style="--v:.9"></i></span><span class="n">3 stars · everyone in</span></div></div></div>
+          <div class="w-tg reveal d1"><span class="tag">PvP · matches</span><h3>Matches: solve rate, and who writes the better problem</h3><p>Only teams on the same route meet. Humans only if the whole team agrees.</p>
+            <div class="w-score"><div><b>3</b>points for answers</div><div><b>3</b>points for problems that catch the other team</div></div></div>
+          <div class="w-tg reveal d2"><span class="tag">Guild · monthly badge</span><h3>Monthly badge run: hit the bar, win</h3><p>80% and everyone in: a real badge for each teammate.</p>
+            <div class="w-badge"><svg viewBox="0 0 48 48" aria-hidden="true"><circle fill="var(--honey)" stroke="#B8912A" stroke-width="2" cx="24" cy="24" r="20"/><circle fill="#FBEBC0" cx="24" cy="24" r="13"/><path fill="none" stroke="#7A5A08" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M17 24l4 4 10-10"/></svg><span><b>October · Month of Root Valley</b><small>No lottery, nothing to buy.</small></span></div></div>
+          <div class="w-tg reveal d3"><span class="tag">World map · lighthouses</span><h3>Map: one continent per subject</h3><p>Light lighthouses together; teams on the same route compete to keep them.</p>
+            <div class="w-minimap"><svg viewBox="0 0 440 420" role="img" aria-label="Math Continent示意：六區各一座燈塔"><path class="wave" d="M26 40q10-6 20 0t20 0M372 70q10-6 20 0t20 0M46 392q10-6 20 0t20 0M352 372q10-6 20 0t20 0M400 330q10-6 20 0t20 0"/><path class="land" d="M76 128c14-44 60-74 118-82 46-6 96 4 134 34 36 28 60 70 52 118-6 36-32 62-60 86-30 26-66 44-108 44-44 0-84-20-110-50-26-32-40-80-26-150z"/><path class="shore" d="M94 150c10-30 44-56 90-64" /><path class="shore" d="M330 100c22 20 38 48 38 80"/><path class="field" d="M112 182h66M106 196h74M112 210h66M118 224h56"/><path class="tree" d="M236 122l-6 10h4v4h4v-4h4z"/><path class="tree" d="M256 116l-6 10h4v4h4v-4h4z"/><path class="tree" d="M276 126l-6 10h4v4h4v-4h4z"/><path class="tree" d="M246 142l-6 10h4v4h4v-4h4z"/><path class="tree" d="M268 146l-6 10h4v4h4v-4h4z"/><path class="tree" d="M290 140l-6 10h4v4h4v-4h4z"/><path class="tree" d="M228 150l-6 10h4v4h4v-4h4z"/><path class="tree" d="M302 158l-6 10h4v4h4v-4h4z"/><path class="valley" d="M318 206l20 36 22-40"/><path class="river" d="M338 242q6 18-4 34t2 34"/><path class="peak" d="M126 284l-14 22h28z"/><path class="snow" d="M126 284l-5 8h10z"/><path class="peak" d="M154 270l-14 22h28z"/><path class="snow" d="M154 270l-5 8h10z"/><path class="peak" d="M176 296l-14 22h28z"/><path class="snow" d="M176 296l-5 8h10z"/><path class="cave" d="M232 356a22 18 0 0 1 44 0z"/><path class="cave-in" d="M242 356a12 10 0 0 1 24 0z"/><path class="mesa" d="M296 318l14-14h40l14 14z"/><path class="mesa-top" d="M310 304h40"/><path class="route" d="M60 60q60-30 120-10M400 390q-40 20-90 6"/><text class="cn" x="96" y="96">Math Continent</text><circle class="glow" cx="161" cy="186" r="22"/><use href="#tower" class="tw t-us" x="150" y="170" width="22" height="30"/><text class="rl" x="161" y="222">Multiplication Plains</text><circle class="glow" cx="266" cy="160" r="22"/><use href="#tower" class="tw t-o" x="255" y="144" width="22" height="30"/><text class="rl" x="266" y="194">Polynomial Woods</text><circle class="glow" cx="351" cy="228" r="22"/><use href="#tower" class="tw t-us" x="340" y="212" width="22" height="30"/><text class="rl" x="351" y="262">Root Valley</text><use href="#tower" class="tw t-n" x="130" y="300" width="22" height="30"/><text class="rl" x="141" y="350">Pythagoras Peak</text><use href="#tower" class="tw t-n" x="240" y="330" width="22" height="30"/><text class="rl" x="251" y="380">Factoring Caves</text><ellipse class="fogm" cx="330" cy="340" rx="50" ry="28"/><text class="rl fogt" x="330" y="345">?</text></svg></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="safe-title">
+      <div class="wrap">
+        <div class="sec-head"><p class="eyebrow">Guardrails</p><h2 id="safe-title" class="h-section">Sleep and mood<br>matter more than progress.</h2></div>
+        <div class="w-guard">
+          <div class="w-g reveal"><span class="ico"><svg viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></span><span><b>No task reminders after 10:30 pm</b><p>It opens again at six.</p></span></div>
+          <div class="w-g reveal d1"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><circle cx="17" cy="10" r="2.6"/><path d="M3 19c.6-3.4 3-5 6-5s5.4 1.6 6 5M15.5 14.4c2.8 0 4.8 1.4 5.5 4.6"/></svg></span><span><b>No names on teammates' screens</b><p>Boards show three teams above and below you.</p></span></div>
+          <div class="w-g reveal d2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>No comparison, no deductions</b><p>Retreat is not failure. Asleep is not gone.</p></span></div>
+          <div class="w-g reveal"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2"/></svg></span><span><b>The map is imaginary</b><p>Leagues go by region, never by school.</p></span></div>
+          <div class="w-g reveal d1"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/></svg></span><span><b>No loot boxes, nothing to buy</b><p>Points come only from verified learning.</p></span></div>
+          <div class="w-g reveal d2"><span class="ico"><svg viewBox="0 0 24 24"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg></span><span><b>AI never writes the whole answer</b><p>Ask, point, lend an example, show one step. Problems are reviewed by people.</p></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="wrap">
+        <div class="sec-head"><p class="eyebrow">Parents ask</p><h2 id="faq-title" class="h-section">Is this a game, or is it math?</h2></div>
+        <div class="w-faq">
+          <details><summary>Will my child play more than learn?</summary><p>There is nothing to do in the world that is unrelated to learning. Three short tasks a day, each under ten minutes, nothing after 10:30 pm. Every achievement counts only delayed no-hint checks, never logins, streaks or time spent.</p></details>
+          <details><summary>Does the AI give answers?</summary><p>It never writes the whole solution. It starts from the step your child wrote and nudges forward: ask, point, lend a similar example, show one step. After the fourth level it stops and hands the question to a teammate or teacher.</p></details>
+          <details><summary>My child is behind. Will they drag the team down?</summary><p>Teams are formed from kids tricked by the same monster, so nobody needs to feel ashamed. Dungeons score the team's solve rate; asking for help costs nothing; teammates never see who is stuck.</p></details>
+          <details><summary>Does the US$9 plan include a teacher?</summary><p>No. It is AI practice only. The weekly live class is only in the 8-week plan; teacher check-ins add weekly voice notes and spot checks, but no class.</p></details>
+          <details><summary>What if the small group does not fill?</summary><p>Four students open a group. Three becomes a one-to-three with adjusted tuition. Two or fewer means a full refund. After week four you can stop or continue.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="w-close" aria-labelledby="closing-title">
+      <div class="wrap w-close">
+        <div class="w-squad-static" aria-hidden="true">
+          <span class="w-kid" style="color:var(--av-2)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid" style="color:var(--av-4)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid g"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid" style="color:var(--av-3)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="w-kid" style="color:var(--av-5)"><svg viewBox="0 0 64 64"><use href="#p-kid"/></svg></span>
+          <span class="mon shadow"><svg><use href="#m-round"/></svg></span>
+        </div>
+        <h2 id="closing-title" class="h-section">The stuck step, practiced until they can solve it alone,<br>and a kid who wants to go back and fight.</h2>
+        <div class="cta">
+          <a class="btn btn-lg" href="world/#/play">Try a math task (demo)<svg class="ico ico-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ghost btn-lg" href="world/">See the full world demo</a>
+        </div>
+        <p class="w-docs">The demo is in Traditional Chinese. Strategy and research documents: <a href="strategy.html">Strategy 2.1</a><a href="adventure.html">Adventure concept</a><a href="coach.html">AI coach design</a></p>
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ⑩ 頁尾 -->
+  <footer class="site-foot">
+    <div class="wrap foot-grid">
+      <div class="foot-brand">
+        <a class="brand-lockup" href="./" aria-label="Tandelo 首頁">
+          <svg class="brand-mark" viewBox="0 0 64 40" aria-hidden="true"><circle class="c-a" cx="21" cy="20" r="18"/><circle class="c-b" cx="43" cy="20" r="18"/><path class="c-ov" d="M32 5.752A18 18 0 0 1 32 34.248A18 18 0 0 1 32 5.752Z"/></svg>
+          <span class="wordmark">Tandelo</span>
+        </a>
+        <p>Two circles, side by side.<br>One is you. One is the person with you.</p>
+      </div>
+      <nav class="foot-nav" aria-label="Footer">
+        <a href="en.html">Product</a>
+        <a href="teachers.html">Teach with us</a>
+        <a href="world/">World demo</a>
+        <a href="app/">App prototype</a>
+        <a href="strategy.html">Strategy 2.1</a>
+      </nav>
+      <div class="poc-note">
+        <h2>About this concept</h2>
+        <p>This site is a concept demo, not a live service. Prices, rules and teacher earnings are estimates; all people and data are fictional; nothing is collected or sent.</p>
+      </div>
+    </div>
+    <div class="wrap foot-base">
+      <p>Tandelo 概念驗證（POC）· Edward Tseng · 2026</p>
+      <button class="foot-toggle" type="button" data-cursor-toggle aria-pressed="true" hidden>游標小圓：開</button>
+    </div>
+  </footer>
+</body>
+</html>

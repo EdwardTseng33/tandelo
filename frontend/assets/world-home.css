@@ -267,3 +267,34 @@
 /* ---------- 可及性設定（HIG）：減少透明度、增加對比 ---------- */
 @media (prefers-reduced-transparency: reduce){.site-nav,.w-hint,.w-bubble{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--surface)}}
 @media (prefers-contrast: more){.w-pain,.w-mapc,.w-face,.w-day,.w-mode,.w-tg,.w-tier,.w-g,.w-faq details{box-shadow:0 0 0 1.5px var(--text-mute)}.w-pain p,.w-mapc .why,.w-day p,.w-mode p,.w-tg p,.w-tier .alt,.w-g p{color:var(--text)}}
+
+/* ---------- 一題示範：卡住 → 提示 → 自己解 ---------- */
+.w-try{display:grid;gap:18px;margin-top:32px}
+@media (min-width:900px){.w-try{grid-template-columns:1.1fr .9fr;align-items:start}}
+.w-try-q{background:var(--surface);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-soft)}
+.w-try-stem{font-size:20px;font-weight:700;margin:0 0 16px}
+.w-try-stem .mx{font-size:24px}
+.w-try-opts{display:grid;gap:10px}
+@media (min-width:560px){.w-try-opts{grid-template-columns:1fr 1fr}}
+.w-opt{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;text-align:left;min-height:56px;padding:12px 14px;border-radius:16px;background:var(--surface-2);border:1.5px solid color-mix(in srgb,var(--text-mute) 55%,transparent);font:inherit;font-size:18px;color:inherit;cursor:pointer;transition:transform .2s var(--ease),background .2s,border-color .2s}
+.w-opt i{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--bg-alt);font-family:var(--font-num);font-weight:700;font-size:13px;font-style:normal;color:var(--text-mute)}
+.w-opt:hover{transform:translateY(-1px)}
+.w-opt.trap{border-color:var(--coral);background:var(--stuck-bg);animation:w-shake-sm .4s ease-in-out}
+.w-opt.trap i{background:var(--coral);color:#fff}
+.w-opt.ok{border-color:var(--pine);background:var(--learned-bg)}
+.w-opt.ok i{background:var(--brand-fill);color:var(--on-brand)}
+.w-opt[disabled]{pointer-events:none}
+@keyframes w-shake-sm{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.w-try-side{display:grid;gap:10px}
+.w-try-msg{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;background:var(--stuck-bg);border-radius:var(--r-card);padding:14px 16px;animation:w-pop .35s var(--ease) both}
+.w-try-msg .mon{width:40px;height:40px}
+.w-try-msg p{margin:0;font-size:14.5px;line-height:1.6}
+.w-try-msg b{color:var(--stuck-text)}
+.w-try-msg.learned{background:var(--learned-bg)}.w-try-msg.learned b{color:var(--brand)}
+.w-try-coach{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;background:var(--coach-bg);border-radius:var(--r-card);padding:14px 16px;animation:w-pop .35s var(--ease) both}
+.w-try-coach .face{width:40px;height:40px;border-radius:50%;background:var(--brand-fill);display:grid;place-items:center}
+.w-try-coach .face svg{width:24px;height:16px}
+.w-try-coach p{margin:0;font-size:14.5px;line-height:1.6}
+.w-try-coach p b{display:block;font-size:11.5px;color:var(--brand);letter-spacing:.04em}
+.w-try-note{font-size:13px;color:var(--text-mute);margin:0}
+@keyframes w-pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}

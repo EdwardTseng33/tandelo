@@ -66,6 +66,8 @@ a{color:var(--brand)}
 /* ---------- 狀態列與 view ---------- */
 .sb{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:calc(var(--sat) + 6px) 22px 6px;font-family:var(--font-num);font-weight:600;font-size:14px;pointer-events:none}
 .sb .cap{font-family:var(--font-sans);font-weight:700;font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow-soft);pointer-events:auto}
+.sb .clockbtn{pointer-events:auto;min-height:32px;padding:0 8px;border-radius:10px}
+.sb .clockbtn:hover{background:var(--surface)}
 .sb .capture b{font-family:var(--font-num);color:var(--brand)}
 .view{position:absolute;inset:0;overflow:hidden}
 .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-padding-bottom:calc(var(--tabs-h) + var(--sab) + 16px);padding:calc(var(--sat) + 44px) calc(18px + var(--sar)) calc(var(--tabs-h) + var(--sab) + 18px) calc(18px + var(--sal));scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -600,3 +602,83 @@ a{color:var(--brand)}
 .stop b{display:block;font-size:15px}.stop small{display:block;font-size:12.5px;color:var(--text-mute)}
 .ios-tip{display:none;background:var(--mastered-bg);border-radius:var(--r-card);padding:12px 14px;font-size:13.5px;margin-bottom:12px}
 .ios-tip.on{display:block}
+
+/* ---------- 美術掛載點（codex 產出放進 art/，由 art/art.css 覆寫；沒有時維持向量版） ---------- */
+.dg-hero,.wall,.tower-hero,.capture,.guild-hero,.home-top{background-size:cover;background-position:center}
+
+/* ======================================================================
+   遊戲手感層（game feel）：待機動畫、打擊回饋、浮字、震動、地圖鏡頭、收服特效
+   只動 transform／opacity／filter；prefers-reduced-motion 時全部關閉
+   ====================================================================== */
+/* 怪的待機：呼吸＋眨眼；受擊：壓扁彈回 */
+.mon svg{transform-origin:50% 90%}
+.mon:not(.asleep):not(.fog) svg{animation:m-breathe 3.6s ease-in-out infinite}
+.mon.shadow svg{animation:m-breathe 4.4s ease-in-out infinite}
+.mon.hit svg{animation:m-hit .45s cubic-bezier(.2,1.4,.4,1) 1}
+.mon.tricked svg{animation:m-tricked .5s ease-in-out 1}
+@keyframes m-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97) translateY(1px)}}
+@keyframes m-hit{0%{transform:scale(1)}30%{transform:scale(1.25,.75)}60%{transform:scale(.9,1.12)}100%{transform:scale(1)}}
+@keyframes m-tricked{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg) scale(1.08)}50%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+
+/* 畫面震動與打擊閃光 */
+.shake-screen{animation:scr-shake .4s ease-in-out 1}
+@keyframes scr-shake{0%,100%{transform:translate(0)}20%{transform:translate(-5px,2px)}40%{transform:translate(5px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(3px,-1px)}}
+.flash{position:absolute;inset:0;z-index:55;pointer-events:none;background:radial-gradient(circle at var(--fx,50%) var(--fy,50%),rgba(244,194,77,.55),transparent 55%);animation:flash .5s var(--ease) both}
+@keyframes flash{from{opacity:1}to{opacity:0}}
+/* 浮字 */
+.float-txt{position:absolute;z-index:56;left:var(--fx,50%);top:var(--fy,50%);transform:translate(-50%,-50%);font-family:var(--font-num);font-weight:900;font-size:26px;letter-spacing:-.02em;pointer-events:none;animation:float-up 1s var(--ease) both;text-shadow:0 2px 0 rgba(0,0,0,.08)}
+.float-txt.good{color:var(--brand)} .float-txt.bad{color:var(--stuck-text)} .float-txt.gold{color:var(--mastered-text)}
+@keyframes float-up{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-140%) scale(1)}}
+/* 連擊 */
+.combo{position:absolute;right:16px;top:calc(var(--sat) + 52px);z-index:40;font-family:var(--font-num);font-weight:900;font-size:14px;color:var(--mastered-text);background:var(--mastered-bg);padding:4px 10px;border-radius:999px;animation:pop .3s var(--ease-expressive) both}
+/* 按鈕彈性 */
+.btn,.task,.layer,.opt,.cand,.chip,.tabs button,.mcard,.region{transition:transform .25s var(--ease-expressive),box-shadow .25s var(--ease),background .2s,border-color .2s}
+.btn:active,.task:active,.layer:active,.opt:active,.cand:active,.chip:active,.mcard:active,.region:active{transform:scale(.95)}
+.tabs button:active svg{transform:scale(.85)}
+.tabs button.on svg{animation:tab-pop .45s var(--ease-expressive) both}
+@keyframes tab-pop{0%{transform:scale(.8)}60%{transform:scale(1.18) translateY(-3px)}100%{transform:translateY(-2px)}}
+/* 畫面切換：帶一點縮放 */
+@keyframes in-fwd{from{opacity:0;transform:translateX(28px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes in-back{from{opacity:0;transform:translateX(-28px) scale(.985)}to{opacity:1;transform:none}}
+
+/* 地圖鏡頭：可拖曳、縮放；燈塔光束、迷霧飄動、塵埃 */
+.map{touch-action:none;cursor:grab;position:relative}
+.map.dragging{cursor:grabbing}
+.map .cam{transform-origin:0 0;transition:transform .35s var(--ease);will-change:transform}
+.map.dragging .cam{transition:none}
+.map .beam{fill:#FFF3C4;opacity:.45;transform-origin:var(--bx) var(--by);animation:beam-sweep 7s ease-in-out infinite alternate;pointer-events:none}
+@keyframes beam-sweep{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+.map .fogdrift{fill:var(--fog);opacity:.55;animation:fog-drift 14s ease-in-out infinite alternate;pointer-events:none}
+@keyframes fog-drift{from{transform:translate(-8px,2px)}to{transform:translate(8px,-3px)}}
+.map .hot .rl{transition:transform .25s var(--ease-expressive)}
+.map .hot:hover .rl,.map .hot:focus-visible .rl{transform:translateY(-2px)}
+.map .hot:active{transform:scale(.96);transform-origin:center}
+.map-ctl{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;z-index:2}
+.map-ctl button{width:36px;height:36px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-soft);font-family:var(--font-num);font-weight:700;font-size:16px}
+.map-hint{position:absolute;left:12px;bottom:12px;font-size:11.5px;color:var(--text-mute);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:3px 8px;border-radius:999px;pointer-events:none}
+/* 塵埃粒子（深色區塊） */
+.motes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.motes i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--honey);opacity:0;animation:mote var(--d,6s) linear infinite;animation-delay:var(--dl,0s);left:var(--x);top:var(--y)}
+@keyframes mote{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:.7}80%{opacity:.5}100%{opacity:0;transform:translateY(-60px) scale(1)}}
+
+/* 收服時刻：光線、衝擊環、標題砸入 */
+.capture .rays{position:absolute;left:50%;top:40%;width:620px;height:620px;transform:translate(-50%,-50%);background:conic-gradient(from 0deg,rgba(244,194,77,0) 0 14deg,rgba(244,194,77,.18) 18deg,rgba(244,194,77,0) 22deg,rgba(244,194,77,0) 36deg,rgba(244,194,77,.18) 40deg,rgba(244,194,77,0) 44deg,rgba(244,194,77,0) 58deg,rgba(244,194,77,.18) 62deg,rgba(244,194,77,0) 66deg,rgba(244,194,77,0) 80deg,rgba(244,194,77,.18) 84deg,rgba(244,194,77,0) 88deg);mask:radial-gradient(circle,#000 20%,transparent 70%);opacity:0;animation:rays-spin 12s linear infinite;pointer-events:none}
+.capture.p2 .rays{opacity:1;transition:opacity .8s}
+@keyframes rays-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.capture .ring{position:absolute;left:50%;top:40%;width:40px;height:40px;border-radius:50%;border:3px solid var(--honey);transform:translate(-50%,-50%);opacity:0;pointer-events:none}
+.capture.p2 .ring{animation:ring-out 1s var(--ease) both}
+@keyframes ring-out{0%{opacity:.9;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(9)}}
+.capture.p2 h2{animation:slam .6s var(--ease-expressive) both}
+@keyframes slam{0%{opacity:0;transform:scale(1.6)}60%{opacity:1;transform:scale(.96)}100%{transform:scale(1)}}
+.capture.p1 .arena .mon{filter:brightness(1.15) saturate(1.2)}
+.capture.p2 .arena .mon{filter:drop-shadow(0 0 18px rgba(244,194,77,.55))}
+
+/* 今天：進度環 */
+.today .dots{position:relative}
+.task .go svg{transition:transform .25s var(--ease-expressive)}
+.task:hover .go svg{transform:translateX(3px)}
+
+@media (prefers-reduced-motion: reduce){
+  .mon svg,.mon.shadow svg,.map .beam,.map .fogdrift,.motes i,.capture .rays{animation:none !important}
+  .shake-screen,.flash,.float-txt{animation:none !important}
+}

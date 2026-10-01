@@ -16,7 +16,10 @@ codex exec --skip-git-repo-check "$(cat docs/codex-image-brief.md)"
 - 怪的 symbol 一律用 CSS 變數上色：`fill="var(--m-body)"`、眼白 `var(--m-eye)`、瞳孔 `var(--m-pupil)`、細節 `var(--m-feat)`，另放 `<text fill="var(--m-zz)">z</text>` 與 `<text fill="var(--m-q)">?</text>` 供睡著與迷霧狀態（這是唯一允許的 text）。參考 `frontend/assets/monsters-defs.svg`。
 - viewBox 固定；單檔 ≤ 12KB；不侵犯任何既有 IP。
 
-## 要產的圖
+## 要產的圖（優先順序：先 Demo 美術，再網站插畫）
+
+0. **Demo 美術（最優先）**，輸出到 `frontend/world/art/`，檔名與尺寸依 `frontend/world/art/README.md`：五張場景背景（今天、副本、圖鑑夜景、燈塔、收服全幕）、公會營地、數理大陸完整地圖（有海岸、田畦、樹林、河谷、山峰、洞窟、迷霧台地、航線）、六色隊員與嚮導、巡查員的人物、以及接線用的 `art.css` 與 `manifest.json`。風格：幾何平面、留白多、品牌色、手繪感線條，像會動的繪本地圖；不要寫實、不要漸層陰影；背景不可搶過前景的卡片與文字（對比留給內容）。產完在瀏覽器開 `frontend/world/index.html` 逐個畫面看一次。
+
 
 1. **其他三片大陸的怪（9 隻 symbol）**，輸出 `frontend/assets/monsters-defs-2.svg`：
    - 英文 · 西風港：時光獸（過去式與現在完成式混用）、失蹤的 s（第三人稱單數忘加 s）、介係詞迷路怪（in／on／at 放錯）
