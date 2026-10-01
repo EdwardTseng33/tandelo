@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     lights_out_start: str = Field(default="22:30", description="關燈開始（含）")
     lights_out_end: str = Field(default="06:00", description="關燈結束（不含）")
     seed_on_startup: bool = Field(default=False, description="啟動時若資料庫是空的就灌種子資料")
+    variant_secret: str = Field(default="", description="題目變體 answer_token 的簽章金鑰；空字串＝啟動時隨機產生（重啟後舊 token 失效）")
 
     @property
     def cors_origin_list(self) -> List[str]:

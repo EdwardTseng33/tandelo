@@ -7,7 +7,7 @@
 from datetime import timedelta
 from typing import Any, Dict, List, Optional, Set
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session as DBSession
 
 from .. import models, schemas
@@ -15,6 +15,7 @@ from ..core.config import Settings
 from ..models import json_get, json_set, utcnow
 from ..services import content as C
 from ..services import rules
+from ..services import variants as V
 from ..services import world as W
 from .deps import get_db, get_settings_dep, require_admin
 
@@ -519,3 +520,77 @@ def board(
     except ValueError:
         raise HTTPException(status_code=404, detail="這一隊不在這個榜上（聯賽區、科目或路線不符）。") from None
     return schemas.BoardOut(league=league, subject=subject, route=route, entries=entries)
+
+
+# ——— 題目變體（0.3）：給作答的題不帶答案，用 answer_token 判題 ———
+def _variant_secret(request: Request) -> str:
+    return request.app.state.variant_secret
+
+
+def _route(route: str) -> str:
+    if route not in W.ROUTES:
+        raise HTTPException(status_code=422, detail="路線只有 plain／hills／ridge／cloud。")
+    return route
+
+
+def _bank(monster_id: str, n: int, route: str, seed: str) -> List[Dict[str, Any]]:
+    try:
+        return V.bank(monster_id, n, route, seed)
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e)) from None
+
+
+@router.get("/world/monsters/{monster_id}/variants", response_model=schemas.VariantListOut)
+def monster_variants(
+    monster_id: str,
+    request: Request,
+    n: int = Query(default=5, ge=1, le=V.TOKEN_MAX_INDEX, description="幾題（互不重複）"),
+    route: str = Query(default=W.FIRST_ROUTE, description="plain／hills／ridge／cloud＝難度"),
+    seed: str = Query(default="0", max_length=40, description="同一個種子永遠拿到同一套題"),
+):
+    m = _monster(monster_id)
+    if monster_id not in V.GENERATORS:
+        raise HTTPException(status_code=404, detail="這隻怪還沒有題目產生器（目前只有數學八隻）。")
+    _route(route)
+    secret = _variant_secret(request)
+    items = [
+        schemas.VariantOut(
+            index=i,
+            variant_key=v["variant_key"],
+            monster_id=v["monster_id"],
+            difficulty=v["difficulty"],
+            level=v["level"],
+            cross_chapter=v["cross_chapter"],
+            stem=v["stem"],
+            options=v["options"],
+            answer_token=V.sign_token(secret, monster_id, route, seed, i),
+        )
+        for i, v in enumerate(_bank(monster_id, n, route, seed))
+    ]
+    return schemas.VariantListOut(monster_id=monster_id, name=m["name"], route=route, seed=seed, n=len(items), items=items)
+
+
+@router.post("/world/monsters/{monster_id}/variants/check", response_model=schemas.VariantCheckOut)
+def check_variant(monster_id: str, body: schemas.VariantCheckIn, request: Request):
+    _monster(monster_id)
+    try:
+        tok = V.parse_token(_variant_secret(request), body.answer_token)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from None
+    if tok["monster_id"] != monster_id:
+        raise HTTPException(status_code=422, detail="這個 answer_token 不是這隻怪的題。")
+    v = _bank(monster_id, tok["index"] + 1, tok["route"], tok["seed"])[tok["index"]]
+    r = V.judge(v, body.choice)
+    return schemas.VariantCheckOut(monster_id=monster_id, variant_key=v["variant_key"], **r)
+
+
+@router.get("/world/monsters/{monster_id}/bank-status", response_model=schemas.BankStatusOut)
+def bank_status(
+    monster_id: str,
+    size: int = Query(default=6, ge=1, le=6, description="隊伍人數；門檻＝人數 × 6 ＋ 4"),
+    seed: str = Query(default="0", max_length=40),
+):
+    m = _monster(monster_id)
+    if monster_id not in V.GENERATORS:
+        raise HTTPException(status_code=404, detail="這隻怪還沒有題目產生器（目前只有數學八隻）。")
+    return schemas.BankStatusOut(name=m["name"], **V.bank_status(monster_id, size, seed))

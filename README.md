@@ -104,6 +104,7 @@ make logs / make down
 | `COACH_MODEL` | `claude-sonnet-5-5` | `COACH_PROVIDER=anthropic` 時用的模型 id |
 | `TIMEZONE` / `LIGHTS_OUT_START` / `LIGHTS_OUT_END` | `Asia/Taipei` / `22:30` / `06:00` | 關燈判斷 |
 | `SEED_ON_STARTUP` | `false`（Docker：`true`） | 啟動時資料庫空就灌種子 |
+| `VARIANT_SECRET` | 空（啟動時隨機產生） | 題目變體 `answer_token` 的簽章金鑰；沒設就每次啟動換一把，舊 token 失效 |
 
 範本：`.env.example`（compose 用）、`backend/.env.example`（直接跑後端用）。`.env*` 不進 git。
 
@@ -135,6 +136,11 @@ make logs / make down
 | POST | `/matches/mirror`、`/matches/duel` | 鏡像賽（只比解題率）、出題戰（六分制）；投票未全數同意或交集不足三隻→幽靈隊 |
 | GET / POST | `/leagues/{league}/regions/{region_id}/tower`、`/towers/settle` | 燈塔（點燈進度、守塔隊、歷代名冊）；月結算需 `X-Admin-Token` |
 | GET | `/leagues/{league}/board?team_id=&subject=&route=` | 隊伍榜：只回我前後各三隊，不含名次與總數 |
+| GET / POST | `/world/monsters/{id}/variants?n=&route=&seed=`、`/world/monsters/{id}/variants/check` | 題目變體（數學八隻怪、四條路線＝難度、種子決定性）：不回答案，用 `answer_token` 判對錯並回有沒有踩到那隻怪的 trap |
+| GET | `/world/monsters/{id}/bank-status?size=` | 題庫門檻：人數 × 6 ＋ 4（六人隊 40 題），每條路線是否達標 |
+| POST | `/interventions` | 人工介入紀錄（by／kind／trigger／分鐘；note ≤ 200 字、不放個資）；回下一個該介入的層級（系統 → 巡邏 → 嚮導） |
+| GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
+| PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
 
 ## 說明
 

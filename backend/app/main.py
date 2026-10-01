@@ -5,12 +5,13 @@
 """
 
 import logging
+import secrets
 from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import coach, health, students, teachers, teams, world
+from .api import coach, health, interventions, students, teachers, teams, world
 from .core.config import Settings, get_settings
 from .core.ratelimit import RateLimiter, RateLimitMiddleware
 from .db import Base, make_engine, make_session_factory
@@ -39,6 +40,7 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
     app.state.rate_limiter = RateLimiter(settings.rate_limit_per_minute)
+    app.state.variant_secret = settings.variant_secret or secrets.token_hex(32)  # 題目變體 answer_token 的簽章；金鑰不寫在程式碼裡
     # 小陪：啟動時決定提供者；anthropic 但沒金鑰／沒 SDK 會在這裡退回規則引擎並記一行 log
     app.state.coach_metrics = coach_svc.CoachMetrics()
     app.state.coach_provider = coach_svc.get_provider(settings.coach_provider, settings.anthropic_api_key, settings.coach_model, app.state.coach_metrics)
@@ -52,7 +54,7 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         allow_headers=["Content-Type", "X-Admin-Token"],
     )
 
-    for r in (health.router, students.router, teams.router, teachers.router, coach.router, world.router):
+    for r in (health.router, students.router, teams.router, teachers.router, coach.router, world.router, interventions.router):
         app.include_router(r, prefix=API_PREFIX)
 
     @app.get("/health", include_in_schema=False)

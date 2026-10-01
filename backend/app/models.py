@@ -118,6 +118,7 @@ class Team(Base):
     min_size: Mapped[int] = mapped_column(Integer, default=4)
     max_size: Mapped[int] = mapped_column(Integer, default=6)
     focus_json: Mapped[str] = mapped_column(Text, default="[]")
+    layer: Mapped[str] = mapped_column(String(3), default="L2")  # 人力介入分層（L0／L1／L2／L3，POC 實驗用）
     created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
 
     teacher: Mapped[Optional[Teacher]] = relationship(back_populates="teams")
@@ -328,3 +329,21 @@ class TowerKeeper(Base):
     team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
     month: Mapped[str] = mapped_column(String(7))  # YYYY-MM
     records: Mapped[int] = mapped_column(Integer, default=0)
+
+
+# ——— 人工介入紀錄（0.3）———
+class Intervention(Base):
+    """一次介入：誰（by：system／patrol／guide／cs）、做了什麼（kind）、為什麼（trigger）、花了幾分鐘。
+    student_id 與 team_id 都可以空；note 最多 200 字、不放個資。規則在 services/interventions.py。"""
+
+    __tablename__ = "interventions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[Optional[int]] = mapped_column(ForeignKey("students.id"), nullable=True, index=True)
+    team_id: Mapped[Optional[int]] = mapped_column(ForeignKey("teams.id"), nullable=True, index=True)
+    by: Mapped[str] = mapped_column(String(8))
+    kind: Mapped[str] = mapped_column(String(12))
+    trigger: Mapped[str] = mapped_column(String(16))
+    minutes: Mapped[float] = mapped_column(Float, default=0.0)
+    note: Mapped[str] = mapped_column(String(200), default="")
+    created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)

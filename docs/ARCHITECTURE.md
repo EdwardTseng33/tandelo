@@ -33,8 +33,8 @@ backend/app/
   db.py              engine／session；SQLite 或 Postgres
   models.py          SQLAlchemy 2 模型
   schemas.py         Pydantic 輸入輸出
-  api/               路由：health、students、teams、teachers、coach
-  services/          純邏輯：content（題庫）、diagnosis（判卡點）、rules（規則）、teams（湊隊成班）、report（週報）、coach（小陪）、guard（小陪守門）
+  api/               路由：health、students、teams、teachers、coach、world、interventions
+  services/          純邏輯：content（題庫）、diagnosis（判卡點）、rules（規則）、teams（湊隊成班）、report（週報）、coach（小陪）、guard（小陪守門）、world（冒險世界）、variants（題目變體）、interventions（人工介入）
   seed.py            種子資料（虛構隊友、老師）
   data/content.json  題庫與卡點地圖
 ```
@@ -150,7 +150,47 @@ POST /coach/reply
 - **API**：`POST /coach/reply` body 多了 `monster_id`、`step_text`、`level`、`answer_forms`；回傳多了 `provider`（原本就有）、`level`、`handoff`、`guarded`（沒過守門的原因，這時句子來自規則引擎）。
 - **測試**：`tests/test_coach_guard.py` 用假的 SDK client（monkeypatch `coach._make_client`）鎖住：有金鑰走模型、沒金鑰或沒 SDK 退回規則、各種洩漏寫法、放過「負號要發給每一個人」、第四層固定句、關燈不呼叫模型、metrics 數字。不對外打 API。
 
-POC 邊界：前端 `app/` 與 `world/` 目前仍走規則引擎，還沒送 `step_text`／`level`；`services/variants.py`（變體引擎）還沒有，`answer_forms` 先由呼叫端給或用題庫的最終答案。
+POC 邊界：前端 `app/` 與 `world/` 目前仍走規則引擎，還沒送 `step_text`／`level`；`answer_forms` 由呼叫端給或用題庫的最終答案（變體引擎產的題，判題回應裡的答案選項文字就能當 `answer_forms`，前端還沒接）。
+
+## 題目變體引擎與人工介入紀錄（0.3）
+
+### 題目變體引擎
+
+一隻怪要有「隊伍人數 × 6 ＋ 4」題已審變體（六人隊 40 題）才夠一季遠征不重題。`services/variants.py` 對數學八隻怪各寫一個參數化產生器（id 沿用 `content.json` 的卡點 id），用種子決定性產出；路由在 `api/world.py`（tags＝世界）。純函式、不碰資料庫，數字由 `tests/test_variants.py` 鎖住。
+
+```
+services/variants.py
+  generate(monster_id, seed, difficulty)   → {stem, options[4], answer, trap, why, steps, difficulty, monster_id, variant_key, params}
+  check(variant)                           規則版「AI 三檢查」，不過就丟 ValueError
+  bank(monster_id, n, route, seed)         n 題互不重複（variant_key 去重），每題都過 check
+  threshold(size) = size × 6 ＋ 4           ready(monster_id, size, route) 回是否達標
+  sign_token / parse_token / judge         answer_token 與判題
+```
+
+- **決定性**：同一組（怪、種子、路線）永遠同一題；`bank` 的第 i 題只和（怪、路線、種子、i）有關、和 n 無關。題幹用純文字數學（²、√、−），不用 LaTeX。
+- **trap 一定是那隻怪的錯法**（`TRAP_KINDS`）：漏項獸＝只剩兩端平方（`missing_middle`）、負號幽靈＝只有第一項變號（`first_term_only`）、拆根蟲＝拆成 √a ± √b（`split_root`）、雙面根＝±k（`plus_minus`）、斜邊迷霧＝已知斜邊卻拿去加／把長的股當斜邊（`wrong_hypotenuse`）、平方差雙子＝(a − b)²（`both_minus`）、十字符號怪＝數字對符號全換（`sign_swapped`）、零的隱者＝只剩 x = k（`dropped_zero`）。另外兩個干擾項是別的常見錯（半個中間項、忘了平方首項、漏開根號、另一組因數……）。
+- **路線＝難度**：`DIFFICULTY_FACTOR` plain 1.0、hills 1.5、ridge 2.0、cloud 2.5 放大係數範圍（例如基底 10 → 10／15／20／25）；山徑線加結構（二次多項式、兩個變數、首項係數、分數根、化簡根式）；雲頂線混入跨章節：(ax + by)²、(x + b)² − (x² + cx + e)、√((−a)² + b²)、√((−a)² + (−b)²)、兩股求斜邊要化簡根式、(x + c)² − b²、先提公因式再十字交乘、(x + c)² = k(x + c)。
+- **三檢查（規則版，之後可換成模型審）**：① 答案唯一且在選項裡；② trap 與答案不同、四個選項互不相同（去空白比對）；③ 用 `params` 實際重算——多項式乘開、因式乘回去要等於題幹、根代回方程式、根號裡先算完再開——要等於選項裡的答案，且最後一步要得出答案。`bank` 每題都跑，湊不到就丟 ValueError（API 回 409）。
+- **API**：`GET /world/monsters/{id}/variants?n=&route=&seed=` 只回 `stem`、`options`、`difficulty`、`variant_key` 與 `answer_token`，不回答案、trap、為什麼與步驟；`POST /world/monsters/{id}/variants/check` 用 token 判對錯、回有沒有踩到 trap、`why` 與 `steps`；`GET /world/monsters/{id}/bank-status?size=` 回每條路線湊得到幾題、是否達標。非數學怪（提案中的九隻）回 404。
+- **answer_token**：HMAC-SHA256 簽的（怪、路線、種子、索引），不含答案；判題時重新產生那一題再比對，所以解開 token 也拿不到答案。金鑰從 `VARIANT_SECRET` 讀，沒設就啟動時隨機產生（重啟後舊 token 失效）；程式碼裡沒有金鑰。
+
+POC 邊界：只有數學八隻怪；「已審」目前＝規則三檢查通過，人工審核的欄位與流程還沒有；題幹是純文字、沒有圖（斜邊迷霧用頂點寫法代替轉過的三角形）；難度係數是生成參數，不是實測的答對率。
+
+### 人工介入紀錄
+
+POC 的人力介入階梯實驗要知道「誰、為什麼、花了幾分鐘」。表 `interventions`，規則在 `services/interventions.py`（純函式），路由在 `api/interventions.py`（tags＝人工介入）。
+
+| 表 | 用途 | 重點欄位 |
+|---|---|---|
+| interventions | 一次介入 | student_id（可空）、team_id（可空）、by（system／patrol／guide／cs）、kind（nudge／explain／comfort／demo／review／parent_note）、trigger（help_timeout／three_wrong／three_days_off／expedition／weekly／parent_message／manual）、minutes、note（≤ 200 字、不放個資）、created_at |
+
+`teams` 多了 `layer`（L0／L1／L2／L3，預設 L2）：這一隊在實驗裡的人力介入分層。
+
+- **升級順序** `escalate(trigger, history)`：同一個 trigger 先讓系統試一次 → 巡邏（patrol）→ 嚮導（guide），嚮導是頂層；別的 trigger 的紀錄不影響；cs 不在階梯上。API 以「同一位學生（沒學生就同一隊）、同一個 trigger、同一個 ISO 週」為一回合，`POST /interventions` 回 `next_level`。
+- **摘要** `summary(rows, week)`：人力分鐘＝by ≠ system 的分鐘（系統另計 `system_minutes`），回每生每週人力分鐘（`per_student`、`per_student_week`）、各 kind 分鐘、各 trigger 次數、各 by 分鐘；沒有學生的小隊層級紀錄進 `team_minutes`。
+- **API**：`POST /interventions`（note 超過 200 字 422；`at` 可覆蓋建立時間，示範用）、`GET /teams/{id}/interventions/summary?week=`（這一隊＋隊員的紀錄）、`GET /interventions/summary?layer=&week=`（該分層所有小隊）、`PUT /teams/{id}/layer`。
+
+POC 邊界：`minutes` 由介入的人自填；note 不放個資靠長度限制與自律，沒有自動偵測；分層手動設定，沒有隨機分派。
 
 ## 往 1.0 的方向
 
