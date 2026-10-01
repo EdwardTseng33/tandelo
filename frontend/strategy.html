@@ -644,7 +644,7 @@ ul.tight li+li{margin-top:.4em}
     <div class="grid g4">
       <div class="card"><div class="who">市場</div><p class="say">核心客群每屆 6–8 萬人，可服務市場約 3.1 億／年。</p><p class="small">國中生 60.5 萬、補習參與率約六成五、月均 4,400 元；會考數學 C 級約四分之一。詳見 01。</p></div>
       <div class="card"><div class="who">定位</div><p class="say">真人＋AI 混合 × 固定小隊 × 以段考為時鐘，國內外都是空位。</p><p class="small">國際最接近的是 Synthesis Teams（年齡偏低、不對準考試）與已關閉的 Classcraft。台灣最接近的是 PaGamO（無真人、無段考節奏）。詳見 02。</p></div>
-      <div class="card"><div class="who">商業模式</div><p class="say">三個價格帶＝介入階梯的三層；毛利用同一口徑並列，人力分鐘是成本的主變數。</p><p class="small">真人季票扣老師後約 38%、再扣每隊每堂 500 元固定成本後只剩 11–16%，獲客未計；AI 層約 70%。POC 的成本表以「每生每週人力分鐘」為單位記錄。不做硬體、不做無上限一對一、不向老師收費、不賣戰力。詳見 03。</p></div>
+      <div class="card"><div class="who">商業模式</div><p class="say">主力是 890／月的真人追蹤，真人上課交給合作方；第 11 個月損平、第 3 年毛利率 77%。</p><p class="small">自營真人小隊只做示範班（上限 10 隊）。AI 練習 299 是入門，合作方小隊每生每月收 400。每層貢獻率與 36 個月模型見 03 與 docs/gtm-and-finance.md。不做硬體、不做無上限一對一、不向老師收費、不賣戰力。詳見 03。</p></div>
       <div class="card"><div class="who">POC</div><p class="say">人力介入階梯實驗：同一個世界、四種介入強度、一個完整週期。</p><p class="small">2 週準備、8 週服務、2 週續購觀察；每一次人工介入都記類型、時長、觸發原因。四個答案：家長付不付、孩子用不用、學習有沒有改善、每一層的成效除以人力分鐘。詳見 06。</p></div>
     </div>
     <div class="callout honey">
@@ -837,7 +837,10 @@ ul.tight li+li{margin-top:.4em}
         <tr><th>L3 遠征＋課後語音</th><td>1,495</td><td>1,720</td><td>−315</td><td>−21%</td></tr>
       </tbody>
     </table></div>
-    <p class="note">逐月 36 個月模型與四個情境在 <a href="../docs/gtm-and-finance.md">docs/gtm-and-finance.md</a>（程式 <code>docs/financial-model.py</code> 可重跑）。基準情境（表價、5 人隊）36 個月內不損平；真人層改 1,995／月、6 人隊、獲客 800、嚮導只做兩幕，第 17 個月損平、第 3 年毛利率 55%。所以家長訪談的願付要同時問 2,990 與 3,990 兩個價位。</p>
+    <p class="note">逐月 36 個月模型在 <a href="../docs/gtm-and-finance.md">docs/gtm-and-finance.md</a>。表價加自營真人課當成長引擎的配置 36 個月內不損平，所以不採用。</p>
+    <div class="callout pine">
+      <p><b>商業模式定稿（情境 E）。</b>三條收入：AI 練習 299／月（入門與量，貢獻 82%）；<b>真人追蹤 890／月為主力</b>（一位老師每週語音回饋與抽查，一人管 60–100 生，貢獻 78%）；合作方小隊（補習班或學校老師自備真人上課，Tandelo 收每生每月 250 系統費加 150 巡查費，85% 以上）。自營真人小隊只做示範班，上限 10 隊、6 人隊、1,995／月，拿來證明成效與訓練嚮導，不當成長引擎。團隊固定成本精實。結果：<b>第 11 個月損平，第 3 年營收約 4,200 萬、毛利率 77%、營業利益約 2,000 萬</b>；最大累計虧損約 250 萬，所需資金約 500 萬。成立的前提由 POC 量：真人追蹤月流失 ≤ 8%、AI 練習 ≤ 12%、合作方每家 60 生、獲客 ≤ 800。</p>
+    </div>
     <div class="grid g2">
       <div class="card mint"><div class="who">毛利的槓桿在哪（長期）</div><ul class="tight">
         <li>怪的傳說卡與題目引擎一次製作，四片大陸、所有價格帶、補習班通路全部重用。</li>
