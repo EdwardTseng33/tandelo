@@ -604,3 +604,48 @@ class InterventionSummaryOut(BaseModel):
     per_kind: Dict[str, float]
     per_trigger: Dict[str, int]
     per_by: Dict[str, float]
+
+
+# ——— 營地來信（0.5）———
+class CampLetterIn(BaseModel):
+    kind: str = Field(pattern=r"^(capture|wake|explain|dungeon|week)$")
+    monster_id: Optional[str] = Field(default=None, max_length=24)
+    extra: Dict[str, Any] = Field(default_factory=dict, description="dungeon：rate、stars、next_route_name；week：可省略（由夥伴狀態算）")
+
+
+class CampLetterOut(BaseModel):
+    id: int
+    student_id: int
+    kind: str
+    monster_id: Optional[str] = None
+    title: str
+    lines: List[str]
+    ask: Optional[str] = None
+    actions: List[Dict[str, str]]
+    text: str
+    status: str
+    channel: str
+    error: str = ""
+    created_at: _dt.datetime
+    sent_at: Optional[_dt.datetime] = None
+    replied_at: Optional[_dt.datetime] = None
+
+
+class CampReplyIn(BaseModel):
+    action: str = Field(pattern=r"^(witnessed|later)$")
+
+
+class ParentLinkIn(BaseModel):
+    line_user_id: str = Field(min_length=4, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+
+
+class ParentLinkOut(BaseModel):
+    student_id: int
+    linked: bool
+    created_at: Optional[_dt.datetime] = None
+
+
+class LineWebhookOut(BaseModel):
+    handled: int
+    ignored: int
+    at: _dt.datetime

@@ -11,14 +11,14 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import coach, health, interventions, students, teachers, teams, world
+from .api import camp, coach, health, interventions, students, teachers, teams, world
 from .core.config import Settings, get_settings
 from .core.ratelimit import RateLimiter, RateLimitMiddleware
 from .db import Base, make_engine, make_session_factory
 from .services import coach as coach_svc
 
 API_PREFIX = "/api/v1"
-VERSION = "0.3.0"
+VERSION = "0.5.0"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logging.getLogger("uvicorn.access").setLevel(logging.WARNING)  # 不記每筆請求的細節
@@ -54,7 +54,7 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         allow_headers=["Content-Type", "X-Admin-Token"],
     )
 
-    for r in (health.router, students.router, teams.router, teachers.router, coach.router, world.router, interventions.router):
+    for r in (health.router, students.router, teams.router, teachers.router, coach.router, world.router, interventions.router, camp.router):
         app.include_router(r, prefix=API_PREFIX)
 
     @app.get("/health", include_in_schema=False)

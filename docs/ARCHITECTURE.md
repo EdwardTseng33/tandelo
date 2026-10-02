@@ -33,8 +33,8 @@ backend/app/
   db.py              engine／session；SQLite 或 Postgres
   models.py          SQLAlchemy 2 模型
   schemas.py         Pydantic 輸入輸出
-  api/               路由：health、students、teams、teachers、coach、world、interventions
-  services/          純邏輯：content（題庫）、diagnosis（判卡點）、rules（規則）、teams（湊隊成班）、report（週報）、coach（小陪）、guard（小陪守門）、world（冒險世界）、variants（題目變體）、interventions（人工介入）
+  api/               路由：health、students、teams、teachers、coach、world、interventions、camp
+  services/          純邏輯：content（題庫）、diagnosis（判卡點）、rules（規則）、teams（湊隊成班）、report（週報）、coach（小陪）、guard（小陪守門）、world（冒險世界）、variants（題目變體）、interventions（人工介入）、camp（營地來信）
   seed.py            種子資料（虛構隊友、老師）
   data/content.json  題庫與卡點地圖
 ```
@@ -199,6 +199,22 @@ POC 邊界：`minutes` 由介入的人自填；note 不放個資靠長度限制�
 - **接後端的切換點只有一個**：`frontend/world/api.js` 的 `base()`（localStorage 或 `?api=`）。有位址時，巡邏、伏擊、叫醒三條流程改走 `variants`（只拿題幹、選項、`answer_token`）→ 每個選項第一次點 `variants/check`（後端判，回答案索引、錯法標籤、為什麼）→ 小陪 `coach/reply` 帶 `answer_token`（後端用同一條路找回那一題）。前端從頭到尾不知道答案，直到後端判過。
 - **嚮導視角**：`#/guide` 把「人力只在三個時刻介入」做成三張卡（求援逾時、三次同錯法、三天沒來），每張標示系統與巡查已做過什麼；處理一件就是一筆介入，分鐘數對上每生每週上限；有位址時 `POST /interventions`，欄位與 `docs/pilot/intervention-log.md` 一致。
 - **沒回應的退路**：出題中顯示骨架；失敗可重試或一鍵清掉位址改回本地題；小陪或判題失敗只提示，不卡住畫面。
+- **營地畫面接後端**：有位址時 `#/camp` 列的是後端 `camp_letters`（收服、叫醒、講解自動寄；分享卡「傳到營地」、週回顧、結算放上隊伍牆會手動寄），「我見證了／晚點問他」直接回後端。
+
+## 營地來信（0.5）
+
+家長只用 LINE，不裝 App；每一封信只說三件事：孩子學會了什麼、還在追什麼、今晚可以問他哪一句。不放分數、不放排名、不放別人家的孩子。
+
+| 表 | 用途 | 重點欄位 |
+|---|---|---|
+| camp_letters | 一封給家長的信 | student_id、kind（capture／wake／explain／dungeon／week）、monster_id、body_json（title／lines／ask／actions）、text（LINE 純文字）、status（queued → sent → witnessed／later；failed）、channel（line／stub）、error、sent_at、replied_at |
+| parent_links | 家長的 LINE 連結 | student_id、line_user_id（只存 LINE 的假名 userId，不存姓名電話；唯一） |
+
+- **文案是純函式** `services/camp.py::compose(nickname, kind, monster, chasing, guide, guide_day, extra)`，不開伺服器可測；「今晚可以問他」優先用題庫 `skills[*].tonight`。
+- **誰來寄**：`POST /students/{id}/shadows/{monster}/events` 的 `explained_ok`／`retest_passed`／`woken` 會自動寄（卡住的事件不寄）；副本結算與週回顧由前端手動 `POST /students/{id}/camp-letters`。
+- **送件**：有 `LINE_CHANNEL_ACCESS_TOKEN` 且孩子綁了家長才真的推（Messaging API push，附兩個 quick reply：我見證了／晚點問他）；推不出去記 `failed` 與原因，不讓學會事件失敗；沒設定就 `channel: stub`，Demo 的營地畫面直接讀這張表。
+- **回覆**：LINE 的 postback 或文字打到 `POST /line/webhook`，先驗 `X-Line-Signature`；只會改到該家長自己孩子的信。Demo 的家長視角則直接 `POST /camp-letters/{id}/reply`。
+- **1.0 要補**：家長綁定改 LINE Login（POC 由營運用管理權杖綁）、21:00 批次發信（POC 即時寄）、同一事件一天只寄一封。
 
 ## 往 1.0 的方向
 

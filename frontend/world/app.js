@@ -484,10 +484,42 @@ SCREENS.share = (id) => {
   <div class="share"><span class="corner"></span><div class="top"><span>收服 · 第 ${D.SQUAD.week} 週</span><svg class="logo" viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg></div>
     <div class="mid">${monSvg(m, 'shadow')}<h3>${esc(m.name)}，收服。</h3><span class="team">${esc(D.SQUAD.name)} · ${esc(D.SQUAD.me.nick)}</span></div>
     <p class="ev"><b>${esc(m.weakness)}</b><br>第 0 天 在遠征中被打倒 · 第 9 天 不給提示也會<br>嚮導 ${esc(D.SQUAD.guide)} · ${esc(D.SQUAD.examLabel)}</p></div>
-  <div class="btns"><button class="btn" data-go="camp">傳到營地 · 看家長收到什麼</button><button class="btn ghost" data-go="shadows">回到圖鑑</button></div>`;
+  <div class="btns"><button class="btn" data-act="to-camp" data-mon="${esc(id)}">傳到營地 · 看家長收到什麼</button><button class="btn ghost" data-go="shadows">回到圖鑑</button></div>`;
 };
 
-SCREENS.camp = () => `
+// 接後端時：營地來信由後端寄（收服、叫醒、講解會自動寄；傳到營地、週回顧、副本結算手動寄）
+const campRemote = { letters: null, at: 0, busy: false, err: '' };
+function loadLetters(force = false) {
+  if (!API.base() || campRemote.busy || (!force && Date.now() - campRemote.at < 20000)) return;
+  campRemote.busy = true; campRemote.err = '';
+  API.campLetters(S.studentId).then((rows) => { campRemote.letters = rows; campRemote.at = Date.now(); campRemote.busy = false; if (curKey === 'camp') rerender(); })
+    .catch((e) => { campRemote.busy = false; campRemote.at = Date.now(); campRemote.err = e.message; if (curKey === 'camp') rerender(); });
+}
+function sendLetter(body, after) {
+  if (!API.base() || !body) return after && after();
+  API.campSend(S.studentId, body).then(() => { campRemote.at = 0; after && after(); }).catch((e) => { toast(`營地沒收到：${e.message.replace(/^http-\d+ ?/, '')}`); after && after(); });
+}
+const letterTime = (iso) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : `${'日一二三四五六'[d.getDay()] === '日' ? '星期日' : `星期${'日一二三四五六'[d.getDay()]}`} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+function letterHtml(l) {
+  const acts = l.actions && l.actions.length ? `<div class="acts">${l.actions.map((a) => `<button class="${l.status === a.id ? 'on' : ''}" data-lreply="${l.id}:${a.id}">${l.status === a.id ? (a.id === 'witnessed' ? '已見證' : '晚點問他 ✓') : esc(a.label)}</button>`).join('')}</div>` : '';
+  const state = l.status === 'failed' ? `<span class="t">LINE 沒送出 · ${esc(l.error || '')}</span>` : `<span class="t">${l.channel === 'line' ? '已推到 LINE' : '示範 · 沒接 LINE'} · ${letterTime(l.sent_at || l.created_at)}</span>`;
+  return `<div class="bub"><b>${esc(l.title)} · ${letterTime(l.created_at)}</b><br>${l.lines.map(esc).join('<br>')}${l.ask ? `<span class="q">${esc(l.ask)}</span>` : ''}${acts}${state}</div>`;
+}
+SCREENS.camp = () => {
+  if (API.base()) {
+    loadLetters();
+    const L = campRemote.letters;
+    return `
+  ${hd('營地來信', `家長端 · LINE · 學生 ${S.studentId} · ${esc(API.host())}`)}
+  <div class="line-top"><span class="ic">T</span>Tandelo 營地</div>
+  <div class="line-body">
+    ${L === null ? `<div class="bub"><span class="meta">${campRemote.err ? `後端沒回應：${esc(campRemote.err)}` : '讀取中…'}</span></div>` : ''}
+    ${L && !L.length ? '<div class="bub">今晚還沒有來信。收服、叫醒、講給隊友聽之後，營地會寄一封。<span class="t">示範</span></div>' : ''}
+    ${L ? L.slice().reverse().map(letterHtml).join('') : ''}
+  </div>
+  <div class="btns"><button class="btn ghost" data-act="letters-refresh">重新讀取</button><button class="btn ghost" data-go="home">回到孩子的畫面</button></div>`;
+  }
+  return `
   ${hd('營地來信', '家長端 · LINE · 不裝 App')}
   <div class="line-top"><span class="ic">T</span>Tandelo 營地</div>
   <div class="line-body">
@@ -498,6 +530,7 @@ SCREENS.camp = () => `
     ${S.weekSent ? `<div class="bub"><b>小睿這週學會的 · 剛剛</b><br>收服 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 隻：${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').map((m) => m.name).join('、')}。<br>他會說：「${esc((D.MONSTERS.find((m) => S.shadows[m.id].state === 'captured') || D.MONSTERS[0]).weakness)}」<span class="q">今晚可以請他講給你聽。</span><span class="t">剛剛</span></div>` : ''}
   </div>
   <div class="btns"><button class="btn ghost" data-go="home">回到孩子的畫面</button></div>`;
+};
 
 let chat = [];
 SCREENS.coach = () => `
@@ -661,13 +694,14 @@ document.addEventListener('click', (e) => {
   const gl = e.target.closest('[data-gline]'); if (gl) { const g = D.GUIDE_QUEUE.find((x) => x.id === gl.dataset.gline); return logIntervention(g, gl.dataset.text); }
   const gs = e.target.closest('[data-gsend]'); if (gs) { const g = D.GUIDE_QUEUE.find((x) => x.id === gs.dataset.gsend); return logIntervention(g, `語音 ${play.rec} 秒`); }
   const rc = e.target.closest('[data-react]'); if (rc) { const id = rc.dataset.react; S.reactions[id] = (S.reactions[id] || 0) + 1; save(); rc.classList.add('on'); rc.querySelector('.num').textContent = Number(rc.querySelector('.num').textContent) + 1; SFX.play('pop'); buzz(8); const r = rc.getBoundingClientRect(); juice('good', r.left + r.width / 2, r.top, '+1'); return; }
-  const t = e.target.closest('[data-go],[data-back],[data-act],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
+  const t = e.target.closest('[data-go],[data-back],[data-act],[data-lreply],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
   if (!t) return;
   if (t.dataset.back !== undefined) return back();
   if (t.dataset.go) { if (t.dataset.locked) return toast('伏擊層週一開放。可以在設定把示範時間快轉。'); return go(t.dataset.go); }
   if (t.dataset.share) return go(`share/${t.dataset.share}`);
   if (t.dataset.region) return go(`tower/${t.dataset.region}`);
   if (t.dataset.lore) return lore(t.dataset.lore);
+  if (t.dataset.lreply) { const [id, action] = t.dataset.lreply.split(':'); return API.campReply(Number(id), action).then(() => { campRemote.at = 0; loadLetters(true); }).catch((e) => toast(`後端沒回應：${e.message}`)); }
   if (t.dataset.clock) { S.clock = t.dataset.clock; save(); rerender(); applyTheme(); return; }
   if (t.dataset.opt !== undefined) {
     const q = PQ()[S.patrol.i]; const i = Number(t.dataset.opt);
@@ -724,8 +758,10 @@ document.addEventListener('click', (e) => {
   }
   if (a === 'wake-done') { SFX.play('wake'); juice('gold', null, null, '+5'); S.wake.done = true; S.shadows['diff-sq'] = { state: 'captured', day0: '09/20', dayN: '10/11', days: 21 }; addRecord('wake', '叫醒 平方差雙子', 5); addCard(); save(); pushShadowEvent('diff-sq', 'woken'); return go('capture/diff-sq'); }
   if (a === 'settle') { S.clock = 'tue'; S.settled = true; S.route = 'hills'; addRecord('dungeon2', '副本兩星（全隊一份）', 8); save(); applyTheme(); return go('settle'); }
-  if (a === 'wall-post') { if (!S.wallPosts.length) S.wallPosts.push('這週副本過關了，兩星。下一個副本走丘陵線。'); save(); toast('放上隊伍牆了'); return go('guild'); }
-  if (a === 'week-send') { S.weekSent = true; save(); SFX.play('card'); toast('傳到營地了'); return go('camp'); }
+  if (a === 'wall-post') { if (!S.wallPosts.length) { S.wallPosts.push('這週副本過關了，兩星。下一個副本走丘陵線。'); sendLetter({ kind: 'dungeon', extra: { rate: 0.8, stars: 2, next_route_name: '丘陵線' } }); } save(); toast('放上隊伍牆了'); return go('guild'); }
+  if (a === 'week-send') { S.weekSent = true; save(); SFX.play('card'); toast('傳到營地了'); return sendLetter({ kind: 'week' }, () => go('camp')); }
+  if (a === 'to-camp') { const back = MON_BACK[t.dataset.mon]; return sendLetter(back ? { kind: 'capture', monster_id: back } : null, () => go('camp')); }
+  if (a === 'letters-refresh') { campRemote.at = 0; loadLetters(true); return rerender(); }
   if (a === 'race') { S.raceSigned = !S.raceSigned; save(); toast(S.raceSigned ? '已送到家長的 LINE 確認' : '已取消報名'); return rerender(); }
   if (a === 'witness') { S.witnessed = !S.witnessed; save(); return rerender(); }
   if (a === 'api-test') { toast('測試中…'); API.ping().then(() => { toast(`連上了 · ${API.host()}`); sync.at = 0; syncFromBackend(true); }).catch((e) => toast(`連不上：${e.message}`)); return; }
