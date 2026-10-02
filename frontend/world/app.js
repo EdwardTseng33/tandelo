@@ -163,7 +163,7 @@ SCREENS.home = () => {
   return `
   <div class="home-top">
     <div class="flag"><svg viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg><span class="role" title="這週的位置：書記">書</span></div>
-    <div class="grow"><h2>${esc(D.SQUAD.name)}</h2><span class="sub">嚮導 ${esc(D.SQUAD.guide)} · 第 ${D.SQUAD.week} 週 · ${esc(D.SQUAD.examLabel)}</span></div>
+    <div class="grow"><h2>${esc(D.SQUAD.name)}</h2><span class="sub"><span class="nw">嚮導 ${esc(D.SQUAD.guide)}</span> · <span class="nw">第 ${D.SQUAD.week} 週</span> · <span class="nw">${esc(D.SQUAD.examLabel)}</span></span></div>
     <div class="avs">${av(1, 'me')}${av(2)}${av(3)}${av(4)}${av(5)}</div>
   </div>
   <button class="letter ${S.letterPlayed ? '' : ''}" data-act="letter" aria-label="播放嚮導的信">
@@ -387,7 +387,7 @@ SCREENS.map = (cid) => {
     ${art}
     <g class="terrain">${D.MAP_TERRAIN}</g>
     <ellipse class="fogdrift" cx="200" cy="200" rx="150" ry="120"/>
-    <text class="cn" x="96" y="96">${esc(C.name)}</text><text class="cs" x="96" y="112">${esc(C.subject)} · 迷霧中</text>
+    <text class="cn" x="96" y="78">${esc(C.name)}</text><text class="cs" x="96" y="94">${esc(C.subject)} · 迷霧中</text>
     ${C.spots.map((p) => `<g class="hot" tabindex="0" role="button" aria-label="${esc(p.name)}，迷霧" data-spot="${p.id}"><ellipse class="fogm" cx="${p.x}" cy="${p.y}" rx="52" ry="30"/><text class="fogq" x="${p.x}" y="${p.y + 5}">?</text><text class="rl fogt" x="${p.x}" y="${p.y + 52}">${esc(p.name)}</text></g>`).join('')}
   </g></svg><div class="map-ctl"><button type="button" data-zoom="-1" aria-label="縮小">−</button><button type="button" data-zoom="1" aria-label="放大">＋</button></div><span class="map-hint">拖曳移動 · 捏合縮放</span></div>
   <div class="sect"><h3>${esc(C.name)}的怪</h3><span class="meta">題庫達標後開放</span></div>
@@ -399,7 +399,7 @@ SCREENS.map = (cid) => {
   <div class="map"><svg viewBox="0 0 440 420" role="img" aria-label="數理大陸地圖：六個區域各一座燈塔"><g class="cam">
     ${art}
     <g class="terrain">${D.MAP_TERRAIN}</g>
-    ${R.filter((r) => r.light === 'lit').map((r) => `<path class="beam" style="--bx:${r.x}px;--by:${r.y - 12}px" d="M${r.x} ${r.y - 12}L${r.x - 46} ${r.y - 150}L${r.x + 46} ${r.y - 150}z"/>`).join('')}
+    <defs><linearGradient id="mapBeam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFF3C4" stop-opacity=".95"/><stop offset="1" stop-color="#FFF3C4" stop-opacity="0"/></linearGradient></defs>${R.filter((r) => r.light === 'lit').map((r) => `<path class="beam" style="--bx:${r.x}px;--by:${r.y - 12}px" d="M${r.x} ${r.y - 12}L${r.x - 40} ${r.y - 128}L${r.x + 40} ${r.y - 128}z"/>`).join('')}
     ${R.filter((r) => r.light === 'fog').map((r) => `<ellipse class="fogdrift" cx="${r.x - 20}" cy="${r.y - 10}" rx="70" ry="34"/>`).join('')}
     <text class="cn" x="96" y="96">數理大陸</text><text class="cs" x="96" y="112">數學 · 六區</text>
     ${R.map((r) => r.light === 'fog'
@@ -407,7 +407,7 @@ SCREENS.map = (cid) => {
       : `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}燈塔" data-region="${r.id}"><circle class="ring" cx="${r.x}" cy="${r.y}" r="34"/><circle class="glow ${r.light === 'lit' ? 'on' : ''}" cx="${r.x}" cy="${r.y - 10}" r="24"/><use href="#tower" class="tw ${cls(r)}" x="${r.x - 12}" y="${r.y - 22}" width="24" height="32"/>${r.keeper ? `<path class="flag ${r.keeper === 'us' ? 'f-us' : 'f-other'}" d="M${r.x + 9} ${r.y - 12}v-9l8 3-8 3"/>` : ''}<text class="rl" x="${r.x}" y="${r.y + 34}">${esc(r.name)}</text></g>`).join('')}
   </g></svg><div class="map-ctl"><button type="button" data-zoom="-1" aria-label="縮小">−</button><button type="button" data-zoom="1" aria-label="放大">＋</button></div><span class="map-hint">拖曳移動 · 捏合縮放</span></div>
   <div class="maplegend"><span><i class="u"></i>我們守塔</span><span><i class="o"></i>其他小隊守塔</span><span><i class="l"></i>燈已點亮</span><span><i class="n"></i>燈未點亮</span><span><i class="f"></i>迷霧</span></div>
-  <div class="regions">${R.map((r) => `<button class="region" data-region="${r.id}"><span class="tw ${r.light === 'fog' ? 'none' : (r.keeper === 'us' ? 'us' : (r.keeper === 'other' ? 'other' : (r.light === 'lit' ? 'lit' : 'none')))}">${towerSvg}</span><span><b>${esc(r.name)}</b><small>${r.light === 'fog' ? '迷霧 · 還沒偵察到這一區' : (r.light === 'lit' ? `已點亮 · ${r.keeper === 'us' ? '四葉小隊守著平原線這一層' : (r.keeper === 'other' ? '星期三小隊守著平原線這一層' : '尚無守塔隊')}` : `點燈進度 ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</small></span><span class="pct">${r.light === 'fog' ? '' : `${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}`}</span></button>`).join('')}</div>`;
+  <div class="regions">${R.map((r) => `<button class="region" data-region="${r.id}"><span class="tw ${r.light === 'fog' ? 'none' : (r.keeper === 'us' ? 'us' : (r.keeper === 'other' ? 'other' : (r.light === 'lit' ? 'lit' : 'none')))}">${towerSvg}</span><span><b>${esc(r.name)}</b><small>${r.light === 'fog' ? '迷霧 · 還沒偵察到這一區' : (r.light === 'lit' ? `已點亮 · ${r.keeper === 'us' ? '四葉小隊守著平原線' : (r.keeper === 'other' ? '星期三小隊守著平原線' : '尚無守塔隊')}` : `點燈進度 ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</small></span><span class="pct">${r.light === 'fog' ? '' : `${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}`}</span></button>`).join('')}</div>`;
 };
 
 SCREENS.tower = (id) => {
@@ -452,7 +452,7 @@ SCREENS.guild = () => {
   <div class="guild-hero"><span class="em">${SVG.guild}</span><div><h2>${esc(G.name)}</h2><small>公會長 ${esc(G.master)} · ${G.squads} 支小隊 · ${G.members} 人 · 跨季存在</small></div></div>
   <div class="race"><span class="medal">${badgeSvg(true)}</span><h3>${esc(G.race.month)}徽章公開賽 · ${esc(G.race.theme)}</h3><span class="when">${esc(G.race.when)}</span>
     <p><b>怎麼贏</b>：${esc(G.race.rule)}達到就贏，不是只有前幾名。</p><p><b>獎品</b>：${esc(G.race.prize)}</p>
-    <div class="kv" style="border:0;margin-top:10px;padding-bottom:4px"><span>全服目標 · 所有參賽隊伍的收服加總</span><b>${G.race.server[0].toLocaleString()} / ${G.race.server[1].toLocaleString()}</b></div><div class="bar"><i class="honey" style="transform:scaleX(${G.race.server[0] / G.race.server[1]})"></i></div>
+    <div class="kv" style="border:0;margin-top:10px;padding-bottom:4px"><span>全服目標 · 參賽隊伍收服加總</span><b>${G.race.server[0].toLocaleString()} / ${G.race.server[1].toLocaleString()}</b></div><div class="bar"><i class="honey" style="transform:scaleX(${G.race.server[0] / G.race.server[1]})"></i></div>
     <div class="btns"><button class="btn ${S.raceSigned ? 'ghost' : 'honey'}" data-act="race">${S.raceSigned ? '已報名 · 家長已勾選由本人作答' : '替小隊報名（家長在 LINE 端確認）'}</button></div></div>
   <div class="sect"><h3>徽章冊</h3><span class="meta">一學年十枚</span></div>
   <div class="album">${G.album.map((a) => `<div class="${a.got ? 'got' : ''} ${a.now ? 'now' : ''}" title="${esc(a.theme || '')}">${badgeSvg(!!a.got)}<span>${esc(a.month)}</span></div>`).join('')}</div>
@@ -552,6 +552,7 @@ function route() {
   tabsEl.classList.toggle('hidden', NOTABS.has(key));
   tabsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.go === key));
   sbEl.innerHTML = `<button class="num clockbtn" data-act="clock-next" aria-label="切換示範時間：${esc(clock().label)}">${esc(clock().time)}</button><span class="cap">今天 <b>${S.cards}</b> / 3</span>`;
+  sbEl.classList.toggle('on-dark', key === 'capture');
   lightsOut(el, key);
   if (key === 'capture') runCapture(el, param);
   if (key === 'capture' || key === 'shadows' || key === 'tower') motes(el.querySelector('.capture, .wall, .tower-hero'));
@@ -616,7 +617,7 @@ function runCapture(el, id) {
   const cap = el.querySelector('#cap'); const line = el.querySelector('#cap-line'); const title = el.querySelector('#cap-title'); const ev = el.querySelector('#cap-ev');
   const t = reduced() ? 0 : 1;
   setTimeout(() => { line.textContent = `「${m.caught}」`; }, 900 * t);
-  setTimeout(() => { cap.classList.remove('p1'); cap.classList.add('p2'); title.textContent = `${m.name}，收服。`; line.innerHTML = `<b>站到你身後了。</b>　${esc(m.weakness)}`; ev.style.opacity = 1; burst(el.querySelector('#confetti')); buzz([20, 40, 20]); SFX.play('capture'); }, 1700 * t);
+  setTimeout(() => { cap.classList.remove('p1'); cap.classList.add('p2'); title.textContent = `${m.name}，收服。`; line.innerHTML = '<b>站到你身後了。</b>'; ev.style.opacity = 1; burst(el.querySelector('#confetti')); buzz([20, 40, 20]); SFX.play('capture'); }, 1700 * t);
 }
 function burst(host) {
   if (!host || reduced()) return;

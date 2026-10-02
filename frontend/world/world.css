@@ -68,6 +68,7 @@ a{color:var(--brand)}
 .sb .cap{font-family:var(--font-sans);font-weight:700;font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow-soft);pointer-events:auto}
 .sb .clockbtn{pointer-events:auto;min-height:32px;padding:0 8px;border-radius:10px}
 .sb .clockbtn:hover{background:var(--surface)}
+.sb.on-dark .clockbtn{color:var(--on-night)}
 .sb .capture b{font-family:var(--font-num);color:var(--brand)}
 .view{position:absolute;inset:0;overflow:hidden}
 .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-padding-bottom:calc(var(--tabs-h) + var(--sab) + 16px);padding:calc(var(--sat) + 44px) calc(18px + var(--sar)) calc(var(--tabs-h) + var(--sab) + 18px) calc(18px + var(--sal));scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -145,7 +146,8 @@ a{color:var(--brand)}
 @keyframes grow{from{transform:scaleX(0)}}
 .kv{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--rule)}
 .kv:last-child{border-bottom:0}
-.kv b{font-family:var(--font-num);font-size:15px}
+.kv b{font-family:var(--font-num);font-size:15px;white-space:nowrap;flex-shrink:0;margin-left:10px}
+.kv>span{min-width:0}
 .note{font-size:12.5px;color:var(--text-mute);margin:8px 0 0;line-height:1.6}
 .divider{height:1px;background:var(--rule);margin:14px 0}
 .avs{display:flex}
@@ -463,7 +465,7 @@ div.mcard.fogc{cursor:default}
 .region .tw.us{--tw-body:var(--coral);--tw-glow:#F4C24D} .region .tw.other{--tw-body:var(--sky);--tw-glow:#F4C24D} .region .tw.lit{--tw-body:var(--honey);--tw-stripe:#FFF8DC;--tw-glow:#F4C24D} .region .tw.none{--tw-line:var(--text-mute);--tw-lamp:var(--rule);--tw-stripe:var(--bg-alt)}
 .region .tw-glow{opacity:.35}
 .region b{display:block;font-size:14px} .region small{display:block;font-size:12px;color:var(--text-mute)}
-.region .pct{font-family:var(--font-num);font-weight:700;font-size:13px;color:var(--text-mute)}
+.region .pct{font-family:var(--font-num);font-weight:700;font-size:12.5px;color:var(--text-mute);white-space:nowrap}
 
 /* 燈塔 */
 .tower-hero{background:var(--night-2);color:var(--on-night);border-radius:var(--r-lg);padding:0;margin-bottom:12px;position:relative;overflow:hidden;text-align:center}
@@ -602,6 +604,8 @@ div.mcard.fogc{cursor:default}
 .setrow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
 .setrow:last-child{border-bottom:0}
 .setrow small{display:block;font-size:12px;color:var(--text-mute)}
+.setrow>span{min-width:0}
+.setrow .btn{white-space:nowrap;flex-shrink:0;margin-left:12px}
 .switch{width:52px;height:32px;border-radius:999px;background:var(--rule-strong);position:relative;transition:.25s;flex:0 0 auto}
 .switch::before{content:"";position:absolute;inset:-6px}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:.25s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.2)}
@@ -671,14 +675,14 @@ div.mcard.fogc{cursor:default}
 .map.dragging{cursor:grabbing}
 .map .cam{transform-origin:0 0;transition:transform .35s var(--ease);will-change:transform}
 .map.dragging .cam{transition:none}
-.map .beam{fill:#FFF3C4;opacity:.3;transform-origin:var(--bx) var(--by);animation:beam-sweep 7s ease-in-out infinite alternate;pointer-events:none}
+.map .beam{fill:url(#mapBeam);opacity:.38;transform-origin:var(--bx) var(--by);animation:beam-sweep 7s ease-in-out infinite alternate;pointer-events:none}
 @keyframes beam-sweep{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
 .map .fogdrift{fill:var(--fog);opacity:.55;animation:fog-drift 14s ease-in-out infinite alternate;pointer-events:none}
 @keyframes fog-drift{from{transform:translate(-8px,2px)}to{transform:translate(8px,-3px)}}
 .map .hot .rl{transition:transform .25s var(--ease-expressive)}
 .map .hot:hover .rl,.map .hot:focus-visible .rl{transform:translateY(-2px)}
 .map .hot:active{transform:scale(.96);transform-origin:center}
-.map-ctl{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;z-index:2}
+.map-ctl{position:absolute;left:10px;bottom:44px;display:flex;flex-direction:column;gap:6px;z-index:2}
 .map-ctl button{width:36px;height:36px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-soft);font-family:var(--font-num);font-weight:700;font-size:16px}
 .map-hint{position:absolute;left:12px;bottom:12px;font-size:11.5px;color:var(--text-mute);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:3px 8px;border-radius:999px;pointer-events:none}
 /* 塵埃粒子（深色區塊） */
@@ -720,7 +724,10 @@ div.mcard.fogc{cursor:default}
 .reward b{display:block;font-size:18px;margin-top:8px}
 .reward small{display:block;font-size:13px;color:var(--text-mute);margin-top:4px}
 .reward .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.pill.streak{margin-left:auto;gap:4px}
+.pill.streak{margin-left:auto;gap:4px;white-space:nowrap;flex-shrink:0}
+.today>div:first-child{min-width:0;flex:1}
+.today .meta{font-size:13.5px;color:var(--text-mute);margin-top:2px}
+.nw{white-space:nowrap}
 .pill.streak svg{width:14px;height:14px}
 .meta.live{display:inline-flex;align-items:center;gap:6px}
 .meta.live i{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:live-pulse 1.6s ease-in-out infinite}

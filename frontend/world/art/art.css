@@ -9,7 +9,7 @@
 [data-art] .capture .sky,[data-art] .capture .stars{display:none}
 [data-art] .map .terrain{display:none}
 [data-art] .map .art-map.light{display:block}
-[data-art] .map .beam{opacity:.12}
+[data-art] .map .beam{opacity:.22}
 [data-art] .map .rl{stroke:none;paint-order:normal}
 [data-art] .map .cn,[data-art] .map .cs{paint-order:stroke;stroke:var(--sea);stroke-width:4px;stroke-linejoin:round}
 /* 人物：六色隊員、嚮導、巡查員 */
@@ -26,7 +26,7 @@
   [data-art]:not([data-theme="light"]) .capture{background-image:url(bg-capture-dark.svg)}
   [data-art]:not([data-theme="light"]) .map .art-map.light{display:none}
   [data-art]:not([data-theme="light"]) .map .art-map.dark{display:block}
-  [data-art]:not([data-theme="light"]) .map .beam{opacity:.07}
+  [data-art]:not([data-theme="light"]) .map .beam{opacity:.28}
   [data-art]:not([data-theme="light"]) .kid.guide{background-image:url(guide-dark.svg)} [data-art]:not([data-theme="light"]) .kid.patrol{background-image:url(patrol-dark.svg)}
 }
 [data-art][data-theme="dark"] .home-top{background-image:url(bg-home-dark.svg)}
@@ -36,6 +36,6 @@
 [data-art][data-theme="dark"] .capture{background-image:url(bg-capture-dark.svg)}
 [data-art][data-theme="dark"] .map .art-map.light{display:none}
 [data-art][data-theme="dark"] .map .art-map.dark{display:block}
-[data-art][data-theme="dark"] .map .beam{opacity:.07}
+[data-art][data-theme="dark"] .map .beam{opacity:.28}
 [data-art][data-theme="dark"] .kid.guide{background-image:url(guide-dark.svg)} [data-art][data-theme="dark"] .kid.patrol{background-image:url(patrol-dark.svg)}
 @media (prefers-reduced-transparency: reduce){[data-art] .home-top,[data-art] .guild-hero{background-image:none}}
