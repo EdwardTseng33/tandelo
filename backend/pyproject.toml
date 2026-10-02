@@ -1,6 +1,6 @@
 [project]
 name = "tandelo-backend"
-version = "0.3.0"
+version = "0.5.0"
 description = "Tandelo 概念驗證後端：FastAPI + SQLAlchemy 2 + SQLite（可換 Postgres）"
 readme = "README.md"
 requires-python = ">=3.11"

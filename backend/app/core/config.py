@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     lights_out_end: str = Field(default="06:00", description="關燈結束（不含）")
     seed_on_startup: bool = Field(default=False, description="啟動時若資料庫是空的就灌種子資料")
     variant_secret: str = Field(default="", description="題目變體 answer_token 的簽章金鑰；空字串＝啟動時隨機產生（重啟後舊 token 失效）")
+    line_channel_access_token: str = Field(
+        default="", description="LINE Messaging API 的 channel access token，只從環境變數 LINE_CHANNEL_ACCESS_TOKEN 讀；空字串＝營地來信只存不推（stub）"
+    )
+    line_channel_secret: str = Field(default="", description="LINE channel secret，驗 webhook 簽章；空字串＝webhook 回 503")
 
     @property
     def cors_origin_list(self) -> List[str]:

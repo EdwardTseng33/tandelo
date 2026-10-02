@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session as DBSession
 from .. import models, schemas
 from ..core.config import Settings
 from ..models import json_get, json_set, utcnow
+from ..services import camp, rules
 from ..services import content as C
-from ..services import rules
 from ..services import variants as V
 from ..services import world as W
 from .deps import get_db, get_settings_dep, require_admin
@@ -217,7 +217,9 @@ def list_shadows(student_id: int, db: DBSession = Depends(get_db)):
 
 
 @router.post("/students/{student_id}/shadows/{monster_id}/events", response_model=schemas.ShadowEventOut)
-def shadow_event(student_id: int, monster_id: str, body: schemas.ShadowEventIn, db: DBSession = Depends(get_db)):
+def shadow_event(
+    student_id: int, monster_id: str, body: schemas.ShadowEventIn, db: DBSession = Depends(get_db), settings: Settings = Depends(get_settings_dep)
+):
     s = _student(db, student_id)
     m = _monster(monster_id)
     sh = db.query(models.Shadow).filter_by(student_id=s.id, monster_id=m["id"]).first()
@@ -248,6 +250,8 @@ def shadow_event(student_id: int, monster_id: str, body: schemas.ShadowEventIn, 
         sh.woke_at = now
     db.commit()
     db.refresh(sh)
+    if body.event in camp.EVENT_KIND:  # 學會的事件才寄營地來信；卡住不寄
+        camp.enqueue(db, s, camp.EVENT_KIND[body.event], m["id"], settings=settings)
     return schemas.ShadowEventOut(
         **_shadow_out(sh).model_dump(), previous_state=previous, record_kind=kind, points=points, today_count=today_count, daily_cap=s.daily_cap
     )

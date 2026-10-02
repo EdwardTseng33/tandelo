@@ -347,3 +347,36 @@ class Intervention(Base):
     minutes: Mapped[float] = mapped_column(Float, default=0.0)
     note: Mapped[str] = mapped_column(String(200), default="")
     created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+
+
+# ——— 營地來信（0.5）：家長的 LINE ———
+class ParentLink(Base):
+    """家長的 LINE 連結：只存 LINE 的 userId（假名 id），不存姓名與電話。一個 userId 只綁一位孩子。"""
+
+    __tablename__ = "parent_links"
+    __table_args__ = (UniqueConstraint("line_user_id", name="uq_parent_line"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey("students.id"), index=True)
+    line_user_id: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class CampLetter(Base):
+    """營地來信：給家長的一則訊息。由學會事件生成，文案存一份（body_json＋純文字）。
+    status：queued → sent → witnessed／later；failed 記原因（不含金鑰）。channel：line（真的推）或 stub（沒設定 LINE，Demo 直接讀）。"""
+
+    __tablename__ = "camp_letters"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey("students.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(12))
+    monster_id: Mapped[Optional[str]] = mapped_column(String(24), nullable=True)
+    body_json: Mapped[str] = mapped_column(Text, default="{}")
+    text: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(12), default="queued")
+    channel: Mapped[str] = mapped_column(String(8), default="stub")
+    error: Mapped[str] = mapped_column(String(200), default="")
+    created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
+    sent_at: Mapped[Optional[_dt.datetime]] = mapped_column(DateTime, nullable=True)
+    replied_at: Mapped[Optional[_dt.datetime]] = mapped_column(DateTime, nullable=True)

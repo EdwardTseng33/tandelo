@@ -142,6 +142,10 @@ make logs / make down
 | POST | `/interventions` | 人工介入紀錄（by／kind／trigger／分鐘；note ≤ 200 字、不放個資）；回下一個該介入的層級（系統 → 巡邏 → 嚮導） |
 | GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
 | PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
+| GET / POST | `/students/{id}/camp-letters` | 營地來信（家長的 LINE 訊息）：收服、叫醒、講解會自動寄；`kind` 為 capture／wake／explain／dungeon／week 可手動寄。沒設定 LINE 時只存不推（`channel: stub`），Demo 直接讀 |
+| POST | `/camp-letters/{id}/reply` | 家長回覆：witnessed（我見證了）／later（晚點問他） |
+| GET / POST | `/students/{id}/parent-link` | 家長 LINE 連結：只回有沒有綁，不回 userId；綁定需 `X-Admin-Token`，一個 LINE 帳號只綁一位孩子 |
+| POST | `/line/webhook` | LINE 回呼：驗 `X-Line-Signature`（HMAC-SHA256），postback `reply=witnessed&letter=ID` 或文字「我見證了／晚點問他」；沒設 `LINE_CHANNEL_SECRET` 回 503 |
 
 ### Demo 端對端測試
 

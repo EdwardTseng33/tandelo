@@ -32,3 +32,6 @@ export const intervention = (body) => call('/interventions', { method: 'POST', b
 export const shadows = (studentId) => call(`/students/${studentId}/shadows`);
 export const shadowEvent = (studentId, monster, event) => call(`/students/${studentId}/shadows/${encodeURIComponent(monster)}/events`, { method: 'POST', body: { event } });
 export const record = (studentId) => call(`/students/${studentId}/record`);
+export const campLetters = (studentId) => call(`/students/${studentId}/camp-letters`);
+export const campSend = (studentId, body) => call(`/students/${studentId}/camp-letters`, { method: 'POST', body });
+export const campReply = (id, action) => call(`/camp-letters/${id}/reply`, { method: 'POST', body: { action } });
