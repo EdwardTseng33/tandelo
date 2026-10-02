@@ -1,6 +1,7 @@
 // app.js — Tandelo 冒險世界 Demo：hash 路由、狀態（localStorage）、畫面、動態。
 // 只用瀏覽器內建能力；沒有後端也能完整操作。所有資料虛構。
 import * as D from './data.js';
+import * as V from './variants.js';
 
 const KEY = 'tandelo.world.v1';
 const $ = (s, el = document) => el.querySelector(s);
@@ -12,6 +13,7 @@ const buzz = (p = 12) => { try { navigator.vibrate && navigator.vibrate(p); } ca
 function defaults() {
   return {
     clock: 'sat',
+    seed: Math.random().toString(36).slice(2, 8), // 題目種子：換了就換一組題
     cards: 0,              // 今天已完成的任務卡
     shadows: JSON.parse(JSON.stringify(D.INITIAL_SHADOWS)),
     patrol: { i: 0, done: 0, helped: 0, why: false, finished: false },
@@ -39,6 +41,11 @@ function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e
 function reset() { S = defaults(); save(); go('home'); toast('已重設示範資料'); }
 
 const clock = () => D.CLOCKS.find((c) => c.id === S.clock) || D.CLOCKS[0];
+// 題目由變體引擎依種子與路線產生：同一個種子永遠同一組，換種子就「換個樣子出現」
+let pqCache = { k: '', qs: [] };
+const PQ = () => { const k = `${S.seed}|${S.route}`; if (pqCache.k !== k) { const qs = V.bank('sign-dist', 3, S.route, `patrol-${S.seed}`); qs[1].why = true; pqCache = { k, qs }; } return pqCache.qs; };
+const AQ = () => V.generate('sqrt-split', `ambush-${S.seed}`, S.route);
+const WQ = () => V.generate('factor-diff', `wake-${S.seed}`, 'plain');
 const night = () => { const [h, m] = clock().time.split(':').map(Number); const t = h * 60 + m; return t >= 1350 || t < 360; };
 const mon = (id) => D.MONSTERS.find((m) => m.id === id);
 const region = (id) => D.REGIONS.find((r) => r.id === id);
@@ -162,19 +169,19 @@ SCREENS.dungeon = () => {
 // 巡邏作答：四層引導 問 → 指 → 借 → 示範一步
 let play = { lvl: 0, picked: null, tried: false, rec: 0, recT: null };
 SCREENS.play = () => {
-  const q = D.PATROL[S.patrol.i];
-  if (!q || S.patrol.finished) return `${hd('巡邏完成', '第 1 層 · 負號幽靈')}<div class="card"><div class="settle"><div class="big num">3<small>/ 3</small></div><div class="lbl">巡邏層完成 · 問過小陪照樣算分</div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button><button class="btn ghost" data-go="home">回到今天</button></div>`;
+  const q = PQ()[S.patrol.i];
+  if (!q || S.patrol.finished) return `${hd('巡邏完成', '第 1 層 · 負號幽靈')}<div class="card"><div class="settle"><div class="big num">3<small>/ 3</small></div><div class="lbl">巡邏層完成 · 問過小陪照樣算分</div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button><button class="btn ghost" data-act="patrol-again">再巡一次 · 牠換個樣子</button></div>`;
   const m = mon('sign-dist');
   const lvls = ['問', '指', '借', '示範一步'];
   const txt = [q.hint.ask, q.hint.point, q.hint.lend, q.hint.show];
   return `
   ${hd(`巡邏 · 第 ${S.patrol.i + 1} 題`, '負號幽靈 · 多項式林')}
-  <div class="q-top"><div class="steps" aria-label="進度">${D.PATROL.map((_, i) => `<i class="${i < S.patrol.i ? 'on' : (i === S.patrol.i ? 'cur' : '')}"></i>`).join('')}</div><span class="pill brand">今天 ${S.cards} / 3</span></div>
+  <div class="q-top"><div class="steps" aria-label="進度">${PQ().map((_, i) => `<i class="${i < S.patrol.i ? 'on' : (i === S.patrol.i ? 'cur' : '')}"></i>`).join('')}</div><span class="pill brand">今天 ${S.cards} / 3</span></div>
   <div class="qcard"><div class="row" style="margin-bottom:6px">${monSvg(m, play.tried ? 'shake' : 'bob')}<div class="grow"><span class="meta">這隻怪的口頭禪</span><b style="font-size:13.5px">「${esc(m.taunt)}」</b></div></div>
-    <p class="stem"><span class="mx">${esc(q.stem.replace('化簡：', ''))}</span><br><span class="meta" style="font-size:13px;font-weight:500">化簡</span></p>
+    <p class="stem"><span class="mx">${esc(q.stem.replace(' = ?', ''))}</span><br><span class="meta" style="font-size:13px;font-weight:500">化簡</span></p>
     <div class="opts" id="opts">${q.options.map((o, i) => `<button class="opt ${play.picked === i ? (i === q.answer ? 'ok' : 'trap') : ''}" data-opt="${i}" ${play.picked === q.answer ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
-    ${play.picked !== null && play.picked !== q.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：你看，${play.picked === q.trap ? '只有第一項變號。我就說後面的我不管。' : '差一點點，再看一次括號。'}</p></div>` : ''}
-    ${play.picked === q.answer ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>打中了</b>：${esc(m.weakness)}${play.lvl ? '（問過小陪，一樣算 1 分）' : ''}</p></div>` : ''}
+    ${play.picked !== null && play.picked !== q.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：${play.picked === q.trap ? esc(q.taunt) : '差一點點，再看一次括號。'}</p></div>` : ''}
+    ${play.picked === q.answer ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>打中了</b>：${esc(q.why)}${play.lvl ? '（問過小陪，一樣算 1 分）' : ''}</p></div>` : ''}
   </div>
   ${play.picked !== q.answer ? `
   <div class="coach"><span class="face">${SVG.coach}</span><div><span class="lvl">小陪 · ${lvls[play.lvl]}</span><p>${esc(txt[play.lvl])}</p>
@@ -197,7 +204,7 @@ SCREENS.relay = () => {
 };
 
 SCREENS.ambush = () => {
-  const a = D.AMBUSH; const m = mon(a.monster);
+  const a = AQ(); const m = mon(a.monster);
   if (S.ambush.done) return `${hd('伏擊 · 結果', '只記進你的收服紀錄')}<div class="card ${S.ambush.passed ? 'honey' : 'coral'}"><div class="row">${monSvg(m, S.ambush.passed ? 'shadow' : '')}<div class="grow"><b>${S.ambush.passed ? '拆根蟲，收服。' : '拆根蟲還在附近。'}</b><small>${S.ambush.passed ? '第 9 天不給提示也會。' : '不扣分，回到練習清單，下週再來。'}</small></div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button></div>`;
   return `
   ${hd('伏擊', '到期的夥伴回來了 · 沒有提示')}
@@ -209,16 +216,16 @@ SCREENS.ambush = () => {
 };
 
 SCREENS.wake = () => {
-  const m = mon('diff-sq');
+  const m = mon('diff-sq'); const wq = WQ();
   if (S.wake.done) return `${hd('叫醒夥伴', '平方差雙子')}<div class="card honey"><div class="row">${monSvg(m, 'shadow')}<div class="grow"><b>平方差雙子醒了。</b><small>再站回你身後。戰績 +5。</small></div></div></div><div class="btns"><button class="btn" data-go="home">回到今天</button></div>`;
   return `
   ${hd('叫醒夥伴', '平方差雙子 · 分解洞窟')}
   <div class="card"><div class="row">${monSvg(m, 'asleep')}<div class="grow"><b>上週又錯了一次，睡著了。</b><small>不扣分、不消失，只是換一種狀態。今天可以叫醒。</small></div></div></div>
-  <div class="qcard"><p class="stem"><span class="mx">x² − 49 = ?</span></p>
-    <div class="opts">${['(x + 7)(x − 7)', '(x − 7)(x − 7)', '(x + 7)(x + 7)', '(x − 49)(x + 1)'].map((o, i) => `<button class="opt ${play.wpick === i ? (i === 0 ? 'ok' : 'trap') : ''}" data-wopt="${i}" ${play.wpick === 0 ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
-    ${play.wpick === 1 ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>平方差雙子</b>：我們是雙胞胎，當然一樣。</p></div>` : ''}
-    ${play.wpick === 0 ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>醒了</b>：${esc(m.weakness)}</p></div>` : ''}</div>
-  <div class="btns"><button class="btn honey" data-act="wake-done" ${play.wpick === 0 ? '' : 'disabled'}>叫醒 · 站回身後</button></div>`;
+  <div class="qcard"><p class="stem"><span class="mx">${esc(wq.stem)}</span></p>
+    <div class="opts">${wq.options.map((o, i) => `<button class="opt ${play.wpick === i ? (i === wq.answer ? 'ok' : 'trap') : ''}" data-wopt="${i}" ${play.wpick === wq.answer ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
+    ${play.wpick !== null && play.wpick !== undefined && play.wpick !== wq.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>平方差雙子</b>：${play.wpick === wq.trap ? esc(wq.taunt) : '差一點，乘回去看看。'}</p></div>` : ''}
+    ${play.wpick === wq.answer ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>醒了</b>：${esc(wq.why)}</p></div>` : ''}</div>
+  <div class="btns"><button class="btn honey" data-act="wake-done" ${play.wpick === wq.answer ? '' : 'disabled'}>叫醒 · 站回身後</button></div>`;
 };
 
 SCREENS.settle = () => `
@@ -386,6 +393,7 @@ SCREENS.coach = () => `
 SCREENS.settings = () => `
   ${hd('示範設定', '時間、深淺色、個人榜、對戰投票')}
   <div class="ios-tip ${/iP(hone|ad|od)/.test(navigator.userAgent) && !window.navigator.standalone ? 'on' : ''}"><b>加到主畫面</b>：Safari 底下的「分享」→「加入主畫面」。之後會像 App 一樣全螢幕開啟。</div>
+  <div class="card"><h3>這週的題</h3><div class="setrow"><span>種子 <b class="num">${esc(S.seed)}</b><small>巡邏、伏擊、叫醒的題目由變體引擎依種子產生；換種子，怪就換個樣子。</small></span><button class="btn sm ghost" data-act="reseed">換一組</button></div></div>
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
     <div class="setrow"><span>深色模式<small>22:30 後自動轉暗</small></span><button class="switch ${document.documentElement.getAttribute('data-theme') === 'dark' ? 'on' : ''}" data-act="theme" role="switch" aria-label="深色模式"></button></div>
@@ -513,7 +521,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.lore) return lore(t.dataset.lore);
   if (t.dataset.clock) { S.clock = t.dataset.clock; save(); rerender(); applyTheme(); return; }
   if (t.dataset.opt !== undefined) {
-    const q = D.PATROL[S.patrol.i]; const i = Number(t.dataset.opt); play.picked = i; play.tried = i !== q.answer;
+    const q = PQ()[S.patrol.i]; const i = Number(t.dataset.opt); play.picked = i; play.tried = i !== q.answer;
     const r = t.getBoundingClientRect();
     if (i === q.answer) { buzz(10); combo += 1; juice('good', r.left + r.width / 2, r.top, play.lvl ? '打中' : '打中！'); rerender(); showCombo(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('hit'); return; }
     buzz([10, 30, 10]); combo = 0; juice('bad', r.left + r.width / 2, r.top, '被騙到'); rerender(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('tricked'); return;
@@ -521,7 +529,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.coach !== undefined) { if (play.lvl < 3) play.lvl += 1; else { play.picked = null; play.lvl = 0; } return rerender(); }
   if (t.dataset.ropt !== undefined) { play.rpick = Number(t.dataset.ropt); const r = t.getBoundingClientRect(); const ok = play.rpick === D.RELAY.steps[3].answer; buzz(ok ? 10 : [10, 30, 10]); juice(ok ? 'good' : 'bad', r.left + r.width / 2, r.top, ok ? '接到了' : '被騙到'); return rerender(); }
   if (t.dataset.aopt !== undefined) { play.apick = Number(t.dataset.aopt); return rerender(); }
-  if (t.dataset.wopt !== undefined) { play.wpick = Number(t.dataset.wopt); const r = t.getBoundingClientRect(); const ok = play.wpick === 0; juice(ok ? 'gold' : 'bad', r.left + r.width / 2, r.top, ok ? '醒了！' : '還在睡'); buzz(ok ? [10, 20, 10] : [10, 30, 10]); return rerender(); }
+  if (t.dataset.wopt !== undefined) { play.wpick = Number(t.dataset.wopt); const r = t.getBoundingClientRect(); const ok = play.wpick === WQ().answer; juice(ok ? 'gold' : 'bad', r.left + r.width / 2, r.top, ok ? '醒了！' : '還在睡'); buzz(ok ? [10, 20, 10] : [10, 30, 10]); return rerender(); }
   if (t.dataset.flag !== undefined) { S.relay.flagsLeft -= 1; play.flagged = Number(t.dataset.flag); save(); toast('已標記「這步怪怪的」，上一棒會收到匿名通知'); return rerender(); }
   if (t.dataset.vote) { const [n, i] = t.dataset.vote.split(':').map(Number); S.duel.votes[n] = i; save(); buzz(10); return rerender(); }
   if (t.dataset.say) return toast(`已送出「${t.dataset.say}」`);
@@ -540,15 +548,17 @@ document.addEventListener('click', (e) => {
   if (a === 'report') { toast('已回報給內容團隊，謝謝你'); return; }
   if (a === 'sos') { toast('隊友收到匿名求援：「有一位隊友卡在負號幽靈」。30 分鐘沒人回就播嚮導的 30 秒。'); return; }
   if (a === 'next') {
-    const q = D.PATROL[S.patrol.i];
+    const q = PQ()[S.patrol.i];
     if (play.picked !== q.answer) return;
     S.patrol.done += 1; if (play.lvl) S.patrol.helped += 1;
-    if (S.patrol.i < D.PATROL.length - 1) { S.patrol.i += 1; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); return rerender(); }
+    if (S.patrol.i < PQ().length - 1) { S.patrol.i += 1; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); return rerender(); }
     S.patrol.finished = true; addCard(); save(); toast('巡邏 3 / 3 完成 · 今天第 ' + S.cards + ' 張'); return rerender();
   }
+  if (a === 'patrol-again') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); toast('牠換了個樣子'); return rerender(); }
+  if (a === 'reseed') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; S.ambush = { done: false, passed: false }; S.wake = { done: false }; save(); toast('換了一組題'); return rerender(); }
   if (a === 'relay-submit') { S.relay.done = true; addCard(); save(); buzz(20); toast('第 4 棒交出去了'); return rerender(); }
   if (a === 'ambush-submit') {
-    const ok = play.apick === D.AMBUSH.answer; S.ambush.done = true; S.ambush.passed = ok; addCard();
+    const ok = play.apick === AQ().answer; S.ambush.done = true; S.ambush.passed = ok; addCard();
     if (ok) { S.shadows['sqrt-split'] = { state: 'captured', day0: '10/03', dayN: '10/12', days: 9 }; addRecord('capture', '收服 拆根蟲', 10); save(); juice('gold', null, null, '+10'); return setTimeout(() => go('capture/sqrt-split'), reduced() ? 0 : 500); }
     S.shadows['sqrt-split'] = { state: 'near', note: '沒中，不扣分，回到清單' }; save(); return rerender();
   }
