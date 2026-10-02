@@ -119,12 +119,12 @@ jobs:
           if [ "${{ matrix.service }}" = "backend" ]; then
             docker run -d --name tandelo-ci -p 8000:8000 tandelo-backend:ci
             for i in $(seq 1 20); do curl -fsS http://localhost:8000/health && break; sleep 2; done
-            curl -fsS http://localhost:8000/api/v1/health | grep -q '"ok":true'
+            out=$(curl -fsS http://localhost:8000/api/v1/health); grep -q '"ok":true' <<<"$out"
           else
             docker run -d --name tandelo-ci -p 8080:8080 -e BACKEND_HOST=127.0.0.1 -e BACKEND_PORT=9 tandelo-frontend:ci
             for i in $(seq 1 20); do curl -fsS http://localhost:8080/healthz && break; sleep 2; done
-            curl -fsS http://localhost:8080/ | grep -q Tandelo
-            curl -fsS http://localhost:8080/config.js | grep -q "'/api'"
+            out=$(curl -fsS http://localhost:8080/); grep -q Tandelo <<<"$out"
+            out=$(curl -fsS http://localhost:8080/config.js); grep -q "'/api'" <<<"$out"
           fi
           docker logs tandelo-ci
           docker rm -f tandelo-ci
