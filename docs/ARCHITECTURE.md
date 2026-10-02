@@ -148,6 +148,7 @@ POST /coach/reply
 - **四層與交棒**：`level` 從 body 來（沒給就用 `hint_level`）。第 3 層回覆 `handoff=true`；`level ≥ 4` 不呼叫模型，只回固定句。對錯判斷與換步驟永遠在規則引擎（計算與答案比對不讓語言模型做）。
 - **計數**：`CoachMetrics`（記憶體，重啟歸零，多副本要換集中式）：`total`（小陪實際回覆數，關燈不算）、`llm_calls`、`leak`（沒過守門退回的次數）、`by_reason`。`GET /coach/metrics` 回 `leak_rate = leak / total`，對應設計稿的「洩漏答案率 ≤ 2%」。
 - **API**：`POST /coach/reply` body 多了 `monster_id`、`step_text`、`level`、`answer_forms`；回傳多了 `provider`（原本就有）、`level`、`handoff`、`guarded`（沒過守門的原因，這時句子來自規則引擎）。
+- **變體題（0.4）**：body 可帶 `variant: {monster_id, route, seed, picked}`，後端用變體引擎重算該題（不信任前端送來的答案），`CoachTurn.variant` 帶題幹、答案、trap、錯法標籤、步驟與是否踩到 trap。規則引擎四層：0 問寫到哪、1 指（踩到 trap 就點名錯法）、2 借、3 示範該題第一步；模型提示詞多了題幹、孩子的選擇、錯法與隱藏最後一步的解法；守門把該題答案列入不可說。
 - **測試**：`tests/test_coach_guard.py` 用假的 SDK client（monkeypatch `coach._make_client`）鎖住：有金鑰走模型、沒金鑰或沒 SDK 退回規則、各種洩漏寫法、放過「負號要發給每一個人」、第四層固定句、關燈不呼叫模型、metrics 數字。不對外打 API。
 
 POC 邊界：前端 `app/` 與 `world/` 目前仍走規則引擎，還沒送 `step_text`／`level`；`answer_forms` 由呼叫端給或用題庫的最終答案（變體引擎產的題，判題回應裡的答案選項文字就能當 `answer_forms`，前端還沒接）。

@@ -6,6 +6,7 @@ from .. import schemas
 from ..core.config import Settings
 from ..services import coach as coach_svc
 from ..services import rules
+from ..services import variants as V
 from .deps import get_settings_dep
 
 router = APIRouter(tags=["小陪"])
@@ -49,6 +50,14 @@ def reply(
         level=body.level,
         answer_forms=body.answer_forms,
     )
+    if body.variant is not None:
+        try:
+            v = V.generate(body.variant.monster_id, body.variant.seed, body.variant.route)
+        except ValueError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from None
+        turn.variant = coach_svc.variant_context(v, body.variant.picked)
+        if not turn.monster_id:
+            turn.monster_id = body.variant.monster_id
     try:
         r = provider.reply(turn)
     except KeyError as e:

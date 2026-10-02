@@ -290,6 +290,15 @@ class EarningsOut(BaseModel):
 
 
 # ——— 小陪 ———
+class CoachVariantIn(BaseModel):
+    """這一題是變體引擎產的：給 (monster_id, route, seed) 讓後端自己重算，不信任前端送來的答案。"""
+
+    monster_id: str = Field(max_length=40)
+    route: str = Field(default="plain", pattern=r"^(plain|hills|ridge|cloud)$")
+    seed: str = Field(default="0", max_length=64)
+    picked: Optional[int] = Field(default=None, ge=0, le=3, description="孩子選的選項索引；空＝還沒選")
+
+
 class CoachReplyIn(BaseModel):
     skill_id: str
     message: str = Field(default="", max_length=400)
@@ -302,6 +311,7 @@ class CoachReplyIn(BaseModel):
     step_text: str = Field(default="", max_length=400, description="孩子目前寫到的步驟（原文）")
     level: Optional[int] = Field(default=None, ge=0, le=9, description="引導層級：0 問、1 指、2 借、3 示範一步；4 以上只回固定句。空＝用 hint_level")
     answer_forms: List[str] = Field(default_factory=list, max_length=10, description="最終答案的各種寫法（守門用）；空＝用題庫的最終答案")
+    variant: Optional[CoachVariantIn] = Field(default=None, description="這一題若是變體引擎產的，帶種子讓小陪知道題目與錯法")
 
 
 class CoachReplyOut(BaseModel):

@@ -127,7 +127,7 @@ make logs / make down
 | GET | `/students/{id}/parent-report`、`/students/{id}/parent-reports` | 生成週報、歷史週報 |
 | POST / GET | `/teacher-applications` | 招募表單；列表需 `X-Admin-Token` |
 | GET | `/teachers`、`/teachers/{id}/earnings?tier=&teams=&size=` | 老師清單、收入試算（45／52／60%、保底 600） |
-| POST | `/coach/reply`、`/coach/explain` | 小陪回覆（規則引擎或接模型，四層引導、答案守門；22:30–06:00 回「關燈中」且不呼叫模型）、說給我聽評分 |
+| POST | `/coach/reply`、`/coach/explain` | 小陪回覆（規則引擎或接模型，四層引導、答案守門；22:30–06:00 回「關燈中」且不呼叫模型；body 帶 `variant`（monster_id、route、seed、picked）時後端重算該題，踩到錯法會點名、示範一步用該題第一步、守門含該題答案）、說給我聽評分 |
 | GET | `/coach/metrics` | 小陪洩漏率：`leak`／`total`（記憶體計數） |
 | GET | `/world/map` | 冒險世界：四片大陸、區域與燈塔、怪的傳說卡、路線、聯賽區 |
 | GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 夥伴狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
