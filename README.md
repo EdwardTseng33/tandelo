@@ -143,6 +143,10 @@ make logs / make down
 | GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
 | PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
 
+### Demo 的三個視角
+
+同一個 Demo 有三個視角：孩子（今天、副本、圖鑑、地圖、公會、我學會的）、家長（營地來信，LINE 樣式）、嚮導（設定 → 切到嚮導視角：今晚三個介入時刻、每生每週人力分鐘表、介入紀錄）。
+
 ### Demo 接後端
 
 冒險世界 Demo 預設用前端的本地引擎出題（`frontend/world/variants.js`）。在 Demo 的「設定 → 後端」填入 API 位址，或用 `world/?api=https://…` 開啟，巡邏題就改由後端出題（`/world/monsters/{id}/variants`）、後端判題（`…/variants/check`）、小陪由 `/coach/reply` 帶 `answer_token` 回話。後端的 `CORS_ORIGINS` 要包含 Demo 的來源。沒回應時可一鍵改回本地題。
