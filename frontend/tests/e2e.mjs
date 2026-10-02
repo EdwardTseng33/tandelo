@@ -22,8 +22,10 @@ const click = async (sel) => { await vis(sel).click(); };
 const hash = () => p.evaluate(() => location.hash);
 const hold = async (sel, ms) => { const box = await vis(sel).boundingBox(); await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await p.mouse.down(); await p.waitForTimeout(ms); await p.mouse.up(); await p.waitForTimeout(150); };
 const setClock = async (id) => { await p.evaluate((id) => { const k = 'tandelo.world.v1'; const st = JSON.parse(localStorage.getItem(k) || '{}'); st.clock = id; localStorage.setItem(k, JSON.stringify(st)); }, id); await p.reload({ waitUntil: 'networkidle' }); await p.waitForTimeout(300); };
+const solved = () => p.evaluate(() => !!document.querySelector('.opt.ok'));
 const solve = async (optSel) => {
-  // 逐一試選項直到出現 .opt.ok；會先碰到怪的錯法（trap）也沒關係
+  // 逐一試選項直到出現 .opt.ok；會先碰到怪的錯法（trap）也沒關係。前一步若已經點中（選項全鎖），直接算過。
+  if (await solved()) return -1;
   for (let k = 0; k < 4; k++) { const btn = p.locator(`[${optSel}="${k}"]:visible`).first(); if (await btn.isDisabled().catch(() => true)) continue; await btn.click(); await p.waitForTimeout(200); if (await p.evaluate(() => !!document.querySelector('.opt.ok'))) return k; }
   throw new Error('找不到正解');
 };
