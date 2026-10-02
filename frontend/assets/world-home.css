@@ -183,8 +183,8 @@
 
 .w-minimap .rl{font-family:var(--font-sans);font-weight:700;font-size:12px;fill:var(--text);text-anchor:middle;paint-order:stroke;stroke:var(--land);stroke-width:4px;stroke-linejoin:round}
 .w-minimap .rl.fogt{fill:var(--fog-text)}
-.w-minimap .tw{--tw-line:var(--ink);--tw-lamp:#FFF8DC;--tw-body:var(--surface)}
-.w-minimap .t-us{--tw-body:var(--coral)}.w-minimap .t-o{--tw-body:var(--sky)}.w-minimap .t-l{--tw-body:var(--honey)}.w-minimap .t-n{--tw-body:var(--surface);--tw-line:var(--text-mute);--tw-lamp:var(--rule)}
+.w-minimap .tw{--tw-line:var(--ink);--tw-lamp:#FFF8DC;--tw-body:var(--surface);--tw-stripe:#FFFFFF;--tw-rock:var(--land-2)}
+.w-minimap .t-us{--tw-body:var(--coral);--tw-glow:#F4C24D}.w-minimap .t-o{--tw-body:var(--sky);--tw-glow:#F4C24D}.w-minimap .t-l{--tw-body:var(--honey)}.w-minimap .t-n{--tw-body:var(--surface);--tw-line:var(--text-mute);--tw-lamp:var(--rule)}
 .w-minimap .fogm{fill:var(--fog);stroke:var(--fog-text);stroke-width:1.5;stroke-dasharray:3 3}
 .w-minimap .glow{fill:#FFF3C4;opacity:.5;animation:w-glow 2.8s ease-in-out infinite}
 @keyframes w-glow{0%,100%{opacity:.3}50%{opacity:.7}}

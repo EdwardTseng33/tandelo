@@ -563,7 +563,6 @@ ART_CSS = """/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-
 [data-art] .dg-hero .fogbg{display:none}
 [data-art] .wall{background-image:url(bg-wall.svg);background-size:cover;background-position:center bottom}
 [data-art] .wall .stars{display:none}
-[data-art] .tower-hero{background-image:url(bg-tower.svg);background-size:cover;background-position:center bottom;min-height:168px;padding-top:28px}
 [data-art] .capture{background-image:url(bg-capture.svg);background-size:cover;background-position:center}
 [data-art] .capture .sky,[data-art] .capture .stars{display:none}
 [data-art] .map .terrain{display:none}
@@ -582,7 +581,6 @@ ART_CSS = """/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-
   [data-art]:not([data-theme="light"]) .guild-hero{background-image:url(bg-guild-dark.svg)}
   [data-art]:not([data-theme="light"]) .dg-hero{background-image:url(bg-dungeon-dark.svg)}
   [data-art]:not([data-theme="light"]) .wall{background-image:url(bg-wall-dark.svg)}
-  [data-art]:not([data-theme="light"]) .tower-hero{background-image:url(bg-tower-dark.svg)}
   [data-art]:not([data-theme="light"]) .capture{background-image:url(bg-capture-dark.svg)}
   [data-art]:not([data-theme="light"]) .map .art-map.light{display:none}
   [data-art]:not([data-theme="light"]) .map .art-map.dark{display:block}
@@ -593,7 +591,6 @@ ART_CSS = """/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-
 [data-art][data-theme="dark"] .guild-hero{background-image:url(bg-guild-dark.svg)}
 [data-art][data-theme="dark"] .dg-hero{background-image:url(bg-dungeon-dark.svg)}
 [data-art][data-theme="dark"] .wall{background-image:url(bg-wall-dark.svg)}
-[data-art][data-theme="dark"] .tower-hero{background-image:url(bg-tower-dark.svg)}
 [data-art][data-theme="dark"] .capture{background-image:url(bg-capture-dark.svg)}
 [data-art][data-theme="dark"] .map .art-map.light{display:none}
 [data-art][data-theme="dark"] .map .art-map.dark{display:block}
@@ -614,7 +611,6 @@ if __name__ == '__main__':
         write(f'bg-guild{suf}.svg', bg_guild(theme))
         write(f'bg-dungeon{suf}.svg', bg_dungeon(theme))
         write(f'bg-wall{suf}.svg', bg_wall(theme))
-        write(f'bg-tower{suf}.svg', bg_tower(theme))
         write(f'bg-capture{suf}.svg', bg_capture(theme))
         write(f'map-math{suf}.svg', continent(theme, map_math_features))
         write(f'map-en{suf}.svg', continent(theme, map_en_features))

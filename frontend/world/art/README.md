@@ -10,7 +10,6 @@ Demo 啟動時偵測到 manifest 就會在 `<html>` 加上 `data-art`，`art.css
 | `bg-home.svg` | 今天畫面頂部（隊伍旗與營地） | 390×220 |
 | `bg-dungeon.svg` | 副本畫面頂部（多項式林深處） | 390×200 |
 | `bg-wall.svg` | 圖鑑的夥伴牆夜景 | 390×220 |
-| `bg-tower.svg` | 燈塔頁頂部（燈塔與光束） | 390×220 |
 | `bg-capture.svg` | 收服時刻全幕背景 | 390×844 |
 | `bg-guild.svg` | 公會頁頂部（營地） | 390×180 |
 | `map-math.svg` | 數理大陸完整地圖（取代地形層） | 440×420 |

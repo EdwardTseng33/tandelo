@@ -64,7 +64,9 @@ const monSvg = (m, cls = '', extra = '') => `<span class="mon ${cls}" ${extra}><
 const stateCls = { fog: 'fog', near: '', hit: 'pine', captured: 'shadow', asleep: 'asleep', shadow: 'shadow' };
 const av = (n, cls = '') => `<span class="av a${n} ${cls}" aria-hidden="true"></span>`;
 const kid = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="24" r="14" fill="currentColor"/><path d="M8 62c2-16 12-24 24-24s22 8 24 24z" fill="currentColor"/></svg>';
-const towerSvg = '<svg viewBox="0 0 24 32" aria-hidden="true"><use href="#tower"/></svg>';
+const towerSvg = '<svg viewBox="0 0 36 48" aria-hidden="true"><use href="#tower"/></svg>';
+// 燈塔頁夜景的星點（固定，避免每次重繪閃動）
+const SKY_STARS = [[18,22,1.4],[44,58,1],[70,16,1.8],[96,44,1.1],[126,24,1.3],[150,70,.9],[176,18,1.6],[210,52,1],[238,28,1.2],[262,66,1.5],[290,20,1],[318,48,1.7],[346,26,1.1],[372,60,1.3],[34,92,1],[110,88,1.2],[300,96,1],[358,100,1.4],[60,120,.9],[334,128,1.1]];
 const hd = (title, sub, back = true) => `<div class="hd ${back ? 'with-back' : ''}">${back ? `<button class="back" data-back aria-label="返回">${SVG.back}</button>` : ''}<div class="grow"><h2>${title}</h2>${sub ? `<span class="sub">${sub}</span>` : ''}</div></div>`;
 const wave = (n = 18) => `<span class="wave" aria-hidden="true">${'<i></i>'.repeat(n)}</span>`;
 
@@ -275,12 +277,12 @@ SCREENS.map = (cid) => {
   <div class="map"><svg viewBox="0 0 440 420" role="img" aria-label="數理大陸地圖：六個區域各一座燈塔"><g class="cam">
     ${art}
     <g class="terrain">${D.MAP_TERRAIN}</g>
-    ${R.filter((r) => r.light === 'lit').map((r) => `<path class="beam" style="--bx:${r.x}px;--by:${r.y - 18}px" d="M${r.x} ${r.y - 18}L${r.x - 70} ${r.y - 150}L${r.x + 70} ${r.y - 150}z"/>`).join('')}
+    ${R.filter((r) => r.light === 'lit').map((r) => `<path class="beam" style="--bx:${r.x}px;--by:${r.y - 12}px" d="M${r.x} ${r.y - 12}L${r.x - 46} ${r.y - 150}L${r.x + 46} ${r.y - 150}z"/>`).join('')}
     ${R.filter((r) => r.light === 'fog').map((r) => `<ellipse class="fogdrift" cx="${r.x - 20}" cy="${r.y - 10}" rx="70" ry="34"/>`).join('')}
     <text class="cn" x="96" y="96">數理大陸</text><text class="cs" x="96" y="112">數學 · 六區</text>
     ${R.map((r) => r.light === 'fog'
       ? `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}，迷霧" data-region="${r.id}"><ellipse class="fogm" cx="${r.x}" cy="${r.y}" rx="52" ry="30"/><text class="fogq" x="${r.x}" y="${r.y + 5}">?</text><text class="rl fogt" x="${r.x}" y="${r.y + 52}">${esc(r.name)}</text></g>`
-      : `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}燈塔" data-region="${r.id}"><circle class="ring" cx="${r.x}" cy="${r.y}" r="34"/><circle class="glow ${r.light === 'lit' ? 'on' : ''}" cx="${r.x}" cy="${r.y - 4}" r="26"/><use href="#tower" class="tw ${cls(r)}" x="${r.x - 11}" y="${r.y - 20}" width="22" height="30"/>${r.keeper === 'us' ? `<path class="flag" d="M${r.x + 10} ${r.y - 22}v-12l10 4-10 4"/>` : ''}<text class="rl" x="${r.x}" y="${r.y + 34}">${esc(r.name)}</text></g>`).join('')}
+      : `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}燈塔" data-region="${r.id}"><circle class="ring" cx="${r.x}" cy="${r.y}" r="34"/><circle class="glow ${r.light === 'lit' ? 'on' : ''}" cx="${r.x}" cy="${r.y - 10}" r="24"/><use href="#tower" class="tw ${cls(r)}" x="${r.x - 12}" y="${r.y - 22}" width="24" height="32"/>${r.keeper ? `<path class="flag ${r.keeper === 'us' ? 'f-us' : 'f-other'}" d="M${r.x + 9} ${r.y - 12}v-9l8 3-8 3"/>` : ''}<text class="rl" x="${r.x}" y="${r.y + 34}">${esc(r.name)}</text></g>`).join('')}
   </g></svg><div class="map-ctl"><button type="button" data-zoom="-1" aria-label="縮小">−</button><button type="button" data-zoom="1" aria-label="放大">＋</button></div><span class="map-hint">拖曳移動 · 捏合縮放</span></div>
   <div class="maplegend"><span><i class="u"></i>我們守塔</span><span><i class="o"></i>其他小隊守塔</span><span><i class="l"></i>燈已點亮</span><span><i class="n"></i>燈未點亮</span><span><i class="f"></i>迷霧</span></div>
   <div class="regions">${R.map((r) => `<button class="region" data-region="${r.id}"><span class="tw ${r.light === 'fog' ? 'none' : (r.keeper === 'us' ? 'us' : (r.keeper === 'other' ? 'other' : (r.light === 'lit' ? 'lit' : 'none')))}">${towerSvg}</span><span><b>${esc(r.name)}</b><small>${r.light === 'fog' ? '迷霧 · 還沒偵察到這一區' : (r.light === 'lit' ? `已點亮 · ${r.keeper === 'us' ? '四葉小隊守著平原線這一層' : (r.keeper === 'other' ? '星期三小隊守著平原線這一層' : '尚無守塔隊')}` : `點燈進度 ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</small></span><span class="pct">${r.light === 'fog' ? '' : `${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}`}</span></button>`).join('')}</div>`;
@@ -293,7 +295,24 @@ SCREENS.tower = (id) => {
   const rows = T.board.map((b, i) => ({ ...b, i })).filter((b) => Math.abs(b.i - mine) <= 3);
   return `
   ${hd(`${esc(r.name)} · 燈塔`, `${esc(D.SQUAD.league)} · ${esc(D.SQUAD.subject)}`)}
-  <div class="tower-hero">${lit ? '<div class="beam"></div>' : ''}<span class="tw" style="--tw-body:${r.keeper === 'us' ? 'var(--coral)' : (r.keeper === 'other' ? 'var(--sky)' : (lit ? 'var(--honey)' : 'var(--night-2)'))}">${towerSvg}</span><h2>${lit ? (r.keeper === 'us' ? '燈亮著，四葉小隊守著平原線這一層。' : (r.keeper === 'other' ? '燈亮著，星期三小隊守著平原線這一層。' : '燈亮著，還沒有守塔隊。')) : (r.light === 'fog' ? '迷霧還沒散。' : '燈還沒亮。')}</h2><p>${r.light === 'fog' ? '下週遠征偵察這一區。' : '點燈是全區合作，守塔是同路線爭奪。'}</p></div>
+  <div class="tower-hero ${lit ? 'lit' : ''} ${r.light === 'fog' ? 'fog' : ''}">
+    <svg class="scene" viewBox="0 0 390 230" aria-hidden="true">
+      <g class="stars">${SKY_STARS.map(([x, y, rr], i) => `<circle cx="${x}" cy="${y}" r="${rr}" style="--d:${(i % 7) * 0.45}s"/>`).join('')}</g>
+      <g class="moon"><circle cx="330" cy="44" r="15"/><circle class="bite" cx="337" cy="40" r="13"/></g>
+      ${r.light === 'fog' ? '<ellipse class="fogbank" cx="195" cy="150" rx="230" ry="70"/>' : ''}
+      <rect class="sea" x="0" y="166" width="390" height="64"/>
+      <path class="moonlight" d="M318 176h26M312 186h34M322 196h20M316 208h28"/>
+      <g class="waves"><path d="M20 182q7-4 14 0t14 0M70 200q7-4 14 0t14 0M250 190q7-4 14 0t14 0M120 214q7-4 14 0t14 0M280 212q7-4 14 0t14 0"/></g>
+      <path class="cliff l" d="M-10 230V178c16-10 34-14 56-10 14 3 22 12 24 22L62 230z"/>
+      <path class="cliff r" d="M400 230V184c-14-8-30-10-46-6-12 3-20 10-24 20l-4 32z"/>
+      <path class="rock" d="M110 230c6-32 34-52 85-52s79 20 85 52z"/>
+      <path class="rock top" d="M148 184c10-10 27-15 47-15s37 5 47 15c-12 5-27 7-47 7s-35-2-47-7z"/>
+      ${lit ? '<g class="beamg" style="transform-origin:195px 90px"><path class="beam wide" d="M195 90L-40 10L-40 170z"/><path class="beam core" d="M195 90L-40 52L-40 128z"/></g><circle class="halo" cx="195" cy="90" r="32"/>' : `<circle class="arc bg" cx="195" cy="90" r="38"/><circle class="arc" cx="195" cy="90" r="38" style="stroke-dasharray:${(2 * Math.PI * 38).toFixed(1)};stroke-dashoffset:${(2 * Math.PI * 38 * (1 - Math.min(1, r.progress[0] / r.progress[1]))).toFixed(1)}"/>`}
+      <use href="#tower" class="tw ${r.keeper === 'us' ? 't-us' : (r.keeper === 'other' ? 't-other' : (lit ? 't-lit' : 't-none'))}" x="153" y="60" width="84" height="112"/>
+      ${r.keeper ? `<path class="kflag ${r.keeper === 'us' ? 'f-us' : 'f-other'}" d="M218 100v-24l22 9-22 9"/><path class="kpole" d="M218 101v-26"/>` : ''}
+    </svg>
+    <div class="cap"><h2>${lit ? (r.keeper === 'us' ? '燈亮著，四葉小隊守著平原線這一層。' : (r.keeper === 'other' ? '燈亮著，星期三小隊守著平原線這一層。' : '燈亮著，還沒有守塔隊。')) : (r.light === 'fog' ? '迷霧還沒散。' : `燈還沒亮 · ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</h2><p>${r.light === 'fog' ? '下週遠征偵察這一區。' : '點燈是全區合作，守塔是同路線爭奪。'}</p></div>
+  </div>
   <div class="card"><div class="kv" style="border:0;padding:0 0 6px"><span>點燈進度 · 全${esc(D.SQUAD.league)}</span><b>${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}</b></div><div class="bar"><i class="${lit ? 'honey' : ''}" style="transform:scaleX(${Math.min(1, r.progress[0] / r.progress[1])})"></i></div></div>
   ${lit && r.keeper ? `<div class="quote"><p>${esc(T.words)}</p><small>塔上的話 · ${esc(r.keeper === 'us' ? T.wordsBy : '星期三小隊')}</small></div>` : ''}
   ${lit ? `<div class="sect"><h3>本月爭奪 · 平原線層</h3><span class="meta">到 ${esc(T.until)}</span></div>
