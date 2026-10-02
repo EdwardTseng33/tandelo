@@ -131,7 +131,7 @@ const COACH = {
   'sqrt-split': { point: '根號裡面算完了嗎？還是先各自開了？', lend: '√(9 + 16) 是 5，不是 3 + 4。根號是一個整體。' },
   'factor-diff': { point: '一個加、一個減。你寫的兩個都是減？', lend: '乘回去看看：(x − 3)(x − 3) 中間會多出 −6x，抵不掉。' },
 };
-const TAUNT = {
+export const TAUNT = {
   'sign-dist': '你看，只有第一項變號。我就說後面的我不管。',
   'sqrt-split': '分開算比較快，相信我。',
   'factor-diff': '我們是雙胞胎，當然一樣。',

@@ -759,3 +759,11 @@ div.mcard.fogc{cursor:default}
 .learned-row .pill{flex:0 0 auto;font-size:11px}
 .quote.say p{margin:0 0 4px;font-size:15px;line-height:1.5;padding-left:18px}
 .quote.say small{display:block;font-size:12px;color:var(--text-mute);padding-left:18px}
+
+/* ---------- 接後端：輸入框、出題中骨架 ---------- */
+.in{width:100%;min-height:44px;margin-top:8px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--rule-strong);background:var(--bg);color:var(--text);font:inherit;font-size:14px}
+.in:focus{outline:none;border-color:var(--brand)}
+.qcard.skeleton{display:grid;gap:10px}
+.sk{display:block;border-radius:12px;background:linear-gradient(90deg,var(--bg-alt) 25%,var(--rule) 50%,var(--bg-alt) 75%);background-size:200% 100%;animation:sk 1.2s linear infinite}
+.sk-mon{width:44px;height:44px;border-radius:50%;flex:0 0 auto}.sk-line{flex:1;height:16px}.sk-stem{height:28px;width:70%}.sk-opt{height:56px}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}

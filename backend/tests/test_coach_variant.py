@@ -115,3 +115,29 @@ def test_llm_leaking_variant_answer_falls_back_to_variant_line(monkeypatch):
     assert r["guarded"] and "負號只給第一項" in r["messages"][0]["text"]
     assert answer not in r["messages"][0]["text"]
     assert v["stem"] in client.messages.calls[0]["system"]
+
+
+def test_api_reply_with_answer_token_uses_the_same_item_as_check(client: TestClient):
+    lst = client.get("/api/v1/world/monsters/sign-dist/variants", params={"n": 2, "route": "plain", "seed": "tok-1"}).json()
+    item = lst["items"][1]
+    # 先用判題端點找出 trap 是哪一個
+    trap = next(
+        i
+        for i in range(4)
+        if client.post("/api/v1/world/monsters/sign-dist/variants/check", json={"answer_token": item["answer_token"], "choice": i}).json()["hit_trap"]
+    )
+    body = {
+        "skill_id": "sign-dist",
+        "action": "hint",
+        "level": 1,
+        "hint_level": 1,
+        "time": "20:00",
+        "variant": {"answer_token": item["answer_token"], "picked": trap},
+    }
+    r = client.post("/api/v1/coach/reply", json=body)
+    assert r.status_code == 200, r.text
+    assert "負號只給第一項" in r.json()["messages"][0]["text"]
+    bad = client.post("/api/v1/coach/reply", json={**body, "variant": {"answer_token": "nope.sig"}})
+    assert bad.status_code == 422
+    empty = client.post("/api/v1/coach/reply", json={**body, "variant": {}})
+    assert empty.status_code == 422

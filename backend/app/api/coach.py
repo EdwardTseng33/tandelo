@@ -23,6 +23,7 @@ def get_metrics_dep(request: Request) -> coach_svc.CoachMetrics:
 @router.post("/coach/reply", response_model=schemas.CoachReplyOut)
 def reply(
     body: schemas.CoachReplyIn,
+    request: Request,
     settings: Settings = Depends(get_settings_dep),
     provider: coach_svc.CoachProvider = Depends(get_provider_dep),
     metrics: coach_svc.CoachMetrics = Depends(get_metrics_dep),
@@ -52,7 +53,13 @@ def reply(
     )
     if body.variant is not None:
         try:
-            v = V.generate(body.variant.monster_id, body.variant.seed, body.variant.route)
+            if body.variant.answer_token:
+                tok = V.parse_token(request.app.state.variant_secret, body.variant.answer_token)
+                v = V.bank(tok["monster_id"], tok["index"] + 1, tok["route"], tok["seed"])[tok["index"]]
+            elif body.variant.monster_id:
+                v = V.generate(body.variant.monster_id, body.variant.seed, body.variant.route)
+            else:
+                raise ValueError("variant 要給 answer_token 或 monster_id。")
         except ValueError as e:
             raise HTTPException(status_code=422, detail=str(e)) from None
         turn.variant = coach_svc.variant_context(v, body.variant.picked)

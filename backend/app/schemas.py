@@ -293,9 +293,10 @@ class EarningsOut(BaseModel):
 class CoachVariantIn(BaseModel):
     """這一題是變體引擎產的：給 (monster_id, route, seed) 讓後端自己重算，不信任前端送來的答案。"""
 
-    monster_id: str = Field(max_length=40)
+    monster_id: str = Field(default="", max_length=40)
     route: str = Field(default="plain", pattern=r"^(plain|hills|ridge|cloud)$")
     seed: str = Field(default="0", max_length=64)
+    answer_token: Optional[str] = Field(default=None, max_length=400, description="題目清單給的 answer_token；有就用它找回那一題（優先）")
     picked: Optional[int] = Field(default=None, ge=0, le=3, description="孩子選的選項索引；空＝還沒選")
 
 
