@@ -39,6 +39,7 @@ function defaults() {
     reactions: {},
     weekSent: false,
     interventions: [], // 嚮導的介入紀錄（示範）
+    studentId: 9, // 接後端時用哪一位種子學生（示範）
     guideDone: {},
   };
 }
@@ -76,6 +77,25 @@ function remoteQ(monster, seed, route) {
 const remoteLocal = (monster, seed, route) => { if (!API.base()) return null; const r = remoteQ(monster, seed, route); return r; };
 const AQ = () => { const r = remoteLocal('sqrt-split', `ambush-${S.seed}`, S.route); return r ? r.q : V.generate('sqrt-split', `ambush-${S.seed}`, S.route); };
 const WQ = () => { const r = remoteLocal('factor-diff', `wake-${S.seed}`, 'plain'); return r ? r.q : V.generate('factor-diff', `wake-${S.seed}`, 'plain'); };
+// 接後端時：圖鑑狀態與戰績來自後端（後端的怪 id 和 Demo 的對照）
+const MON_MAP = { 'sq-cross': 'sq-expand', 'sign-dist': 'sign-dist', 'sqrt-split': 'sqrt-split', 'sqrt-abs': 'sqrt-sign', 'pyth-hyp': 'pyth-hyp', 'factor-diff': 'diff-sq', 'factor-cross': 'factor-cross', 'quad-zero': 'zero-hide' };
+const MON_BACK = Object.fromEntries(Object.entries(MON_MAP).map(([k, v]) => [v, k]));
+const RECORD_LABEL = { capture: '收服', wake: '叫醒', explain: '講解抽查合格', dungeon_1: '副本一星（全隊一份）', dungeon_2: '副本兩星（全隊一份）', dungeon_3: '副本三星（全隊一份）' };
+const sync = { at: 0, busy: false };
+function syncFromBackend(force = false) {
+  if (!API.base() || sync.busy || (!force && Date.now() - sync.at < 20000)) return;
+  sync.busy = true;
+  Promise.all([API.shadows(S.studentId), API.record(S.studentId)]).then(([sh, rec]) => {
+    sh.forEach((it) => { const id = MON_MAP[it.monster_id]; if (!id || !S.shadows[id]) return; const prev = S.shadows[id]; const days = it.captured_at ? Math.max(0, Math.round((Date.now() - new Date(it.captured_at)) / 86400000)) : prev.days; S.shadows[id] = { ...prev, state: it.state, days: it.state === 'captured' ? days : prev.days }; });
+    S.records = rec.events.map((e) => ({ kind: e.kind, label: RECORD_LABEL[e.kind] || e.kind, pts: e.points, when: String(e.created_at).slice(5, 10).replace('-', '/') }));
+    sync.at = Date.now(); sync.busy = false; save(); rerender();
+  }).catch((e) => { sync.busy = false; sync.at = Date.now(); toast(`後端沒回應：${e.message}`); });
+}
+function pushShadowEvent(demoId, event) {
+  if (!API.base()) return;
+  const back = MON_BACK[demoId]; if (!back) return;
+  API.shadowEvent(S.studentId, back, event).then(() => { sync.at = 0; syncFromBackend(true); }).catch((e) => toast(`後端：這隻怪的狀態不符（${e.message.replace(/^http-\d+ ?/, '')}）`));
+}
 const SKELETON = (title, sub) => `${hd(title, sub)}<div class="qcard skeleton"><div class="row"><span class="sk sk-mon"></span><span class="sk sk-line"></span></div><span class="sk sk-stem"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span></div><p class="meta" style="text-align:center">後端出題中 · ${esc(API.host())}</p>`;
 const REMOTE_ERR = (title, sub, err) => `${hd(title, sub)}<div class="card coral"><b>後端沒回應</b><small>${esc(err)}</small></div><div class="btns"><button class="btn" data-act="api-retry">再試一次</button><button class="btn ghost" data-act="api-off">先用本地題</button></div>`;
 // 遠端題：第一次點某個選項先交給後端判，結果記在題上
@@ -489,7 +509,7 @@ SCREENS.coach = () => `
 SCREENS.settings = () => `
   ${hd('示範設定', '時間、深淺色、個人榜、對戰投票')}
   <div class="ios-tip ${/iP(hone|ad|od)/.test(navigator.userAgent) && !window.navigator.standalone ? 'on' : ''}"><b>加到主畫面</b>：Safari 底下的「分享」→「加入主畫面」。之後會像 App 一樣全螢幕開啟。</div>
-  <div class="card"><h3>後端</h3><div class="setrow"><span>${API.base() ? `已連線 <b>${esc(API.host())}</b>` : '本地引擎'}<small>有位址時：題目由後端出、後端判題、小陪由後端回話。</small></span>${API.base() ? '<button class="btn sm ghost" data-act="api-test">測試</button>' : ''}</div><input class="in" type="url" inputmode="url" placeholder="https://api.example.com" value="${esc(API.base())}" data-api aria-label="後端位址"></div>
+  <div class="card"><h3>後端</h3><div class="setrow"><span>${API.base() ? `已連線 <b>${esc(API.host())}</b>` : '本地引擎'}<small>有位址時：題目由後端出、後端判題、小陪由後端回話。</small></span>${API.base() ? '<button class="btn sm ghost" data-act="api-test">測試</button>' : ''}</div><input class="in" type="url" inputmode="url" placeholder="https://api.example.com" value="${esc(API.base())}" data-api aria-label="後端位址">${API.base() ? `<div class="setrow"><span>示範學生 id<small>圖鑑與戰績讀這一位；種子資料 9–11 各有不同狀態</small></span><input class="in num" type="number" min="1" value="${S.studentId}" data-student aria-label="示範學生 id" style="width:84px;margin:0"></div>` : ''}</div>
   <div class="card"><h3>這週的題</h3><div class="setrow"><span>種子 <b class="num">${esc(S.seed)}</b><small>巡邏、伏擊、叫醒的題目由變體引擎依種子產生；換種子，怪就換個樣子。</small></span><button class="btn sm ghost" data-act="reseed">換一組</button></div></div>
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
@@ -537,6 +557,7 @@ function route() {
   if (key === 'capture' || key === 'shadows' || key === 'tower') motes(el.querySelector('.capture, .wall, .tower-hero'));
   if (key === 'map') setupMap(el);
   if (key === 'home') startFeed(); else stopFeed();
+  if (['home', 'shadows', 'week', 'record', 'map', 'tower'].includes(key)) syncFromBackend();
   document.querySelectorAll('.panel .scenes button').forEach((b) => b.classList.toggle('on', b.dataset.go === key));
 }
 function rerender() { const { key, param } = parse(); const el = view.querySelector('.screen:not([class*="leave"])'); if (!el) return route(); const y = el.scrollTop; el.innerHTML = (SCREENS[key] || SCREENS.home)(param); el.scrollTop = y; sbEl.innerHTML = `<button class="num clockbtn" data-act="clock-next" aria-label="切換示範時間：${esc(clock().label)}">${esc(clock().time)}</button><span class="cap">今天 <b>${S.cards}</b> / 3</span>`; lightsOut(el, key); }
@@ -688,7 +709,7 @@ document.addEventListener('click', (e) => {
     if (play.picked !== q.answer) return;
     S.patrol.done += 1; if (play.lvl) S.patrol.helped += 1;
     if (S.patrol.i < PQ().length - 1) { S.patrol.i += 1; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); return rerender(); }
-    S.patrol.finished = true; addCard(); addRecord('patrol', '巡邏 3 / 3', 3); save(); rerender(); return reward({ big: '+3', title: '巡邏完成', sub: `今天第 ${S.cards} 張` });
+    S.patrol.finished = true; addCard(); addRecord('patrol', '巡邏 3 / 3', 3); save(); pushShadowEvent('sign-dist', 'explained_ok'); rerender(); return reward({ big: '+3', title: '巡邏完成', sub: `今天第 ${S.cards} 張` });
   }
   if (a === 'patrol-again') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); toast('牠換了個樣子'); return rerender(); }
   if (a === 'reseed') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; S.ambush = { done: false, passed: false }; S.wake = { done: false }; save(); toast('換了一組題'); return rerender(); }
@@ -697,16 +718,16 @@ document.addEventListener('click', (e) => {
     const aq = AQ();
     if (aq.remote && !(aq.judged && aq.judged[play.apick])) return judgeRemote(aq, play.apick, () => { const btn = view.querySelector('[data-act="ambush-submit"]'); if (btn) btn.click(); });
     const ok = play.apick === aq.answer; S.ambush.done = true; S.ambush.passed = ok; addCard();
-    if (ok) { S.shadows['sqrt-split'] = { state: 'captured', day0: '10/03', dayN: '10/12', days: 9 }; addRecord('capture', '收服 拆根蟲', 10); save(); juice('gold', null, null, '+10'); return setTimeout(() => go('capture/sqrt-split'), reduced() ? 0 : 500); }
+    if (ok) { S.shadows['sqrt-split'] = { state: 'captured', day0: '10/03', dayN: '10/12', days: 9 }; addRecord('capture', '收服 拆根蟲', 10); save(); pushShadowEvent('sqrt-split', 'retest_passed'); juice('gold', null, null, '+10'); return setTimeout(() => go('capture/sqrt-split'), reduced() ? 0 : 500); }
     S.shadows['sqrt-split'] = { state: 'near', note: '沒中，不扣分，回到清單' }; save(); return rerender();
   }
-  if (a === 'wake-done') { SFX.play('wake'); juice('gold', null, null, '+5'); S.wake.done = true; S.shadows['diff-sq'] = { state: 'captured', day0: '09/20', dayN: '10/11', days: 21 }; addRecord('wake', '叫醒 平方差雙子', 5); addCard(); save(); return go('capture/diff-sq'); }
+  if (a === 'wake-done') { SFX.play('wake'); juice('gold', null, null, '+5'); S.wake.done = true; S.shadows['diff-sq'] = { state: 'captured', day0: '09/20', dayN: '10/11', days: 21 }; addRecord('wake', '叫醒 平方差雙子', 5); addCard(); save(); pushShadowEvent('diff-sq', 'woken'); return go('capture/diff-sq'); }
   if (a === 'settle') { S.clock = 'tue'; S.settled = true; S.route = 'hills'; addRecord('dungeon2', '副本兩星（全隊一份）', 8); save(); applyTheme(); return go('settle'); }
   if (a === 'wall-post') { if (!S.wallPosts.length) S.wallPosts.push('這週副本過關了，兩星。下一個副本走丘陵線。'); save(); toast('放上隊伍牆了'); return go('guild'); }
   if (a === 'week-send') { S.weekSent = true; save(); SFX.play('card'); toast('傳到營地了'); return go('camp'); }
   if (a === 'race') { S.raceSigned = !S.raceSigned; save(); toast(S.raceSigned ? '已送到家長的 LINE 確認' : '已取消報名'); return rerender(); }
   if (a === 'witness') { S.witnessed = !S.witnessed; save(); return rerender(); }
-  if (a === 'api-test') { toast('測試中…'); API.ping().then(() => toast(`連上了 · ${API.host()}`)).catch((e) => toast(`連不上：${e.message}`)); return; }
+  if (a === 'api-test') { toast('測試中…'); API.ping().then(() => { toast(`連上了 · ${API.host()}`); sync.at = 0; syncFromBackend(true); }).catch((e) => toast(`連不上：${e.message}`)); return; }
   if (a === 'api-retry') { remote.k = ''; Object.keys(remoteOne).forEach((k) => delete remoteOne[k]); return rerender(); }
   if (a === 'api-off') { API.setBase(''); remote.k = ''; Object.keys(remoteOne).forEach((k) => delete remoteOne[k]); toast('改用本地題'); return rerender(); }
   if (a === 'sound') { S.sound = !S.sound; SFX.setEnabled(S.sound); save(); if (S.sound) SFX.play('hit'); return rerender(); }
@@ -715,7 +736,7 @@ document.addEventListener('click', (e) => {
   if (a === 'pvp') { S.pvp = !S.pvp; save(); toast(S.pvp ? '你投了同意。只要有一票不同意，本季打幽靈隊。' : '你投了不同意。沒有人知道是誰投的。'); return rerender(); }
   if (a === 'reset') { if (confirm('重設所有示範資料？')) reset(); return; }
 });
-document.addEventListener('change', (e) => { const inp = e.target.closest('[data-api]'); if (!inp) return; const u = API.setBase(inp.value); remote.k = ''; toast(u ? `後端：${API.host()}` : '改用本地引擎'); rerender(); });
+document.addEventListener('change', (e) => { const st = e.target.closest('[data-student]'); if (st) { S.studentId = Math.max(1, Number(st.value) || 1); save(); sync.at = 0; syncFromBackend(true); return; } const inp = e.target.closest('[data-api]'); if (!inp) return; const u = API.setBase(inp.value); remote.k = ''; toast(u ? `後端：${API.host()}` : '改用本地引擎'); rerender(); });
 document.addEventListener('pointerdown', (e) => { const m = e.target.closest('[data-act="rec"]'); if (m) { e.preventDefault(); recStart(); } });
 ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => document.addEventListener(ev, (e) => { if (recTimer && !e.target.closest('[data-act="rec"]')) recStop(); else if (recTimer && ev !== 'pointerleave') recStop(); }));
 document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.map .hot')) { e.preventDefault(); e.target.click(); } });
