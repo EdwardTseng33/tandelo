@@ -11,6 +11,7 @@ export const SQUAD = {
   week: 3,
   exam: '11/27',
   examLabel: '對準 11/27 段考',
+  streak: 4, // 連續亮滿三張的天數（示範值）
   me: { id: 'me', nick: '小睿', av: 1, role: 'scribe' }, // 這週的位置：書記
   mates: [{ id: 'm2', av: 2 }, { id: 'm3', av: 3 }, { id: 'm4', av: 4 }, { id: 'm5', av: 5 }],
 };
@@ -153,6 +154,16 @@ export const TITLES = [
 
 // 戰績：只從驗證過的學會來。數字為提案。
 export const POINTS = { capture: 10, wake: 5, explain: 3, dungeon1: 5, dungeon2: 8, dungeon3: 12 };
+
+// 隊友動態：首頁「隊友剛剛」一條一條冒出來，讓小隊像是活著的（示範資料，匿名只顯示色塊與暱稱）。
+export const TEAM_FEED = [
+  { id: 'f1', av: 3, who: '阿哲', text: '打中了負號幽靈，第 2 題', kind: 'hit' },
+  { id: 'f2', av: 2, who: '小琪', text: '錄了 30 秒講解，給卡住的隊友', kind: 'explain' },
+  { id: 'f3', av: 5, who: '阿寶', text: '第 3 棒交出去了', kind: 'relay' },
+  { id: 'f4', av: 4, who: '芸芸', text: '叫醒了漏項獸', kind: 'wake' },
+  { id: 'f5', av: 3, who: '阿哲', text: '3 連擊', kind: 'combo' },
+  { id: 'f6', av: 2, who: '小琪', text: '今天三張都亮了', kind: 'card' },
+];
 
 export const RECORD_EVENTS = [
   { kind: 'capture', label: '收服 雙面根', pts: 10, when: '10/04' },

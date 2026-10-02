@@ -2,6 +2,7 @@
 // 只用瀏覽器內建能力；沒有後端也能完整操作。所有資料虛構。
 import * as D from './data.js';
 import * as V from './variants.js';
+import * as SFX from './sfx.js';
 
 const KEY = 'tandelo.world.v1';
 const $ = (s, el = document) => el.querySelector(s);
@@ -33,10 +34,13 @@ function defaults() {
     cheered: false,
     records: D.RECORD_EVENTS.slice(),
     theme: null,
+    sound: true,
+    reactions: {},
   };
 }
 function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); return s ? { ...defaults(), ...s } : defaults(); } catch (e) { return defaults(); } }
 let S = load();
+SFX.setEnabled(S.sound !== false);
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 隱私模式 */ } }
 function reset() { S = defaults(); save(); go('home'); toast('已重設示範資料'); }
 
@@ -54,6 +58,8 @@ const myPoints = () => S.records.reduce((a, r) => a + r.pts, 0);
 
 // ---------- 畫面元件 ----------
 const SVG = {
+  flame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3 4 4.5 4 8.5a4 4 0 0 1-8 0c0-1.5.5-2.5 1.2-3.3C9.6 9.5 10 11 11 11.5 11 8 12 6 12 3z"/><path d="M8.5 14.5c-.9 1.2-1.5 2.4-1.5 3.5a5 5 0 0 0 10 0c0-1-.4-2-1-3"/></svg>',
+  clap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11l5-5M10 14l5-5M13 17l5-5"/><path d="M6 12l-1.5 1.5a4 4 0 0 0 0 5.7l1.3 1.3a4 4 0 0 0 5.7 0L18 14"/><path d="M14 4l1.5-1.5M18 6l1.5-1.5M19 10h2"/></svg>',
   back: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
   chev: '<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
   check: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
@@ -76,6 +82,14 @@ const towerSvg = '<svg viewBox="0 0 36 48" aria-hidden="true"><use href="#tower"
 const SKY_STARS = [[18,22,1.4],[44,58,1],[70,16,1.8],[96,44,1.1],[126,24,1.3],[150,70,.9],[176,18,1.6],[210,52,1],[238,28,1.2],[262,66,1.5],[290,20,1],[318,48,1.7],[346,26,1.1],[372,60,1.3],[34,92,1],[110,88,1.2],[300,96,1],[358,100,1.4],[60,120,.9],[334,128,1.1]];
 const hd = (title, sub, back = true) => `<div class="hd ${back ? 'with-back' : ''}">${back ? `<button class="back" data-back aria-label="返回">${SVG.back}</button>` : ''}<div class="grow"><h2>${title}</h2>${sub ? `<span class="sub">${sub}</span>` : ''}</div></div>`;
 const wave = (n = 18) => `<span class="wave" aria-hidden="true">${'<i></i>'.repeat(n)}</span>`;
+
+// 隊友動態：載入後每 6 秒多冒一條，像小隊真的在線上；點一下回應
+const bootT = Date.now();
+const feedCount = () => Math.min(D.TEAM_FEED.length, 2 + Math.floor((Date.now() - bootT) / 6000));
+const feedHtml = () => D.TEAM_FEED.slice(0, feedCount()).reverse().map((f, i) => `<div class="item ${i === 0 ? 'new' : ''}">${av(f.av)}<span class="grow"><b>${esc(f.who)}</b> ${esc(f.text)}</span><button class="react ${S.reactions[f.id] ? 'on' : ''}" data-react="${f.id}" aria-label="回應">${SVG.clap || '👏'}<span class="num">${(f.kind === 'card' ? 3 : 1) + (S.reactions[f.id] || 0)}</span></button></div>`).join('');
+let feedTimer = null;
+function startFeed() { stopFeed(); let n = feedCount(); feedTimer = setInterval(() => { const el = view.querySelector('#feed'); if (!el) return stopFeed(); const m = feedCount(); if (m !== n) { n = m; el.innerHTML = feedHtml(); SFX.play('pop'); } }, 1000); }
+function stopFeed() { if (feedTimer) { clearInterval(feedTimer); feedTimer = null; } }
 
 // ---------- 畫面 ----------
 const SCREENS = {};
@@ -103,9 +117,11 @@ SCREENS.home = () => {
     <span class="len num">${D.LETTER.length}</span>
   </button>
   ${S.witnessed ? `<div class="witness"><span class="heart">${SVG.heart}</span><span>媽媽見證了這一次。<small class="meta" style="display:block">昨晚的營地來信 · 漏項獸</small></span></div>` : ''}
-  <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><div class="dots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < S.cards ? 'on' : ''}"></i>`).join('')}</div></div>
+  <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><span class="pill honey streak">${SVG.flame || '🔥'} 連續 ${D.SQUAD.streak + (S.cards >= 3 ? 1 : 0)} 天</span><div class="dots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < S.cards ? 'on' : ''}"></i>`).join('')}</div></div>
   ${S.cards >= 3 ? `<div class="stop"><span class="moon" aria-hidden="true"></span><span><b>今天三張都亮了，夠了。</b><small>沒有第四張。明天早上六點再發，晚安。</small></span></div>` : ''}
   ${todays.map((t) => `<button class="task ${t.done ? 'done' : ''}" data-go="${t.go}"><span class="mon ${t.done ? 'shadow' : (t.id === 'wake' ? 'asleep' : '')}" aria-hidden="true"><svg><use href="#${t.mon.shape}"/></svg></span><span class="grow"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small><span class="why">${esc(t.why)}</span></span><span class="go">${t.done ? SVG.check : SVG.chev}</span></button>`).join('')}
+  <div class="sect"><h3>隊友剛剛</h3><span class="meta live"><i></i>現在</span></div>
+  <div class="feed" id="feed">${feedHtml()}</div>
   <div class="sect"><h3>整備條</h3><span class="meta">全隊這週</span></div>
   <div class="card"><div class="ready"><div class="bar"><i style="transform:scaleX(${lit / 15})"></i></div><span class="n">亮了 ${lit} / 15 張</span></div>
     <div class="btns"><button class="btn soft ${S.cheered ? '' : ''}" data-act="cheer" ${S.cheered ? 'disabled' : ''}>${S.cheered ? '已經對全隊說過「大家加油」' : '對全隊按一次「大家加油」'}</button></div></div>
@@ -180,7 +196,7 @@ SCREENS.play = () => {
   <div class="qcard"><div class="row" style="margin-bottom:6px">${monSvg(m, play.tried ? 'shake' : 'bob')}<div class="grow"><span class="meta">這隻怪的口頭禪</span><b style="font-size:13.5px">「${esc(m.taunt)}」</b></div></div>
     <p class="stem"><span class="mx">${esc(q.stem.replace(' = ?', ''))}</span><br><span class="meta" style="font-size:13px;font-weight:500">化簡</span></p>
     <div class="opts" id="opts">${q.options.map((o, i) => `<button class="opt ${play.picked === i ? (i === q.answer ? 'ok' : 'trap') : ''}" data-opt="${i}" ${play.picked === q.answer ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
-    ${play.picked !== null && play.picked !== q.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：${play.picked === q.trap ? esc(q.taunt) : '差一點點，再看一次括號。'}</p></div>` : ''}
+    ${play.picked !== null && play.picked !== q.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：${play.picked === q.trap ? `${esc(q.taunt)} <span class="pill coral">${esc(q.trapLabel)}</span>` : '差一點點，再看一次括號。'}</p></div>` : ''}
     ${play.picked === q.answer ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>打中了</b>：${esc(q.why)}${play.lvl ? '（問過小陪，一樣算 1 分）' : ''}</p></div>` : ''}
   </div>
   ${play.picked !== q.answer ? `
@@ -396,6 +412,7 @@ SCREENS.settings = () => `
   <div class="card"><h3>這週的題</h3><div class="setrow"><span>種子 <b class="num">${esc(S.seed)}</b><small>巡邏、伏擊、叫醒的題目由變體引擎依種子產生；換種子，怪就換個樣子。</small></span><button class="btn sm ghost" data-act="reseed">換一組</button></div></div>
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
+    <div class="setrow"><span>音效<small>打中、連擊、收服的聲音</small></span><button class="switch ${S.sound ? 'on' : ''}" data-act="sound" role="switch" aria-label="音效" aria-checked="${!!S.sound}"><i></i></button></div>
     <div class="setrow"><span>深色模式<small>22:30 後自動轉暗</small></span><button class="switch ${document.documentElement.getAttribute('data-theme') === 'dark' ? 'on' : ''}" data-act="theme" role="switch" aria-label="深色模式"></button></div>
     <div class="setrow"><span>上個人拓荒榜<small>預設關。開了只有稱號和隊名，別人看不到百分位。</small></span><button class="switch ${S.personalBoard ? 'on' : ''}" data-act="pboard" role="switch" aria-label="個人拓荒榜"></button></div>
     <div class="setrow"><span>本季真人對戰<small>匿名投票，全隊同意才打；否則打幽靈隊，沒有人知道是誰投的。</small></span><button class="switch ${S.pvp ? 'on' : ''}" data-act="pvp" role="switch" aria-label="真人對戰"></button></div>
@@ -438,6 +455,7 @@ function route() {
   if (key === 'capture') runCapture(el, param);
   if (key === 'capture' || key === 'shadows' || key === 'tower') motes(el.querySelector('.capture, .wall, .tower-hero'));
   if (key === 'map') setupMap(el);
+  if (key === 'home') startFeed(); else stopFeed();
   document.querySelectorAll('.panel .scenes button').forEach((b) => b.classList.toggle('on', b.dataset.go === key));
 }
 function rerender() { const { key, param } = parse(); const el = view.querySelector('.screen:not([class*="leave"])'); if (!el) return route(); const y = el.scrollTop; el.innerHTML = (SCREENS[key] || SCREENS.home)(param); el.scrollTop = y; sbEl.innerHTML = `<button class="num clockbtn" data-act="clock-next" aria-label="切換示範時間：${esc(clock().label)}">${esc(clock().time)}</button><span class="cap">今天 <b>${S.cards}</b> / 3</span>`; lightsOut(el, key); }
@@ -456,15 +474,25 @@ let combo = 0;
 function juice(kind, x, y, text) {
   const shell = $('.shell'); if (!shell || reduced()) { if (text) toast(text); return; }
   const r = shell.getBoundingClientRect(); const fx = x != null ? `${((x - r.left) / r.width * 100).toFixed(1)}%` : '50%'; const fy = y != null ? `${((y - r.top) / r.height * 100).toFixed(1)}%` : '45%';
+  SFX.play(kind === 'bad' ? 'miss' : (kind === 'gold' ? 'reward' : 'hit'));
   if (kind === 'bad') { shell.classList.remove('shake-screen'); void shell.offsetWidth; shell.classList.add('shake-screen'); setTimeout(() => shell.classList.remove('shake-screen'), 450); }
   if (kind === 'good' || kind === 'gold') { const f = document.createElement('div'); f.className = 'flash'; f.style.setProperty('--fx', fx); f.style.setProperty('--fy', fy); shell.appendChild(f); setTimeout(() => f.remove(), 520); }
   if (text) { const d = document.createElement('div'); d.className = `float-txt ${kind}`; d.style.setProperty('--fx', fx); d.style.setProperty('--fy', fy); d.textContent = text; shell.appendChild(d); setTimeout(() => d.remove(), 1050); }
 }
-function showCombo() { const old = view.querySelector('.combo'); if (old) old.remove(); if (combo < 2) return; const c = document.createElement('div'); c.className = 'combo'; c.textContent = `${combo} 連擊`; view.appendChild(c); setTimeout(() => c.remove(), 1400); }
+function showCombo() { const old = view.querySelector('.combo'); if (old) old.remove(); if (combo < 2) return; SFX.play('combo'); const c = document.createElement('div'); c.className = 'combo'; c.textContent = `${combo} 連擊`; view.appendChild(c); setTimeout(() => c.remove(), 1400); }
 function motes(host, n = 14) { if (!host || reduced()) return; const m = document.createElement('div'); m.className = 'motes'; for (let i = 0; i < n; i++) { const s = document.createElement('i'); s.style.setProperty('--x', `${Math.random() * 100}%`); s.style.setProperty('--y', `${30 + Math.random() * 70}%`); s.style.setProperty('--d', `${5 + Math.random() * 6}s`); s.style.setProperty('--dl', `${-Math.random() * 8}s`); m.appendChild(s); } host.appendChild(m); }
 let toastT;
 function toast(t) { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), 2200); }
-function addCard() { if (S.cards < 3) { S.cards += 1; buzz(16); } }
+function addCard() { if (S.cards < 3) { S.cards += 1; buzz(16); SFX.play('card'); if (S.cards === 3) setTimeout(() => reward({ big: '3 / 3', title: '今天三張都亮了', sub: `連續第 ${D.SQUAD.streak + 1} 天` }), 1600); } }
+// 獎勵時刻：全幕一下、光芒與彩紙，點一下或兩秒後收起
+function reward({ big, title, sub }) {
+  const shell = $('.shell'); if (!shell) return; const old = shell.querySelector('.reward'); if (old) old.remove();
+  const r = document.createElement('div'); r.className = 'reward';
+  r.innerHTML = `<div class="rays" aria-hidden="true"></div><div class="box"><div class="big num">${esc(big)}</div><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div><div class="confetti" aria-hidden="true"></div>`;
+  shell.appendChild(r); burst(r.querySelector('.confetti')); SFX.play('reward'); buzz([20, 30, 20]);
+  const close = () => { r.classList.add('out'); setTimeout(() => r.remove(), 350); };
+  r.addEventListener('click', close); setTimeout(close, reduced() ? 1200 : 2400);
+}
 function addRecord(kind, label, pts) { S.records.push({ kind, label, pts, when: '今天' }); }
 
 function runCapture(el, id) {
@@ -472,7 +500,7 @@ function runCapture(el, id) {
   const cap = el.querySelector('#cap'); const line = el.querySelector('#cap-line'); const title = el.querySelector('#cap-title'); const ev = el.querySelector('#cap-ev');
   const t = reduced() ? 0 : 1;
   setTimeout(() => { line.textContent = `「${m.caught}」`; }, 900 * t);
-  setTimeout(() => { cap.classList.remove('p1'); cap.classList.add('p2'); title.textContent = `${m.name}，收服。`; line.innerHTML = `<b>站到你身後了。</b>　${esc(m.weakness)}`; ev.style.opacity = 1; burst(el.querySelector('#confetti')); buzz([20, 40, 20]); }, 1700 * t);
+  setTimeout(() => { cap.classList.remove('p1'); cap.classList.add('p2'); title.textContent = `${m.name}，收服。`; line.innerHTML = `<b>站到你身後了。</b>　${esc(m.weakness)}`; ev.style.opacity = 1; burst(el.querySelector('#confetti')); buzz([20, 40, 20]); SFX.play('capture'); }, 1700 * t);
 }
 function burst(host) {
   if (!host || reduced()) return;
@@ -512,6 +540,7 @@ function setupMap(el) {
 
 // ---------- 事件 ----------
 document.addEventListener('click', (e) => {
+  const rc = e.target.closest('[data-react]'); if (rc) { const id = rc.dataset.react; S.reactions[id] = (S.reactions[id] || 0) + 1; save(); rc.classList.add('on'); rc.querySelector('.num').textContent = Number(rc.querySelector('.num').textContent) + 1; SFX.play('pop'); buzz(8); const r = rc.getBoundingClientRect(); juice('good', r.left + r.width / 2, r.top, '+1'); return; }
   const t = e.target.closest('[data-go],[data-back],[data-act],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
   if (!t) return;
   if (t.dataset.back !== undefined) return back();
@@ -552,21 +581,22 @@ document.addEventListener('click', (e) => {
     if (play.picked !== q.answer) return;
     S.patrol.done += 1; if (play.lvl) S.patrol.helped += 1;
     if (S.patrol.i < PQ().length - 1) { S.patrol.i += 1; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); return rerender(); }
-    S.patrol.finished = true; addCard(); save(); toast('巡邏 3 / 3 完成 · 今天第 ' + S.cards + ' 張'); return rerender();
+    S.patrol.finished = true; addCard(); addRecord('patrol', '巡邏 3 / 3', 3); save(); rerender(); return reward({ big: '+3', title: '巡邏完成', sub: `今天第 ${S.cards} 張` });
   }
   if (a === 'patrol-again') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); toast('牠換了個樣子'); return rerender(); }
   if (a === 'reseed') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; S.ambush = { done: false, passed: false }; S.wake = { done: false }; save(); toast('換了一組題'); return rerender(); }
-  if (a === 'relay-submit') { S.relay.done = true; addCard(); save(); buzz(20); toast('第 4 棒交出去了'); return rerender(); }
+  if (a === 'relay-submit') { S.relay.done = true; addCard(); addRecord('relay', 'Boss 接力 · 第 4 棒', 2); save(); buzz(20); rerender(); return reward({ big: '+2', title: '第 4 棒交出去了', sub: `今天第 ${S.cards} 張` }); }
   if (a === 'ambush-submit') {
     const ok = play.apick === AQ().answer; S.ambush.done = true; S.ambush.passed = ok; addCard();
     if (ok) { S.shadows['sqrt-split'] = { state: 'captured', day0: '10/03', dayN: '10/12', days: 9 }; addRecord('capture', '收服 拆根蟲', 10); save(); juice('gold', null, null, '+10'); return setTimeout(() => go('capture/sqrt-split'), reduced() ? 0 : 500); }
     S.shadows['sqrt-split'] = { state: 'near', note: '沒中，不扣分，回到清單' }; save(); return rerender();
   }
-  if (a === 'wake-done') { juice('gold', null, null, '+5'); S.wake.done = true; S.shadows['diff-sq'] = { state: 'captured', day0: '09/20', dayN: '10/11', days: 21 }; addRecord('wake', '叫醒 平方差雙子', 5); addCard(); save(); return go('capture/diff-sq'); }
+  if (a === 'wake-done') { SFX.play('wake'); juice('gold', null, null, '+5'); S.wake.done = true; S.shadows['diff-sq'] = { state: 'captured', day0: '09/20', dayN: '10/11', days: 21 }; addRecord('wake', '叫醒 平方差雙子', 5); addCard(); save(); return go('capture/diff-sq'); }
   if (a === 'settle') { S.clock = 'tue'; S.settled = true; S.route = 'hills'; addRecord('dungeon2', '副本兩星（全隊一份）', 8); save(); applyTheme(); return go('settle'); }
   if (a === 'wall-post') { if (!S.wallPosts.length) S.wallPosts.push('這週副本過關了，兩星。下一個副本走丘陵線。'); save(); toast('放上隊伍牆了'); return go('guild'); }
   if (a === 'race') { S.raceSigned = !S.raceSigned; save(); toast(S.raceSigned ? '已送到家長的 LINE 確認' : '已取消報名'); return rerender(); }
   if (a === 'witness') { S.witnessed = !S.witnessed; save(); return rerender(); }
+  if (a === 'sound') { S.sound = !S.sound; SFX.setEnabled(S.sound); save(); if (S.sound) SFX.play('hit'); return rerender(); }
   if (a === 'theme') { const r = document.documentElement; const dark = r.getAttribute('data-theme') === 'dark'; r.setAttribute('data-theme', dark ? 'light' : 'dark'); S.theme = dark ? 'light' : 'dark'; save(); return rerender(); }
   if (a === 'pboard') { S.personalBoard = !S.personalBoard; save(); toast(S.personalBoard ? '13 歲以下需家長在 LINE 端同意' : '已關閉'); return rerender(); }
   if (a === 'pvp') { S.pvp = !S.pvp; save(); toast(S.pvp ? '你投了同意。只要有一票不同意，本季打幽靈隊。' : '你投了不同意。沒有人知道是誰投的。'); return rerender(); }
