@@ -705,3 +705,33 @@ div.mcard.fogc{cursor:default}
   .mon svg,.mon.shadow svg,.map .beam,.map .fogdrift,.motes i,.capture .rays{animation:none !important}
   .shake-screen,.flash,.float-txt{animation:none !important}
 }
+
+/* ---------- 遊戲體驗 2.0：獎勵時刻、隊友動態、連續天數 ---------- */
+.reward{position:absolute;inset:0;z-index:70;display:grid;place-items:center;background:rgba(15,42,37,.55);animation:fade .25s var(--ease) both;cursor:pointer}
+.reward.out{animation:fade-out .3s var(--ease) both}
+@keyframes fade-out{to{opacity:0}}
+.reward .rays{position:absolute;width:140vmax;height:140vmax;left:50%;top:50%;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(244,194,77,.18) 0 12deg,transparent 12deg 30deg);animation:rays-spin 14s linear infinite;mask-image:radial-gradient(circle,#000 0,transparent 42%)}
+@keyframes rays-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.reward .box{position:relative;background:var(--surface);color:var(--text);border-radius:28px;padding:26px 36px;text-align:center;box-shadow:var(--shadow-lift);animation:reward-pop .5s var(--ease-expressive) both;min-width:200px}
+@keyframes reward-pop{0%{transform:scale(.6) translateY(20px);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+.reward .big{font-family:var(--font-num);font-weight:900;font-size:52px;line-height:1;color:var(--mastered-text);letter-spacing:-.03em}
+.reward b{display:block;font-size:18px;margin-top:8px}
+.reward small{display:block;font-size:13px;color:var(--text-mute);margin-top:4px}
+.reward .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pill.streak{margin-left:auto;gap:4px}
+.pill.streak svg{width:14px;height:14px}
+.meta.live{display:inline-flex;align-items:center;gap:6px}
+.meta.live i{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:live-pulse 1.6s ease-in-out infinite}
+@keyframes live-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.feed{background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-soft);padding:4px 12px;margin-bottom:12px;max-height:168px;overflow:hidden}
+.feed .item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--rule);font-size:13.5px}
+.feed .item:last-child{border-bottom:0}
+.feed .item.new{animation:feed-in .45s var(--ease-expressive) both}
+@keyframes feed-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.feed .item .av{margin-left:0;flex:0 0 auto}
+.feed .item b{font-weight:700}
+.feed .react{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border-radius:999px;background:var(--bg-alt);font-size:13px;color:var(--text-mute);transition:transform .2s var(--ease-expressive),background .2s}
+.feed .react:active{transform:scale(.9)}
+.feed .react.on{background:var(--mastered-bg);color:var(--mastered-text)}
+.feed .react svg{width:14px;height:14px}
+.taunt .pill{margin-left:4px;vertical-align:middle}
