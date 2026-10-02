@@ -212,7 +212,7 @@ SCREENS.play = () => {
   if (!q || S.patrol.finished) return `${hd('巡邏完成', '第 1 層 · 負號幽靈')}<div class="card"><div class="settle"><div class="big num">3<small>/ 3</small></div><div class="lbl">巡邏層完成 · 問過小陪照樣算分</div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button><button class="btn ghost" data-act="patrol-again">再巡一次 · 牠換個樣子</button></div>`;
   const m = mon('sign-dist');
   const lvls = ['問', '指', '借', '示範一步'];
-  const txt = [q.hint.ask, q.hint.point, q.hint.lend, q.hint.show];
+  const txt = [q.hint.ask, play.picked === q.trap ? `你踩到的是「${q.trapLabel}」。${q.hint.point}` : q.hint.point, q.hint.lend, q.hint.show];
   return `
   ${hd(`巡邏 · 第 ${S.patrol.i + 1} 題`, '負號幽靈 · 多項式林')}
   <div class="q-top"><div class="steps" aria-label="進度">${PQ().map((_, i) => `<i class="${i < S.patrol.i ? 'on' : (i === S.patrol.i ? 'cur' : '')}"></i>`).join('')}</div><span class="pill brand">今天 ${S.cards} / 3</span></div>
