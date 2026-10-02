@@ -36,6 +36,7 @@ function defaults() {
     theme: null,
     sound: true,
     reactions: {},
+    weekSent: false,
   };
 }
 function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); return s ? { ...defaults(), ...s } : defaults(); } catch (e) { return defaults(); } }
@@ -125,6 +126,7 @@ SCREENS.home = () => {
   <div class="sect"><h3>整備條</h3><span class="meta">全隊這週</span></div>
   <div class="card"><div class="ready"><div class="bar"><i style="transform:scaleX(${lit / 15})"></i></div><span class="n">亮了 ${lit} / 15 張</span></div>
     <div class="btns"><button class="btn soft ${S.cheered ? '' : ''}" data-act="cheer" ${S.cheered ? 'disabled' : ''}>${S.cheered ? '已經對全隊說過「大家加油」' : '對全隊按一次「大家加油」'}</button></div></div>
+  <button class="task week" data-go="week"><span class="shelf-mini" aria-hidden="true">${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').slice(0, 3).map((m) => monSvg(m, 'shadow')).join('')}</span><span class="grow"><b>我學會的</b><small>收服 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 隻 · 說得出來的 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 句</small></span><span class="go">${SVG.chev}</span></button>
   <div class="sect"><h3>本週副本</h3><button data-go="dungeon">看副本</button></div>
   <button class="task" data-go="dungeon">${monSvg(mon('sign-dist'), S.settled ? 'shadow' : '')}<span class="grow"><b>${esc(D.DUNGEON.name)} · ${esc(D.ROUTES[S.route].name)}</b><small>${S.settled ? '已結算 · 80% 兩星過關' : '本週副本進行中 · 週二 22:00 結算'}</small></span><span class="go">${SVG.chev}</span></button>
   <div class="sect"><h3>出題戰 · 第 3 週</h3><button data-go="duel">去作答</button></div>
@@ -154,6 +156,27 @@ SCREENS.shadows = () => {
   <div class="titles">${D.TITLES.map((t) => `<div class="title ${t.earned ? '' : 'off'}"><span class="badge">${t.team ? SVG.flag : SVG.title}</span><span><b>${esc(t.name)}</b><small>${esc(t.rule)}${t.team ? ' · 隊伍級' : ''}</small></span><span class="pr">${t.earned ? '已獲得' : `${t.progress[0]} / ${t.progress[1]}`}</span></div>`).join('')}</div>
   <div class="sect"><h3>冒險日誌</h3><button data-go="record">看戰績</button></div>
   <div class="card"><div class="row">${av(1, 'me')}<div class="grow"><b>「負號要發給括號裡每一個人。」</b><small>說給我聽 · 0:28 · 10/09</small></div><button class="btn sm soft">重聽</button></div></div>`;
+};
+
+SCREENS.week = () => {
+  const caps = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured');
+  const chasing = D.MONSTERS.filter((m) => ['near', 'hit'].includes(S.shadows[m.id].state));
+  const asleep = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'asleep');
+  const wakes = S.records.filter((r) => r.kind === 'wake').length;
+  const explains = S.records.filter((r) => r.kind === 'explain').length;
+  return `
+  ${hd('我學會的', `第 ${D.SQUAD.week} 週 · 這一季到現在`)}
+  <div class="week-hero"><div class="stars"></div>
+    <div class="shelf">${caps.map((m, i) => monSvg(m, 'shadow blink', `style="--i:${i}"`)).join('')}${asleep.map((m, i) => monSvg(m, 'asleep', `style="--i:${caps.length + i}"`)).join('')}</div>
+    <div class="plank"></div>
+    <div class="stats3"><div><b class="num">${caps.length}</b><small>收服</small></div><div><b class="num">${wakes}</b><small>叫醒</small></div><div><b class="num">${explains}</b><small>講解</small></div></div>
+  </div>
+  <div class="sect"><h3>被我識破的錯法</h3></div>
+  <div class="card">${caps.map((m) => { const sh = S.shadows[m.id]; return `<div class="learned-row">${monSvg(m, 'shadow sm')}<span class="grow"><b>${esc(m.name)}</b><small>${esc(m.skill)}</small></span>${sh.days ? `<span class="pill honey">第 ${sh.days} 天 不給提示也會</span>` : ''}</div>`; }).join('') || '<p class="meta">還沒有。這週收服第一隻。</p>'}</div>
+  <div class="sect"><h3>我會說的一句</h3><span class="meta">書記整理 · 說給家人聽</span></div>
+  ${caps.slice(0, 3).map((m) => `<div class="quote say"><p>${esc(m.weakness)}</p><small>${esc(m.name)} · ${esc(region(m.region).name)}</small></div>`).join('')}
+  ${chasing.length ? `<div class="sect"><h3>還在追</h3></div><div class="mgrid">${chasing.map((m) => `<button class="mcard" data-lore="${m.id}">${monSvg(m, stateCls[S.shadows[m.id].state])}<span><b>${esc(m.name)}</b><small>${esc(D.STATE_LABEL[S.shadows[m.id].state])}</small></span></button>`).join('')}</div>` : ''}
+  <div class="btns"><button class="btn honey" data-act="week-send" ${S.weekSent ? 'disabled' : ''}>${S.weekSent ? '已傳到營地' : '傳到營地（家人 LINE）'}</button><button class="btn ghost" data-go="record">看戰績</button></div>`;
 };
 
 SCREENS.record = () => `
@@ -396,6 +419,7 @@ SCREENS.camp = () => `
       <div class="acts"><button class="${S.witnessed ? 'on' : ''}" data-act="witness">${S.witnessed ? '已見證' : '我見證了'}</button><button>晚點問他</button></div><span class="t">已讀 21:05</span></div>
     <div class="bub me">好，晚上問他。<span class="t">21:06</span></div>
     ${S.wallPosts.length ? `<div class="bub"><b>營地來信 · 剛剛</b><br>小睿的小隊這週副本過關了：解題率 80%，兩星。下一個副本走丘陵線。<span class="t">剛剛</span></div>` : ''}
+    ${S.weekSent ? `<div class="bub"><b>小睿這週學會的 · 剛剛</b><br>收服 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 隻：${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').map((m) => m.name).join('、')}。<br>他會說：「${esc((D.MONSTERS.find((m) => S.shadows[m.id].state === 'captured') || D.MONSTERS[0]).weakness)}」<span class="q">今晚可以請他講給你聽。</span><span class="t">剛剛</span></div>` : ''}
   </div>
   <div class="btns"><button class="btn ghost" data-go="home">回到孩子的畫面</button></div>`;
 
@@ -422,7 +446,7 @@ SCREENS.settings = () => `
 
 // ---------- 路由與渲染 ----------
 const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['shadows', '圖鑑', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
-const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower']);
+const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower', 'week']);
 const DARK = new Set([]);
 const view = $('#view'); const tabsEl = $('#tabs'); const sbEl = $('#sb'); const toastEl = $('#toast');
 const trail = [];
@@ -594,6 +618,7 @@ document.addEventListener('click', (e) => {
   if (a === 'wake-done') { SFX.play('wake'); juice('gold', null, null, '+5'); S.wake.done = true; S.shadows['diff-sq'] = { state: 'captured', day0: '09/20', dayN: '10/11', days: 21 }; addRecord('wake', '叫醒 平方差雙子', 5); addCard(); save(); return go('capture/diff-sq'); }
   if (a === 'settle') { S.clock = 'tue'; S.settled = true; S.route = 'hills'; addRecord('dungeon2', '副本兩星（全隊一份）', 8); save(); applyTheme(); return go('settle'); }
   if (a === 'wall-post') { if (!S.wallPosts.length) S.wallPosts.push('這週副本過關了，兩星。下一個副本走丘陵線。'); save(); toast('放上隊伍牆了'); return go('guild'); }
+  if (a === 'week-send') { S.weekSent = true; save(); SFX.play('card'); toast('傳到營地了'); return go('camp'); }
   if (a === 'race') { S.raceSigned = !S.raceSigned; save(); toast(S.raceSigned ? '已送到家長的 LINE 確認' : '已取消報名'); return rerender(); }
   if (a === 'witness') { S.witnessed = !S.witnessed; save(); return rerender(); }
   if (a === 'sound') { S.sound = !S.sound; SFX.setEnabled(S.sound); save(); if (S.sound) SFX.play('hit'); return rerender(); }
