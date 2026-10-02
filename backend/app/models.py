@@ -239,9 +239,9 @@ class ParentReport(Base):
     created_at: Mapped[_dt.datetime] = mapped_column(DateTime, default=utcnow)
 
 
-# ——— 冒險世界（0.2）：影子、戰績、副本、對戰、公會、守塔 ———
+# ——— 冒險世界（0.2）：夥伴、戰績、副本、對戰、公會、守塔 ———
 class Shadow(Base):
-    """影子：一位學生對一隻怪的狀態（fog／near／hit／captured／asleep）。規則在 services/world.py。"""
+    """夥伴（影子）：一位學生對一隻怪的狀態（fog／near／hit／captured／asleep）。規則在 services/world.py。"""
 
     __tablename__ = "shadows"
     __table_args__ = (UniqueConstraint("student_id", "monster_id", name="uq_shadow"),)

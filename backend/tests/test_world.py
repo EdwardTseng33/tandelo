@@ -1,4 +1,4 @@
-"""冒險世界（0.2）：影子狀態機、戰績、副本解題率、路線、缺席、對戰、配對、公會解鎖、徽章、燈塔、守塔、榜、關燈。
+"""冒險世界（0.2）：夥伴狀態機、戰績、副本解題率、路線、缺席、對戰、配對、公會解鎖、徽章、燈塔、守塔、榜、關燈。
 前半是純規則（不開伺服器），後半是 API 流程。數字全部鎖住，改規則要同步改這裡與概念稿。"""
 
 from datetime import date, time
@@ -32,7 +32,7 @@ def example_answers():
     return ans
 
 
-# ——— 影子狀態機 ———
+# ——— 夥伴狀態機 ———
 def test_shadow_happy_path():
     s = "fog"
     for ev, expect in [("diagnosed_stuck", "near"), ("explained_ok", "hit"), ("retest_passed", "captured"), ("wrong_again", "asleep"), ("woken", "captured")]:
