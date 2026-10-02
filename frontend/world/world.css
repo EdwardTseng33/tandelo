@@ -605,6 +605,8 @@ a{color:var(--brand)}
 
 /* ---------- 美術掛載點（codex 產出放進 art/，由 art/art.css 覆寫；沒有時維持向量版） ---------- */
 .dg-hero,.wall,.tower-hero,.capture,.guild-hero,.home-top{background-size:cover;background-position:center}
+.map .art-map{display:none}
+.dg-hero h2,.tower-hero h2,.capture h2,.curtain h2,.wall h2,.card.night h2{color:inherit}
 
 /* ======================================================================
    遊戲手感層（game feel）：待機動畫、打擊回饋、浮字、震動、地圖鏡頭、收服特效

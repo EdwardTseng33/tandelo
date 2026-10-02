@@ -1,0 +1,42 @@
+/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-art] 在 art/manifest.json 存在時由 app.js 開啟 */
+[data-art] .home-top{min-height:176px;align-items:flex-start;padding:14px 14px 12px;border-radius:var(--r-lg);background-image:url(bg-home.svg);background-size:cover;background-position:center bottom;overflow:hidden}
+[data-art] .guild-hero{min-height:150px;align-items:start;padding:12px 14px;border-radius:var(--r-lg);background-image:url(bg-guild.svg);background-size:cover;background-position:center bottom;overflow:hidden}
+[data-art] .dg-hero{background-image:url(bg-dungeon.svg);background-size:cover;background-position:center bottom;min-height:150px}
+[data-art] .dg-hero .fogbg{display:none}
+[data-art] .wall{background-image:url(bg-wall.svg);background-size:cover;background-position:center bottom}
+[data-art] .wall .stars{display:none}
+[data-art] .tower-hero{background-image:url(bg-tower.svg);background-size:cover;background-position:center bottom;min-height:168px;padding-top:28px}
+[data-art] .capture{background-image:url(bg-capture.svg);background-size:cover;background-position:center}
+[data-art] .capture .sky,[data-art] .capture .stars{display:none}
+[data-art] .map .terrain{display:none}
+[data-art] .map .art-map.light{display:block}
+[data-art] .map .beam{opacity:.22}
+[data-art] .map .rl{stroke:none;paint-order:normal}
+[data-art] .map .cn,[data-art] .map .cs{paint-order:stroke;stroke:var(--sea);stroke-width:4px;stroke-linejoin:round}
+/* 人物：六色隊員、嚮導、巡查員 */
+[data-art] .kid svg{display:none}
+[data-art] .kid{background:url(kid-1.svg) center/contain no-repeat;display:inline-block}
+[data-art] .kid.k2{background-image:url(kid-2.svg)} [data-art] .kid.k3{background-image:url(kid-3.svg)} [data-art] .kid.k4{background-image:url(kid-4.svg)} [data-art] .kid.k5{background-image:url(kid-5.svg)} [data-art] .kid.k6{background-image:url(kid-6.svg)}
+[data-art] .kid.guide{background-image:url(guide.svg)} [data-art] .kid.patrol{background-image:url(patrol.svg)}
+/* 深色 */
+@media (prefers-color-scheme: dark){
+  [data-art]:not([data-theme="light"]) .home-top{background-image:url(bg-home-dark.svg)}
+  [data-art]:not([data-theme="light"]) .guild-hero{background-image:url(bg-guild-dark.svg)}
+  [data-art]:not([data-theme="light"]) .dg-hero{background-image:url(bg-dungeon-dark.svg)}
+  [data-art]:not([data-theme="light"]) .wall{background-image:url(bg-wall-dark.svg)}
+  [data-art]:not([data-theme="light"]) .tower-hero{background-image:url(bg-tower-dark.svg)}
+  [data-art]:not([data-theme="light"]) .capture{background-image:url(bg-capture-dark.svg)}
+  [data-art]:not([data-theme="light"]) .map .art-map.light{display:none}
+  [data-art]:not([data-theme="light"]) .map .art-map.dark{display:block}
+  [data-art]:not([data-theme="light"]) .kid.guide{background-image:url(guide-dark.svg)} [data-art]:not([data-theme="light"]) .kid.patrol{background-image:url(patrol-dark.svg)}
+}
+[data-art][data-theme="dark"] .home-top{background-image:url(bg-home-dark.svg)}
+[data-art][data-theme="dark"] .guild-hero{background-image:url(bg-guild-dark.svg)}
+[data-art][data-theme="dark"] .dg-hero{background-image:url(bg-dungeon-dark.svg)}
+[data-art][data-theme="dark"] .wall{background-image:url(bg-wall-dark.svg)}
+[data-art][data-theme="dark"] .tower-hero{background-image:url(bg-tower-dark.svg)}
+[data-art][data-theme="dark"] .capture{background-image:url(bg-capture-dark.svg)}
+[data-art][data-theme="dark"] .map .art-map.light{display:none}
+[data-art][data-theme="dark"] .map .art-map.dark{display:block}
+[data-art][data-theme="dark"] .kid.guide{background-image:url(guide-dark.svg)} [data-art][data-theme="dark"] .kid.patrol{background-image:url(patrol-dark.svg)}
+@media (prefers-reduced-transparency: reduce){[data-art] .home-top,[data-art] .guild-hero{background-image:none}}
