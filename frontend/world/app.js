@@ -61,8 +61,28 @@ function loadRemote() {
   }).catch((e) => { remote.loading = false; remote.err = String(e.message || e); if (parse().key === 'play') rerender(); });
 }
 const PQ = () => { if (API.base() && remote.qs) return remote.qs; return localPQ(); };
-const AQ = () => V.generate('sqrt-split', `ambush-${S.seed}`, S.route);
-const WQ = () => V.generate('factor-diff', `wake-${S.seed}`, 'plain');
+const remoteOne = {};
+function remoteQ(monster, seed, route) {
+  const k = `${monster}|${seed}|${route}|${API.base()}`;
+  if (!remoteOne[k]) {
+    const slot = { q: null, loading: true, err: '' }; remoteOne[k] = slot;
+    API.variants(monster, 1, route, seed).then((list) => { const it = list.items[0]; slot.q = { id: it.variant_key, monster, route, stem: it.stem, options: it.options, token: it.answer_token, answer: null, trap: null, trapLabel: '', taunt: V.TAUNT[monster], why: '', steps: [], hint: { ask: '你寫到哪一步？', point: '', lend: '', show: '' }, remote: true }; slot.loading = false; rerender(); })
+      .catch((e) => { slot.loading = false; slot.err = String(e.message || e); rerender(); });
+  }
+  return remoteOne[k];
+}
+const remoteLocal = (monster, seed, route) => { if (!API.base()) return null; const r = remoteQ(monster, seed, route); return r; };
+const AQ = () => { const r = remoteLocal('sqrt-split', `ambush-${S.seed}`, S.route); return r ? r.q : V.generate('sqrt-split', `ambush-${S.seed}`, S.route); };
+const WQ = () => { const r = remoteLocal('factor-diff', `wake-${S.seed}`, 'plain'); return r ? r.q : V.generate('factor-diff', `wake-${S.seed}`, 'plain'); };
+const SKELETON = (title, sub) => `${hd(title, sub)}<div class="qcard skeleton"><div class="row"><span class="sk sk-mon"></span><span class="sk sk-line"></span></div><span class="sk sk-stem"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span></div><p class="meta" style="text-align:center">後端出題中 · ${esc(API.host())}</p>`;
+const REMOTE_ERR = (title, sub, err) => `${hd(title, sub)}<div class="card coral"><b>後端沒回應</b><small>${esc(err)}</small></div><div class="btns"><button class="btn" data-act="api-retry">再試一次</button><button class="btn ghost" data-act="api-off">先用本地題</button></div>`;
+// 遠端題：第一次點某個選項先交給後端判，結果記在題上
+function judgeRemote(q, i, then) {
+  if (!q.remote || (q.judged && q.judged[i])) return then();
+  if (play.busy) return; play.busy = true; rerender();
+  API.check(q.monster, q.token, i).then((j) => { q.judged = q.judged || {}; q.judged[i] = j; q.answer = j.answer; q.trapLabel = j.trap_label; q.why = j.why; if (j.hit_trap) q.trap = i; play.busy = false; then(); })
+    .catch((e) => { play.busy = false; toast(`後端沒回應：${e.message}`); rerender(); });
+}
 const night = () => { const [h, m] = clock().time.split(':').map(Number); const t = h * 60 + m; return t >= 1350 || t < 360; };
 const mon = (id) => D.MONSTERS.find((m) => m.id === id);
 const region = (id) => D.REGIONS.find((r) => r.id === id);
@@ -259,6 +279,7 @@ SCREENS.relay = () => {
 };
 
 SCREENS.ambush = () => {
+  const ar = remoteLocal('sqrt-split', `ambush-${S.seed}`, S.route); if (ar && !ar.q) return ar.loading ? SKELETON('伏擊', '到期的夥伴回來了 · 沒有提示') : REMOTE_ERR('伏擊', '到期的夥伴回來了', ar.err);
   const a = AQ(); const m = mon(a.monster);
   if (S.ambush.done) return `${hd('伏擊 · 結果', '只記進你的收服紀錄')}<div class="card ${S.ambush.passed ? 'honey' : 'coral'}"><div class="row">${monSvg(m, S.ambush.passed ? 'shadow' : '')}<div class="grow"><b>${S.ambush.passed ? '拆根蟲，收服。' : '拆根蟲還在附近。'}</b><small>${S.ambush.passed ? '第 9 天不給提示也會。' : '不扣分，回到練習清單，下週再來。'}</small></div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button></div>`;
   return `
@@ -271,16 +292,18 @@ SCREENS.ambush = () => {
 };
 
 SCREENS.wake = () => {
-  const m = mon('diff-sq'); const wq = WQ();
+  const m = mon('diff-sq');
+  const wr = remoteLocal('factor-diff', `wake-${S.seed}`, 'plain'); if (wr && !wr.q) return wr.loading ? SKELETON('叫醒夥伴', '平方差雙子 · 分解洞窟') : REMOTE_ERR('叫醒夥伴', '平方差雙子', wr.err);
+  const wq = WQ(); const wHit = play.wpick !== null && play.wpick !== undefined && play.wpick === wq.answer;
   if (S.wake.done) return `${hd('叫醒夥伴', '平方差雙子')}<div class="card honey"><div class="row">${monSvg(m, 'shadow')}<div class="grow"><b>平方差雙子醒了。</b><small>再站回你身後。戰績 +5。</small></div></div></div><div class="btns"><button class="btn" data-go="home">回到今天</button></div>`;
   return `
   ${hd('叫醒夥伴', '平方差雙子 · 分解洞窟')}
   <div class="card"><div class="row">${monSvg(m, 'asleep')}<div class="grow"><b>上週又錯了一次，睡著了。</b><small>不扣分、不消失，只是換一種狀態。今天可以叫醒。</small></div></div></div>
   <div class="qcard"><p class="stem"><span class="mx">${esc(wq.stem)}</span></p>
-    <div class="opts">${wq.options.map((o, i) => `<button class="opt ${play.wpick === i ? (i === wq.answer ? 'ok' : 'trap') : ''}" data-wopt="${i}" ${play.wpick === wq.answer ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
-    ${play.wpick !== null && play.wpick !== undefined && play.wpick !== wq.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>平方差雙子</b>：${play.wpick === wq.trap ? esc(wq.taunt) : '差一點，乘回去看看。'}</p></div>` : ''}
-    ${play.wpick === wq.answer ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>醒了</b>：${esc(wq.why)}</p></div>` : ''}</div>
-  <div class="btns"><button class="btn honey" data-act="wake-done" ${play.wpick === wq.answer ? '' : 'disabled'}>叫醒 · 站回身後</button></div>`;
+    <div class="opts">${wq.options.map((o, i) => `<button class="opt ${play.wpick === i ? (i === wq.answer ? 'ok' : 'trap') : ''}" data-wopt="${i}" ${wHit ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
+    ${play.wpick !== null && play.wpick !== undefined && !wHit ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>平方差雙子</b>：${play.wpick === wq.trap ? esc(wq.taunt) : '差一點，乘回去看看。'}</p></div>` : ''}
+    ${wHit ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>醒了</b>：${esc(wq.why)}</p></div>` : ''}</div>
+  <div class="btns"><button class="btn honey" data-act="wake-done" ${wHit ? '' : 'disabled'}>叫醒 · 站回身後</button></div>`;
 };
 
 SCREENS.settle = () => `
@@ -598,12 +621,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.opt !== undefined) {
     const q = PQ()[S.patrol.i]; const i = Number(t.dataset.opt);
     const r = t.getBoundingClientRect();
-    if (q.remote && !(q.judged && q.judged[i])) {
-      if (play.busy) return; play.busy = true; rerender();
-      API.check('sign-dist', q.token, i).then((j) => { q.judged = q.judged || {}; q.judged[i] = j; q.answer = j.answer; q.trapLabel = j.trap_label; q.why = j.why; if (j.hit_trap) q.trap = i; play.busy = false; afterPick(q, i, r); }).catch((e) => { play.busy = false; toast(`後端沒回應：${e.message}`); rerender(); });
-      return;
-    }
-    return afterPick(q, i, r);
+    return judgeRemote(q, i, () => afterPick(q, i, r));
   }
   if (t.dataset.coach !== undefined) {
     const q = PQ()[S.patrol.i];
@@ -618,7 +636,7 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.ropt !== undefined) { play.rpick = Number(t.dataset.ropt); const r = t.getBoundingClientRect(); const ok = play.rpick === D.RELAY.steps[3].answer; buzz(ok ? 10 : [10, 30, 10]); juice(ok ? 'good' : 'bad', r.left + r.width / 2, r.top, ok ? '接到了' : '被騙到'); return rerender(); }
   if (t.dataset.aopt !== undefined) { play.apick = Number(t.dataset.aopt); return rerender(); }
-  if (t.dataset.wopt !== undefined) { play.wpick = Number(t.dataset.wopt); const r = t.getBoundingClientRect(); const ok = play.wpick === WQ().answer; juice(ok ? 'gold' : 'bad', r.left + r.width / 2, r.top, ok ? '醒了！' : '還在睡'); buzz(ok ? [10, 20, 10] : [10, 30, 10]); return rerender(); }
+  if (t.dataset.wopt !== undefined) { const wq = WQ(); const i = Number(t.dataset.wopt); const r = t.getBoundingClientRect(); return judgeRemote(wq, i, () => { play.wpick = i; const ok = i === wq.answer; juice(ok ? 'gold' : 'bad', r.left + r.width / 2, r.top, ok ? '醒了！' : '還在睡'); buzz(ok ? [10, 20, 10] : [10, 30, 10]); rerender(); }); }
   if (t.dataset.flag !== undefined) { S.relay.flagsLeft -= 1; play.flagged = Number(t.dataset.flag); save(); toast('已標記「這步怪怪的」，上一棒會收到匿名通知'); return rerender(); }
   if (t.dataset.vote) { const [n, i] = t.dataset.vote.split(':').map(Number); S.duel.votes[n] = i; save(); buzz(10); return rerender(); }
   if (t.dataset.say) return toast(`已送出「${t.dataset.say}」`);
@@ -647,7 +665,9 @@ document.addEventListener('click', (e) => {
   if (a === 'reseed') { S.seed = Math.random().toString(36).slice(2, 8); S.patrol = { i: 0, done: 0, helped: 0, why: false, finished: false }; S.ambush = { done: false, passed: false }; S.wake = { done: false }; save(); toast('換了一組題'); return rerender(); }
   if (a === 'relay-submit') { S.relay.done = true; addCard(); addRecord('relay', 'Boss 接力 · 第 4 棒', 2); save(); buzz(20); rerender(); return reward({ big: '+2', title: '第 4 棒交出去了', sub: `今天第 ${S.cards} 張` }); }
   if (a === 'ambush-submit') {
-    const ok = play.apick === AQ().answer; S.ambush.done = true; S.ambush.passed = ok; addCard();
+    const aq = AQ();
+    if (aq.remote && !(aq.judged && aq.judged[play.apick])) return judgeRemote(aq, play.apick, () => { const btn = view.querySelector('[data-act="ambush-submit"]'); if (btn) btn.click(); });
+    const ok = play.apick === aq.answer; S.ambush.done = true; S.ambush.passed = ok; addCard();
     if (ok) { S.shadows['sqrt-split'] = { state: 'captured', day0: '10/03', dayN: '10/12', days: 9 }; addRecord('capture', '收服 拆根蟲', 10); save(); juice('gold', null, null, '+10'); return setTimeout(() => go('capture/sqrt-split'), reduced() ? 0 : 500); }
     S.shadows['sqrt-split'] = { state: 'near', note: '沒中，不扣分，回到清單' }; save(); return rerender();
   }
@@ -658,8 +678,8 @@ document.addEventListener('click', (e) => {
   if (a === 'race') { S.raceSigned = !S.raceSigned; save(); toast(S.raceSigned ? '已送到家長的 LINE 確認' : '已取消報名'); return rerender(); }
   if (a === 'witness') { S.witnessed = !S.witnessed; save(); return rerender(); }
   if (a === 'api-test') { toast('測試中…'); API.ping().then(() => toast(`連上了 · ${API.host()}`)).catch((e) => toast(`連不上：${e.message}`)); return; }
-  if (a === 'api-retry') { remote.k = ''; return rerender(); }
-  if (a === 'api-off') { API.setBase(''); remote.k = ''; toast('改用本地題'); return rerender(); }
+  if (a === 'api-retry') { remote.k = ''; Object.keys(remoteOne).forEach((k) => delete remoteOne[k]); return rerender(); }
+  if (a === 'api-off') { API.setBase(''); remote.k = ''; Object.keys(remoteOne).forEach((k) => delete remoteOne[k]); toast('改用本地題'); return rerender(); }
   if (a === 'sound') { S.sound = !S.sound; SFX.setEnabled(S.sound); save(); if (S.sound) SFX.play('hit'); return rerender(); }
   if (a === 'theme') { const r = document.documentElement; const dark = r.getAttribute('data-theme') === 'dark'; r.setAttribute('data-theme', dark ? 'light' : 'dark'); S.theme = dark ? 'light' : 'dark'; save(); return rerender(); }
   if (a === 'pboard') { S.personalBoard = !S.personalBoard; save(); toast(S.personalBoard ? '13 歲以下需家長在 LINE 端同意' : '已關閉'); return rerender(); }
