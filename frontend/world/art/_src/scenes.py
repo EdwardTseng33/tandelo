@@ -544,11 +544,14 @@ MON2 = {
 }
 
 
+Q2 = '<text fill="var(--m-q)" font-family="Outfit,sans-serif" font-weight="700" font-size="26" text-anchor="middle" x="32" y="46">?</text>'
+
+
 def monsters_defs_2():
     out = ['<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:none">',
            '<!-- 其他大陸九隻怪（第一版，由 _src/scenes.py 產生）：英文三、國文三、社會三；顏色走 CSS 變數 -->']
     for k, v in MON2.items():
-        out.append(f'<symbol id="{k}" viewBox="0 0 64 64">{v}</symbol>')
+        out.append(f'<symbol id="{k}" viewBox="0 0 64 64">{v}{Q2}</symbol>')
     out.append('</svg>\n')
     return '\n'.join(out)
 
@@ -565,7 +568,7 @@ ART_CSS = """/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-
 [data-art] .capture .sky,[data-art] .capture .stars{display:none}
 [data-art] .map .terrain{display:none}
 [data-art] .map .art-map.light{display:block}
-[data-art] .map .beam{opacity:.22}
+[data-art] .map .beam{opacity:.12}
 [data-art] .map .rl{stroke:none;paint-order:normal}
 [data-art] .map .cn,[data-art] .map .cs{paint-order:stroke;stroke:var(--sea);stroke-width:4px;stroke-linejoin:round}
 /* 人物：六色隊員、嚮導、巡查員 */
@@ -583,6 +586,7 @@ ART_CSS = """/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-
   [data-art]:not([data-theme="light"]) .capture{background-image:url(bg-capture-dark.svg)}
   [data-art]:not([data-theme="light"]) .map .art-map.light{display:none}
   [data-art]:not([data-theme="light"]) .map .art-map.dark{display:block}
+  [data-art]:not([data-theme="light"]) .map .beam{opacity:.07}
   [data-art]:not([data-theme="light"]) .kid.guide{background-image:url(guide-dark.svg)} [data-art]:not([data-theme="light"]) .kid.patrol{background-image:url(patrol-dark.svg)}
 }
 [data-art][data-theme="dark"] .home-top{background-image:url(bg-home-dark.svg)}
@@ -593,6 +597,7 @@ ART_CSS = """/* 美術接線（第一版，由 _src/scenes.py 產生）：[data-
 [data-art][data-theme="dark"] .capture{background-image:url(bg-capture-dark.svg)}
 [data-art][data-theme="dark"] .map .art-map.light{display:none}
 [data-art][data-theme="dark"] .map .art-map.dark{display:block}
+[data-art][data-theme="dark"] .map .beam{opacity:.07}
 [data-art][data-theme="dark"] .kid.guide{background-image:url(guide-dark.svg)} [data-art][data-theme="dark"] .kid.patrol{background-image:url(patrol-dark.svg)}
 @media (prefers-reduced-transparency: reduce){[data-art] .home-top,[data-art] .guild-hero{background-image:none}}
 """

@@ -29,6 +29,20 @@ export const ROLES = {
   quartermaster: { name: '整備官', short: '備', does: '看整備條，可以對全隊按一次「大家加油」。' },
 };
 
+// 四大陸：數理大陸可玩；其他三個依題庫達標順序開（英文、社會、國文），地圖先以迷霧呈現，怪先露臉。
+export const CONTINENTS = [
+  { id: 'math', name: '數理大陸', subject: '數學', open: true, map: 'map-math' },
+  { id: 'en', name: '西風港', subject: '英文', open: false, map: 'map-en',
+    spots: [{ id: 'dock', name: '碼頭區', x: 170, y: 190 }, { id: 'mill', name: '風車坡', x: 312, y: 150 }, { id: 'cape', name: '南岬', x: 250, y: 330 }],
+    monsters: [{ id: 'en-tense', name: '時光獸', shape: 'm2-clock', skill: '時態' }, { id: 'en-s', name: '失蹤的 s', shape: 'm2-snake', skill: '第三人稱單數' }, { id: 'en-prep', name: '介係詞迷路怪', shape: 'm2-arrow', skill: '介係詞' }] },
+  { id: 'soc', name: '時光古道', subject: '社會', open: false, map: 'map-soc',
+    spots: [{ id: 'gate', name: '石門', x: 124, y: 150 }, { id: 'road', name: '古道口', x: 300, y: 214 }, { id: 'rings', name: '年輪台', x: 150, y: 330 }],
+    monsters: [{ id: 'soc-era', name: '年代錯置怪', shape: 'm2-hourglass', skill: '年代順序' }, { id: 'soc-cause', name: '因果顛倒獸', shape: 'm2-flip', skill: '因果關係' }, { id: 'soc-geo', name: '經緯迷航', shape: 'm2-compass', skill: '經緯與方位' }] },
+  { id: 'zh', name: '字林', subject: '國文', open: false, map: 'map-zh',
+    spots: [{ id: 'bamboo', name: '竹徑', x: 124, y: 290 }, { id: 'hall', name: '書院', x: 258, y: 300 }, { id: 'deep', name: '林深處', x: 230, y: 150 }],
+    monsters: [{ id: 'zh-homo', name: '音近字妖', shape: 'm2-twin', skill: '音近字' }, { id: 'zh-wenyan', name: '之乎迷霧', shape: 'm2-mist', skill: '文言虛字' }, { id: 'zh-rhet', name: '修辭變臉怪', shape: 'm2-mask', skill: '修辭' }] },
+];
+
 export const REGIONS = [
   { id: 'mult', name: '乘法平原', continent: 'math', light: 'lit', keeper: 'us', progress: [3600, 3000], x: 161, y: 190 },
   { id: 'poly', name: '多項式林', continent: 'math', light: 'lit', keeper: 'other', progress: [3120, 3000], x: 266, y: 165 },

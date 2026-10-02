@@ -249,14 +249,31 @@ SCREENS.duel = () => {
   <div class="card">${d.history.map((h) => `<div class="kv"><span>第 ${h.week} 週 · ${esc(h.label)}</span><b>${esc(h.result)}</b></div>`).join('')}<div class="kv"><span>第 3 週 · ${esc(d.opponent)}</span><b>出題戰進行中</b></div></div>`;
 };
 
-SCREENS.map = () => {
+SCREENS.map = (cid) => {
+  const C = D.CONTINENTS.find((c) => c.id === cid) || D.CONTINENTS[0];
   const R = D.REGIONS;
   const cls = (r) => r.light === 'fog' ? '' : (r.keeper === 'us' ? 't-us' : (r.keeper === 'other' ? 't-other' : (r.light === 'lit' ? 't-lit' : 't-none')));
+  const chips = `<div class="leagues conts">${D.CONTINENTS.map((c) => `<button class="${c.id === C.id ? 'on' : ''} ${c.open ? '' : 'locked'}" data-go="map/${c.id}" aria-label="${esc(c.name)} · ${esc(c.subject)}${c.open ? '' : ' · 未開放'}">${esc(c.name)}</button>`).join('')}</div>`;
+  const art = `<image class="art-map light" href="art/${C.map}.svg" x="0" y="0" width="440" height="420"/><image class="art-map dark" href="art/${C.map}-dark.svg" x="0" y="0" width="440" height="420"/>`;
+  if (!C.open) {
+    return `
+  ${hd('世界地圖', `${esc(D.SQUAD.league)} · ${esc(C.name)}`, false)}
+  ${chips}
+  <div class="map locked"><svg viewBox="0 0 440 420" role="img" aria-label="${esc(C.name)}地圖：迷霧中"><g class="cam">
+    ${art}
+    <g class="terrain">${D.MAP_TERRAIN}</g>
+    <ellipse class="fogdrift" cx="200" cy="200" rx="150" ry="120"/>
+    <text class="cn" x="96" y="96">${esc(C.name)}</text><text class="cs" x="96" y="112">${esc(C.subject)} · 迷霧中</text>
+    ${C.spots.map((p) => `<g class="hot" tabindex="0" role="button" aria-label="${esc(p.name)}，迷霧" data-spot="${p.id}"><ellipse class="fogm" cx="${p.x}" cy="${p.y}" rx="52" ry="30"/><text class="fogq" x="${p.x}" y="${p.y + 5}">?</text><text class="rl fogt" x="${p.x}" y="${p.y + 52}">${esc(p.name)}</text></g>`).join('')}
+  </g></svg><div class="map-ctl"><button type="button" data-zoom="-1" aria-label="縮小">−</button><button type="button" data-zoom="1" aria-label="放大">＋</button></div><span class="map-hint">拖曳移動 · 捏合縮放</span></div>
+  <div class="sect"><h3>${esc(C.name)}的怪</h3><span class="meta">題庫達標後開放</span></div>
+  <div class="mgrid">${C.monsters.map((m) => `<div class="mcard fogc">${monSvg({ shape: ART.m2 ? m.shape : 'm-round' }, 'fog')}<span><b>${esc(m.name)}</b><small>${esc(m.skill)} · 迷霧</small></span></div>`).join('')}</div>`;
+  }
   return `
-  ${hd('世界地圖', `${esc(D.SQUAD.league)} · 數理大陸`, false)}
-  <div class="leagues">${['北區', '中區', '南區', '東區'].map((l) => `<button class="${l === D.SQUAD.league ? 'on' : ''}" ${l === D.SQUAD.league ? '' : 'disabled'}>${l}</button>`).join('')}</div>
+  ${hd('世界地圖', `${esc(D.SQUAD.league)} · ${esc(C.name)}`, false)}
+  ${chips}
   <div class="map"><svg viewBox="0 0 440 420" role="img" aria-label="數理大陸地圖：六個區域各一座燈塔"><g class="cam">
-    <image class="art-map light" href="art/map-math.svg" x="0" y="0" width="440" height="420"/><image class="art-map dark" href="art/map-math-dark.svg" x="0" y="0" width="440" height="420"/>
+    ${art}
     <g class="terrain">${D.MAP_TERRAIN}</g>
     ${R.filter((r) => r.light === 'lit').map((r) => `<path class="beam" style="--bx:${r.x}px;--by:${r.y - 18}px" d="M${r.x} ${r.y - 18}L${r.x - 70} ${r.y - 150}L${r.x + 70} ${r.y - 150}z"/>`).join('')}
     ${R.filter((r) => r.light === 'fog').map((r) => `<ellipse class="fogdrift" cx="${r.x - 20}" cy="${r.y - 10}" rx="70" ry="34"/>`).join('')}
@@ -266,9 +283,7 @@ SCREENS.map = () => {
       : `<g class="hot" tabindex="0" role="button" aria-label="${esc(r.name)}燈塔" data-region="${r.id}"><circle class="ring" cx="${r.x}" cy="${r.y}" r="34"/><circle class="glow ${r.light === 'lit' ? 'on' : ''}" cx="${r.x}" cy="${r.y - 4}" r="26"/><use href="#tower" class="tw ${cls(r)}" x="${r.x - 11}" y="${r.y - 20}" width="22" height="30"/>${r.keeper === 'us' ? `<path class="flag" d="M${r.x + 10} ${r.y - 22}v-12l10 4-10 4"/>` : ''}<text class="rl" x="${r.x}" y="${r.y + 34}">${esc(r.name)}</text></g>`).join('')}
   </g></svg><div class="map-ctl"><button type="button" data-zoom="-1" aria-label="縮小">−</button><button type="button" data-zoom="1" aria-label="放大">＋</button></div><span class="map-hint">拖曳移動 · 捏合縮放</span></div>
   <div class="maplegend"><span><i class="u"></i>我們守塔</span><span><i class="o"></i>其他小隊守塔</span><span><i class="l"></i>燈已點亮</span><span><i class="n"></i>燈未點亮</span><span><i class="f"></i>迷霧</span></div>
-  <div class="regions">${R.map((r) => `<button class="region" data-region="${r.id}"><span class="tw ${r.light === 'fog' ? 'none' : (r.keeper === 'us' ? 'us' : (r.keeper === 'other' ? 'other' : (r.light === 'lit' ? 'lit' : 'none')))}">${towerSvg}</span><span><b>${esc(r.name)}</b><small>${r.light === 'fog' ? '迷霧 · 還沒偵察到這一區' : (r.light === 'lit' ? `已點亮 · ${r.keeper === 'us' ? '四葉小隊守著平原線這一層' : (r.keeper === 'other' ? '星期三小隊守著平原線這一層' : '尚無守塔隊')}` : `點燈進度 ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</small></span><span class="pct">${r.light === 'fog' ? '' : `${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}`}</span></button>`).join('')}</div>
-  <div class="sect"><h3>其他大陸</h3><span class="meta">依題庫達標順序開：英文、社會、國文</span></div>
-  <div class="card flat"><div class="stack">${[['西風港', '英文 · 時光獸、失蹤的 s、介係詞迷路怪'], ['字林', '國文 · 音近字妖、之乎迷霧、修辭變臉怪'], ['時光古道', '社會 · 年代錯置怪、因果顛倒獸、經緯迷航']].map(([n, t]) => `<div class="row"><span class="mon sm fog"><svg><use href="#m-round"/></svg></span><div class="grow"><b style="font-size:14px">${n}</b><small>${t}</small></div></div>`).join('')}</div></div>`;
+  <div class="regions">${R.map((r) => `<button class="region" data-region="${r.id}"><span class="tw ${r.light === 'fog' ? 'none' : (r.keeper === 'us' ? 'us' : (r.keeper === 'other' ? 'other' : (r.light === 'lit' ? 'lit' : 'none')))}">${towerSvg}</span><span><b>${esc(r.name)}</b><small>${r.light === 'fog' ? '迷霧 · 還沒偵察到這一區' : (r.light === 'lit' ? `已點亮 · ${r.keeper === 'us' ? '四葉小隊守著平原線這一層' : (r.keeper === 'other' ? '星期三小隊守著平原線這一層' : '尚無守塔隊')}` : `點燈進度 ${Math.round(r.progress[0] / r.progress[1] * 100)}%`)}</small></span><span class="pct">${r.light === 'fog' ? '' : `${r.progress[0].toLocaleString()} / ${r.progress[1].toLocaleString()}`}</span></button>`).join('')}</div>`;
 };
 
 SCREENS.tower = (id) => {
@@ -464,7 +479,7 @@ function setupMap(el) {
   map.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1.12 : .9, e.clientX, e.clientY); }, { passive: false });
   el.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); const r = map.getBoundingClientRect(); zoomAt(b.dataset.zoom === '1' ? 1.25 : .8, r.left + r.width / 2, r.top + r.height / 2); }));
   // 點區域：鏡頭先飛過去再開燈塔頁
-  el.querySelectorAll('.map .hot').forEach((g) => g.addEventListener('click', (e) => { e.stopPropagation(); const id = g.dataset.region; const r = region(id); st.k = 1.6; st.x = 220 - r.x * st.k; st.y = 200 - r.y * st.k; clamp(); apply(); buzz(8); setTimeout(() => go(`tower/${id}`), reduced() ? 0 : 320); }));
+  el.querySelectorAll('.map .hot').forEach((g) => g.addEventListener('click', (e) => { e.stopPropagation(); if (g.dataset.spot) { buzz(6); toast('題庫達標後開放這一區'); return; } const id = g.dataset.region; const r = region(id); st.k = 1.6; st.x = 220 - r.x * st.k; st.y = 200 - r.y * st.k; clamp(); apply(); buzz(8); setTimeout(() => go(`tower/${id}`), reduced() ? 0 : 320); }));
 }
 
 // ---------- 事件 ----------
@@ -552,7 +567,16 @@ function applyTheme() {
   else r.removeAttribute('data-theme');
 }
 // 美術掛載：codex 產出的 art/manifest.json 存在時，開啟 [data-art]，由 art/art.css 接手背景與角色
-fetch('art/manifest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((m) => { if (m) { document.documentElement.setAttribute('data-art', m.version || '1'); } }).catch(() => {});
+const ART = { m2: false };
+fetch('art/manifest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((m) => {
+  if (!m) return;
+  document.documentElement.setAttribute('data-art', m.version || '1');
+  return fetch('art/monsters-defs-2.svg').then((r) => (r.ok ? r.text() : '')).then((t) => {
+    if (!t) return; const box = document.createElement('div'); box.innerHTML = t; const defs = document.querySelector('svg defs'); if (!defs) return;
+    box.querySelectorAll('symbol').forEach((sym) => { if (!document.getElementById(sym.id)) defs.appendChild(sym); });
+    ART.m2 = true; if (parse().key === 'map') rerender();
+  });
+}).catch(() => {});
 tabsEl.innerHTML = TABS.map(([k, n, p]) => `<button data-go="${k}" aria-label="${n}"><svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>${n}</button>`).join('');
 $('#panel-scenes')?.querySelectorAll('button[data-go]').forEach(() => {});
 window.addEventListener('hashchange', route);
