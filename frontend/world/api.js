@@ -28,3 +28,4 @@ export const ping = () => call('/health');
 export const variants = (monster, n, route, seed) => call(`/world/monsters/${encodeURIComponent(monster)}/variants?n=${n}&route=${encodeURIComponent(route)}&seed=${encodeURIComponent(seed)}`);
 export const check = (monster, answerToken, choice) => call(`/world/monsters/${encodeURIComponent(monster)}/variants/check`, { method: 'POST', body: { answer_token: answerToken, choice } });
 export const coach = (body) => call('/coach/reply', { method: 'POST', body });
+export const intervention = (body) => call('/interventions', { method: 'POST', body });

@@ -38,6 +38,8 @@ function defaults() {
     sound: true,
     reactions: {},
     weekSent: false,
+    interventions: [], // 嚮導的介入紀錄（示範）
+    guideDone: {},
   };
 }
 function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); return s ? { ...defaults(), ...s } : defaults(); } catch (e) { return defaults(); } }
@@ -209,6 +211,21 @@ SCREENS.week = () => {
   ${caps.slice(0, 3).map((m) => `<div class="quote say"><p>${esc(m.weakness)}</p><small>${esc(m.name)} · ${esc(region(m.region).name)}</small></div>`).join('')}
   ${chasing.length ? `<div class="sect"><h3>還在追</h3></div><div class="mgrid">${chasing.map((m) => `<button class="mcard" data-lore="${m.id}">${monSvg(m, stateCls[S.shadows[m.id].state])}<span><b>${esc(m.name)}</b><small>${esc(D.STATE_LABEL[S.shadows[m.id].state])}</small></span></button>`).join('')}</div>` : ''}
   <div class="btns"><button class="btn honey" data-act="week-send" ${S.weekSent ? 'disabled' : ''}>${S.weekSent ? '已傳到營地' : '傳到營地（家人 LINE）'}</button><button class="btn ghost" data-go="record">看戰績</button></div>`;
+};
+
+SCREENS.guide = () => {
+  const G = D.GUIDE_QUEUE; const W = D.GUIDE_WEEK;
+  const used = W.minutesSoFar + S.interventions.reduce((a, r) => a + (r.minutes || 0), 0);
+  const perStudent = used / W.students;
+  const pending = G.filter((g) => !S.guideDone[g.id]);
+  return `
+  ${hd('嚮導 · 四葉小隊', `今晚 ${pending.reduce((a, g) => a + g.minutes, 0)} 分鐘 · 只在三個時刻介入`)}
+  <div class="gmeter ${perStudent > W.cap ? 'over' : ''}"><div><b class="num">${perStudent.toFixed(1)}</b><small>分鐘 / 每生每週</small></div><div class="bar"><i style="transform:scaleX(${Math.min(1, perStudent / W.cap)})"></i></div><span class="meta">上限 ${W.cap}</span></div>
+  ${G.map((g) => { const done = S.guideDone[g.id]; const m = mon(g.mon); return `<div class="gcard ${done ? 'done' : ''}">${monSvg(m, done ? 'shadow sm' : 'sm')}<div class="grow"><b>${esc(g.who)} · ${esc(g.text)}</b><small>${esc(g.ladder)} → 你</small>${done ? `<small class="ok">已處理 · ${esc(done)}</small>` : (g.lines && play.gpick === g.id ? `<div class="chips">${g.lines.map((l) => `<button class="chip" data-gline="${g.id}" data-text="${esc(l)}">${esc(l)}</button>`).join('')}</div>` : '')}</div>${done ? '' : (g.kind === 'explain' ? `<button class="mic sm ${play.rec ? 'on' : ''}" data-act="rec" data-gid="${g.id}" aria-label="按住錄 30 秒">${SVG.mic}</button>` : `<button class="btn sm ${play.gpick === g.id ? 'ghost' : ''}" data-gpick="${g.id}">${esc(g.action)}</button>`)}</div>`; }).join('')}
+  ${play.rec >= 3 && pending.some((g) => g.kind === 'explain') ? `<div class="btns"><button class="btn honey" data-gsend="${pending.find((g) => g.kind === 'explain').id}">送出 ${play.rec} 秒講解</button></div>` : ''}
+  <div class="sect"><h3>本週介入紀錄</h3><span class="meta">${S.interventions.length} 筆</span></div>
+  <div class="card">${S.interventions.slice().reverse().map((r) => `<div class="kv"><span>${esc(r.label)}<span class="meta" style="margin-left:6px">${esc(r.when)}</span></span><b>${r.minutes} 分</b></div>`).join('') || '<p class="meta">今晚還沒有。系統與巡查先處理，輪到你再出手。</p>'}</div>
+  <div class="btns"><button class="btn ghost" data-go="home">回到孩子的畫面</button></div>`;
 };
 
 SCREENS.record = () => `
@@ -482,11 +499,11 @@ SCREENS.settings = () => `
     <div class="setrow"><span>本季真人對戰<small>匿名投票，全隊同意才打；否則打幽靈隊，沒有人知道是誰投的。</small></span><button class="switch ${S.pvp ? 'on' : ''}" data-act="pvp" role="switch" aria-label="真人對戰"></button></div>
   </div>
   <div class="card flat"><h3>隱私與安全</h3><p class="meta">隊友畫面不出現名字。分享卡、公會牆、燈塔上只有隊名與頭像色塊。地圖是幻想的，聯賽區只到北中南東。</p></div>
-  <div class="btns"><button class="btn warn" data-act="reset">重設示範資料</button></div>`;
+  <div class="btns"><button class="btn" data-go="guide">切到嚮導視角</button><button class="btn warn" data-act="reset">重設示範資料</button></div>`;
 
 // ---------- 路由與渲染 ----------
 const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['shadows', '圖鑑', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
-const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower', 'week']);
+const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower', 'week', 'guide']);
 const DARK = new Set([]);
 const view = $('#view'); const tabsEl = $('#tabs'); const sbEl = $('#sb'); const toastEl = $('#toast');
 const trail = [];
@@ -547,6 +564,15 @@ function showCombo() { const old = view.querySelector('.combo'); if (old) old.re
 function motes(host, n = 14) { if (!host || reduced()) return; const m = document.createElement('div'); m.className = 'motes'; for (let i = 0; i < n; i++) { const s = document.createElement('i'); s.style.setProperty('--x', `${Math.random() * 100}%`); s.style.setProperty('--y', `${30 + Math.random() * 70}%`); s.style.setProperty('--d', `${5 + Math.random() * 6}s`); s.style.setProperty('--dl', `${-Math.random() * 8}s`); m.appendChild(s); } host.appendChild(m); }
 let toastT;
 function toast(t) { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), 2200); }
+const INTERVENTION_LABEL = { explain: '錄 30 秒講解', nudge: '推一句', comfort: '問候' };
+function logIntervention(g, note) {
+  S.guideDone[g.id] = `${clock().time}`;
+  S.interventions.push({ id: g.id, kind: g.kind, trigger: g.trigger, minutes: g.minutes, label: `${INTERVENTION_LABEL[g.kind]} · ${g.who}`, note, when: '今晚' });
+  save(); SFX.play('card'); buzz(12); play.gpick = null; play.rec = 0;
+  if (API.base()) API.intervention({ by: 'guide', kind: g.kind, trigger: g.trigger, minutes: g.minutes, note: (note || '').slice(0, 200) }).then(() => toast('已記進後端')).catch((e) => toast(`後端沒記到：${e.message}`));
+  else toast('記下了');
+  rerender();
+}
 function afterPick(q, i, r) {
   play.picked = i; play.tried = i !== q.answer;
   if (i === q.answer) { buzz(10); combo += 1; juice('good', r.left + r.width / 2, r.top, play.lvl ? '打中' : '打中！'); rerender(); showCombo(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('hit'); return; }
@@ -609,6 +635,9 @@ function setupMap(el) {
 
 // ---------- 事件 ----------
 document.addEventListener('click', (e) => {
+  const gp = e.target.closest('[data-gpick]'); if (gp) { play.gpick = play.gpick === gp.dataset.gpick ? null : gp.dataset.gpick; return rerender(); }
+  const gl = e.target.closest('[data-gline]'); if (gl) { const g = D.GUIDE_QUEUE.find((x) => x.id === gl.dataset.gline); return logIntervention(g, gl.dataset.text); }
+  const gs = e.target.closest('[data-gsend]'); if (gs) { const g = D.GUIDE_QUEUE.find((x) => x.id === gs.dataset.gsend); return logIntervention(g, `語音 ${play.rec} 秒`); }
   const rc = e.target.closest('[data-react]'); if (rc) { const id = rc.dataset.react; S.reactions[id] = (S.reactions[id] || 0) + 1; save(); rc.classList.add('on'); rc.querySelector('.num').textContent = Number(rc.querySelector('.num').textContent) + 1; SFX.play('pop'); buzz(8); const r = rc.getBoundingClientRect(); juice('good', r.left + r.width / 2, r.top, '+1'); return; }
   const t = e.target.closest('[data-go],[data-back],[data-act],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
   if (!t) return;

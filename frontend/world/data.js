@@ -165,6 +165,14 @@ export const TEAM_FEED = [
   { id: 'f6', av: 2, who: '小琪', text: '今天三張都亮了', kind: 'card' },
 ];
 
+// 嚮導視角：人力只在三個時刻介入。系統推過、巡查沒回，才輪到嚮導；每一次都記分鐘數。
+export const GUIDE_QUEUE = [
+  { id: 'g1', trigger: 'help_timeout', who: '一位隊友', text: '卡在負號幽靈，求援 32 分鐘沒人回', ladder: '系統推過 2 次 · 巡查沒回', kind: 'explain', minutes: 1, action: '錄 30 秒', mon: 'sign-dist' },
+  { id: 'g2', trigger: 'three_wrong', who: '阿哲', text: '三次踩「負號只給第一項」', ladder: '系統提示過 3 次', kind: 'nudge', minutes: 0.5, action: '推一句', mon: 'sign-dist', lines: ['括號前面的負號，要發給裡面每一個。', '把 −(2x − 3) 先寫成 −2x + 3 再合併。', '你第二題已經對了，用同一招。'] },
+  { id: 'g3', trigger: 'three_days_off', who: '芸芸', text: '三天沒亮任務卡', ladder: '系統沒推播（關燈規則）', kind: 'comfort', minutes: 1, action: '問候', mon: 'diff-sq', lines: ['這週的怪比較難，先回來打一題就好。', '隊友在等你的那一棒。', '明天 20:30 我在營地。'] },
+];
+export const GUIDE_WEEK = { minutesSoFar: 23, students: 5, cap: 6 }; // 本週已用人力分鐘（示範）、隊員數、每生每週上限
+
 export const RECORD_EVENTS = [
   { kind: 'capture', label: '收服 雙面根', pts: 10, when: '10/04' },
   { kind: 'capture', label: '收服 漏項獸', pts: 10, when: '10/11' },

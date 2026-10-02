@@ -767,3 +767,21 @@ div.mcard.fogc{cursor:default}
 .sk{display:block;border-radius:12px;background:linear-gradient(90deg,var(--bg-alt) 25%,var(--rule) 50%,var(--bg-alt) 75%);background-size:200% 100%;animation:sk 1.2s linear infinite}
 .sk-mon{width:44px;height:44px;border-radius:50%;flex:0 0 auto}.sk-line{flex:1;height:16px}.sk-stem{height:28px;width:70%}.sk-opt{height:56px}
 @keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* ---------- 嚮導視角：人力分鐘表、三個介入時刻 ---------- */
+.gmeter{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--surface);border-radius:var(--r-card);padding:12px 14px;box-shadow:var(--shadow-soft);margin-bottom:12px}
+.gmeter b{font-family:var(--font-num);font-size:28px;font-weight:900;line-height:1;color:var(--brand)}
+.gmeter small{display:block;font-size:11.5px;color:var(--text-mute)}
+.gmeter.over b{color:var(--stuck-text)} .gmeter.over .bar i{background:var(--coral)}
+.gcard{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;background:var(--surface);border-radius:var(--r-card);padding:12px 14px;box-shadow:var(--shadow-soft);margin-bottom:10px}
+.gcard .mon.sm{width:40px;height:40px}
+.gcard b{display:block;font-size:14px;line-height:1.35}
+.gcard small{display:block;font-size:12px;color:var(--text-mute);margin-top:2px}
+.gcard small.ok{color:var(--brand)}
+.gcard.done{opacity:.72}
+.gcard .chips{margin-top:8px}
+.gcard .chips .chip{font-weight:500;text-align:left;min-height:36px}
+.gcard .mic.sm{width:44px;height:44px}
+.gcard .mic{width:48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;transition:transform .2s var(--ease)}
+.gcard .mic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gcard .mic.on{transform:scale(1.1)}
