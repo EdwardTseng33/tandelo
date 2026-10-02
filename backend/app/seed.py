@@ -1,4 +1,4 @@
-"""種子資料：虛構隊友、老師；冒險世界的兩支虛構小隊、影子與戰績。題庫在 app/data/content.json，不進資料庫。
+"""種子資料：虛構隊友、老師；冒險世界的兩支虛構小隊、夥伴與戰績。題庫在 app/data/content.json，不進資料庫。
 用法：python -m app.seed（或 make seed）。重複執行不會重複灌。"""
 
 from datetime import date, timedelta
@@ -32,7 +32,7 @@ SEED_TEACHERS = [
 
 
 # 冒險世界：兩支已成班的虛構小隊（隊員也是新的虛構人物，不佔用上面可湊隊的示範隊友）。
-# shadows：(怪 id, 事件序列)；事件照影子狀態機走，會產生對應戰績。
+# shadows：(怪 id, 事件序列)；事件照夥伴狀態機走，會產生對應戰績。
 SEED_SQUADS = [
     {
         "name": "四葉小隊",
@@ -77,7 +77,7 @@ SEED_GUILDS = [
 
 
 def _seed_world(db: DBSession, created: dict) -> None:
-    """冒險世界的種子：公會、兩支小隊（含 8 堂課）、影子與戰績、一個已結算的副本。"""
+    """冒險世界的種子：公會、兩支小隊（含 8 堂課）、夥伴與戰績、一個已結算的副本。"""
     teachers = {t.nickname: t for t in db.query(models.Teacher).filter_by(is_seed=True).all()}
     if db.query(models.Guild).count() == 0:
         for row in SEED_GUILDS:

@@ -1,4 +1,4 @@
-"""冒險世界（0.2）：地圖、影子、戰績、副本、對戰、燈塔與守塔、鄰近榜。
+"""冒險世界（0.2）：地圖、夥伴、戰績、副本、對戰、燈塔與守塔、鄰近榜。
 
 路由只做「取資料、呼叫 services/world.py、轉成回應」；所有數字與判斷都在 service 裡。
 隊友畫面不露名字：小隊戰績只回加總與人均，榜只回前後各三隊、不含名次與總數。
@@ -137,7 +137,7 @@ def _squad(db: DBSession, team: models.Team) -> Dict[str, Any]:
 
 
 def _history(db: DBSession, team: models.Team, week: int) -> List[str]:
-    """這一隊遠征過的怪：到這週為止的課表卡點，加上隊員影子裡已經偵察到的怪。"""
+    """這一隊遠征過的怪：到這週為止的課表卡點，加上隊員夥伴裡已經偵察到的怪。"""
     seen: List[str] = []
     for s in team.sessions:
         if s.week <= week and s.skill_id and s.skill_id not in seen:
@@ -191,7 +191,7 @@ def world_map():
     )
 
 
-# ——— 影子 ———
+# ——— 夥伴 ———
 def _shadow_out(sh: models.Shadow) -> schemas.ShadowOut:
     m = C.monsters().get(sh.monster_id, {})
     return schemas.ShadowOut(

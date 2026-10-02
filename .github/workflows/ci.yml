@@ -74,10 +74,31 @@ jobs:
           fi
           echo "禁字檢查：0 筆"
 
+  e2e:
+    name: Demo 端對端（真瀏覽器玩一圈）
+    runs-on: ubuntu-24.04
+    needs: [frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: 安裝 Playwright 與 Chromium
+        working-directory: frontend/tests
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: 起靜態伺服器並玩一圈
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --directory frontend >/tmp/http.log 2>&1 &
+          for i in $(seq 1 20); do curl -fsS http://localhost:8765/world/ >/dev/null 2>&1 && break; sleep 0.5; done
+          node frontend/tests/e2e.mjs http://localhost:8765
+
   docker:
     name: Docker build（不 push）
     runs-on: ubuntu-24.04
-    needs: [backend, frontend]
+    needs: [backend, frontend, e2e]
     strategy:
       matrix:
         service: [frontend, backend]
@@ -98,12 +119,12 @@ jobs:
           if [ "${{ matrix.service }}" = "backend" ]; then
             docker run -d --name tandelo-ci -p 8000:8000 tandelo-backend:ci
             for i in $(seq 1 20); do curl -fsS http://localhost:8000/health && break; sleep 2; done
-            curl -fsS http://localhost:8000/api/v1/health | grep -q '"ok":true'
+            out=$(curl -fsS http://localhost:8000/api/v1/health); grep -q '"ok":true' <<<"$out"
           else
             docker run -d --name tandelo-ci -p 8080:8080 -e BACKEND_HOST=127.0.0.1 -e BACKEND_PORT=9 tandelo-frontend:ci
             for i in $(seq 1 20); do curl -fsS http://localhost:8080/healthz && break; sleep 2; done
-            curl -fsS http://localhost:8080/ | grep -q Tandelo
-            curl -fsS http://localhost:8080/config.js | grep -q "'/api'"
+            out=$(curl -fsS http://localhost:8080/); grep -q Tandelo <<<"$out"
+            out=$(curl -fsS http://localhost:8080/config.js); grep -q "'/api'" <<<"$out"
           fi
           docker logs tandelo-ci
           docker rm -f tandelo-ci

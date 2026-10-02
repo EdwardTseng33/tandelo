@@ -12,3 +12,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .ruff_cache/
+
+# 前端 e2e 的套件
+node_modules
+frontend/tests/package-lock.json

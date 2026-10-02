@@ -89,8 +89,10 @@ a{color:var(--brand)}
 .hd .sub{display:block;font-size:13px;color:var(--text-mute);font-weight:500;margin-top:4px}
 .hd .back{width:44px;height:44px;border-radius:14px;background:var(--surface);box-shadow:var(--shadow-soft);display:grid;place-items:center;flex:0 0 auto;margin-top:-2px}
 .hd .back svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hd.with-back{align-items:center}
-.hd.with-back h2{font-size:20px}
+.hd.with-back{align-items:center;justify-content:flex-start}
+.hd.with-back .grow{flex:1;min-width:0;text-align:left}
+.hd.with-back h2{font-size:21px;line-height:1.25}
+.hd.with-back .sub{margin-top:2px}
 .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--brand);text-transform:uppercase}
 .dark .eyebrow{color:#7ED3C0}
 .dark .hd .sub{color:var(--on-night-mute)}

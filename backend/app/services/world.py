@@ -1,4 +1,4 @@
-"""冒險世界（0.2）的純規則：影子狀態機、戰績、副本解題率、路線、缺席、鏡像賽、出題戰六分制、
+"""冒險世界（0.2）的純規則：夥伴狀態機、戰績、副本解題率、路線、缺席、鏡像賽、出題戰六分制、
 配對與幽靈隊、對戰開關、公會解鎖、徽章公開賽、燈塔與守塔、鄰近榜、關燈。
 
 全部是純函式，不碰資料庫，可以不開伺服器直接測；關鍵數字由 tests/test_world.py 鎖住。
@@ -10,7 +10,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from . import rules
 
-# ——— 影子狀態機：迷霧 → 還在附近 → 打中了 → 收服 → 睡著了 → 收服（叫醒）———
+# ——— 夥伴狀態機：迷霧 → 還在附近 → 打中了 → 收服 → 睡著了 → 收服（叫醒）———
 SHADOW_STATES = ("fog", "near", "hit", "captured", "asleep")
 SHADOW_EVENTS = ("diagnosed_stuck", "explained_ok", "retest_passed", "wrong_again", "woken")
 TRANSITIONS: Dict[tuple, str] = {
@@ -33,7 +33,7 @@ def transition(state: str, event: str) -> str:
     try:
         return TRANSITIONS[(state, event)]
     except KeyError:
-        raise ValueError(f"影子在「{state}」時不能發生「{event}」。") from None
+        raise ValueError(f"夥伴在「{state}」時不能發生「{event}」。") from None
 
 
 def shadow_record_kind(event: str) -> Optional[str]:

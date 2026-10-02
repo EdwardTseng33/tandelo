@@ -143,6 +143,10 @@ make logs / make down
 | GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
 | PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
 
+### Demo 端對端測試
+
+`frontend/tests/e2e.mjs` 用真的瀏覽器把一週循環玩一遍（12 步，每步斷言，任何 console 錯誤都算失敗），CI 的「Demo 端對端」工作會跑。本機：`python3 -m http.server 8765 --directory frontend`，另一個終端 `cd frontend/tests && npm install && npx playwright install chromium && node e2e.mjs`。
+
 ### Demo 的三個視角
 
 同一個 Demo 有三個視角：孩子（今天、副本、圖鑑、地圖、公會、我學會的）、家長（營地來信，LINE 樣式）、嚮導（設定 → 切到嚮導視角：今晚三個介入時刻、每生每週人力分鐘表、介入紀錄）。
