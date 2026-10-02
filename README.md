@@ -127,7 +127,7 @@ make logs / make down
 | GET | `/students/{id}/parent-report`、`/students/{id}/parent-reports` | 生成週報、歷史週報 |
 | POST / GET | `/teacher-applications` | 招募表單；列表需 `X-Admin-Token` |
 | GET | `/teachers`、`/teachers/{id}/earnings?tier=&teams=&size=` | 老師清單、收入試算（45／52／60%、保底 600） |
-| POST | `/coach/reply`、`/coach/explain` | 小陪回覆（規則引擎或接模型，四層引導、答案守門；22:30–06:00 回「關燈中」且不呼叫模型）、說給我聽評分 |
+| POST | `/coach/reply`、`/coach/explain` | 小陪回覆（規則引擎或接模型，四層引導、答案守門；22:30–06:00 回「關燈中」且不呼叫模型；body 帶 `variant`（monster_id、route、seed、picked）時後端重算該題，踩到錯法會點名、示範一步用該題第一步、守門含該題答案）、說給我聽評分 |
 | GET | `/coach/metrics` | 小陪洩漏率：`leak`／`total`（記憶體計數） |
 | GET | `/world/map` | 冒險世界：四片大陸、區域與燈塔、怪的傳說卡、路線、聯賽區 |
 | GET / POST | `/students/{id}/shadows`、`/students/{id}/shadows/{monster_id}/events` | 夥伴狀態（迷霧→附近→打中→收服→睡著→叫醒）；非法轉移 409 |
@@ -142,6 +142,10 @@ make logs / make down
 | POST | `/interventions` | 人工介入紀錄（by／kind／trigger／分鐘；note ≤ 200 字、不放個資）；回下一個該介入的層級（系統 → 巡邏 → 嚮導） |
 | GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
 | PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
+
+### Demo 接後端
+
+冒險世界 Demo 預設用前端的本地引擎出題（`frontend/world/variants.js`）。在 Demo 的「設定 → 後端」填入 API 位址，或用 `world/?api=https://…` 開啟，巡邏題就改由後端出題（`/world/monsters/{id}/variants`）、後端判題（`…/variants/check`）、小陪由 `/coach/reply` 帶 `answer_token` 回話。後端的 `CORS_ORIGINS` 要包含 Demo 的來源。沒回應時可一鍵改回本地題。
 
 ## 說明
 

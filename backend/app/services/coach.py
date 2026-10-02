@@ -42,6 +42,7 @@ class CoachTurn:
     step_text: str = ""
     level: Optional[int] = None
     answer_forms: List[str] = field(default_factory=list)
+    variant: Optional[Dict[str, Any]] = None  # variant_context() 的結果：這一題的題幹、錯法、步驟、孩子是否踩到 trap
 
     def effective_level(self) -> int:
         """沒給 level 就用 hint_level 當層級（舊前端相容）。"""
@@ -58,10 +59,30 @@ def tier_for_step(start_tier: int, step: int) -> int:
     return min(2, start_tier + step)
 
 
+def variant_context(variant: Dict[str, Any], picked: Optional[int] = None) -> Dict[str, Any]:
+    """把變體引擎的一題整理成小陪要看的樣子：題幹、答案與 trap 的文字、錯法標籤、解法步驟、孩子選了什麼、是否踩到 trap。"""
+    opts = list(variant["options"])
+    picked_text = opts[picked] if picked is not None and 0 <= picked < len(opts) else ""
+    return {
+        "monster_id": variant["monster_id"],
+        "stem": variant["stem"],
+        "answer": opts[variant["answer"]],
+        "trap": opts[variant["trap"]],
+        "trap_label": variant.get("trap_label", ""),
+        "steps": list(variant.get("steps", [])),
+        "why": variant.get("why", ""),
+        "picked": picked_text,
+        "trap_hit": picked is not None and picked == variant["trap"],
+        "wrong": bool(picked_text) and picked != variant["answer"],
+    }
+
+
 def guard_forms(turn: CoachTurn) -> List[str]:
     """要擋的答案寫法：呼叫端給的，或題庫的最終答案；第三層以前連這一步的答案也不能說。"""
     forms = [a for a in (turn.answer_forms or []) if str(a).strip()]
     sk = C.skill(turn.skill_id)
+    if turn.variant:
+        forms.append(turn.variant["answer"])
     if not forms:
         forms.append(sk["coach"]["final"])
     steps = sk["coach"]["steps"]
@@ -99,7 +120,52 @@ class RulesCoach:
             return hints[level - 1]
         return f"我用別的題目示範這一步：{st['demo']}。換你做原本那題。"
 
+    def line_for_variant(self, turn: CoachTurn, level: int) -> str:
+        """變體題的四層：0 問寫到哪；1 指（踩到 trap 就點名錯法）；2 借（同一隻怪的小提示）；3 示範這一題的第一步；之後固定句。"""
+        if level > MAX_LEVEL:
+            return HANDOFF_TEXT
+        v = turn.variant or {}
+        sk = C.skill(turn.skill_id)
+        hints = sk["coach"]["steps"][0].get("hints", []) if sk["coach"]["steps"] else []
+        if level == 0:
+            return "你寫到哪一步？"
+        if level == 1:
+            if v.get("trap_hit"):
+                return f"你踩到的是「{v['trap_label']}」。{hints[0] if hints else '再看一次題目這一步在問什麼。'}"
+            return hints[0] if hints else "先看第一步，你是從哪裡開始算的？"
+        if level == 2:
+            if len(hints) > 1:
+                return hints[1]
+            demo = sk["coach"]["steps"][0].get("demo", "") if sk["coach"]["steps"] else ""
+            return f"用別的題目試試：{demo}" if demo else "換一題更簡單的想想看，規則是一樣的。"
+        first = v["steps"][0] if v.get("steps") else ""
+        return f"我示範第一步：{first}。接下來換你。" if first else HANDOFF_TEXT
+
+    def _reply_variant(self, turn: CoachTurn) -> Dict[str, Any]:
+        v = turn.variant or {}
+        level = turn.effective_level()
+        base = {"step": 0, "hint_level": turn.hint_level, "done": False, "ok": None, "level": min(level, MAX_LEVEL + 1), "handoff": False}
+        if turn.action == "start":
+            text = f"我看到這一題了：{v.get('stem', '')}。{self.line_for_variant(turn, 0)}"
+            return {**base, "messages": [{"who": "coach", "kind": "ask", "text": text}], "level": 0}
+        if turn.action == "hint":
+            text = self.line_for_variant(turn, level)
+            nxt = min(turn.hint_level + 1, MAX_LEVEL + 1)
+            return {**base, "messages": [{"who": "coach", "kind": "hint", "text": text}], "hint_level": nxt, "handoff": level >= MAX_LEVEL}
+        # answer：只比對這一題的答案；踩到 trap 就先點名錯法，不給答案
+        n = normalize(turn.message)
+        if not n:
+            return {**base, "messages": [{"who": "coach", "kind": "text", "text": "我還沒看到你的想法。寫一點就好。"}], "ok": False}
+        if n == normalize(v.get("answer", "")):
+            done = {"who": "coach", "kind": "done", "text": "你自己解出來了。我沒有給你答案，只問了你問題。"}
+            return {**base, "messages": [done], "done": True, "ok": True, "level": 0}
+        if n == normalize(v.get("trap", "")):
+            return {**base, "messages": [{"who": "coach", "kind": "text", "text": f"這一步踩到「{v.get('trap_label', '')}」了。你是怎麼想的？"}], "ok": False}
+        return {**base, "messages": [{"who": "coach", "kind": "text", "text": "我先不說對錯。你是怎麼想的？再看一次題目這一步在問什麼。"}], "ok": False}
+
     def reply(self, turn: CoachTurn) -> Dict[str, Any]:
+        if turn.variant:
+            return self._reply_variant(turn)
         sk = C.skill(turn.skill_id)
         steps = sk["coach"]["steps"]
         step, hint_level, action = turn.step, turn.hint_level, turn.action
@@ -233,8 +299,16 @@ def build_system_prompt(turn: CoachTurn) -> str:
             f"- 被識破時：{monster['caught_line']}",
             "",
         ]
+    if turn.variant:
+        v = turn.variant
+        parts += [
+            f"題目（這一題是變體）：{v['stem']}",
+            f"孩子選了：{v['picked'] or '（還沒選）'}" + (f"，踩到了這隻怪的錯法「{v['trap_label']}」" if v.get("trap_hit") else ""),
+            "解法步驟（只給你參考，最後一步絕對不能說出來）：" + "；".join(v.get("steps", [])[:-1]),
+            "",
+        ]
     parts += [
-        f"題目：{sk['coach']['prompt']}",
+        f"題目：{sk['coach']['prompt']}" if not turn.variant else "同一隻怪的題庫範例：" + sk["coach"]["prompt"],
         f"現在在第 {turn.step + 1} 步，這一步在問：{step_ask}",
         f"孩子目前寫到：{turn.step_text.strip() or '（還沒寫）'}",
         f"目前引導層級：第 {level} 層「{LEVEL_NAMES[level]}」。只做這一層的事。",
@@ -293,7 +367,7 @@ class LLMProvider:
 
     def _fallback(self, turn: CoachTurn, level: int, reason: str) -> Dict[str, Any]:
         self.metrics.count_leak(reason)
-        text = self.rules.line_for_level(turn.skill_id, turn.step, level)
+        text = self.rules.line_for_variant(turn, level) if turn.variant else self.rules.line_for_level(turn.skill_id, turn.step, level)
         return {
             "messages": [{"who": "coach", "kind": "hint", "text": text}],
             "step": turn.step,

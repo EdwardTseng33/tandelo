@@ -3,6 +3,7 @@
 import * as D from './data.js';
 import * as V from './variants.js';
 import * as SFX from './sfx.js';
+import * as API from './api.js';
 
 const KEY = 'tandelo.world.v1';
 const $ = (s, el = document) => el.querySelector(s);
@@ -48,7 +49,18 @@ function reset() { S = defaults(); save(); go('home'); toast('已重設示範資
 const clock = () => D.CLOCKS.find((c) => c.id === S.clock) || D.CLOCKS[0];
 // 題目由變體引擎依種子與路線產生：同一個種子永遠同一組，換種子就「換個樣子出現」
 let pqCache = { k: '', qs: [] };
-const PQ = () => { const k = `${S.seed}|${S.route}`; if (pqCache.k !== k) { const qs = V.bank('sign-dist', 3, S.route, `patrol-${S.seed}`); qs[1].why = true; pqCache = { k, qs }; } return pqCache.qs; };
+const localPQ = () => { const k = `${S.seed}|${S.route}`; if (pqCache.k !== k) { const qs = V.bank('sign-dist', 3, S.route, `patrol-${S.seed}`); qs[1].why = true; pqCache = { k, qs }; } return pqCache.qs; };
+// 接後端時：題目由後端出（只給題幹、選項、answer_token），答案要等後端判了才知道
+const remote = { k: '', qs: null, loading: false, err: '' };
+function loadRemote() {
+  const k = `${S.seed}|${S.route}|${API.base()}`; if (remote.k === k) return;
+  Object.assign(remote, { k, qs: null, loading: true, err: '' });
+  API.variants('sign-dist', 3, S.route, `patrol-${S.seed}`).then((list) => {
+    remote.qs = list.items.map((it) => ({ id: it.variant_key, monster: 'sign-dist', route: S.route, stem: it.stem, options: it.options, token: it.answer_token, answer: null, trap: null, trapLabel: '', taunt: V.TAUNT['sign-dist'], why: '', steps: [], hint: { ask: '你寫到哪一步？', point: '', lend: '', show: '' }, remote: true }));
+    remote.qs[1].why = true; remote.loading = false; if (parse().key === 'play') rerender();
+  }).catch((e) => { remote.loading = false; remote.err = String(e.message || e); if (parse().key === 'play') rerender(); });
+}
+const PQ = () => { if (API.base() && remote.qs) return remote.qs; return localPQ(); };
 const AQ = () => V.generate('sqrt-split', `ambush-${S.seed}`, S.route);
 const WQ = () => V.generate('factor-diff', `wake-${S.seed}`, 'plain');
 const night = () => { const [h, m] = clock().time.split(':').map(Number); const t = h * 60 + m; return t >= 1350 || t < 360; };
@@ -208,21 +220,25 @@ SCREENS.dungeon = () => {
 // 巡邏作答：四層引導 問 → 指 → 借 → 示範一步
 let play = { lvl: 0, picked: null, tried: false, rec: 0, recT: null };
 SCREENS.play = () => {
+  if (API.base()) { loadRemote(); if (remote.loading) return `${hd('巡邏', '負號幽靈 · 多項式林')}<div class="qcard skeleton"><div class="row"><span class="sk sk-mon"></span><span class="sk sk-line"></span></div><span class="sk sk-stem"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span></div><p class="meta" style="text-align:center">後端出題中 · ${esc(API.host())}</p>`; if (remote.err && !remote.qs) return `${hd('巡邏', '負號幽靈 · 多項式林')}<div class="card coral"><b>後端沒回應</b><small>${esc(remote.err)}</small></div><div class="btns"><button class="btn" data-act="api-retry">再試一次</button><button class="btn ghost" data-act="api-off">先用本地題</button></div>`; }
   const q = PQ()[S.patrol.i];
   if (!q || S.patrol.finished) return `${hd('巡邏完成', '第 1 層 · 負號幽靈')}<div class="card"><div class="settle"><div class="big num">3<small>/ 3</small></div><div class="lbl">巡邏層完成 · 問過小陪照樣算分</div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button><button class="btn ghost" data-act="patrol-again">再巡一次 · 牠換個樣子</button></div>`;
   const m = mon('sign-dist');
+  const hit = play.picked !== null && play.picked !== undefined && play.picked === q.answer;
   const lvls = ['問', '指', '借', '示範一步'];
-  const txt = [q.hint.ask, q.hint.point, q.hint.lend, q.hint.show];
+  const txt = [q.hint.ask, play.picked === q.trap ? `你踩到的是「${q.trapLabel}」。${q.hint.point}` : q.hint.point, q.hint.lend, q.hint.show];
+  if (play.coachText) for (let i = 0; i < 4; i++) if (play.coachText[i]) txt[i] = play.coachText[i];
+  if (play.busy) txt[play.lvl] = '小陪想一下…';
   return `
   ${hd(`巡邏 · 第 ${S.patrol.i + 1} 題`, '負號幽靈 · 多項式林')}
   <div class="q-top"><div class="steps" aria-label="進度">${PQ().map((_, i) => `<i class="${i < S.patrol.i ? 'on' : (i === S.patrol.i ? 'cur' : '')}"></i>`).join('')}</div><span class="pill brand">今天 ${S.cards} / 3</span></div>
   <div class="qcard"><div class="row" style="margin-bottom:6px">${monSvg(m, play.tried ? 'shake' : 'bob')}<div class="grow"><span class="meta">這隻怪的口頭禪</span><b style="font-size:13.5px">「${esc(m.taunt)}」</b></div></div>
     <p class="stem"><span class="mx">${esc(q.stem.replace(' = ?', ''))}</span><br><span class="meta" style="font-size:13px;font-weight:500">化簡</span></p>
-    <div class="opts" id="opts">${q.options.map((o, i) => `<button class="opt ${play.picked === i ? (i === q.answer ? 'ok' : 'trap') : ''}" data-opt="${i}" ${play.picked === q.answer ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
-    ${play.picked !== null && play.picked !== q.answer ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：${play.picked === q.trap ? `${esc(q.taunt)} <span class="pill coral">${esc(q.trapLabel)}</span>` : '差一點點，再看一次括號。'}</p></div>` : ''}
-    ${play.picked === q.answer ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>打中了</b>：${esc(q.why)}${play.lvl ? '（問過小陪，一樣算 1 分）' : ''}</p></div>` : ''}
+    <div class="opts" id="opts">${q.options.map((o, i) => `<button class="opt ${play.picked === i ? (i === q.answer ? 'ok' : 'trap') : ''}" data-opt="${i}" ${hit ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
+    ${play.picked !== null && !hit ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：${play.picked === q.trap ? `${esc(q.taunt)} <span class="pill coral">${esc(q.trapLabel)}</span>` : '差一點點，再看一次括號。'}</p></div>` : ''}
+    ${hit ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>打中了</b>：${esc(q.why)}${play.lvl ? '（問過小陪，一樣算 1 分）' : ''}</p></div>` : ''}
   </div>
-  ${play.picked !== q.answer ? `
+  ${!hit ? `
   <div class="coach"><span class="face">${SVG.coach}</span><div><span class="lvl">小陪 · ${lvls[play.lvl]}</span><p>${esc(txt[play.lvl])}</p>
     <div class="chips">${play.lvl === 0 ? ['我把括號拆開了', '我還沒開始', '我卡在合併'].map((c) => `<button class="chip" data-coach="${esc(c)}">${esc(c)}</button>`).join('') : `<button class="chip" data-coach="more">${play.lvl < 3 ? '再多一點' : '我再試一次'}</button><button class="chip ghost" data-act="sos">求援 · 隊友或嚮導</button>`}</div></div></div>` : `
   ${q.why ? `<div class="rec ${play.rec ? 'on' : ''}"><button class="mic ${play.rec ? 'on' : ''}" data-act="rec" aria-label="按住錄 30 秒">${SVG.mic}</button><span class="t num">0:${String(play.rec).padStart(2, '0')}</span>${wave(14)}<p>這一題要附一句「為什麼」。用說的就可以，嚮導每週抽查 3 段。</p></div>` : ''}
@@ -433,6 +449,7 @@ SCREENS.coach = () => `
 SCREENS.settings = () => `
   ${hd('示範設定', '時間、深淺色、個人榜、對戰投票')}
   <div class="ios-tip ${/iP(hone|ad|od)/.test(navigator.userAgent) && !window.navigator.standalone ? 'on' : ''}"><b>加到主畫面</b>：Safari 底下的「分享」→「加入主畫面」。之後會像 App 一樣全螢幕開啟。</div>
+  <div class="card"><h3>後端</h3><div class="setrow"><span>${API.base() ? `已連線 <b>${esc(API.host())}</b>` : '本地引擎'}<small>有位址時：題目由後端出、後端判題、小陪由後端回話。</small></span>${API.base() ? '<button class="btn sm ghost" data-act="api-test">測試</button>' : ''}</div><input class="in" type="url" inputmode="url" placeholder="https://api.example.com" value="${esc(API.base())}" data-api aria-label="後端位址"></div>
   <div class="card"><h3>這週的題</h3><div class="setrow"><span>種子 <b class="num">${esc(S.seed)}</b><small>巡邏、伏擊、叫醒的題目由變體引擎依種子產生；換種子，怪就換個樣子。</small></span><button class="btn sm ghost" data-act="reseed">換一組</button></div></div>
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
@@ -507,6 +524,11 @@ function showCombo() { const old = view.querySelector('.combo'); if (old) old.re
 function motes(host, n = 14) { if (!host || reduced()) return; const m = document.createElement('div'); m.className = 'motes'; for (let i = 0; i < n; i++) { const s = document.createElement('i'); s.style.setProperty('--x', `${Math.random() * 100}%`); s.style.setProperty('--y', `${30 + Math.random() * 70}%`); s.style.setProperty('--d', `${5 + Math.random() * 6}s`); s.style.setProperty('--dl', `${-Math.random() * 8}s`); m.appendChild(s); } host.appendChild(m); }
 let toastT;
 function toast(t) { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), 2200); }
+function afterPick(q, i, r) {
+  play.picked = i; play.tried = i !== q.answer;
+  if (i === q.answer) { buzz(10); combo += 1; juice('good', r.left + r.width / 2, r.top, play.lvl ? '打中' : '打中！'); rerender(); showCombo(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('hit'); return; }
+  buzz([10, 30, 10]); combo = 0; juice('bad', r.left + r.width / 2, r.top, '被騙到'); rerender(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('tricked');
+}
 function addCard() { if (S.cards < 3) { S.cards += 1; buzz(16); SFX.play('card'); if (S.cards === 3) setTimeout(() => reward({ big: '3 / 3', title: '今天三張都亮了', sub: `連續第 ${D.SQUAD.streak + 1} 天` }), 1600); } }
 // 獎勵時刻：全幕一下、光芒與彩紙，點一下或兩秒後收起
 function reward({ big, title, sub }) {
@@ -574,12 +596,26 @@ document.addEventListener('click', (e) => {
   if (t.dataset.lore) return lore(t.dataset.lore);
   if (t.dataset.clock) { S.clock = t.dataset.clock; save(); rerender(); applyTheme(); return; }
   if (t.dataset.opt !== undefined) {
-    const q = PQ()[S.patrol.i]; const i = Number(t.dataset.opt); play.picked = i; play.tried = i !== q.answer;
+    const q = PQ()[S.patrol.i]; const i = Number(t.dataset.opt);
     const r = t.getBoundingClientRect();
-    if (i === q.answer) { buzz(10); combo += 1; juice('good', r.left + r.width / 2, r.top, play.lvl ? '打中' : '打中！'); rerender(); showCombo(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('hit'); return; }
-    buzz([10, 30, 10]); combo = 0; juice('bad', r.left + r.width / 2, r.top, '被騙到'); rerender(); const m = view.querySelector('.qcard .mon'); if (m) m.classList.add('tricked'); return;
+    if (q.remote && !(q.judged && q.judged[i])) {
+      if (play.busy) return; play.busy = true; rerender();
+      API.check('sign-dist', q.token, i).then((j) => { q.judged = q.judged || {}; q.judged[i] = j; q.answer = j.answer; q.trapLabel = j.trap_label; q.why = j.why; if (j.hit_trap) q.trap = i; play.busy = false; afterPick(q, i, r); }).catch((e) => { play.busy = false; toast(`後端沒回應：${e.message}`); rerender(); });
+      return;
+    }
+    return afterPick(q, i, r);
   }
-  if (t.dataset.coach !== undefined) { if (play.lvl < 3) play.lvl += 1; else { play.picked = null; play.lvl = 0; } return rerender(); }
+  if (t.dataset.coach !== undefined) {
+    const q = PQ()[S.patrol.i];
+    if (q && q.remote && play.lvl < 3) {
+      if (play.busy) return; const lvl = play.lvl + 1; play.busy = true; rerender();
+      API.coach({ skill_id: 'sign-dist', action: 'hint', level: lvl, hint_level: lvl, step_text: t.dataset.coach === 'more' ? '' : t.dataset.coach, time: clock().time, variant: { answer_token: q.token, picked: play.picked } })
+        .then((j) => { play.coachText = play.coachText || {}; play.coachText[lvl] = (j.messages && j.messages[0] && j.messages[0].text) || ''; play.lvl = lvl; play.busy = false; rerender(); })
+        .catch((e) => { play.busy = false; play.lvl = lvl; toast(`小陪沒回應：${e.message}`); rerender(); });
+      return;
+    }
+    if (play.lvl < 3) play.lvl += 1; else { play.picked = null; play.lvl = 0; } return rerender();
+  }
   if (t.dataset.ropt !== undefined) { play.rpick = Number(t.dataset.ropt); const r = t.getBoundingClientRect(); const ok = play.rpick === D.RELAY.steps[3].answer; buzz(ok ? 10 : [10, 30, 10]); juice(ok ? 'good' : 'bad', r.left + r.width / 2, r.top, ok ? '接到了' : '被騙到'); return rerender(); }
   if (t.dataset.aopt !== undefined) { play.apick = Number(t.dataset.aopt); return rerender(); }
   if (t.dataset.wopt !== undefined) { play.wpick = Number(t.dataset.wopt); const r = t.getBoundingClientRect(); const ok = play.wpick === WQ().answer; juice(ok ? 'gold' : 'bad', r.left + r.width / 2, r.top, ok ? '醒了！' : '還在睡'); buzz(ok ? [10, 20, 10] : [10, 30, 10]); return rerender(); }
@@ -621,12 +657,16 @@ document.addEventListener('click', (e) => {
   if (a === 'week-send') { S.weekSent = true; save(); SFX.play('card'); toast('傳到營地了'); return go('camp'); }
   if (a === 'race') { S.raceSigned = !S.raceSigned; save(); toast(S.raceSigned ? '已送到家長的 LINE 確認' : '已取消報名'); return rerender(); }
   if (a === 'witness') { S.witnessed = !S.witnessed; save(); return rerender(); }
+  if (a === 'api-test') { toast('測試中…'); API.ping().then(() => toast(`連上了 · ${API.host()}`)).catch((e) => toast(`連不上：${e.message}`)); return; }
+  if (a === 'api-retry') { remote.k = ''; return rerender(); }
+  if (a === 'api-off') { API.setBase(''); remote.k = ''; toast('改用本地題'); return rerender(); }
   if (a === 'sound') { S.sound = !S.sound; SFX.setEnabled(S.sound); save(); if (S.sound) SFX.play('hit'); return rerender(); }
   if (a === 'theme') { const r = document.documentElement; const dark = r.getAttribute('data-theme') === 'dark'; r.setAttribute('data-theme', dark ? 'light' : 'dark'); S.theme = dark ? 'light' : 'dark'; save(); return rerender(); }
   if (a === 'pboard') { S.personalBoard = !S.personalBoard; save(); toast(S.personalBoard ? '13 歲以下需家長在 LINE 端同意' : '已關閉'); return rerender(); }
   if (a === 'pvp') { S.pvp = !S.pvp; save(); toast(S.pvp ? '你投了同意。只要有一票不同意，本季打幽靈隊。' : '你投了不同意。沒有人知道是誰投的。'); return rerender(); }
   if (a === 'reset') { if (confirm('重設所有示範資料？')) reset(); return; }
 });
+document.addEventListener('change', (e) => { const inp = e.target.closest('[data-api]'); if (!inp) return; const u = API.setBase(inp.value); remote.k = ''; toast(u ? `後端：${API.host()}` : '改用本地引擎'); rerender(); });
 document.addEventListener('pointerdown', (e) => { const m = e.target.closest('[data-act="rec"]'); if (m) { e.preventDefault(); recStart(); } });
 ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => document.addEventListener(ev, (e) => { if (recTimer && !e.target.closest('[data-act="rec"]')) recStop(); else if (recTimer && ev !== 'pointerleave') recStop(); }));
 document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.map .hot')) { e.preventDefault(); e.target.click(); } });
@@ -653,6 +693,7 @@ function applyTheme() {
   else r.removeAttribute('data-theme');
 }
 // 美術掛載：codex 產出的 art/manifest.json 存在時，開啟 [data-art]，由 art/art.css 接手背景與角色
+{ const qp = new URLSearchParams(location.search).get('api'); if (qp !== null) API.setBase(qp); }
 const ART = { m2: false };
 fetch('art/manifest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((m) => {
   if (!m) return;
