@@ -4,7 +4,7 @@
 
 這是一個**概念驗證（POC）**：品牌網站、老師招募頁、可操作的 App 原型（學生、家長 LINE、老師三條流程），以及一個小的後端 API。所有示範資料都是虛構的；沒有後端時，資料只留在使用者自己的裝置。
 
-- 網站（Pages）：<https://edwardtseng33.github.io/tandelo/>（離線示範模式，不連後端）
+- 網站（Pages）：<https://edwardtseng33.github.io/tandelo/>（預設離線示範；設定頁可填後端位址接上真的出題、判題與小陪）
 - 冒險世界 Demo：<https://edwardtseng33.github.io/tandelo/world/>
 - 架構說明：[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
