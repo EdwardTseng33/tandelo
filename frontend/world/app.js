@@ -408,6 +408,7 @@ function go(path) { const h = `#/${path}`; if (location.hash === h) route(); els
 function back() { if (trail.length > 1) { trail.pop(); const prev = trail.pop(); go(prev); } else go('home'); }
 
 function route() {
+  document.querySelectorAll('.sheet,.sheet-bg').forEach((el) => el.remove()); // 換畫面時收起傳說卡
   const { key, param } = parse();
   const fn = SCREENS[key] || SCREENS.home;
   const dir = trail.length && trail[trail.length - 1] === key ? 'back' : (trail.includes(key) && trail.indexOf(key) < trail.length - 1 ? 'back' : 'fwd');
@@ -576,6 +577,7 @@ function lore(id) {
   requestAnimationFrame(() => { bg.classList.add('on'); sh.classList.add('on'); });
   const close = () => { bg.classList.remove('on'); sh.classList.remove('on'); setTimeout(() => { bg.remove(); sh.remove(); }, 420); };
   bg.addEventListener('click', close); sh.addEventListener('click', (e) => { if (e.target.closest('[data-share],[data-go]')) close(); });
+  document.addEventListener('keydown', function onEsc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onEsc); } });
 }
 
 // ---------- 主題與啟動 ----------
