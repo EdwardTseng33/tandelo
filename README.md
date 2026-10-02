@@ -4,7 +4,7 @@
 
 這是一個**概念驗證（POC）**：品牌網站、老師招募頁、可操作的 App 原型（學生、家長 LINE、老師三條流程），以及一個小的後端 API。所有示範資料都是虛構的；沒有後端時，資料只留在使用者自己的裝置。
 
-- 網站（Pages）：<https://edwardtseng33.github.io/tandelo/>（離線示範模式，不連後端）
+- 網站（Pages）：<https://edwardtseng33.github.io/tandelo/>（預設離線示範；設定頁可填後端位址接上真的出題、判題與小陪）
 - 冒險世界 Demo：<https://edwardtseng33.github.io/tandelo/world/>
 - 架構說明：[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
@@ -142,6 +142,10 @@ make logs / make down
 | POST | `/interventions` | 人工介入紀錄（by／kind／trigger／分鐘；note ≤ 200 字、不放個資）；回下一個該介入的層級（系統 → 巡邏 → 嚮導） |
 | GET | `/teams/{id}/interventions/summary?week=`、`/interventions/summary?layer=&week=` | 每生每週人力分鐘、各 kind 分鐘、各 trigger 次數；分層由小隊的 `layer` 決定 |
 | PUT | `/teams/{id}/layer` | 小隊的人力介入分層 L0／L1／L2／L3（預設 L2） |
+
+### Demo 的三個視角
+
+同一個 Demo 有三個視角：孩子（今天、副本、圖鑑、地圖、公會、我學會的）、家長（營地來信，LINE 樣式）、嚮導（設定 → 切到嚮導視角：今晚三個介入時刻、每生每週人力分鐘表、介入紀錄）。
 
 ### Demo 接後端
 

@@ -151,7 +151,7 @@ POST /coach/reply
 - **變體題（0.4）**：body 可帶 `variant: {monster_id, route, seed, picked}`，後端用變體引擎重算該題（不信任前端送來的答案），`CoachTurn.variant` 帶題幹、答案、trap、錯法標籤、步驟與是否踩到 trap。規則引擎四層：0 問寫到哪、1 指（踩到 trap 就點名錯法）、2 借、3 示範該題第一步；模型提示詞多了題幹、孩子的選擇、錯法與隱藏最後一步的解法；守門把該題答案列入不可說。
 - **測試**：`tests/test_coach_guard.py` 用假的 SDK client（monkeypatch `coach._make_client`）鎖住：有金鑰走模型、沒金鑰或沒 SDK 退回規則、各種洩漏寫法、放過「負號要發給每一個人」、第四層固定句、關燈不呼叫模型、metrics 數字。不對外打 API。
 
-POC 邊界：前端 `app/` 與 `world/` 目前仍走規則引擎，還沒送 `step_text`／`level`；`answer_forms` 由呼叫端給或用題庫的最終答案（變體引擎產的題，判題回應裡的答案選項文字就能當 `answer_forms`，前端還沒接）。
+POC 邊界：前端 `app/` 仍走本地規則；`world/` 在設定了後端位址時會送 `level`、`step_text` 與 `variant.answer_token`（見下節）；`answer_forms` 由呼叫端給或用題庫的最終答案（變體引擎產的題，判題回應裡的答案選項文字就能當 `answer_forms`，前端還沒接）。
 
 ## 題目變體引擎與人工介入紀錄（0.3）
 
@@ -192,6 +192,13 @@ POC 的人力介入階梯實驗要知道「誰、為什麼、花了幾分鐘」�
 - **API**：`POST /interventions`（note 超過 200 字 422；`at` 可覆蓋建立時間，示範用）、`GET /teams/{id}/interventions/summary?week=`（這一隊＋隊員的紀錄）、`GET /interventions/summary?layer=&week=`（該分層所有小隊）、`PUT /teams/{id}/layer`。
 
 POC 邊界：`minutes` 由介入的人自填；note 不放個資靠長度限制與自律，沒有自動偵測；分層手動設定，沒有隨機分派。
+
+## Demo 接後端與嚮導視角（0.4）
+
+- **前端引擎與後端引擎並存**：`frontend/world/variants.js` 是後端變體引擎規則的移植（三隻怪、四條路線），讓 Pages 上的 Demo 沒有伺服器也能每次換題；亂數不同於 Python，所以兩邊同一個種子不會同一題。這是刻意的：前端版只是替身，產品路徑永遠是後端出題。
+- **接後端的切換點只有一個**：`frontend/world/api.js` 的 `base()`（localStorage 或 `?api=`）。有位址時，巡邏、伏擊、叫醒三條流程改走 `variants`（只拿題幹、選項、`answer_token`）→ 每個選項第一次點 `variants/check`（後端判，回答案索引、錯法標籤、為什麼）→ 小陪 `coach/reply` 帶 `answer_token`（後端用同一條路找回那一題）。前端從頭到尾不知道答案，直到後端判過。
+- **嚮導視角**：`#/guide` 把「人力只在三個時刻介入」做成三張卡（求援逾時、三次同錯法、三天沒來），每張標示系統與巡查已做過什麼；處理一件就是一筆介入，分鐘數對上每生每週上限；有位址時 `POST /interventions`，欄位與 `docs/pilot/intervention-log.md` 一致。
+- **沒回應的退路**：出題中顯示骨架；失敗可重試或一鍵清掉位址改回本地題；小陪或判題失敗只提示，不卡住畫面。
 
 ## 往 1.0 的方向
 
