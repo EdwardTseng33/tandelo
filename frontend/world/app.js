@@ -799,6 +799,8 @@ function applyTheme() {
   else if (night()) r.setAttribute('data-theme', 'dark');
   else r.removeAttribute('data-theme');
 }
+// 加到主畫面後也能開：註冊 service worker（網路優先；只在 https 或本機）
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }
 // 美術掛載：codex 產出的 art/manifest.json 存在時，開啟 [data-art]，由 art/art.css 接手背景與角色
 { const qp = new URLSearchParams(location.search).get('api'); if (qp !== null) API.setBase(qp); }
 const ART = { m2: false };

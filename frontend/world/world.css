@@ -344,6 +344,8 @@ a{color:var(--brand)}
 .rec .mic{width:72px;height:72px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;transition:transform .2s var(--ease);position:relative}
 .rec .mic svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .rec .mic.on{transform:scale(1.08)}
+/* 手機長按：不選字、不跳出系統選單、不被當成捲動而中斷 */
+.rec .mic,.gcard .mic{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .rec .mic.on::before{content:"";position:absolute;inset:-8px;border-radius:50%;border:3px solid var(--coral);opacity:.5;animation:ring 1.2s ease-out infinite}
 @keyframes ring{from{transform:scale(.9);opacity:.6}to{transform:scale(1.35);opacity:0}}
 .rec .t{font-family:var(--font-num);font-size:20px;font-weight:700}
