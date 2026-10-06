@@ -684,7 +684,7 @@ div.mcard.fogc{cursor:default}
 .map .hot .rl{transition:transform .25s var(--ease-expressive)}
 .map .hot:hover .rl,.map .hot:focus-visible .rl{transform:translateY(-2px)}
 .map .hot:active{transform:scale(.96);transform-origin:center}
-.map-ctl{position:absolute;left:10px;bottom:44px;display:flex;flex-direction:column;gap:6px;z-index:2}
+.map-ctl{position:absolute;right:10px;bottom:12px;display:flex;flex-direction:column-reverse;gap:6px;z-index:2}
 .map-ctl button{width:36px;height:36px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-soft);font-family:var(--font-num);font-weight:700;font-size:16px}
 .map-hint{position:absolute;left:12px;bottom:12px;font-size:11.5px;color:var(--text-mute);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:3px 8px;border-radius:999px;pointer-events:none}
 /* 塵埃粒子（深色區塊） */
@@ -796,3 +796,108 @@ div.mcard.fogc{cursor:default}
 .gcard .mic{width:48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;transition:transform .2s var(--ease)}
 .gcard .mic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .gcard .mic.on{transform:scale(1.1)}
+
+/* ===== 城堡審視第一批（0.6）：頭像、我、帳號、第一次進入、可讀性 ===== */
+/* 頭像：插畫角色放進圓框；深色主題底色降成淡隊色 */
+.av{overflow:hidden;padding:0}
+.av svg{width:100%;height:100%;display:block}
+.av.anon{background:var(--bg-alt);color:var(--text-mute);font-family:var(--font-num);font-size:12px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .av:not(.a0):not(.anon){background:color-mix(in srgb,var(--surface) 70%,#DCEFE8 30%)}}
+:root[data-theme="dark"] .av:not(.a0):not(.anon){background:color-mix(in srgb,var(--surface) 70%,#DCEFE8 30%)}
+button.avs{background:none;border:0;padding:0;cursor:pointer}
+.home-top .role{cursor:pointer;border:0}
+.hero-av{display:block;width:96px;height:96px;border-radius:50%;overflow:hidden;background:#DCEFE8;box-shadow:0 0 0 3px var(--surface),0 10px 24px rgba(0,0,0,.18)}
+.hero-av svg{width:100%;height:100%;display:block}
+.wall .you .hero-av{width:84px;height:84px;box-shadow:0 0 0 3px rgba(255,255,255,.18),0 10px 22px rgba(0,0,0,.35)}
+.capture .arena .hero-av{position:absolute;width:104px;height:104px;opacity:0;transform:translateY(30px);transition:opacity .6s var(--ease),transform .8s var(--ease);z-index:2;box-shadow:0 0 0 3px rgba(255,255,255,.2),0 14px 30px rgba(0,0,0,.4)}
+.capture.p2 .arena .hero-av{opacity:1;transform:translateY(40px)}
+/* 怪物在深色底上加一圈亮邊（黑色怪不再消失） */
+:root{--mon-rim:transparent}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mon-rim:rgba(234,241,238,.55)}}
+:root[data-theme="dark"]{--mon-rim:rgba(234,241,238,.55)}
+.wall,.week-hero,.dg-hero,.card.night,.capture,.tower-hero,.acard .partners{--mon-rim:rgba(234,241,238,.5)}
+.mon svg{filter:drop-shadow(0 0 1.1px var(--mon-rim)) drop-shadow(0 0 .5px var(--mon-rim))}
+/* 中文斷行：不留孤字 */
+p,small,.meta,.bub,.lead{text-wrap:pretty}
+h2,h3,b{text-wrap:balance}
+/* 「為什麼」：說或打 */
+.linkbtn{background:none;border:0;padding:6px 2px;color:var(--brand);font-weight:700;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.rec .linkbtn{display:block;margin:6px auto 0}
+.rec.typing{display:block}
+.why-in{display:block;resize:none;line-height:1.5}
+/* 我：冒險者卡（護照／借書卡質感，不做閃卡） */
+.acard{position:relative;border-radius:24px;padding:16px 16px 14px;margin-bottom:8px;background:var(--surface);box-shadow:var(--shadow-soft);overflow:hidden;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 26px;background-position:0 12px}
+.acard::before{content:"";position:absolute;inset:7px;border-radius:18px;border:1.5px solid var(--frame,var(--rule));pointer-events:none}
+.acard.f-paper{--frame:var(--rule-strong)}
+.acard.f-cloth{--frame:var(--brand);background-color:color-mix(in srgb,var(--surface) 92%,var(--brand) 8%)}
+.acard.f-wood{--frame:#B07A3E;background-color:color-mix(in srgb,var(--surface) 90%,#C99A5C 10%)}
+.acard.f-foil{--frame:var(--honey);background-color:color-mix(in srgb,var(--surface) 88%,var(--honey) 12%)}
+.acard-top{position:relative;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rank-name{font-weight:900;font-size:13px;letter-spacing:.12em;color:var(--frame);padding:3px 10px;border:1.5px solid var(--frame);border-radius:999px;background:var(--surface)}
+.role-chip{font-size:12px;font-weight:700;color:var(--text-mute)}
+.acard-hero{position:relative;display:grid;place-items:center;height:150px;margin-top:4px}
+.acard-hero .hero-av{width:112px;height:112px;position:relative;z-index:2}
+.acard .partners{position:absolute;inset:0;pointer-events:none}
+.acard .partners .mon{position:absolute;width:52px;height:52px;opacity:.95;bottom:18px}
+.acard .partners .mon:nth-child(1){left:calc(50% - 112px);transform:rotate(-6deg)}
+.acard .partners .mon:nth-child(2){left:calc(50% + 60px);transform:rotate(6deg)}
+.acard .partners .mon:nth-child(3){left:calc(50% - 26px);top:0;bottom:auto;width:44px;height:44px;opacity:.75}
+.acard-name{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.acard-name h3{font-size:22px;margin:0}
+.stamp{font-size:12px;font-weight:900;color:var(--coral);border:1.5px solid var(--coral);border-radius:6px;padding:2px 8px;transform:rotate(-3deg);letter-spacing:.06em}
+.acard .stats3{position:relative;display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin:12px 0 8px}
+.acard .stats3 b{display:block;font-family:var(--font-num);font-size:26px;font-weight:900;line-height:1.1;color:var(--brand)}
+.acard .stats3 small{font-size:12px;color:var(--text-mute)}
+.rank-next{position:relative;text-align:center}
+.rank-next .bar{height:6px;border-radius:999px;background:var(--bg-alt);overflow:hidden;margin:4px 8px 6px}
+.rank-next .bar i{display:block;height:100%;background:var(--frame);transform-origin:left;border-radius:999px}
+.rank-next small{font-size:12px;color:var(--text-mute)}
+.role-card .role-big{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--brand-fill);color:var(--on-brand);font-weight:900;font-size:20px;flex:0 0 auto}
+.role-badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 6px}
+.rb{display:grid;justify-items:center;gap:4px}
+.rb i{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;border:2px dashed var(--rule-strong);color:var(--text-mute)}
+.rb.on i{border:2px solid var(--honey);background:color-mix(in srgb,var(--honey) 22%,var(--surface));color:var(--text)}
+.rb.cur i{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--brand)}
+.rb small{font-size:11px;color:var(--text-mute)}
+.learned-row{width:100%;text-align:left;background:none;border:0;cursor:pointer}
+.menu{display:grid;gap:8px;margin-top:14px}
+.menu button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-soft)}
+.menu .mi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--bg-alt);flex:0 0 auto;font-weight:900;color:var(--brand)}
+.menu .mi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9}
+.menu .mi .av{margin:0;width:32px;height:32px;border:0}
+.menu .mi .mon.sm{width:30px;height:30px}
+.menu b{display:block;font-size:15px}.menu small{display:block;font-size:12px;color:var(--text-mute)}
+.menu button>svg{width:18px;height:18px;color:var(--text-mute);fill:none;stroke:currentColor;stroke-width:2}
+/* 帳號與設定 */
+.prof .hero-av{width:64px;height:64px;flex:0 0 auto}
+.prof .nick,.ready-card .nick{font-size:18px;display:block}
+.setrow>b{font-size:14px;flex:0 0 auto;margin-left:12px;text-align:right}
+/* 第一次進入 */
+.jsteps{display:flex;gap:6px;margin:-4px 0 14px}
+.jsteps i{flex:1;height:5px;border-radius:999px;background:var(--bg-alt)}
+.jsteps i.done{background:var(--brand-fill)} .jsteps i.cur{background:var(--coral)}
+.join .lead{font-size:18px;font-weight:700;margin:4px 0 12px}
+.line-body.pass{border-radius:20px;padding:14px;margin-bottom:12px}
+.pass .bub{max-width:100%}
+.pass .code{display:block;text-align:center;font-weight:900;letter-spacing:.2em;font-size:18px}
+.codebox{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:6px 0 12px}
+.codebox i{font-style:normal;text-align:center;font-size:24px;font-weight:900;padding:10px 0;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-soft)}
+.in.big{font-size:20px;font-weight:700;min-height:56px;text-align:center}
+.look-preview{display:grid;justify-items:center;gap:8px;margin:0 0 12px}
+.look-preview .hero-av{width:128px;height:128px}
+.look-preview small{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-mute)}
+.lookrow{margin-bottom:10px}.lookrow .lbl{font-size:12px;font-weight:700;color:var(--text-mute)}
+.lookrow .chips{margin-top:6px;gap:6px}.lookrow .chip{min-height:38px;padding:6px 12px}
+.sw{display:inline-block;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.12)}
+.chip.on .sw{box-shadow:0 0 0 2px var(--on-brand)}
+.pin-dots{display:flex;justify-content:center;gap:16px;margin:8px 0 18px}
+.pin-dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--rule-strong)}.pin-dots i.on{background:var(--brand-fill);border-color:var(--brand-fill)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:300px;margin:0 auto 12px}
+.keypad .key{min-height:56px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow-soft);font-size:22px;font-weight:700}
+.ready-card .hero-av{width:64px;height:64px;flex:0 0 auto}
+svg.qr{display:block;width:120px;height:120px;margin:12px auto 6px;padding:8px;background:#fff;border-radius:10px;box-sizing:content-box}
+.bub .ans{display:block;margin-top:6px;font-size:12.5px;color:var(--text-mute);font-weight:500}
+.bub .from{display:block;margin-top:8px;font-size:12px;color:var(--text-mute)}
+.bub .from .linkbtn{font-size:12px;padding:0}
+.home-top button.avs{background:var(--surface);border-radius:999px;padding:3px 3px 3px 11px;box-shadow:var(--shadow-soft)}

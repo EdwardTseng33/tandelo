@@ -1,7 +1,7 @@
 // sw.js — 加到主畫面後也能開：網路優先，斷線時用上次成功的那份。
 // 只處理 GET 的同源檔案與 Google Fonts；後端 API（跨網域、POST）一律不碰。
-const CACHE = 'tandelo-world-v1';
-const SHELL = ['./', './index.html', './app.js', './data.js', './variants.js', './sfx.js', './api.js', './world.css', './manifest.webmanifest', '../assets/brand.css', '../assets/favicon.svg', './icons/icon-192.png'];
+const CACHE = 'tandelo-world-v2';
+const SHELL = ['./', './index.html', './app.js', './data.js', './variants.js', './sfx.js', './api.js', './avatar.js', './world.css', './manifest.webmanifest', '../assets/brand.css', '../assets/favicon.svg', './icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));

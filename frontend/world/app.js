@@ -4,6 +4,7 @@ import * as D from './data.js';
 import * as V from './variants.js';
 import * as SFX from './sfx.js';
 import * as API from './api.js';
+import * as AV from './avatar.js';
 
 const KEY = 'tandelo.world.v1';
 const $ = (s, el = document) => el.querySelector(s);
@@ -41,6 +42,8 @@ function defaults() {
     interventions: [], // 嚮導的介入紀錄（示範）
     studentId: 9, // 接後端時用哪一位種子學生（示範）
     guideDone: {},
+    profile: { nick: '小睿', look: { ...AV.PRESETS[1] }, cape: 1, pin: '2580', parent: '媽媽', share: true, joined: true }, // 帳號：家長 LINE 名下的孩子檔案（示範）
+    join: null, // 第一次進入流程的暫存
   };
 }
 function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); return s ? { ...defaults(), ...s } : defaults(); } catch (e) { return defaults(); } }
@@ -52,7 +55,7 @@ function reset() { S = defaults(); save(); go('home'); toast('已重設示範資
 const clock = () => D.CLOCKS.find((c) => c.id === S.clock) || D.CLOCKS[0];
 // 題目由變體引擎依種子與路線產生：同一個種子永遠同一組，換種子就「換個樣子出現」
 let pqCache = { k: '', qs: [] };
-const localPQ = () => { const k = `${S.seed}|${S.route}`; if (pqCache.k !== k) { const qs = V.bank('sign-dist', 3, S.route, `patrol-${S.seed}`); qs[1].why = true; pqCache = { k, qs }; } return pqCache.qs; };
+const localPQ = () => { const k = `${S.seed}|${S.route}`; if (pqCache.k !== k) { const qs = V.bank('sign-dist', 3, S.route, `patrol-${S.seed}`); qs[1].askWhy = true; pqCache = { k, qs }; } return pqCache.qs; };
 // 接後端時：題目由後端出（只給題幹、選項、answer_token），答案要等後端判了才知道
 const remote = { k: '', qs: null, loading: false, err: '' };
 function loadRemote() {
@@ -60,7 +63,7 @@ function loadRemote() {
   Object.assign(remote, { k, qs: null, loading: true, err: '' });
   API.variants('sign-dist', 3, S.route, `patrol-${S.seed}`).then((list) => {
     remote.qs = list.items.map((it) => ({ id: it.variant_key, monster: 'sign-dist', route: S.route, stem: it.stem, options: it.options, token: it.answer_token, answer: null, trap: null, trapLabel: '', taunt: V.TAUNT['sign-dist'], why: '', steps: [], hint: { ask: '你寫到哪一步？', point: '', lend: '', show: '' }, remote: true }));
-    remote.qs[1].why = true; remote.loading = false; if (parse().key === 'play') rerender();
+    remote.qs[1].askWhy = true; remote.loading = false; if (parse().key === 'play') rerender();
   }).catch((e) => { remote.loading = false; remote.err = String(e.message || e); if (parse().key === 'play') rerender(); });
 }
 const PQ = () => { if (API.base() && remote.qs) return remote.qs; return localPQ(); };
@@ -130,7 +133,13 @@ const SVG = {
 const badgeSvg = (on = true) => `<svg class="badge-svg${on ? '' : ' off'}" viewBox="0 0 48 48" aria-hidden="true"><circle class="ring" cx="24" cy="24" r="20"/><circle class="in" cx="24" cy="24" r="13"/><path class="mk" d="M17 24l4 4 10-10"/></svg>`;
 const monSvg = (m, cls = '', extra = '') => `<span class="mon ${cls}" ${extra}><svg aria-hidden="true"><use href="#${m.shape}"/></svg></span>`;
 const stateCls = { fog: 'fog', near: '', hit: 'pine', captured: 'shadow', asleep: 'asleep', shadow: 'shadow' };
-const av = (n, cls = '') => `<span class="av a${n} ${cls}" aria-hidden="true"></span>`;
+const lookOf = (n) => (n === 1 ? S.profile.look : AV.PRESETS[n]) || AV.PRESETS[1];
+const capeOf = (n) => (n === 1 ? S.profile.cape : n);
+const av = (n, cls = '') => (n === 0 ? `<span class="av a0 ${cls}" aria-hidden="true">林</span>` : `<span class="av a${n} ${cls}" aria-hidden="true">${AV.avatarSvg(lookOf(n), capeOf(n), { small: !/\blg\b/.test(cls) })}</span>`);
+const heroAv = (mood = 'calm', look = S.profile.look, cape = S.profile.cape) => `<span class="hero-av">${AV.avatarSvg(look, cape, { mood })}</span>`;
+const isDark = () => { const t = document.documentElement.getAttribute('data-theme'); return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; };
+// 只把算式包成數學字體，中文不套斜體
+const mxText = (s) => esc(s).replace(/[0-9A-Za-z][0-9A-Za-z()+−\-=²³√/.\s]*[0-9A-Za-z)²³]|[0-9A-Za-z]/g, (m) => `<span class="mx">${m}</span>`);
 const kid = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="24" r="14" fill="currentColor"/><path d="M8 62c2-16 12-24 24-24s22 8 24 24z" fill="currentColor"/></svg>';
 const towerSvg = '<svg viewBox="0 0 36 48" aria-hidden="true"><use href="#tower"/></svg>';
 // 燈塔頁夜景的星點（固定，避免每次重繪閃動）
@@ -141,7 +150,7 @@ const wave = (n = 18) => `<span class="wave" aria-hidden="true">${'<i></i>'.repe
 // 隊友動態：載入後每 6 秒多冒一條，像小隊真的在線上；點一下回應
 const bootT = Date.now();
 const feedCount = () => Math.min(D.TEAM_FEED.length, 2 + Math.floor((Date.now() - bootT) / 6000));
-const feedHtml = () => D.TEAM_FEED.slice(0, feedCount()).reverse().map((f, i) => `<div class="item ${i === 0 ? 'new' : ''}">${av(f.av)}<span class="grow"><b>${esc(f.who)}</b> ${esc(f.text)}</span><button class="react ${S.reactions[f.id] ? 'on' : ''}" data-react="${f.id}" aria-label="回應">${SVG.clap || '👏'}<span class="num">${(f.kind === 'card' ? 3 : 1) + (S.reactions[f.id] || 0)}</span></button></div>`).join('');
+const feedHtml = () => D.TEAM_FEED.slice(0, feedCount()).reverse().map((f, i) => `<div class="item ${i === 0 ? 'new' : ''}">${av(f.av)}<span class="grow"><b>隊友</b> ${esc(f.text)}</span><button class="react ${S.reactions[f.id] ? 'on' : ''}" data-react="${f.id}" aria-label="回應">${SVG.clap || '👏'}<span class="num">${(f.kind === 'card' ? 3 : 1) + (S.reactions[f.id] || 0)}</span></button></div>`).join('');
 let feedTimer = null;
 function startFeed() { stopFeed(); let n = feedCount(); feedTimer = setInterval(() => { const el = view.querySelector('#feed'); if (!el) return stopFeed(); const m = feedCount(); if (m !== n) { n = m; el.innerHTML = feedHtml(); SFX.play('pop'); } }, 1000); }
 function stopFeed() { if (feedTimer) { clearInterval(feedTimer); feedTimer = null; } }
@@ -162,9 +171,9 @@ SCREENS.home = () => {
   const lit = 9 + S.cards;
   return `
   <div class="home-top">
-    <div class="flag"><svg viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg><span class="role" title="這週的位置：書記">書</span></div>
+    <div class="flag"><svg viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg><button class="role" data-go="me" aria-label="這週的位置：${esc(D.ROLES[D.SQUAD.me.role].name)}">${esc(D.ROLES[D.SQUAD.me.role].short)}</button></div>
     <div class="grow"><h2>${esc(D.SQUAD.name)}</h2><span class="sub"><span class="nw">嚮導 ${esc(D.SQUAD.guide)}</span> · <span class="nw">第 ${D.SQUAD.week} 週</span> · <span class="nw">${esc(D.SQUAD.examLabel)}</span></span></div>
-    <div class="avs">${av(1, 'me')}${av(2)}${av(3)}${av(4)}${av(5)}</div>
+    <button class="avs" data-go="me" aria-label="我的冒險者卡">${av(1, 'me')}${av(2)}${av(3)}${av(4)}${av(5)}</button>
   </div>
   <button class="letter ${S.letterPlayed ? '' : ''}" data-act="letter" aria-label="播放嚮導的信">
     <span class="play">${SVG.play}</span>
@@ -172,7 +181,7 @@ SCREENS.home = () => {
     <span class="len num">${D.LETTER.length}</span>
   </button>
   ${S.witnessed ? `<div class="witness"><span class="heart">${SVG.heart}</span><span>媽媽見證了這一次。<small class="meta" style="display:block">昨晚的營地來信 · 漏項獸</small></span></div>` : ''}
-  <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><span class="pill honey streak">${SVG.flame || '🔥'} 連續 ${D.SQUAD.streak + (S.cards >= 3 ? 1 : 0)} 天</span><div class="dots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < S.cards ? 'on' : ''}"></i>`).join('')}</div></div>
+  <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><span class="pill honey streak">${SVG.flame || '🔥'} 小隊連續 ${D.SQUAD.streak + (S.cards >= 3 ? 1 : 0)} 天</span><div class="dots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < S.cards ? 'on' : ''}"></i>`).join('')}</div></div>
   ${S.cards >= 3 ? `<div class="stop"><span class="moon" aria-hidden="true"></span><span><b>今天三張都亮了，夠了。</b><small>沒有第四張。明天早上六點再發，晚安。</small></span></div>` : ''}
   ${todays.map((t) => `<button class="task ${t.done ? 'done' : ''}" data-go="${t.go}"><span class="mon ${t.done ? 'shadow' : (t.id === 'wake' ? 'asleep' : '')}" aria-hidden="true"><svg><use href="#${t.mon.shape}"/></svg></span><span class="grow"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small><span class="why">${esc(t.why)}</span></span><span class="go">${t.done ? SVG.check : SVG.chev}</span></button>`).join('')}
   <div class="sect"><h3>隊友剛剛</h3><span class="meta live"><i></i>現在</span></div>
@@ -187,6 +196,107 @@ SCREENS.home = () => {
   <button class="task" data-go="duel">${monSvg(mon('diff-sq'))}<span class="grow"><b>${esc(D.DUEL.opponent)}出了三題</b><small>我們一起答 · ${esc(D.DUEL.reveal)}</small></span><span class="go">${SVG.chev}</span></button>`;
 };
 
+// ---------- 「為什麼」：用說的或打字（不想在家人旁邊開口也能交）----------
+const whyOk = () => play.rec >= 3 || (play.typed || 0) >= 6;
+const whyBox = (tip) => `<div class="rec ${play.rec ? 'on' : ''} ${play.typing ? 'typing' : ''}">${play.typing
+  ? `<textarea class="in why-in" data-why-in rows="2" maxlength="120" placeholder="用一句話說為什麼，例如：減號要分給括號裡每一項">${esc(play.whyText || '')}</textarea><button class="linkbtn" data-act="why-voice">改用說的</button>`
+  : `<button class="mic ${play.rec ? 'on' : ''}" data-act="rec" aria-label="按住說一句為什麼">${SVG.mic}</button><span class="t num">0:${String(play.rec).padStart(2, '0')}</span>${wave(14)}<button class="linkbtn" data-act="why-type">不方便說話？改用打字</button>`}<p>${tip}</p></div>`;
+
+// ---------- 我：冒險者卡（成長只從驗證過的學會來：階級看戰績，不看練習量）----------
+const RANKS = [{ at: 0, name: '見習冒險者', frame: 'paper' }, { at: 30, name: '斥候', frame: 'cloth' }, { at: 80, name: '守塔人', frame: 'wood' }, { at: 150, name: '引路人', frame: 'foil' }];
+const rankOf = (p) => RANKS.reduce((r, x, i) => (p >= x.at ? i : r), 0);
+const ROLE_ORDER = ['scout', 'striker', 'scribe', 'quartermaster'];
+SCREENS.me = () => {
+  const P = S.profile; const pts = myPoints(); const ri = rankOf(pts); const rk = RANKS[ri]; const nx = RANKS[ri + 1];
+  const caps = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured');
+  const chasing = D.MONSTERS.filter((m) => ['hit', 'near'].includes(S.shadows[m.id].state));
+  const wakes = S.records.filter((r) => r.kind === 'wake').length; const explains = S.records.filter((r) => r.kind === 'explain').length;
+  const role = D.ROLES[D.SQUAD.me.role]; const badges = D.SQUAD.me.roleBadges || {};
+  const title = D.TITLES.find((t) => t.earned && !t.team);
+  return `
+  ${hd('我', `${esc(D.SQUAD.name)} · 第 ${D.SQUAD.week} 週`, false)}
+  <div class="acard f-${rk.frame}">
+    <div class="acard-top"><span class="rank-name">${esc(rk.name)}</span><span class="role-chip">${esc(role.short)} · 這週${esc(role.name)}</span></div>
+    <div class="acard-hero"><div class="partners">${caps.slice(0, 3).map((m, i) => monSvg(m, 'shadow', `style="--i:${i}"`)).join('')}</div>${heroAv()}</div>
+    <div class="acard-name"><h3>${esc(P.nick)}</h3>${title ? `<span class="stamp">${esc(title.name)}</span>` : ''}</div>
+    <div class="stats3"><div><b class="num">${caps.length}</b><small>收服</small></div><div><b class="num">${wakes}</b><small>叫醒</small></div><div><b class="num">${explains}</b><small>講解</small></div></div>
+    <div class="rank-next">${nx ? `<div class="bar"><i style="transform:scaleX(${((pts - rk.at) / (nx.at - rk.at)).toFixed(3)})"></i></div><small>再 <b class="num">${nx.at - pts}</b> 點戰績升為「${esc(nx.name)}」· 戰績只算驗證過的學會</small>` : '<small>最高階。接下來帶新隊友。</small>'}</div>
+  </div>
+  <div class="sect"><h3>這週的位置</h3><span class="meta">每週輪換 · 不看程度</span></div>
+  <div class="card role-card"><div class="row"><span class="role-big">${esc(role.short)}</span><div class="grow"><b>${esc(role.name)}</b><p class="meta">${esc(role.does)}</p></div></div>
+    <div class="role-badges">${ROLE_ORDER.map((k) => `<span class="rb ${badges[k] ? 'on' : ''} ${k === D.SQUAD.me.role ? 'cur' : ''}"><i>${esc(D.ROLES[k].short)}</i><small>${esc(D.ROLES[k].name)}</small></span>`).join('')}</div>
+    <p class="meta">嚮導確認你做完一次，就點亮一枚職業章。四枚都亮，得到稱號「全能隊員」。</p></div>
+  <div class="sect"><h3>正在追的怪</h3><span class="meta">打中之後隔幾天再測，不給提示就收服</span></div>
+  <div class="card">${chasing.map((m) => { const s = S.shadows[m.id]; return `<button class="learned-row" data-lore="${m.id}">${monSvg(m, `${stateCls[s.state]} sm`)}<span class="grow"><b>${esc(m.name)}</b><small>${esc(m.skill)}</small></span><span class="pill ${s.state === 'hit' ? 'brand' : 'coral'}">${s.state === 'hit' ? `打中了 · ${esc(s.due || '幾天後')}再測` : '還在附近'}</span></button>`; }).join('') || '<p class="meta">這週還沒遇到怪。先去巡邏。</p>'}</div>
+  <div class="menu">
+    <button data-go="shadows"><span class="mi">${monSvg(caps[0] || D.MONSTERS[0], 'shadow sm')}</span><span class="grow"><b>怪物圖鑑</b><small>收服 ${caps.length} 隻 · 傳說卡與稱號</small></span>${SVG.chev}</button>
+    <button data-go="week"><span class="mi">${SVG.title}</span><span class="grow"><b>我學會的</b><small>被我識破的錯法、我會說的一句</small></span>${SVG.chev}</button>
+    <button data-go="record"><span class="mi num">${pts}</span><span class="grow"><b>我的戰績</b><small>只有自己和家長看得到</small></span>${SVG.chev}</button>
+    <button data-go="profile"><span class="mi">${av(1)}</span><span class="grow"><b>帳號與設定</b><small>暱稱、角色、PIN、家長 LINE</small></span>${SVG.chev}</button>
+  </div>`;
+};
+
+// ---------- 帳號與設定（孩子的檔案在家長 LINE 名下；不收 email、電話、真名）----------
+SCREENS.profile = () => {
+  const P = S.profile; const role = D.ROLES[D.SQUAD.me.role];
+  return `
+  ${hd('帳號與設定', '只有你和家長看得到')}
+  <div class="card prof"><div class="row">${heroAv()}<div class="grow"><b class="nick">${esc(P.nick)}</b><small class="meta">${esc(D.SQUAD.name)} · 這週${esc(role.name)}</small></div><button class="btn sm ghost" data-act="join-edit">換造型</button></div></div>
+  <div class="card"><h3>我</h3>
+    <div class="setrow"><span>暱稱<small>隊友看到的是暱稱和角色，不是真名</small></span><b>${esc(P.nick)}</b></div>
+    <div class="setrow"><span>PIN<small>只用來在這台手機上打開；忘了請家長在 LINE 重設</small></span><b class="num">••••</b></div></div>
+  <div class="card"><h3>小隊</h3>
+    <div class="setrow"><span>隊伍<small>跨校湊隊，8 週同一隊</small></span><b>${esc(D.SQUAD.name)}</b></div>
+    <div class="setrow"><span>嚮導<small>國中數學老師，每週帶一次遠征</small></span><b>${esc(D.SQUAD.guide)}</b></div></div>
+  <div class="card"><h3>家長</h3>
+    <div class="setrow"><span>家長 LINE<small>帳號在家長名下；營地來信寄到這裡</small></span><b>已綁定 · ${esc(P.parent)}</b></div>
+    <div class="setrow"><span>分享卡<small>家長同意後才能傳；這裡只能看，改要請家長</small></span><b>${P.share ? '已同意' : '未開'}</b></div>
+    <div class="setrow"><span>上個人榜<small>預設關；13 歲以下要家長在 LINE 同意</small></span><button class="switch ${S.personalBoard ? 'on' : ''}" data-act="pboard" role="switch" aria-label="上個人榜"></button></div></div>
+  <div class="card"><h3>這台手機</h3>
+    <div class="setrow"><span>音效<small>打中、連擊、收服的聲音</small></span><button class="switch ${S.sound !== false ? 'on' : ''}" data-act="sound" role="switch" aria-label="音效"></button></div>
+    <div class="setrow"><span>深色模式<small>22:30 後自動轉暗</small></span><button class="switch ${isDark() ? 'on' : ''}" data-act="theme" role="switch" aria-label="深色模式"></button></div>
+    <div class="setrow"><span>登出這台手機<small>下次要用 PIN 或家長的通行證打開</small></span><button class="btn sm ghost" data-act="logout">登出</button></div></div>
+  <div class="card flat"><h3>示範</h3>
+    <div class="btns"><button class="btn soft" data-act="join-start">從第一次進入開始走一遍</button><button class="btn ghost" data-go="settings">示範面板 · 時間、後端、重設</button></div></div>`;
+};
+
+// ---------- 第一次進入：家長通行證 → 暱稱 → 捏角色 → PIN → 出發 ----------
+const JOIN_STEPS = ['通行證', '暱稱', '角色', 'PIN', '出發'];
+const NICKS = ['小睿', '阿翔', '晴天', '跑跑', 'Leo', '小樹'];
+const swatch = (c) => `<i class="sw" style="background:${c}"></i>`;
+const lookRow = (label, key, names, colors) => `<div class="lookrow"><span class="lbl">${label}</span><div class="chips">${names.map((n, i) => `<button class="chip ${S.join.look[key] === i ? 'on' : ''}" data-look="${key}:${i}" aria-pressed="${S.join.look[key] === i}">${colors ? swatch(colors[i]) : ''}${colors ? '' : esc(n)}${colors ? `<span class="sr">${esc(n)}</span>` : ''}</button>`).join('')}</div></div>`;
+SCREENS.join = () => {
+  if (!S.join) S.join = { step: 0, mode: 'new', nick: '', look: { ...AV.PRESETS[1], hair: 0 }, pin: '', cape: 1 };
+  const J = S.join; const st = J.step;
+  const prog = `<div class="jsteps" aria-label="第 ${st + 1} 步，共 ${JOIN_STEPS.length} 步">${JOIN_STEPS.map((n, i) => `<i class="${i < st ? 'done' : (i === st ? 'cur' : '')}"></i>`).join('')}</div>`;
+  const head = hd(J.mode === 'edit' ? '換造型' : '加入小隊', J.mode === 'edit' ? '斗篷顏色由小隊分配' : `第一次進入 · ${st + 1} / ${JOIN_STEPS.length} · ${JOIN_STEPS[st]}`);
+  let body = '';
+  if (st === 0) {
+    body = `<p class="lead">家長在 LINE 開好帳號後，會收到一張通行證。</p>
+    <div class="line-body pass"><div class="bub"><b>Tandelo 營地 · 通行證</b><br>孩子的冒險通行證開好了。請讓孩子用手機相機掃這張，或在 App 輸入 6 碼。<svg class="qr" viewBox="${D.JOIN_QR.vb}" aria-hidden="true" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="${D.JOIN_QR.d}" stroke="#13302B"/></svg><span class="code num">482 915</span><span class="t">10 分鐘內有效</span></div></div>
+    <div class="codebox num" aria-label="通行證 6 碼">${'482915'.split('').map((d) => `<i>${d}</i>`).join('')}</div>
+    <p class="meta">孩子不需要 email、電話或真名。帳號在家長名下，家長可以隨時在 LINE 暫停或刪除。</p>`;
+  } else if (st === 1) {
+    body = `<p class="lead">取一個暱稱。</p><input class="in big" data-nick-in maxlength="8" value="${esc(J.nick)}" placeholder="2 到 8 個字" autocomplete="off">
+    <div class="chips">${NICKS.map((n) => `<button class="chip ${J.nick === n ? 'on' : ''}" data-nick="${esc(n)}">${esc(n)}</button>`).join('')}</div>
+    <p class="meta">別用真名。隊友看到的只有暱稱和你的角色。</p>`;
+  } else if (st === 2) {
+    body = `<div class="look-preview">${heroAv('smile', J.look, J.cape)}<small>斗篷顏色由小隊分配 ${swatch(AV.CAPES[J.cape])}</small></div>
+    ${lookRow('臉型', 'face', AV.FACE_NAMES)}${lookRow('膚色', 'skin', ['淺', '中淺', '中深', '深'], AV.SKINS)}${lookRow('髮型', 'hair', AV.HAIR_NAMES)}${lookRow('髮色', 'hairC', ['黑', '深棕', '棕', '墨黑'], AV.HAIRS)}${lookRow('隨身帶', 'acc', AV.ACC_NAMES)}`;
+  } else if (st === 3) {
+    body = `<p class="lead">設一組 4 位數 PIN。</p><div class="pin-dots" aria-label="已輸入 ${J.pin.length} 位">${[0, 1, 2, 3].map((i) => `<i class="${i < J.pin.length ? 'on' : ''}"></i>`).join('')}</div>
+    <div class="keypad">${['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map((k) => (k ? `<button class="key num" data-pin="${k}" aria-label="${k === '⌫' ? '刪除' : k}">${k}</button>` : '<span></span>')).join('')}</div>
+    <p class="meta">只用來在這台手機上打開 App。忘了請家長在 LINE 重設。</p>`;
+  } else {
+    body = `<div class="card ready-card"><div class="row">${heroAv('smile', J.look, J.cape)}<div class="grow"><b class="nick">${esc(J.nick)}</b><small class="meta">${esc(D.SQUAD.name)} · 嚮導 ${esc(D.SQUAD.guide)}</small></div></div></div>
+    <div class="card flat"><b>出發前的第一件事</b><p class="meta">8 題、兩分鐘的診斷，找出你的第一隻怪。答錯沒關係，那正是我們要找的。</p></div>
+    <p class="meta">示範版會沿用四葉小隊第 3 週的進度，讓你直接看到冒險中的樣子。</p>`;
+  }
+  const can = st === 1 ? J.nick.trim().length >= 1 : (st === 3 ? J.pin.length === 4 : true);
+  const label = J.mode === 'edit' ? '儲存造型' : (st === 0 ? '這是孩子的手機，開始' : (st === 4 ? '出發' : '下一步'));
+  return `${head}${J.mode === 'edit' ? '' : prog}<div class="join">${body}</div><div class="btns"><button class="btn" data-act="join-next" ${can ? '' : 'disabled'}>${label}</button></div>`;
+};
+
 SCREENS.letter = () => `
   ${hd(`嚮導的信 · 第 ${D.LETTER.week} 封`, `「${D.LETTER.chapter}」· 林老師的聲音 · ${D.LETTER.length}`)}
   <div class="stack">
@@ -198,10 +308,10 @@ SCREENS.shadows = () => {
   const caps = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured');
   const asleep = D.MONSTERS.filter((m) => S.shadows[m.id].state === 'asleep');
   return `
-  ${hd('怪物圖鑑', `收服的夥伴站在你身後 · ${esc(D.SQUAD.me.nick)}`, false)}
+  ${hd('怪物圖鑑', `收服的夥伴站在你身後 · ${esc(S.profile.nick)}`)}
   <div class="wall"><div class="stars"></div><div class="count">收服 <b>${caps.length}</b> 隻 · 睡著 ${asleep.length}</div>
     <div class="shadows">${[...caps.map((m) => ({ m, cls: 'shadow blink' })), ...asleep.map((m) => ({ m, cls: 'asleep' }))].map((o, i, arr) => { const n = arr.length; const spread = Math.min(220, 70 * (n - 1)); const sx = n === 1 ? 0 : -spread / 2 + (spread / (n - 1)) * i; const sy = 8 + Math.abs(sx) * 0.18; return monSvg(o.m, o.cls, `style="--sx:${sx}px;--sy:${sy}px;--ss:${1 - Math.abs(sx) / 600};--sd:${i * 0.12}s"`); }).join('')}</div>
-    <div class="you"><span class="kid k1">${kid}</span><small>${esc(D.SQUAD.me.nick)} · ${esc(D.SQUAD.name)}</small></div>
+    <div class="you">${heroAv()}<small>${esc(D.SQUAD.me.nick)} · ${esc(D.SQUAD.name)}</small></div>
   </div>
   <div class="sect"><h3>數理大陸 · 八隻怪</h3><span class="meta">點一隻看傳說卡</span></div>
   <div class="mgrid">${D.MONSTERS.map((m) => { const s = S.shadows[m.id]; return `<button class="mcard ${s.state === 'fog' ? 'fogc' : ''}" data-lore="${m.id}">${monSvg(m, stateCls[s.state])}<span><b>${s.state === 'fog' ? '？？？' : esc(m.name)}</b><small>${esc(region(m.region).name)} · ${esc(D.STATE_LABEL[s.state])}${s.days ? ` · 第 ${s.days} 天` : ''}</small></span></button>`; }).join('')}</div>
@@ -298,19 +408,19 @@ SCREENS.play = () => {
   ${!hit ? `
   <div class="coach"><span class="face">${SVG.coach}</span><div><span class="lvl">小陪 · ${lvls[play.lvl]}</span><p>${esc(txt[play.lvl])}</p>
     <div class="chips">${play.lvl === 0 ? ['我把括號拆開了', '我還沒開始', '我卡在合併'].map((c) => `<button class="chip" data-coach="${esc(c)}">${esc(c)}</button>`).join('') : `<button class="chip" data-coach="more">${play.lvl < 3 ? '再多一點' : '我再試一次'}</button><button class="chip ghost" data-act="sos">求援 · 隊友或嚮導</button>`}</div></div></div>` : `
-  ${q.why ? `<div class="rec ${play.rec ? 'on' : ''}"><button class="mic ${play.rec ? 'on' : ''}" data-act="rec" aria-label="按住錄 30 秒">${SVG.mic}</button><span class="t num">0:${String(play.rec).padStart(2, '0')}</span>${wave(14)}<p>這一題要附一句「為什麼」。用說的就可以，嚮導每週抽查 3 段。</p></div>` : ''}
-  <div class="btns"><button class="btn" data-act="next" ${q.why && play.rec < 3 ? 'disabled' : ''}>${S.patrol.i < 2 ? '下一題' : '完成巡邏'}</button></div>`}`;
+  ${q.askWhy ? whyBox('這一題要附一句「為什麼」。用說的或打字都可以，只有嚮導會看，每週抽查 3 段。') : ''}
+  <div class="btns"><button class="btn" data-act="next" ${q.askWhy && !whyOk() ? 'disabled' : ''}>${S.patrol.i < 2 ? '下一題' : '完成巡邏'}</button></div>`}`;
 };
 
 SCREENS.relay = () => {
   const r = D.RELAY;
   return `
   ${hd('Boss 接力', `你是第 4 棒 · 截止 ${esc(D.DUNGEON.relayDeadline)}`)}
-  <div class="card night"><span class="eyebrow">Boss</span><p class="stem" style="font-size:17px;margin:4px 0 0"><span class="mx">${esc(r.stem)}</span></p></div>
+  <div class="card night"><span class="eyebrow">Boss</span><p class="stem" style="font-size:17px;margin:4px 0 0">${mxText(r.stem)}</p></div>
   <div class="relay">${r.steps.map((s, i) => {
     const me = s.by === 'me';
     const cls = me ? 'me' : (s.done ? '' : 'next');
-    return `<div class="rstep ${cls} ${play.flagged === i ? 'flag' : ''}">${me ? av(1, 'me') : av(s.by)}<div class="box"><small>第 ${i + 1} 棒${me ? ' · 你' : (s.done ? ' · 已完成' : ' · 等你交棒')}</small>${me && !S.relay.done ? `<div class="opts" style="margin-top:8px">${s.options.map((o, j) => `<button class="opt ${play.rpick === j ? (j === s.answer ? 'ok' : 'trap') : ''}" data-ropt="${j}" ${play.rpick === s.answer ? 'disabled' : ''}><i>${'ABCD'[j]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>${play.rpick !== null && play.rpick !== undefined && play.rpick !== s.answer ? `<div class="taunt">${monSvg(mon('sign-dist'), 'sm')}<p><b>負號幽靈</b>：−(x² − 1) 只有 x² 變號嘛。</p></div>` : ''}` : `<span class="mx">${esc(me && S.relay.done ? 'x² + 12x + 19' : s.text)}</span>`}${!me && s.done && S.relay.flagsLeft > 0 && !S.relay.done ? `<div style="margin-top:6px"><button class="chip ghost" data-flag="${i}" style="font-size:12px">這步怪怪的（剩 ${S.relay.flagsLeft} 次）</button></div>` : ''}</div></div>`;
+    return `<div class="rstep ${cls} ${play.flagged === i ? 'flag' : ''}">${me ? av(1, 'me') : `<span class="av anon" aria-hidden="true">${i + 1}</span>`}<div class="box"><small>第 ${i + 1} 棒${me ? ' · 你' : (s.done ? ' · 已完成' : ' · 等你交棒')}</small>${me && !S.relay.done ? `<div class="opts" style="margin-top:8px">${s.options.map((o, j) => `<button class="opt ${play.rpick === j ? (j === s.answer ? 'ok' : 'trap') : ''}" data-ropt="${j}" ${play.rpick === s.answer ? 'disabled' : ''}><i>${'ABCD'[j]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>${play.rpick !== null && play.rpick !== undefined && play.rpick !== s.answer ? `<div class="taunt">${monSvg(mon('sign-dist'), 'sm')}<p><b>負號幽靈</b>：−(x² − 1) 只有 x² 變號嘛。</p></div>` : ''}` : `<span class="mx">${esc(me && S.relay.done ? 'x² + 12x + 19' : s.text)}</span>`}${!me && s.done && S.relay.flagsLeft > 0 && !S.relay.done ? `<div style="margin-top:6px"><button class="chip ghost" data-flag="${i}" style="font-size:12px">這步怪怪的（剩 ${S.relay.flagsLeft} 次）</button></div>` : ''}</div></div>`;
   }).join('')}</div>
   ${!S.relay.done ? `<div class="btns"><button class="btn" data-act="relay-submit" ${play.rpick === r.steps[3].answer ? '' : 'disabled'}>交出第 4 棒</button></div>` : `<div class="card mint"><b>交棒了。</b><p class="meta">第 5 棒 24 小時沒接，系統會跳到下一棒，由小陪示範，那一棒移出題數。</p></div>`}`;
 };
@@ -324,8 +434,8 @@ SCREENS.ambush = () => {
   <div class="card coral"><div class="row">${monSvg(m, 'shake')}<div class="grow"><b>${esc(m.name)}回來了</b><small>第 9 天。這次沒有嚮導在旁邊，小陪也不出聲。只認第一次作答。</small></div></div></div>
   <div class="qcard"><p class="stem"><span class="mx">${esc(a.stem)}</span></p>
     <div class="opts">${a.options.map((o, i) => `<button class="opt ${play.apick === i ? 'pick' : ''}" data-aopt="${i}"><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div></div>
-  <div class="rec ${play.rec ? 'on' : ''}"><button class="mic ${play.rec ? 'on' : ''}" data-act="rec" aria-label="按住錄一句為什麼">${SVG.mic}</button><span class="t num">0:${String(play.rec).padStart(2, '0')}</span>${wave(14)}<p>錄一句「為什麼」，再交出去。</p></div>
-  <div class="btns"><button class="btn coral" data-act="ambush-submit" ${play.apick === null || play.apick === undefined || play.rec < 3 ? 'disabled' : ''}>交出去 · 只認這一次</button></div>`;
+  ${whyBox('說一句或打一句「為什麼」，再交出去。')}
+  <div class="btns"><button class="btn coral" data-act="ambush-submit" ${play.apick === null || play.apick === undefined || !whyOk() ? 'disabled' : ''}>交出去 · 只認這一次</button></div>`;
 };
 
 SCREENS.wake = () => {
@@ -363,7 +473,7 @@ SCREENS.duel = () => {
   <div class="sect"><h3>對方出的三題</h3><span class="meta">${esc(d.reveal)}</span></div>
   ${d.questions.map((q) => { const m = mon(q.monster); const v = S.duel.votes[q.n]; return `<div class="card"><div class="row" style="margin-bottom:8px">${monSvg(m, 'sm')}<div class="grow"><b>第 ${q.n} 題 · ${esc(region(m.region).name)}</b><small>對方拿${esc(m.name)}出題</small></div>${v !== undefined || q.voted ? '<span class="pill brand">已投</span>' : ''}</div>
     <p class="stem" style="font-size:18px;margin:4px 0 10px"><span class="mx">${esc(q.stem)}</span></p>
-    <div class="stack">${q.candidates.map((c, i) => `<button class="cand ${v === i ? 'pick' : ''}" data-vote="${q.n}:${i}" ${q.voted ? 'disabled' : ''}><span class="mx">${esc(c.t)}</span><span class="v">${c.v + (v === i ? 1 : 0)} 票</span></button>`).join('')}</div>
+    <div class="stack">${q.candidates.map((c, i) => `<button class="cand ${v === i ? 'pick' : ''}" data-vote="${q.n}:${i}" ${q.voted ? 'disabled' : ''}><span class="mx">${esc(c.t)}</span>${v === undefined && !q.voted ? '' : `<span class="v">${c.v + (v === i ? 1 : 0)} 票</span>`}</button>`).join('')}</div>
     <div class="fixed">${['同意', '我算出不同', '我不確定這一步'].map((t) => `<button class="chip ghost" data-say="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>`; }).join('')}
   <div class="sect"><h3>我們出的三題</h3><span class="meta">${esc(d.ours.status)}</span></div>
   <div class="card"><p class="meta" style="margin-bottom:8px">只能拿雙方都遠征過的怪出題。</p><div class="monpick">${d.ours.picked.map((id) => { const m = mon(id); return `<button class="on">${monSvg(m, 'shadow')}<span>${esc(m.name)}</span></button>`; }).join('')}</div></div>
@@ -472,7 +582,7 @@ SCREENS.capture = (id) => {
   const m = mon(id) || mon('sqrt-split');
   return `<div class="capture p1" id="cap"><div class="sky"></div><div class="stars"></div><div class="rays" aria-hidden="true"></div><div class="ring" aria-hidden="true"></div><div class="confetti" id="confetti"></div>
     <div class="top"><span class="eyebrow">收服 · 第 ${D.SQUAD.week} 週</span><h2 id="cap-title">${esc(m.name)}……</h2></div>
-    <div class="arena"><span class="kid k1">${kid}</span>${monSvg(m, 'xl')}</div>
+    <div class="arena">${heroAv('smile')}${monSvg(m, 'xl')}</div>
     <div><p class="line" id="cap-line">「${esc(m.taunt)}」</p><p class="ev" id="cap-ev" style="opacity:0"><b>${esc(m.weakness)}</b><br>第 0 天 在遠征中被打倒 · 第 9 天 不給提示也會</p>
     <div class="btns"><button class="btn honey" data-share="${m.id}">傳到營地（家人 LINE）</button><div class="btns two" style="margin-top:0"><button class="btn ghost" data-act="wall-post">放上隊伍牆</button><button class="btn ghost" data-go="shadows">先收著</button></div></div></div></div>`;
 };
@@ -503,7 +613,7 @@ const letterTime = (iso) => { const d = new Date(iso); return Number.isNaN(d.get
 function letterHtml(l) {
   const acts = l.actions && l.actions.length ? `<div class="acts">${l.actions.map((a) => `<button class="${l.status === a.id ? 'on' : ''}" data-lreply="${l.id}:${a.id}">${l.status === a.id ? (a.id === 'witnessed' ? '已見證' : '晚點問他 ✓') : esc(a.label)}</button>`).join('')}</div>` : '';
   const state = l.status === 'failed' ? `<span class="t">LINE 沒送出 · ${esc(l.error || '')}</span>` : `<span class="t">${l.channel === 'line' ? '已推到 LINE' : '示範 · 沒接 LINE'} · ${letterTime(l.sent_at || l.created_at)}</span>`;
-  return `<div class="bub"><b>${esc(l.title)} · ${letterTime(l.created_at)}</b><br>${l.lines.map(esc).join('<br>')}${l.ask ? `<span class="q">${esc(l.ask)}</span>` : ''}${acts}${state}</div>`;
+  return `<div class="bub"><b>${esc(l.title)} · ${letterTime(l.created_at)}</b><br>${l.lines.map(esc).join('<br>')}${l.ask ? `<span class="q">${esc(l.ask)}${l.answer ? `<small class="ans">${esc(l.answer)}</small>` : ''}</span>` : ''}<span class="from">${esc(l.sender || 'Tandelo 營地')} · <button class="linkbtn" data-act="camp-about">這是誰寄的？</button></span>${acts}${state}</div>`;
 }
 SCREENS.camp = () => {
   if (API.base()) {
@@ -523,11 +633,12 @@ SCREENS.camp = () => {
   ${hd('營地來信', '家長端 · LINE · 不裝 App')}
   <div class="line-top"><span class="ic">T</span>Tandelo 營地</div>
   <div class="line-body">
-    <div class="bub"><b>營地來信 · ${esc(D.CAMP.time)}</b><br>${esc(D.CAMP.text)}<br>${esc(D.CAMP.chase)}<span class="q">${esc(D.CAMP.ask)}</span>
+    <div class="bub"><b>營地來信 · ${esc(D.CAMP.time)}</b><br>${esc(D.CAMP.text)}<br>${esc(D.CAMP.chase)}<span class="q">${esc(D.CAMP.ask)}<small class="ans">${esc(D.CAMP.answer)}</small></span><span class="from">${esc(D.CAMP.from)} · <button class="linkbtn" data-act="camp-about">這是誰寄的？</button></span>
       <div class="acts"><button class="${S.witnessed ? 'on' : ''}" data-act="witness">${S.witnessed ? '已見證' : '我見證了'}</button><button>晚點問他</button></div><span class="t">已讀 21:05</span></div>
     <div class="bub me">好，晚上問他。<span class="t">21:06</span></div>
-    ${S.wallPosts.length ? `<div class="bub"><b>營地來信 · 剛剛</b><br>小睿的小隊這週副本過關了：解題率 80%，兩星。下一個副本走丘陵線。<span class="t">剛剛</span></div>` : ''}
-    ${S.weekSent ? `<div class="bub"><b>小睿這週學會的 · 剛剛</b><br>收服 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 隻：${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').map((m) => m.name).join('、')}。<br>他會說：「${esc((D.MONSTERS.find((m) => S.shadows[m.id].state === 'captured') || D.MONSTERS[0]).weakness)}」<span class="q">今晚可以請他講給你聽。</span><span class="t">剛剛</span></div>` : ''}
+    ${S.patrol.finished ? `<div class="bub"><b>營地來信 · 剛剛</b><br>${esc(S.profile.nick)}今晚練了「括號前面是減號，每一項都要變號」，三題都做對，其中一題自己說出了為什麼。<span class="q">今晚可以問他：「10 − (3 + 2) 和 10 − 3 + 2 為什麼答案不一樣？」<small class="ans">他可能會這樣說：「減號要分給括號裡每一個數，所以 + 2 要變成 − 2。」</small></span><span class="t">剛剛</span></div>` : ''}
+    ${S.wallPosts.length ? `<div class="bub"><b>營地來信 · 剛剛</b><br>${esc(S.profile.nick)}的小隊這週一起練的題目，全隊答對了八成。下週會換稍微難一點的題目。<span class="t">剛剛</span></div>` : ''}
+    ${S.weekSent ? `<div class="bub"><b>${esc(S.profile.nick)}這週學會的 · 剛剛</b><br>學會了 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 件事，都是隔幾天、不給提示再做一次也對：${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').map((m) => esc(m.skill)).join('；')}。<span class="q">今晚可以請他講一次：<small class="ans">「${esc((D.MONSTERS.find((m) => S.shadows[m.id].state === 'captured') || D.MONSTERS[0]).weakness)}」</small></span><span class="t">剛剛</span></div>` : ''}
   </div>
   <div class="btns"><button class="btn ghost" data-go="home">回到孩子的畫面</button></div>`;
 };
@@ -547,7 +658,7 @@ SCREENS.settings = () => `
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
     <div class="setrow"><span>音效<small>打中、連擊、收服的聲音</small></span><button class="switch ${S.sound ? 'on' : ''}" data-act="sound" role="switch" aria-label="音效" aria-checked="${!!S.sound}"><i></i></button></div>
-    <div class="setrow"><span>深色模式<small>22:30 後自動轉暗</small></span><button class="switch ${document.documentElement.getAttribute('data-theme') === 'dark' ? 'on' : ''}" data-act="theme" role="switch" aria-label="深色模式"></button></div>
+    <div class="setrow"><span>深色模式<small>22:30 後自動轉暗</small></span><button class="switch ${isDark() ? 'on' : ''}" data-act="theme" role="switch" aria-label="深色模式"></button></div>
     <div class="setrow"><span>上個人拓荒榜<small>預設關。開了只有稱號和隊名，別人看不到百分位。</small></span><button class="switch ${S.personalBoard ? 'on' : ''}" data-act="pboard" role="switch" aria-label="個人拓荒榜"></button></div>
     <div class="setrow"><span>本季真人對戰<small>匿名投票，全隊同意才打；否則打幽靈隊，沒有人知道是誰投的。</small></span><button class="switch ${S.pvp ? 'on' : ''}" data-act="pvp" role="switch" aria-label="真人對戰"></button></div>
   </div>
@@ -555,8 +666,8 @@ SCREENS.settings = () => `
   <div class="btns"><button class="btn" data-go="guide">切到嚮導視角</button><button class="btn warn" data-act="reset">重設示範資料</button></div>`;
 
 // ---------- 路由與渲染 ----------
-const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['shadows', '圖鑑', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
-const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower', 'week', 'guide']);
+const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['me', '我', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
+const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'profile', 'join', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower', 'week', 'guide']);
 const DARK = new Set([]);
 const view = $('#view'); const tabsEl = $('#tabs'); const sbEl = $('#sb'); const toastEl = $('#toast');
 const trail = [];
@@ -583,7 +694,8 @@ function route() {
   if (old) { old.className = old.className.replace(/enter-\w+/, '') + ` leave-${dir}`; setTimeout(() => old.remove(), 320); }
   view.appendChild(el);
   tabsEl.classList.toggle('hidden', NOTABS.has(key));
-  tabsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.go === key));
+  const tabKey = ({ shadows: 'me' })[key] || key;
+  tabsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.go === tabKey));
   sbEl.innerHTML = `<button class="num clockbtn" data-act="clock-next" aria-label="切換示範時間：${esc(clock().label)}">${esc(clock().time)}</button><span class="cap">今天 <b>${S.cards}</b> / 3</span>`;
   sbEl.classList.toggle('on-dark', key === 'capture');
   lightsOut(el, key);
@@ -694,7 +806,7 @@ document.addEventListener('click', (e) => {
   const gl = e.target.closest('[data-gline]'); if (gl) { const g = D.GUIDE_QUEUE.find((x) => x.id === gl.dataset.gline); return logIntervention(g, gl.dataset.text); }
   const gs = e.target.closest('[data-gsend]'); if (gs) { const g = D.GUIDE_QUEUE.find((x) => x.id === gs.dataset.gsend); return logIntervention(g, `語音 ${play.rec} 秒`); }
   const rc = e.target.closest('[data-react]'); if (rc) { const id = rc.dataset.react; S.reactions[id] = (S.reactions[id] || 0) + 1; save(); rc.classList.add('on'); rc.querySelector('.num').textContent = Number(rc.querySelector('.num').textContent) + 1; SFX.play('pop'); buzz(8); const r = rc.getBoundingClientRect(); juice('good', r.left + r.width / 2, r.top, '+1'); return; }
-  const t = e.target.closest('[data-go],[data-back],[data-act],[data-lreply],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
+  const t = e.target.closest('[data-go],[data-back],[data-act],[data-lreply],[data-look],[data-nick],[data-pin],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
   if (!t) return;
   if (t.dataset.back !== undefined) return back();
   if (t.dataset.go) { if (t.dataset.locked) return toast('伏擊層週一開放。可以在設定把示範時間快轉。'); return go(t.dataset.go); }
@@ -732,7 +844,22 @@ document.addEventListener('click', (e) => {
     const r = replies[Math.min(lv, 3)]; chat.push({ by: 'c', lvl: r[0], text: r[1] });
     return rerender();
   }
+  if (t.dataset.look) { const [k, v] = t.dataset.look.split(':'); S.join.look[k] = Number(v); save(); SFX.play('tap'); return rerender(); }
+  if (t.dataset.nick) { S.join.nick = t.dataset.nick; save(); return rerender(); }
+  if (t.dataset.pin) { const J = S.join; J.pin = t.dataset.pin === '⌫' ? J.pin.slice(0, -1) : (J.pin + t.dataset.pin).slice(0, 4); buzz(6); save(); return rerender(); }
   const a = t.dataset.act;
+  if (a === 'camp-about') return infoSheet('這是誰寄的？', D.CAMP_ABOUT.map(([k, v]) => `<div class="lore-row"><span class="k">${esc(k)}</span><span>${esc(v)}</span></div>`).join(''));
+  if (a === 'why-type') { play.typing = true; rerender(); const ta = view.querySelector('[data-why-in]'); if (ta) ta.focus(); return; }
+  if (a === 'why-voice') { play.typing = false; return rerender(); }
+  if (a === 'join-start') { S.join = { step: 0, mode: 'new', nick: '', look: { ...AV.PRESETS[1], hair: 0 }, pin: '', cape: 1 }; save(); return go('join'); }
+  if (a === 'join-edit') { S.join = { step: 2, mode: 'edit', nick: S.profile.nick, look: { ...S.profile.look }, pin: '', cape: S.profile.cape }; save(); return go('join'); }
+  if (a === 'logout') { if (confirm('登出這台手機？下次要用 PIN 或家長的通行證打開。')) { S.join = { step: 0, mode: 'new', nick: '', look: { ...AV.PRESETS[1], hair: 0 }, pin: '', cape: 1 }; save(); go('join'); } return; }
+  if (a === 'join-next') {
+    const J = S.join; if (!J) return;
+    if (J.mode === 'edit') { S.profile.look = { ...J.look }; S.join = null; save(); toast('造型換好了'); return go('profile'); }
+    if (J.step < JOIN_STEPS.length - 1) { J.step += 1; save(); SFX.play('tap'); return rerender(); }
+    S.profile = { ...S.profile, nick: J.nick.trim(), look: { ...J.look }, cape: J.cape, pin: J.pin, joined: true }; S.join = null; save(); SFX.play('reward'); toast(`歡迎加入，${S.profile.nick}`); return go('home');
+  }
   if (a === 'letter') { S.letterPlayed = true; save(); const l = t; l.classList.add('playing'); setTimeout(() => go('letter'), 450); return; }
   if (a === 'cheer') { S.cheered = true; save(); toast('「大家加油」送給全隊了，不點名任何人'); return rerender(); }
   if (a === 'help') { S.helpAnswered = true; save(); addRecord('explain', '講解給隊友（匿名）', 0); toast('30 秒講解送出去了'); return rerender(); }
@@ -768,16 +895,31 @@ document.addEventListener('click', (e) => {
   if (a === 'api-retry') { remote.k = ''; Object.keys(remoteOne).forEach((k) => delete remoteOne[k]); return rerender(); }
   if (a === 'api-off') { API.setBase(''); remote.k = ''; Object.keys(remoteOne).forEach((k) => delete remoteOne[k]); toast('改用本地題'); return rerender(); }
   if (a === 'sound') { S.sound = !S.sound; SFX.setEnabled(S.sound); save(); if (S.sound) SFX.play('hit'); return rerender(); }
-  if (a === 'theme') { const r = document.documentElement; const dark = r.getAttribute('data-theme') === 'dark'; r.setAttribute('data-theme', dark ? 'light' : 'dark'); S.theme = dark ? 'light' : 'dark'; save(); return rerender(); }
+  if (a === 'theme') { const r = document.documentElement; const dark = isDark(); r.setAttribute('data-theme', dark ? 'light' : 'dark'); S.theme = dark ? 'light' : 'dark'; save(); return rerender(); }
   if (a === 'pboard') { S.personalBoard = !S.personalBoard; save(); toast(S.personalBoard ? '13 歲以下需家長在 LINE 端同意' : '已關閉'); return rerender(); }
   if (a === 'pvp') { S.pvp = !S.pvp; save(); toast(S.pvp ? '你投了同意。只要有一票不同意，本季打幽靈隊。' : '你投了不同意。沒有人知道是誰投的。'); return rerender(); }
   if (a === 'reset') { if (confirm('重設所有示範資料？')) reset(); return; }
+});
+// 打字欄位：只更新按鈕狀態，不重繪（避免游標跳走）
+document.addEventListener('input', (e) => {
+  const w = e.target.closest('[data-why-in]');
+  if (w) { play.whyText = w.value; play.typed = w.value.trim().length; view.querySelectorAll('[data-act="next"],[data-act="ambush-submit"]').forEach((b) => { if (b.dataset.act === 'next') b.disabled = !whyOk(); else b.disabled = play.apick === null || play.apick === undefined || !whyOk(); }); return; }
+  const n = e.target.closest('[data-nick-in]');
+  if (n && S.join) { S.join.nick = n.value; save(); const b = view.querySelector('[data-act="join-next"]'); if (b) b.disabled = !n.value.trim(); view.querySelectorAll('[data-nick]').forEach((c) => c.classList.toggle('on', c.dataset.nick === n.value)); }
 });
 document.addEventListener('change', (e) => { const st = e.target.closest('[data-student]'); if (st) { S.studentId = Math.max(1, Number(st.value) || 1); save(); sync.at = 0; syncFromBackend(true); return; } const inp = e.target.closest('[data-api]'); if (!inp) return; const u = API.setBase(inp.value); remote.k = ''; toast(u ? `後端：${API.host()}` : '改用本地引擎'); rerender(); });
 document.addEventListener('pointerdown', (e) => { const m = e.target.closest('[data-act="rec"]'); if (m) { e.preventDefault(); recStart(); } });
 ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => document.addEventListener(ev, (e) => { if (recTimer && !e.target.closest('[data-act="rec"]')) recStop(); else if (recTimer && ev !== 'pointerleave') recStop(); }));
 document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.map .hot')) { e.preventDefault(); e.target.click(); } });
 
+function infoSheet(title, html) {
+  const bg = document.createElement('div'); bg.className = 'sheet-bg'; const sh = document.createElement('div'); sh.className = 'sheet';
+  sh.innerHTML = `<div class="grip"></div><h3 style="margin:4px 0 10px">${esc(title)}</h3>${html}<div class="btns"><button class="btn ghost" data-sheet-close>知道了</button></div>`;
+  const shell = $('.shell'); shell.appendChild(bg); shell.appendChild(sh);
+  requestAnimationFrame(() => { bg.classList.add('on'); sh.classList.add('on'); });
+  const close = () => { bg.classList.remove('on'); sh.classList.remove('on'); setTimeout(() => { bg.remove(); sh.remove(); }, 420); };
+  bg.addEventListener('click', close); sh.querySelector('[data-sheet-close]').addEventListener('click', close);
+}
 function lore(id) {
   const m = mon(id); const s = S.shadows[id];
   if (s.state === 'fog' && region(m.region).light !== 'lit') return toast('迷霧還沒散。遠征偵察到這一區，或等全區點燈。');

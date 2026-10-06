@@ -43,6 +43,8 @@ def _out(letter: models.CampLetter) -> schemas.CampLetterOut:
         title=body.get("title", "營地來信"),
         lines=body.get("lines", []),
         ask=body.get("ask"),
+        answer=body.get("answer"),
+        sender=body.get("sender", "Tandelo 營地"),
         actions=body.get("actions", []),
         text=letter.text,
         status=letter.status,

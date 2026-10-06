@@ -18,33 +18,42 @@ LINE_UID = "Udeadbeef0000000000000000000000ab"
 
 # ——— 文案（純函式）———
 def test_compose_capture_has_name_title_and_tonight_question():
-    body = camp.compose("小睿", "capture", SQ, chasing=["負號幽靈"], guide="林老師", guide_day="四")
+    body = camp.compose("小睿", "capture", SQ, chasing=["減去括號，每一項都要變號"], guide="林老師", guide_day="四")
     assert body["title"] == "營地來信"
-    assert body["lines"][0] == "小睿今晚收服了一隻怪：漏項獸（完全平方要有中間那一項）。不給提示也會。"
-    assert body["lines"][1] == "還在追：負號幽靈，林老師週四處理。"
+    assert body["lines"][0] == "小睿學會了：完全平方要有中間那一項。隔了幾天、不給提示再做一次，也做對了。"
+    assert body["lines"][1] == "還在練：減去括號，每一項都要變號。林老師週四的小隊課會帶全隊再練一次。"
+    assert body["answer"].startswith("他可能會這樣說：「") and body["sender"] == "Tandelo 營地 · 林老師的小隊"
     assert body["ask"].startswith("今晚可以問他")
     assert [a["id"] for a in body["actions"]] == ["witnessed", "later"]
     text = camp.to_text(body)
-    assert text.splitlines()[0] == "營地來信" and "漏項獸" in text and "今晚可以問他" in text
+    assert text.splitlines()[0] == "營地來信" and "完全平方" in text and "今晚可以問他" in text and "他可能會這樣說" in text
 
 
 def test_compose_wake_explain_dungeon_week():
-    assert "叫醒了睡著的夥伴：漏項獸" in camp.compose("小睿", "wake", SQ)["lines"][0]
-    assert camp.compose("小睿", "explain", SQ)["lines"][0] == "小睿今晚把「完全平方要有中間那一項」講給隊友聽，講對了。"
+    assert camp.compose("小睿", "wake", SQ)["lines"][0] == "小睿之前忘掉的「完全平方要有中間那一項」，今天自己想起來，做對了。"
+    assert camp.compose("小睿", "explain", SQ)["lines"][0] == "小睿今天把「完全平方要有中間那一項」講給隊友聽，講對了。"
     d = camp.compose("小睿", "dungeon", extra={"rate": 0.8, "stars": 2, "next_route_name": "丘陵線"})
-    assert d["lines"] == ["小睿的小隊這週副本過關了：解題率 80%，兩星。下一個副本走丘陵線。"]
+    assert d["lines"] == ["小睿的小隊這週一起練的題目，全隊答對了 80%。下週會換稍微難一點的題目。"]
     assert d["actions"] == [] and d["ask"] is None
-    w = camp.compose("小睿", "week", extra={"captured": ["漏項獸", "雙面根"], "ask_monster": SQ})
-    assert w["title"] == "小睿這週學會的" and w["lines"][0] == "小睿這週學會的：收服 2 隻（漏項獸、雙面根）。" and w["ask"]
-    assert "還在追" in camp.compose("小睿", "week", extra={})["lines"][0]
+    w = camp.compose("小睿", "week", extra={"captured": ["完全平方要有中間那一項", "√ 開出來一定不是負的"], "ask_monster": SQ})
+    assert w["title"] == "小睿這週學會的" and w["lines"][0].startswith("小睿這週學會了 2 件事") and w["ask"] and w["answer"]
+    assert "還在練" in camp.compose("小睿", "week", extra={})["lines"][0]
     with pytest.raises(ValueError):
         camp.compose("小睿", "score")
 
 
-def test_compose_never_mentions_scores_or_ranks():
-    for kind in ("capture", "wake", "explain"):
-        text = camp.to_text(camp.compose("小睿", kind, SQ, chasing=["負號幽靈"]))
-        assert "分" not in text.replace("分鐘", "") and "名" not in text and "排名" not in text
+def test_parent_letters_have_no_scores_ranks_or_game_words():
+    """家長端不用遊戲語言（概念稿「不做」清單），也不放分數排名。"""
+    game_words = ["收服", "怪", "夥伴", "戰績", "副本", "路線", "星", "叫醒", "漏項獸", "負號幽靈"]
+    bodies = [camp.compose("小睿", k, SQ, chasing=["減去括號，每一項都要變號"], guide="林老師", guide_day="四") for k in ("capture", "wake", "explain")]
+    bodies += [
+        camp.compose("小睿", "dungeon", extra={"rate": 0.8, "stars": 2, "next_route_name": "丘陵線"}),
+        camp.compose("小睿", "week", extra={"captured": [SQ["title"]], "ask_monster": SQ}),
+    ]
+    for body in bodies:
+        text = camp.to_text(body)
+        assert not [w for w in game_words if w in text], text
+        assert "分" not in text.replace("分鐘", "").replace("分給", "") and "排名" not in text
 
 
 def test_line_signature_and_webhook_parse():
@@ -84,7 +93,12 @@ def test_learning_events_send_letters_but_stuck_does_not(client):
     assert [x["kind"] for x in letters] == ["capture", "explain"]  # 新的在前
     cap = letters[0]
     assert cap["status"] == "sent" and cap["channel"] == "stub" and cap["monster_id"] == "sq-cross"
-    assert "小睿今晚收服了一隻怪：漏項獸" in cap["text"] and cap["ask"].startswith("今晚可以問他")
+    assert (
+        "小睿學會了：完全平方要有中間那一項" in cap["text"]
+        and cap["ask"].startswith("今晚可以問他")
+        and cap["answer"]
+        and cap["sender"].startswith("Tandelo 營地")
+    )
     assert cap["sent_at"] and cap["replied_at"] is None
 
 
@@ -96,12 +110,12 @@ def test_manual_letters_and_week_summary(client):
     assert client.post(f"/api/v1/students/{sid}/camp-letters", json={"kind": "capture"}).status_code == 404
     assert client.post(f"/api/v1/students/{sid}/camp-letters", json={"kind": "score"}).status_code == 422
     d = client.post(f"/api/v1/students/{sid}/camp-letters", json={"kind": "dungeon", "extra": {"rate": 0.8, "stars": 2, "next_route_name": "丘陵線"}}).json()
-    assert d["lines"][0].endswith("兩星。下一個副本走丘陵線。") and d["actions"] == []
+    assert d["lines"][0].endswith("下週會換稍微難一點的題目。") and d["actions"] == []
     w = client.post(f"/api/v1/students/{sid}/camp-letters", json={"kind": "week"}).json()
-    assert "還在追" in w["lines"][0]  # 只打中、還沒收服
+    assert "還在練" in w["lines"][0]  # 只打中、還沒收服
     client.post(f"/api/v1/students/{sid}/shadows/sq-cross/events", json={"event": "retest_passed"})
     w = client.post(f"/api/v1/students/{sid}/camp-letters", json={"kind": "week"}).json()
-    assert w["lines"][0] == "小睿這週學會的：收服 1 隻（漏項獸）。" and w["ask"]
+    assert w["lines"][0].startswith("小睿這週學會了 1 件事") and "完全平方要有中間那一項" in w["lines"][0] and w["ask"]
     assert client.get("/api/v1/students/9999/camp-letters").status_code == 404
 
 
