@@ -42,15 +42,17 @@ function defaults() {
     interventions: [], // 嚮導的介入紀錄（示範）
     studentId: 9, // 接後端時用哪一位種子學生（示範）
     guideDone: {},
+    stage: 'd1', // 示範進度：d1 第 1 天、w1 第 1 週末、w3 第 3 週
     profile: { nick: '小睿', look: { ...AV.PRESETS[1] }, cape: 1, pin: '2580', parent: '媽媽', share: true, joined: true }, // 帳號：家長 LINE 名下的孩子檔案（示範）
     join: null, // 第一次進入流程的暫存
   };
 }
-function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); return s ? { ...defaults(), ...s } : defaults(); } catch (e) { return defaults(); } }
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); return s && s.stage ? { ...defaults(), ...s } : fresh(); } catch (e) { return fresh(); } }
+function fresh() { const d = defaults(); return { ...d, ...stagePreset(d.stage) }; }
 let S = load();
 SFX.setEnabled(S.sound !== false);
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 隱私模式 */ } }
-function reset() { S = defaults(); save(); go('home'); toast('已重設示範資料'); }
+function reset() { S = fresh(); save(); renderTabs(); go('home'); toast('已重設示範資料'); }
 
 const clock = () => D.CLOCKS.find((c) => c.id === S.clock) || D.CLOCKS[0];
 // 題目由變體引擎依種子與路線產生：同一個種子永遠同一組，換種子就「換個樣子出現」
@@ -158,43 +160,65 @@ function stopFeed() { if (feedTimer) { clearInterval(feedTimer); feedTimer = nul
 // ---------- 畫面 ----------
 const SCREENS = {};
 
+// ---------- 首頁：依進度漸進解鎖（第 1 天只有一件事；之後的系統等用得到時才出現）----------
+const STAGE_ORDER = ['d1', 'w1', 'w3'];
+const STAGES = { d1: { name: '第 1 天', week: 1 }, w1: { name: '第 1 週末', week: 1 }, w3: { name: '第 3 週', week: 3 } };
+const wk = () => (STAGES[S.stage] || STAGES.w3).week;
+const atLeast = (st) => STAGE_ORDER.indexOf(S.stage) >= STAGE_ORDER.indexOf(st);
+const demoJump = () => `<div class="demo-jump"><span class="tag">示範</span><span class="grow">${esc(STAGES[S.stage].name)}的樣子 · 系統會隨天數慢慢打開</span>${STAGE_ORDER.filter((s) => s !== S.stage).map((s) => `<button class="chip ghost" data-stage="${s}">看${esc(STAGES[s].name)}</button>`).join('')}</div>`;
+const taskBtn = (t, compact = false) => `<button class="task ${t.done ? 'done' : ''} ${compact ? 'compact' : ''}" data-go="${t.go}"><span class="mon ${t.done ? 'shadow' : (t.id === 'wake' ? 'asleep' : '')}" aria-hidden="true"><svg><use href="#${t.mon.shape}"/></svg></span><span class="grow"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small>${compact ? '' : `<span class="why">${esc(t.why)}</span>`}</span><span class="go">${t.done ? SVG.check : SVG.chev}</span></button>`;
+
 SCREENS.home = () => {
+  // 第 1 天：林老師一句話、今天 3 題、進度、隊友。其他都還沒出現。
+  if (S.stage === 'd1') {
+    const done = S.patrol.finished ? 3 : S.patrol.done;
+    return `
+  <div class="d1-hello"><span class="guide-badge" aria-hidden="true">林</span><div><b>林老師</b><p>${S.patrol.finished ? `做得好，${esc(S.profile.nick)}。今天就到這裡，明天見。` : `歡迎加入${esc(D.SQUAD.name)}，${esc(S.profile.nick)}。今天只要做 3 題。`}</p></div></div>
+  <button class="hero-task ${S.patrol.finished ? 'done' : ''}" data-go="play">${monSvg(mon('sign-dist'), S.patrol.finished ? 'pine' : 'bob')}<span class="grow"><b>${S.patrol.finished ? '今天的 3 題做完了' : '今天 3 題'}</b><small>負號幽靈 · 括號前面是減號的題目</small></span><span class="go-btn">${S.patrol.finished ? '再看一次' : (done ? '繼續' : '開始')}</span></button>
+  <div class="d1-progress"><div class="dots" aria-label="做了 ${done} / 3 題">${[0, 1, 2].map((i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div><span>${S.patrol.finished ? '夠了，晚安。林老師今晚會寄一封信給家長。' : `做完 3 題，今天就夠了`}</span></div>
+  <button class="d1-team" data-go="me"><span class="avs">${av(1, 'me')}${av(2)}${av(3)}${av(4)}${av(5)}</span><span class="grow"><b>${esc(D.SQUAD.name)}</b><small>5 個人一起追同一隻怪 · 2 人今天出發了</small></span></button>
+  ${demoJump()}`;
+  }
   const c = clock();
-  const sh = S.shadows;
   const todays = [
-    { id: 'patrol', mon: mon('sign-dist'), title: '巡邏 · 負號幽靈', sub: S.patrol.finished ? '3 / 3 完成' : `第 1 層 · 你 ${S.patrol.done} / 3`, why: '林老師昨晚說：牠在括號前面，先別急著算。', done: S.patrol.finished, go: 'play' },
-    { id: 'relay', mon: mon('factor-cross'), title: 'Boss 接力 · 第 4 棒', sub: S.relay.done ? '你的那一棒交出去了' : '開跑中 · 前三棒已完成', why: '一題多步驟，你只負責接到的那一步。', done: S.relay.done, go: 'relay' },
-    S.clock === 'mon' || S.clock === 'tue' || S.clock === 'night'
-      ? { id: 'ambush', mon: mon('sqrt-split'), title: '伏擊 · 拆根蟲回來了', sub: S.ambush.done ? (S.ambush.passed ? '收服了' : '牠還在附近，不扣分') : '沒有提示 · 只認第一次', why: '第 7 到 12 天，自己一個人面對牠。', done: S.ambush.done, go: 'ambush' }
-      : { id: 'wake', mon: mon('diff-sq'), title: '叫醒夥伴 · 平方差雙子', sub: S.wake.done ? '叫醒了' : '上週又錯了一次 · 不扣分', why: '睡著的夥伴不會消失，等你叫醒。', done: S.wake.done, go: 'wake' },
+    { id: 'patrol', mon: mon('sign-dist'), title: '今天 3 題 · 負號幽靈', sub: S.patrol.finished ? '3 / 3 完成' : `做了 ${S.patrol.done} / 3`, why: '林老師昨晚說：牠在括號前面，先別急著算。', done: S.patrol.finished, go: 'play' },
+    { id: 'relay', mon: mon('factor-cross'), title: '接力題 · 你是第 4 棒', sub: S.relay.done ? '你的那一步交出去了' : '一題拆成五步，你只做接到的那一步', why: '前三位隊友做完了，輪到你。', done: S.relay.done, go: 'relay' },
   ];
-  const lit = 9 + S.cards;
+  if (atLeast('w3')) {
+    todays.push(S.clock === 'mon' || S.clock === 'tue' || S.clock === 'night'
+      ? { id: 'ambush', mon: mon('sqrt-split'), title: '怪回來了 · 拆根蟲', sub: S.ambush.done ? (S.ambush.passed ? '收服了' : '牠還在附近，不扣分') : '沒有提示 · 只認第一次', why: '隔了幾天，自己一個人面對牠。答對就收服。', done: S.ambush.done, go: 'ambush' }
+      : { id: 'wake', mon: mon('diff-sq'), title: '怪回來了 · 平方差雙子', sub: S.wake.done ? '叫醒了' : '上週又錯了一次 · 不扣分', why: '學會過的東西會忘，再做一次就回來了。', done: S.wake.done, go: 'wake' });
+  }
+  const next = todays.find((t) => !t.done);
   return `
   <div class="home-top">
-    <div class="flag"><svg viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg><button class="role" data-go="me" aria-label="這週的位置：${esc(D.ROLES[D.SQUAD.me.role].name)}">${esc(D.ROLES[D.SQUAD.me.role].short)}</button></div>
-    <div class="grow"><h2>${esc(D.SQUAD.name)}</h2><span class="sub"><span class="nw">嚮導 ${esc(D.SQUAD.guide)}</span> · <span class="nw">第 ${D.SQUAD.week} 週</span> · <span class="nw">${esc(D.SQUAD.examLabel)}</span></span></div>
+    <div class="flag"><svg viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg>${atLeast('w3') ? `<button class="role" data-go="me" aria-label="這週的位置：${esc(D.ROLES[D.SQUAD.me.role].name)}">${esc(D.ROLES[D.SQUAD.me.role].short)}</button>` : ''}</div>
+    <div class="grow"><h2>${esc(D.SQUAD.name)}</h2><span class="sub"><span class="nw">林老師</span> · <span class="nw">第 ${wk()} 週</span></span>${atLeast('w3') ? `<span class="pill exam">${esc(D.SQUAD.examLabel)}</span>` : ''}</div>
     <button class="avs" data-go="me" aria-label="我的冒險者卡">${av(1, 'me')}${av(2)}${av(3)}${av(4)}${av(5)}</button>
   </div>
-  <button class="letter ${S.letterPlayed ? '' : ''}" data-act="letter" aria-label="播放嚮導的信">
-    <span class="play">${SVG.play}</span>
-    <span class="grow"><b>嚮導的信 · 第 ${D.LETTER.week} 封「${D.LETTER.chapter}」</b><small>對面的小隊也在追同一隻怪。</small>${wave(22)}</span>
-    <span class="len num">${D.LETTER.length}</span>
-  </button>
-  ${S.witnessed ? `<div class="witness"><span class="heart">${SVG.heart}</span><span>媽媽見證了這一次。<small class="meta" style="display:block">昨晚的營地來信 · 漏項獸</small></span></div>` : ''}
-  <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><span class="pill honey streak">${SVG.flame || '🔥'} 小隊連續 ${D.SQUAD.streak + (S.cards >= 3 ? 1 : 0)} 天</span><div class="dots" aria-hidden="true">${[0, 1, 2].map((i) => `<i class="${i < S.cards ? 'on' : ''}"></i>`).join('')}</div></div>
+  ${atLeast('w3') ? `<button class="letter compact" data-act="letter" aria-label="播放林老師的信"><span class="play">${SVG.play}</span><span class="grow"><b>林老師的信 · 第 ${D.LETTER.week} 封</b><small>對面的小隊也在追同一隻怪。</small></span><span class="len num">${D.LETTER.length}</span></button>` : ''}
+  <div class="today"><div><div class="count num">${S.cards}<small>/ 3 張任務卡</small></div><div class="meta">${esc(c.label)} · ${esc(c.note)}</div></div><span class="pill honey streak">${SVG.flame || '🔥'} 小隊連續 ${(atLeast('w3') ? D.SQUAD.streak : 2) + (S.cards >= 3 ? 1 : 0)} 天</span></div>
   ${S.cards >= 3 ? `<div class="stop"><span class="moon" aria-hidden="true"></span><span><b>今天三張都亮了，夠了。</b><small>沒有第四張。明天早上六點再發，晚安。</small></span></div>` : ''}
-  ${todays.map((t) => `<button class="task ${t.done ? 'done' : ''}" data-go="${t.go}"><span class="mon ${t.done ? 'shadow' : (t.id === 'wake' ? 'asleep' : '')}" aria-hidden="true"><svg><use href="#${t.mon.shape}"/></svg></span><span class="grow"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small><span class="why">${esc(t.why)}</span></span><span class="go">${t.done ? SVG.check : SVG.chev}</span></button>`).join('')}
+  ${todays.map((t) => taskBtn(t, t !== next)).join('')}
+  <button class="task thisweek" data-go="dungeon">${monSvg(mon('sign-dist'), S.settled ? 'shadow sm' : 'sm')}<span class="grow"><b>這週 · ${esc(D.DUNGEON.name)}</b><small>${S.settled ? '已結算 · 全隊答對八成' : `全隊一起過關 · ${esc(D.DUNGEON.settle)}結算`}</small></span><span class="go">${SVG.chev}</span></button>
   <div class="sect"><h3>隊友剛剛</h3><span class="meta live"><i></i>現在</span></div>
-  <div class="feed" id="feed">${feedHtml()}</div>
-  <div class="sect"><h3>整備條</h3><span class="meta">全隊這週</span></div>
-  <div class="card"><div class="ready"><div class="bar"><i style="transform:scaleX(${lit / 15})"></i></div><span class="n">亮了 ${lit} / 15 張</span></div>
-    <div class="btns"><button class="btn soft ${S.cheered ? '' : ''}" data-act="cheer" ${S.cheered ? 'disabled' : ''}>${S.cheered ? '已經對全隊說過「大家加油」' : '對全隊按一次「大家加油」'}</button></div></div>
-  <button class="task week" data-go="week"><span class="shelf-mini" aria-hidden="true">${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').slice(0, 3).map((m) => monSvg(m, 'shadow')).join('')}</span><span class="grow"><b>我學會的</b><small>收服 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 隻 · 說得出來的 ${D.MONSTERS.filter((m) => S.shadows[m.id].state === 'captured').length} 句</small></span><span class="go">${SVG.chev}</span></button>
-  <div class="sect"><h3>本週副本</h3><button data-go="dungeon">看副本</button></div>
-  <button class="task" data-go="dungeon">${monSvg(mon('sign-dist'), S.settled ? 'shadow' : '')}<span class="grow"><b>${esc(D.DUNGEON.name)} · ${esc(D.ROUTES[S.route].name)}</b><small>${S.settled ? '已結算 · 80% 兩星過關' : '本週副本進行中 · 週二 22:00 結算'}</small></span><span class="go">${SVG.chev}</span></button>
-  <div class="sect"><h3>出題戰 · 第 3 週</h3><button data-go="duel">去作答</button></div>
-  <button class="task" data-go="duel">${monSvg(mon('diff-sq'))}<span class="grow"><b>${esc(D.DUEL.opponent)}出了三題</b><small>我們一起答 · ${esc(D.DUEL.reveal)}</small></span><span class="go">${SVG.chev}</span></button>`;
+  <div class="feed short" id="feed">${feedHtml()}</div>
+  ${demoJump()}`;
 };
+
+function stagePreset(st) {
+  const fresh = { cards: 0, patrol: { i: 0, done: 0, helped: 0, why: false, finished: false }, relay: { done: false, flagsLeft: 2 }, ambush: { done: false, passed: false }, wake: { done: false }, settled: false, wallPosts: [], weekSent: false, cheered: false, helpAnswered: false, letterPlayed: false, duel: { votes: {}, ours: [] }, clock: 'sat' };
+  if (st === 'd1') {
+    const sh = Object.fromEntries(Object.keys(D.INITIAL_SHADOWS).map((k) => [k, { state: 'fog' }])); sh['sign-dist'] = { state: 'near', note: '今天第一次遇到' };
+    return { ...fresh, shadows: sh, records: [], witnessed: false };
+  }
+  if (st === 'w1') {
+    const sh = Object.fromEntries(Object.keys(D.INITIAL_SHADOWS).map((k) => [k, { state: 'fog' }])); sh['sign-dist'] = { state: 'hit', due: '下週一', note: '打中了，下週一再測' }; sh['sq-expand'] = { state: 'near', note: '這週遠征偵察到' };
+    return { ...fresh, shadows: sh, records: [{ kind: 'explain', label: '講解抽查合格', pts: 3, when: '10/09' }], witnessed: true };
+  }
+  return { ...fresh, shadows: JSON.parse(JSON.stringify(D.INITIAL_SHADOWS)), records: D.RECORD_EVENTS.slice(), witnessed: true };
+}
+function setStage(st) { S = { ...S, ...stagePreset(st), stage: st }; play = { lvl: 0, picked: null, tried: false, rec: 0 }; save(); renderTabs(); go('home'); toast(`示範：${STAGES[st].name}`); }
 
 // ---------- 「為什麼」：用說的或打字（不想在家人旁邊開口也能交）----------
 const whyOk = () => play.rec >= 3 || (play.typed || 0) >= 6;
@@ -214,18 +238,18 @@ SCREENS.me = () => {
   const role = D.ROLES[D.SQUAD.me.role]; const badges = D.SQUAD.me.roleBadges || {};
   const title = D.TITLES.find((t) => t.earned && !t.team);
   return `
-  ${hd('我', `${esc(D.SQUAD.name)} · 第 ${D.SQUAD.week} 週`, false)}
+  ${hd('我', `${esc(D.SQUAD.name)} · 第 ${wk()} 週`, false)}
   <div class="acard f-${rk.frame}">
-    <div class="acard-top"><span class="rank-name">${esc(rk.name)}</span><span class="role-chip">${esc(role.short)} · 這週${esc(role.name)}</span></div>
+    <div class="acard-top"><span class="rank-name">${esc(rk.name)}</span>${atLeast('w3') ? `<span class="role-chip">${esc(role.short)} · 這週${esc(role.name)}</span>` : ''}</div>
     <div class="acard-hero"><div class="partners">${caps.slice(0, 3).map((m, i) => monSvg(m, 'shadow', `style="--i:${i}"`)).join('')}</div>${heroAv()}</div>
-    <div class="acard-name"><h3>${esc(P.nick)}</h3>${title ? `<span class="stamp">${esc(title.name)}</span>` : ''}</div>
+    <div class="acard-name"><h3>${esc(P.nick)}</h3>${title && atLeast('w3') ? `<span class="stamp">${esc(title.name)}</span>` : ''}</div>
     <div class="stats3"><div><b class="num">${caps.length}</b><small>收服</small></div><div><b class="num">${wakes}</b><small>叫醒</small></div><div><b class="num">${explains}</b><small>講解</small></div></div>
     <div class="rank-next">${nx ? `<div class="bar"><i style="transform:scaleX(${((pts - rk.at) / (nx.at - rk.at)).toFixed(3)})"></i></div><small>再 <b class="num">${nx.at - pts}</b> 點戰績升為「${esc(nx.name)}」· 戰績只算驗證過的學會</small>` : '<small>最高階。接下來帶新隊友。</small>'}</div>
   </div>
-  <div class="sect"><h3>這週的位置</h3><span class="meta">每週輪換 · 不看程度</span></div>
+  ${atLeast('w3') ? `<div class="sect"><h3>這週的位置</h3><span class="meta">每週輪換 · 不看程度</span></div>
   <div class="card role-card"><div class="row"><span class="role-big">${esc(role.short)}</span><div class="grow"><b>${esc(role.name)}</b><p class="meta">${esc(role.does)}</p></div></div>
     <div class="role-badges">${ROLE_ORDER.map((k) => `<span class="rb ${badges[k] ? 'on' : ''} ${k === D.SQUAD.me.role ? 'cur' : ''}"><i>${esc(D.ROLES[k].short)}</i><small>${esc(D.ROLES[k].name)}</small></span>`).join('')}</div>
-    <p class="meta">嚮導確認你做完一次，就點亮一枚職業章。四枚都亮，得到稱號「全能隊員」。</p></div>
+    <p class="meta">嚮導確認你做完一次，就點亮一枚職業章。四枚都亮，得到稱號「全能隊員」。</p></div>` : ''}
   <div class="sect"><h3>正在追的怪</h3><span class="meta">打中之後隔幾天再測，不給提示就收服</span></div>
   <div class="card">${chasing.map((m) => { const s = S.shadows[m.id]; return `<button class="learned-row" data-lore="${m.id}">${monSvg(m, `${stateCls[s.state]} sm`)}<span class="grow"><b>${esc(m.name)}</b><small>${esc(m.skill)}</small></span><span class="pill ${s.state === 'hit' ? 'brand' : 'coral'}">${s.state === 'hit' ? `打中了 · ${esc(s.due || '幾天後')}再測` : '還在附近'}</span></button>`; }).join('') || '<p class="meta">這週還沒遇到怪。先去巡邏。</p>'}</div>
   <div class="menu">
@@ -329,7 +353,7 @@ SCREENS.week = () => {
   const wakes = S.records.filter((r) => r.kind === 'wake').length;
   const explains = S.records.filter((r) => r.kind === 'explain').length;
   return `
-  ${hd('我學會的', `第 ${D.SQUAD.week} 週 · 這一季到現在`)}
+  ${hd('我學會的', `第 ${wk()} 週 · 這一季到現在`)}
   <div class="week-hero"><div class="stars"></div>
     <div class="shelf">${caps.map((m, i) => monSvg(m, 'shadow blink', `style="--i:${i}"`)).join('')}${asleep.map((m, i) => monSvg(m, 'asleep', `style="--i:${caps.length + i}"`)).join('')}</div>
     <div class="plank"></div>
@@ -371,7 +395,7 @@ SCREENS.dungeon = () => {
   const patrolSt = S.patrol.finished ? 'done' : '';
   const ambushOpen = ['mon', 'tue', 'night'].includes(S.clock);
   return `
-  ${hd('本週副本', `${esc(D.SQUAD.subject)} · ${esc(r.name)} · 第 ${D.SQUAD.week} 週`, false)}
+  ${hd('這週', `${esc(D.SQUAD.subject)} · 第 ${wk()} 週 · 全隊一起過關`, false)}
   <div class="dg-hero"><div class="fogbg"></div><span class="eyebrow">多項式林</span><h2>${esc(D.DUNGEON.name)}</h2><p>${S.settled ? '已結算 · 80% 兩星過關' : '本週副本進行中 · 結算之前不顯示人數與分數'}</p>${monSvg(m, S.settled ? 'shadow' : 'bob')}</div>
   <button class="layer ${patrolSt}" data-go="play"><span class="n">1</span><span><b>巡邏 · 每人 3 題</b><small>本週遠征那隻怪，換個樣子出現。小陪和求援隨時可用。</small></span><span class="st">${S.patrol.finished ? '3 / 3' : `${S.patrol.done} / 3`}</span></button>
   <button class="layer ${ambushOpen ? (S.ambush.done ? 'done' : '') : 'lock'}" data-go="${ambushOpen ? 'ambush' : 'dungeon'}" ${ambushOpen ? '' : 'data-locked="1"'}><span class="n">2</span><span><b>伏擊 · 到期的夥伴</b><small>${ambushOpen ? '拆根蟲回來了。沒有提示、不能求援。' : '1 隻夥伴到期 · 週一開放'}</small></span><span class="st">${S.ambush.done ? (S.ambush.passed ? '收服' : '沒中') : (ambushOpen ? '開放' : '週一')}</span></button>
@@ -380,14 +404,22 @@ SCREENS.dungeon = () => {
   
   <div class="sect"><h3>結算</h3><span class="meta">${esc(D.DUNGEON.settle)}</span></div>
   ${S.settled ? `<button class="btn ghost" data-go="settle">再看一次結算</button>` : `<button class="btn ${S.clock === 'tue' ? '' : 'ghost'}" data-act="settle">${S.clock === 'tue' ? '結算 · 全隊看到解題率' : '快轉到週二 22:00 結算'}</button>`}
-  <div class="sect"><h3>一季八週</h3><span class="meta">從遠征到遠征</span></div>
-  <div class="calendar">${[['W1', '開季 · 副本從平原線出發'], ['W2', '副本補洞期'], ['W3', '出題戰 · 這週不開副本（示範合併）'], ['W4', '鏡像賽 · 結業點，可停可續'], ['W5', '副本跟上學校進度'], ['W6', '出題戰 · 魔王前的模擬戰'], ['W7', '鏡像賽 · 總複習副本'], ['W8', '魔王戰 · 段考週，不開副本、不加量']].map(([w, t], i) => `<div class="${i === 2 ? 'now' : ''}"><b>${w}</b><span>${esc(t)}</span></div>`).join('')}</div>`;
+  ${atLeast('w3') ? `<div class="sect"><h3>小隊之外</h3><span class="meta">第 2 週起慢慢打開</span></div>
+  <div class="menu">
+    <button data-go="map"><span class="mi">${towerSvg}</span><span class="grow"><b>世界地圖</b><small>全區一起點亮燈塔</small></span>${SVG.chev}</button>
+    <button data-go="duel"><span class="mi">${monSvg(mon('diff-sq'), 'sm')}</span><span class="grow"><b>出題戰</b><small>${esc(D.DUEL.opponent)}出了三題 · ${esc(D.DUEL.reveal)}</small></span>${SVG.chev}</button>
+    <button data-go="guild"><span class="mi">${SVG.guild}</span><span class="grow"><b>公會徽章賽</b><small>${esc(D.GUILD.name)} · 每月一次</small></span>${SVG.chev}</button>
+  </div>
+  <div class="sect"><h3>整備</h3><span class="meta">全隊這週亮了 ${9 + S.cards} / 15 張</span></div>
+  <div class="btns" style="margin-top:0"><button class="btn soft" data-act="cheer" ${S.cheered ? 'disabled' : ''}>${S.cheered ? '已經對全隊說過「大家加油」' : '對全隊按一次「大家加油」'}</button></div>` : ''}
+  ${atLeast('w3') ? `<div class="sect"><h3>一季八週</h3><span class="meta">從遠征到遠征</span></div>
+  <div class="calendar">${[['W1', '開季 · 副本從平原線出發'], ['W2', '副本補洞期'], ['W3', '出題戰 · 這週不開副本（示範合併）'], ['W4', '鏡像賽 · 結業點，可停可續'], ['W5', '副本跟上學校進度'], ['W6', '出題戰 · 魔王前的模擬戰'], ['W7', '鏡像賽 · 總複習副本'], ['W8', '魔王戰 · 段考週，不開副本、不加量']].map(([w, t], i) => `<div class="${i === 2 ? 'now' : ''}"><b>${w}</b><span>${esc(t)}</span></div>`).join('')}</div>` : ''}`;
 };
 
 // 巡邏作答：四層引導 問 → 指 → 借 → 示範一步
 let play = { lvl: 0, picked: null, tried: false, rec: 0, recT: null };
 SCREENS.play = () => {
-  if (API.base()) { loadRemote(); if (remote.loading) return `${hd('巡邏', '負號幽靈 · 多項式林')}<div class="qcard skeleton"><div class="row"><span class="sk sk-mon"></span><span class="sk sk-line"></span></div><span class="sk sk-stem"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span></div><p class="meta" style="text-align:center">後端出題中 · ${esc(API.host())}</p>`; if (remote.err && !remote.qs) return `${hd('巡邏', '負號幽靈 · 多項式林')}<div class="card coral"><b>後端沒回應</b><small>${esc(remote.err)}</small></div><div class="btns"><button class="btn" data-act="api-retry">再試一次</button><button class="btn ghost" data-act="api-off">先用本地題</button></div>`; }
+  if (API.base()) { loadRemote(); if (remote.loading) return `${hd('今天 3 題', '負號幽靈')}<div class="qcard skeleton"><div class="row"><span class="sk sk-mon"></span><span class="sk sk-line"></span></div><span class="sk sk-stem"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span><span class="sk sk-opt"></span></div><p class="meta" style="text-align:center">後端出題中 · ${esc(API.host())}</p>`; if (remote.err && !remote.qs) return `${hd('今天 3 題', '負號幽靈')}<div class="card coral"><b>後端沒回應</b><small>${esc(remote.err)}</small></div><div class="btns"><button class="btn" data-act="api-retry">再試一次</button><button class="btn ghost" data-act="api-off">先用本地題</button></div>`; }
   const q = PQ()[S.patrol.i];
   if (!q || S.patrol.finished) return `${hd('巡邏完成', '第 1 層 · 負號幽靈')}<div class="card"><div class="settle"><div class="big num">3<small>/ 3</small></div><div class="lbl">巡邏層完成 · 問過小陪照樣算分</div></div></div><div class="btns"><button class="btn" data-go="dungeon">回到副本</button><button class="btn ghost" data-act="patrol-again">再巡一次 · 牠換個樣子</button></div>`;
   const m = mon('sign-dist');
@@ -397,16 +429,16 @@ SCREENS.play = () => {
   if (play.coachText) for (let i = 0; i < 4; i++) if (play.coachText[i]) txt[i] = play.coachText[i];
   if (play.busy) txt[play.lvl] = '小陪想一下…';
   return `
-  ${hd(`巡邏 · 第 ${S.patrol.i + 1} 題`, '負號幽靈 · 多項式林')}
-  <div class="q-top"><div class="steps" aria-label="進度">${PQ().map((_, i) => `<i class="${i < S.patrol.i ? 'on' : (i === S.patrol.i ? 'cur' : '')}"></i>`).join('')}</div><span class="pill brand">今天 ${S.cards} / 3</span></div>
+  ${hd(`今天第 ${S.patrol.i + 1} 題`, '負號幽靈 · 括號前面是減號')}
+  <div class="q-top"><div class="steps" aria-label="進度">${PQ().map((_, i) => `<i class="${i < S.patrol.i ? 'on' : (i === S.patrol.i ? 'cur' : '')}"></i>`).join('')}</div><span class="pill brand">第 ${S.patrol.i + 1} / 3 題</span></div>
   <div class="qcard"><div class="row" style="margin-bottom:6px">${monSvg(m, play.tried ? 'shake' : 'bob')}<div class="grow"><span class="meta">這隻怪的口頭禪</span><b style="font-size:13.5px">「${esc(m.taunt)}」</b></div></div>
     <p class="stem"><span class="mx">${esc(q.stem.replace(' = ?', ''))}</span><br><span class="meta" style="font-size:13px;font-weight:500">化簡</span></p>
     <div class="opts" id="opts">${q.options.map((o, i) => `<button class="opt ${play.picked === i ? (i === q.answer ? 'ok' : 'trap') : ''}" data-opt="${i}" ${hit ? 'disabled' : ''}><i>${'ABCD'[i]}</i><span class="mx">${esc(o)}</span></button>`).join('')}</div>
     ${play.picked !== null && !hit ? `<div class="taunt">${monSvg(m, 'sm')}<p><b>${esc(m.name)}</b>：${play.picked === q.trap ? `${esc(q.taunt)} <span class="pill coral">${esc(q.trapLabel)}</span>` : '差一點點，再看一次括號。'}</p></div>` : ''}
     ${hit ? `<div class="taunt learned">${monSvg(m, 'sm shadow')}<p><b>打中了</b>：${esc(q.why)}${play.lvl ? '（問過小陪，一樣算 1 分）' : ''}</p></div>` : ''}
   </div>
-  ${!hit ? `
-  <div class="coach"><span class="face">${SVG.coach}</span><div><span class="lvl">小陪 · ${lvls[play.lvl]}</span><p>${esc(txt[play.lvl])}</p>
+  ${!hit ? (play.coachOpen || play.tried || play.lvl ? '' : `<button class="coach-ask" data-act="coach-open"><span class="face">${SVG.coach}</span>卡住了？問小陪</button>`) + `
+  <div class="coach ${play.coachOpen || play.tried || play.lvl ? '' : 'hidden'}"><span class="face">${SVG.coach}</span><div><span class="lvl">小陪 · ${lvls[play.lvl]}</span><p>${esc(txt[play.lvl])}</p>
     <div class="chips">${play.lvl === 0 ? ['我把括號拆開了', '我還沒開始', '我卡在合併'].map((c) => `<button class="chip" data-coach="${esc(c)}">${esc(c)}</button>`).join('') : `<button class="chip" data-coach="more">${play.lvl < 3 ? '再多一點' : '我再試一次'}</button><button class="chip ghost" data-act="sos">求援 · 隊友或嚮導</button>`}</div></div></div>` : `
   ${q.askWhy ? whyBox('這一題要附一句「為什麼」。用說的或打字都可以，只有嚮導會看，每週抽查 3 段。') : ''}
   <div class="btns"><button class="btn" data-act="next" ${q.askWhy && !whyOk() ? 'disabled' : ''}>${S.patrol.i < 2 ? '下一題' : '完成巡邏'}</button></div>`}`;
@@ -468,7 +500,7 @@ SCREENS.settle = () => `
 SCREENS.duel = () => {
   const d = D.DUEL;
   return `
-  ${hd('出題戰 · 第 3 週', '兩隊互相出題，只出雙方都遠征過的怪', false)}
+  ${hd(`出題戰 · 第 ${wk()} 週`, '兩隊互相出題，只出雙方都遠征過的怪')}
   <div class="vs"><div class="team">${av(1, 'lg')}<b>${esc(D.SQUAD.name)}</b><small>我們</small></div><span class="x">vs</span><div class="team">${av(4, 'lg')}<b>${esc(d.opponent)}</b><small>同路線 · 不同嚮導</small></div></div>
   <div class="sect"><h3>對方出的三題</h3><span class="meta">${esc(d.reveal)}</span></div>
   ${d.questions.map((q) => { const m = mon(q.monster); const v = S.duel.votes[q.n]; return `<div class="card"><div class="row" style="margin-bottom:8px">${monSvg(m, 'sm')}<div class="grow"><b>第 ${q.n} 題 · ${esc(region(m.region).name)}</b><small>對方拿${esc(m.name)}出題</small></div>${v !== undefined || q.voted ? '<span class="pill brand">已投</span>' : ''}</div>
@@ -491,7 +523,7 @@ SCREENS.map = (cid) => {
   const art = `<image class="art-map light" href="art/${C.map}.svg" x="0" y="0" width="440" height="420"/><image class="art-map dark" href="art/${C.map}-dark.svg" x="0" y="0" width="440" height="420"/>`;
   if (!C.open) {
     return `
-  ${hd('世界地圖', `${esc(D.SQUAD.league)} · ${esc(C.name)}`, false)}
+  ${hd('世界地圖', `${esc(D.SQUAD.league)} · ${esc(C.name)}`)}
   ${chips}
   <div class="map locked"><svg viewBox="0 0 440 420" role="img" aria-label="${esc(C.name)}地圖：迷霧中"><g class="cam">
     ${art}
@@ -504,7 +536,7 @@ SCREENS.map = (cid) => {
   <div class="mgrid">${C.monsters.map((m) => `<div class="mcard fogc">${monSvg({ shape: ART.m2 ? m.shape : 'm-round' }, 'fog')}<span><b>${esc(m.name)}</b><small>${esc(m.skill)} · 迷霧</small></span></div>`).join('')}</div>`;
   }
   return `
-  ${hd('世界地圖', `${esc(D.SQUAD.league)} · ${esc(C.name)}`, false)}
+  ${hd('世界地圖', `${esc(D.SQUAD.league)} · ${esc(C.name)}`)}
   ${chips}
   <div class="map"><svg viewBox="0 0 440 420" role="img" aria-label="數理大陸地圖：六個區域各一座燈塔"><g class="cam">
     ${art}
@@ -559,6 +591,7 @@ SCREENS.guild = () => {
   const G = D.GUILD;
   const posts = [...S.wallPosts.map((p) => ({ who: D.SQUAD.name, av: 1, text: p, when: '剛剛' })), ...G.wall];
   return `
+  ${hd('公會', '每月一次徽章賽')}
   <div class="guild-hero"><span class="em">${SVG.guild}</span><div><h2>${esc(G.name)}</h2><small>公會長 ${esc(G.master)} · ${G.squads} 支小隊 · ${G.members} 人 · 跨季存在</small></div></div>
   <div class="race"><span class="medal">${badgeSvg(true)}</span><h3>${esc(G.race.month)}徽章公開賽 · ${esc(G.race.theme)}</h3><span class="when">${esc(G.race.when)}</span>
     <p><b>怎麼贏</b>：${esc(G.race.rule)}達到就贏，不是只有前幾名。</p><p><b>獎品</b>：${esc(G.race.prize)}</p>
@@ -581,7 +614,7 @@ SCREENS.guild = () => {
 SCREENS.capture = (id) => {
   const m = mon(id) || mon('sqrt-split');
   return `<div class="capture p1" id="cap"><div class="sky"></div><div class="stars"></div><div class="rays" aria-hidden="true"></div><div class="ring" aria-hidden="true"></div><div class="confetti" id="confetti"></div>
-    <div class="top"><span class="eyebrow">收服 · 第 ${D.SQUAD.week} 週</span><h2 id="cap-title">${esc(m.name)}……</h2></div>
+    <div class="top"><span class="eyebrow">收服 · 第 ${wk()} 週</span><h2 id="cap-title">${esc(m.name)}……</h2></div>
     <div class="arena">${heroAv('smile')}${monSvg(m, 'xl')}</div>
     <div><p class="line" id="cap-line">「${esc(m.taunt)}」</p><p class="ev" id="cap-ev" style="opacity:0"><b>${esc(m.weakness)}</b><br>第 0 天 在遠征中被打倒 · 第 9 天 不給提示也會</p>
     <div class="btns"><button class="btn honey" data-share="${m.id}">傳到營地（家人 LINE）</button><div class="btns two" style="margin-top:0"><button class="btn ghost" data-act="wall-post">放上隊伍牆</button><button class="btn ghost" data-go="shadows">先收著</button></div></div></div></div>`;
@@ -591,7 +624,7 @@ SCREENS.share = (id) => {
   const m = mon(id) || mon('sqrt-split');
   return `
   ${hd('分享卡', '直式 4:5 · 沒有臉、真名、分數、隊友狀態')}
-  <div class="share"><span class="corner"></span><div class="top"><span>收服 · 第 ${D.SQUAD.week} 週</span><svg class="logo" viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg></div>
+  <div class="share"><span class="corner"></span><div class="top"><span>收服 · 第 ${wk()} 週</span><svg class="logo" viewBox="0 0 64 40" aria-hidden="true"><use href="#logo"/></svg></div>
     <div class="mid">${monSvg(m, 'shadow')}<h3>${esc(m.name)}，收服。</h3><span class="team">${esc(D.SQUAD.name)} · ${esc(D.SQUAD.me.nick)}</span></div>
     <p class="ev"><b>${esc(m.weakness)}</b><br>第 0 天 在遠征中被打倒 · 第 9 天 不給提示也會<br>嚮導 ${esc(D.SQUAD.guide)} · ${esc(D.SQUAD.examLabel)}</p></div>
   <div class="btns"><button class="btn" data-act="to-camp" data-mon="${esc(id)}">傳到營地 · 看家長收到什麼</button><button class="btn ghost" data-go="shadows">回到圖鑑</button></div>`;
@@ -655,6 +688,7 @@ SCREENS.settings = () => `
   <div class="ios-tip ${/iP(hone|ad|od)/.test(navigator.userAgent) && !window.navigator.standalone ? 'on' : ''}"><b>加到主畫面</b>：Safari 底下的「分享」→「加入主畫面」。之後會像 App 一樣全螢幕開啟。</div>
   <div class="card"><h3>後端</h3><div class="setrow"><span>${API.base() ? `已連線 <b>${esc(API.host())}</b>` : '本地引擎'}<small>有位址時：題目由後端出、後端判題、小陪由後端回話。</small></span>${API.base() ? '<button class="btn sm ghost" data-act="api-test">測試</button>' : ''}</div><input class="in" type="url" inputmode="url" placeholder="https://api.example.com" value="${esc(API.base())}" data-api aria-label="後端位址">${API.base() ? `<div class="setrow"><span>示範學生 id<small>圖鑑與戰績讀這一位；種子資料 9–11 各有不同狀態</small></span><input class="in num" type="number" min="1" value="${S.studentId}" data-student aria-label="示範學生 id" style="width:84px;margin:0"></div>` : ''}</div>
   <div class="card"><h3>這週的題</h3><div class="setrow"><span>種子 <b class="num">${esc(S.seed)}</b><small>巡邏、伏擊、叫醒的題目由變體引擎依種子產生；換種子，怪就換個樣子。</small></span><button class="btn sm ghost" data-act="reseed">換一組</button></div></div>
+  <div class="card"><h3>示範進度</h3><div class="chips">${STAGE_ORDER.map((st) => `<button class="chip ${S.stage === st ? 'on' : ''}" data-stage="${st}">${esc(STAGES[st].name)}</button>`).join('')}</div><p class="meta" style="margin-top:8px">第 1 天只開「今天」和「我」；第 1 週末多「這週」；第 3 週才有地圖、出題戰、公會。</p></div>
   <div class="card"><h3>示範時間</h3><div class="chips">${D.CLOCKS.map((c) => `<button class="chip ${S.clock === c.id ? 'on' : ''}" data-clock="${c.id}">${esc(c.label)}</button>`).join('')}</div><p class="note">${esc(clock().note)}</p></div>
   <div class="card">
     <div class="setrow"><span>音效<small>打中、連擊、收服的聲音</small></span><button class="switch ${S.sound ? 'on' : ''}" data-act="sound" role="switch" aria-label="音效" aria-checked="${!!S.sound}"><i></i></button></div>
@@ -666,7 +700,8 @@ SCREENS.settings = () => `
   <div class="btns"><button class="btn" data-go="guide">切到嚮導視角</button><button class="btn warn" data-act="reset">重設示範資料</button></div>`;
 
 // ---------- 路由與渲染 ----------
-const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['me', '我', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>'], ['dungeon', '副本', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['map', '地圖', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'], ['guild', '公會', '<path d="M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z"/><path d="M12 8v8M8.5 12h7"/>']];
+const TABS = [['home', '今天', '<path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z"/>'], ['dungeon', '這週', '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>'], ['me', '我', '<circle cx="12" cy="9" r="5"/><path d="M5 21c1-4 3.5-6 7-6s6 2 7 6"/><path d="M8.5 9h.01M15.5 9h.01" stroke-width="2.6"/>']];
+const tabsFor = () => TABS.filter(([k]) => k !== 'dungeon' || atLeast('w1'));
 const NOTABS = new Set(['capture', 'share', 'camp', 'coach', 'settings', 'profile', 'join', 'letter', 'play', 'relay', 'ambush', 'wake', 'settle', 'record', 'tower', 'week', 'guide']);
 const DARK = new Set([]);
 const view = $('#view'); const tabsEl = $('#tabs'); const sbEl = $('#sb'); const toastEl = $('#toast');
@@ -694,9 +729,10 @@ function route() {
   if (old) { old.className = old.className.replace(/enter-\w+/, '') + ` leave-${dir}`; setTimeout(() => old.remove(), 320); }
   view.appendChild(el);
   tabsEl.classList.toggle('hidden', NOTABS.has(key));
-  const tabKey = ({ shadows: 'me' })[key] || key;
+  renderTabs();
+  const tabKey = ({ shadows: 'me', map: 'dungeon', guild: 'dungeon', duel: 'dungeon' })[key] || key;
   tabsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.go === tabKey));
-  sbEl.innerHTML = `<button class="num clockbtn" data-act="clock-next" aria-label="切換示範時間：${esc(clock().label)}">${esc(clock().time)}</button><span class="cap">今天 <b>${S.cards}</b> / 3</span>`;
+  sbEl.innerHTML = `<span class="num clockbtn">${esc(clock().time)}</span>`;
   sbEl.classList.toggle('on-dark', key === 'capture');
   lightsOut(el, key);
   if (key === 'capture') runCapture(el, param);
@@ -706,7 +742,7 @@ function route() {
   if (['home', 'shadows', 'week', 'record', 'map', 'tower'].includes(key)) syncFromBackend();
   document.querySelectorAll('.panel .scenes button').forEach((b) => b.classList.toggle('on', b.dataset.go === key));
 }
-function rerender() { const { key, param } = parse(); const el = view.querySelector('.screen:not([class*="leave"])'); if (!el) return route(); const y = el.scrollTop; el.innerHTML = (SCREENS[key] || SCREENS.home)(param); el.scrollTop = y; sbEl.innerHTML = `<button class="num clockbtn" data-act="clock-next" aria-label="切換示範時間：${esc(clock().label)}">${esc(clock().time)}</button><span class="cap">今天 <b>${S.cards}</b> / 3</span>`; lightsOut(el, key); }
+function rerender() { const { key, param } = parse(); const el = view.querySelector('.screen:not([class*="leave"])'); if (!el) return route(); const y = el.scrollTop; el.innerHTML = (SCREENS[key] || SCREENS.home)(param); el.scrollTop = y; sbEl.innerHTML = `<span class="num clockbtn">${esc(clock().time)}</span>`; lightsOut(el, key); }
 
 function lightsOut(el, key) {
   const old = view.querySelector('.curtain'); if (old) old.remove();
@@ -806,7 +842,7 @@ document.addEventListener('click', (e) => {
   const gl = e.target.closest('[data-gline]'); if (gl) { const g = D.GUIDE_QUEUE.find((x) => x.id === gl.dataset.gline); return logIntervention(g, gl.dataset.text); }
   const gs = e.target.closest('[data-gsend]'); if (gs) { const g = D.GUIDE_QUEUE.find((x) => x.id === gs.dataset.gsend); return logIntervention(g, `語音 ${play.rec} 秒`); }
   const rc = e.target.closest('[data-react]'); if (rc) { const id = rc.dataset.react; S.reactions[id] = (S.reactions[id] || 0) + 1; save(); rc.classList.add('on'); rc.querySelector('.num').textContent = Number(rc.querySelector('.num').textContent) + 1; SFX.play('pop'); buzz(8); const r = rc.getBoundingClientRect(); juice('good', r.left + r.width / 2, r.top, '+1'); return; }
-  const t = e.target.closest('[data-go],[data-back],[data-act],[data-lreply],[data-look],[data-nick],[data-pin],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
+  const t = e.target.closest('[data-go],[data-back],[data-act],[data-lreply],[data-look],[data-nick],[data-pin],[data-stage],[data-opt],[data-coach],[data-lore],[data-region],[data-vote],[data-say],[data-say-coach],[data-ropt],[data-aopt],[data-wopt],[data-flag],[data-share],[data-clock]');
   if (!t) return;
   if (t.dataset.back !== undefined) return back();
   if (t.dataset.go) { if (t.dataset.locked) return toast('伏擊層週一開放。可以在設定把示範時間快轉。'); return go(t.dataset.go); }
@@ -846,9 +882,11 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.look) { const [k, v] = t.dataset.look.split(':'); S.join.look[k] = Number(v); save(); SFX.play('tap'); return rerender(); }
   if (t.dataset.nick) { S.join.nick = t.dataset.nick; save(); return rerender(); }
+  if (t.dataset.stage) return setStage(t.dataset.stage);
   if (t.dataset.pin) { const J = S.join; J.pin = t.dataset.pin === '⌫' ? J.pin.slice(0, -1) : (J.pin + t.dataset.pin).slice(0, 4); buzz(6); save(); return rerender(); }
   const a = t.dataset.act;
   if (a === 'camp-about') return infoSheet('這是誰寄的？', D.CAMP_ABOUT.map(([k, v]) => `<div class="lore-row"><span class="k">${esc(k)}</span><span>${esc(v)}</span></div>`).join(''));
+  if (a === 'coach-open') { play.coachOpen = true; return rerender(); }
   if (a === 'why-type') { play.typing = true; rerender(); const ta = view.querySelector('[data-why-in]'); if (ta) ta.focus(); return; }
   if (a === 'why-voice') { play.typing = false; return rerender(); }
   if (a === 'join-start') { S.join = { step: 0, mode: 'new', nick: '', look: { ...AV.PRESETS[1], hair: 0 }, pin: '', cape: 1 }; save(); return go('join'); }
@@ -955,7 +993,8 @@ fetch('art/manifest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() :
     ART.m2 = true; if (parse().key === 'map') rerender();
   });
 }).catch(() => {});
-tabsEl.innerHTML = TABS.map(([k, n, p]) => `<button data-go="${k}" aria-label="${n}"><svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>${n}</button>`).join('');
+function renderTabs() { const t = tabsFor(); const sig = t.map(([k]) => k).join(); if (tabsEl.dataset.sig === sig) return; tabsEl.dataset.sig = sig; tabsEl.style.gridTemplateColumns = `repeat(${t.length},1fr)`; tabsEl.innerHTML = t.map(([k, n, p]) => `<button data-go="${k}" aria-label="${n}"><svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>${n}</button>`).join(''); }
+renderTabs();
 $('#panel-scenes')?.querySelectorAll('button[data-go]').forEach(() => {});
 window.addEventListener('hashchange', route);
 applyTheme();
