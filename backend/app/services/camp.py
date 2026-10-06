@@ -24,7 +24,6 @@ KINDS = ("capture", "wake", "explain", "dungeon", "week")
 EVENT_KIND = {"retest_passed": "capture", "woken": "wake", "explained_ok": "explain"}
 ACTIONS = [{"id": "witnessed", "label": "我見證了"}, {"id": "later", "label": "晚點問他"}]
 REPLY_TEXT = {"我見證了": "witnessed", "已見證": "witnessed", "晚點問他": "later"}
-STARS = {0: "零", 1: "一", 2: "兩", 3: "三"}
 LINE_PUSH_URL = "https://api.line.me/v2/bot/message/push"
 WEEKDAYS = "一二三四五六日"
 
@@ -39,48 +38,50 @@ def compose(
     guide_day: Optional[str] = None,
     extra: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """回 {title, lines, ask, actions}。kind：capture／wake／explain／dungeon／week。"""
+    """回 {title, lines, ask, answer, sender, actions}。kind：capture／wake／explain／dungeon／week。
+
+    家長端不用遊戲語言：不說收服、怪、夥伴、戰績、副本、路線，只說學會了什麼、還在練什麼。
+    chasing 是「還在練的事」（技能標題），不是怪的名字。
+    """
     if kind not in KINDS:
         raise ValueError(f"沒有這種來信：{kind}")
     extra = extra or {}
     m = monster or {}
-    name, title = m.get("name", ""), m.get("title", "")
+    title = m.get("title", "")
     lines: List[str] = []
     if kind == "capture":
-        lines.append(f"{nickname}今晚收服了一隻怪：{name}（{title}）。不給提示也會。")
+        lines.append(f"{nickname}學會了：{title}。隔了幾天、不給提示再做一次，也做對了。")
     elif kind == "wake":
-        lines.append(f"{nickname}今晚叫醒了睡著的夥伴：{name}（{title}）。上週錯過一次，今天自己站回來了。")
+        lines.append(f"{nickname}之前忘掉的「{title}」，今天自己想起來，做對了。")
     elif kind == "explain":
-        lines.append(f"{nickname}今晚把「{title}」講給隊友聽，講對了。")
+        lines.append(f"{nickname}今天把「{title}」講給隊友聽，講對了。")
     elif kind == "dungeon":
         rate = float(extra.get("rate", 0) or 0)
         stars = int(extra.get("stars", 0) or 0)
-        head = f"{nickname}的小隊這週副本{'過關了' if stars else '沒過關'}：解題率 {round(rate * 100)}%"
-        head += f"，{STARS.get(stars, str(stars))}星。" if stars else "。"
-        nxt = extra.get("next_route_name")
-        if nxt:
-            head += f"下一個副本走{nxt}。"
+        head = f"{nickname}的小隊這週一起練的題目，全隊答對了 {round(rate * 100)}%。"
+        head += "下週會換稍微難一點的題目。" if stars and extra.get("next_route_name") else ("下週用同樣的難度再練一次。" if not stars else "")
         lines.append(head)
     elif kind == "week":
-        captured = list(extra.get("captured", []))
-        if captured:
-            lines.append(f"{nickname}這週學會的：收服 {len(captured)} 隻（{'、'.join(captured)}）。")
+        learned = list(extra.get("captured", []))
+        if learned:
+            lines.append(f"{nickname}這週學會了 {len(learned)} 件事，都是隔幾天、不給提示再做一次也對：{'；'.join(learned)}。")
         else:
-            lines.append(f"{nickname}這週還在追，沒有新收服；每一次講給隊友聽都算。")
+            lines.append(f"{nickname}這週還在練，還沒有隔幾天再測過的；每一次講給隊友聽都算數。")
     if chasing and kind != "dungeon":
-        tail = f"，{guide}週{guide_day}處理。" if guide and guide_day else "。"
-        lines.append(f"還在追：{'、'.join(chasing)}{tail}")
+        tail = f"。{guide}週{guide_day}的小隊課會帶全隊再練一次。" if guide and guide_day else "。"
+        lines.append(f"還在練：{'、'.join(chasing)}{tail}")
 
-    ask = _ask_for(m) if kind in ("capture", "wake", "explain") else None
-    if kind == "week" and extra.get("ask_monster"):
-        ask = _ask_for(extra["ask_monster"])
-    body = {
+    src = m if kind in ("capture", "wake", "explain") else (extra.get("ask_monster") if kind == "week" else None)
+    ask = _ask_for(src) if src else None
+    answer = f"他可能會這樣說：「{src['weakness']}」" if src and src.get("weakness") and ask and not ask.startswith("今晚可以請他講一次") else None
+    return {
         "title": f"{nickname}這週學會的" if kind == "week" else "營地來信",
         "lines": lines,
         "ask": ask,
+        "answer": answer,
+        "sender": f"Tandelo 營地 · {guide}的小隊" if guide else "Tandelo 營地",
         "actions": ACTIONS if kind != "dungeon" else [],
     }
-    return body
 
 
 def _ask_for(m: Dict[str, Any]) -> Optional[str]:
@@ -99,6 +100,10 @@ def to_text(body: Dict[str, Any]) -> str:
     parts = [body.get("title", "營地來信")] + list(body.get("lines", []))
     if body.get("ask"):
         parts.append(body["ask"])
+    if body.get("answer"):
+        parts.append(body["answer"])
+    if body.get("sender"):
+        parts.append(f"— {body['sender']}")
     return "\n".join(parts)
 
 
@@ -167,7 +172,7 @@ def context(db: DBSession, student: models.Student) -> Dict[str, Any]:
     """還在追哪些怪、嚮導是誰、下一堂在週幾。"""
     monsters = C.monsters()
     shadows = [sh for sh in db.query(models.Shadow).filter_by(student_id=student.id).all() if sh.monster_id in monsters]
-    chasing = [monsters[sh.monster_id]["name"] for sh in shadows if sh.state in ("near", "hit")]
+    chasing = [monsters[sh.monster_id]["title"] for sh in shadows if sh.state in ("near", "hit")]
     captured = [monsters[sh.monster_id] for sh in shadows if sh.state == "captured"]
     guide = guide_day = None
     today = utcnow().date()
@@ -192,7 +197,7 @@ def enqueue(
     ctx = context(db, student)
     extra = dict(extra or {})
     if kind == "week":
-        extra.setdefault("captured", [m["name"] for m in ctx["captured"]])
+        extra.setdefault("captured", [m["title"] for m in ctx["captured"]])
         if ctx["captured"]:
             extra.setdefault("ask_monster", ctx["captured"][0])
     body = compose(student.nickname, kind, monster, ctx["chasing"], ctx["guide"], ctx["guide_day"], extra)

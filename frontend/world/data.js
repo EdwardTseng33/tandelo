@@ -11,8 +11,8 @@ export const SQUAD = {
   week: 3,
   exam: '11/27',
   examLabel: '對準 11/27 段考',
-  streak: 4, // 連續亮滿三張的天數（示範值）
-  me: { id: 'me', nick: '小睿', av: 1, role: 'scribe' }, // 這週的位置：書記
+  streak: 4, // 小隊連續有人亮卡的天數（全隊一起算，不做會斷掉的個人連續天數）
+  me: { id: 'me', nick: '小睿', av: 1, role: 'scribe', roleBadges: { scout: true, scribe: true } }, // 這週的位置：書記；職業章：嚮導確認做完一次就點亮
   mates: [{ id: 'm2', av: 2 }, { id: 'm3', av: 3 }, { id: 'm4', av: 4 }, { id: 'm5', av: 5 }],
 };
 
@@ -321,13 +321,26 @@ export const LETTER = {
 };
 
 // 家長端：營地來信（LINE）。
+// 營地來信：家長端不用遊戲語言（不說「收服、怪、戰績」），只說學會了什麼、還在練什麼、今晚可以問他哪一句。
 export const CAMP = {
   time: '星期二 21:02',
-  text: '小睿今晚收服了一隻怪：漏項獸（完全平方要有中間那一項）。第 9 天不給提示也會。',
-  chase: '還在追：負號幽靈（這週遠征的怪），林老師週四處理。',
+  from: 'Tandelo 營地 · 林老師的四葉小隊',
+  text: '小睿這週學會了：(a + b)² 展開時，中間要有 2ab 這一項。隔了 9 天、不給提示也做對了。',
+  chase: '還在練：括號前面是減號時，括號裡每一項都要變號。週四的小隊課，林老師會帶全隊再練一次。',
   ask: '今晚可以問他：「一塊邊長是 a+b 的正方形，為什麼比 a² + b² 多出兩塊長方形？」',
+  answer: '他可能會這樣說：「切開來有 a²、b²，還有兩塊 a × b 的長方形，所以多出 2ab。」',
   witnessed: true,
 };
+
+// 家長端「這是誰寄的？」：嚮導是誰、誰會跟孩子互動、資料去哪（示範文案；正式條款上線前由法務與隱私審過）
+export const CAMP_ABOUT = [
+  ['寄件人', 'Tandelo 營地。每週由孩子的嚮導林老師看過孩子的紀錄後寄出，只寄到綁定的家長 LINE。'],
+  ['嚮導', '林老師，國中數學老師。每週帶一次小隊課，只在孩子卡住太久、同一個錯連錯三次、三天沒來時介入。'],
+  ['誰會跟孩子互動', '同隊 3 到 5 位國中生，只看得到暱稱和插畫角色，看不到真名、學校、照片；孩子之間沒有私訊、不能自由打字聊天。'],
+  ['孩子的聲音', '「說一句為什麼」的錄音只給嚮導聽；講給隊友聽是孩子自己按送出才會給同隊。不想說話可以改用打字。'],
+  ['資料', '只存暱稱、年級、段考日期與學習紀錄。家長可以隨時在 LINE 暫停或刪除帳號；實體徽章的收件資料寄出後 30 天刪除。'],
+];
+export const JOIN_QR = { vb: '0 0 29 29', d: 'M0 0.5h7m4 0h1m4 0h1m1 0h3m1 0h7M0 1.5h1m5 0h1m1 0h2m4 0h2m1 0h1m4 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m2 0h3m2 0h3m2 0h2m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m1 0h6m1 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m4 0h1m1 0h1m2 0h4m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h1m1 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 7.5h1m1 0h2m3 0h1m2 0h1M0 8.5h5m1 0h4m1 0h4m2 0h1m2 0h2m1 0h1m1 0h1m1 0h1M0 9.5h1m1 0h1m2 0h1m2 0h1m2 0h1m1 0h1m2 0h1m2 0h1m2 0h3m3 0h1M0 10.5h1m1 0h5m1 0h1m1 0h1m2 0h4m3 0h2m1 0h2M0 11.5h4m1 0h1m2 0h1m2 0h1m2 0h2m2 0h2m1 0h2m1 0h2m1 0h1M5 12.5h2m1 0h6m1 0h1m1 0h1m2 0h1m4 0h2M0 13.5h1m2 0h3m2 0h2m1 0h3m2 0h4m1 0h4m3 0h1M2 14.5h1m1 0h1m1 0h1m1 0h1m4 0h3m2 0h1m1 0h1m2 0h1m1 0h2M0 15.5h1m2 0h1m1 0h1m2 0h5m1 0h3m1 0h4m1 0h2m2 0h1M0 16.5h1m1 0h1m1 0h3m1 0h2m2 0h6m5 0h1m1 0h2M0 17.5h2m1 0h3m2 0h2m1 0h2m1 0h1m1 0h1m2 0h2m1 0h3m1 0h1m1 0h1M0 18.5h1m1 0h1m3 0h1m1 0h1m1 0h1m2 0h4m7 0h1m1 0h1M0 19.5h1m1 0h2m3 0h1m3 0h1m2 0h1m1 0h1m2 0h3m1 0h2m2 0h1M0 20.5h1m1 0h1m2 0h3m1 0h6m2 0h1m1 0h6m1 0h3M8 21.5h2m1 0h3m4 0h1m1 0h1m3 0h5M0 22.5h7m1 0h1m1 0h1m1 0h9m1 0h1m1 0h3M0 23.5h1m5 0h1m7 0h1m1 0h1m1 0h3m3 0h1m2 0h1M0 24.5h1m1 0h3m1 0h1m1 0h3m1 0h3m2 0h2m1 0h5m1 0h1M0 25.5h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h1m1 0h4m5 0h2m1 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m3 0h2m1 0h3m1 0h1m2 0h6M0 27.5h1m5 0h1m1 0h3m4 0h1m2 0h1m1 0h2m1 0h3m1 0h1M0 28.5h7m1 0h2m1 0h4m2 0h1m1 0h1m2 0h3m1 0h1' };
 
 // 示範時鐘：四個常用時間點。
 export const CLOCKS = [

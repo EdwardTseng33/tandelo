@@ -621,6 +621,8 @@ class CampLetterOut(BaseModel):
     title: str
     lines: List[str]
     ask: Optional[str] = None
+    answer: Optional[str] = None
+    sender: str = "Tandelo 營地"
     actions: List[Dict[str, str]]
     text: str
     status: str
