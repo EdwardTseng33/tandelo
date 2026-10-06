@@ -4,7 +4,7 @@
 export const SQUAD = {
   name: '四葉小隊',
   guide: '林老師',
-  guild: '林間營地',
+  guild: '林間公會',
   league: '北區',
   subject: '數學',
   route: 'plain',
@@ -276,7 +276,7 @@ export const TOWER = {
 };
 
 export const GUILD = {
-  name: '林間營地',
+  name: '林間公會',
   master: '林老師',
   squads: 4,
   members: 19,

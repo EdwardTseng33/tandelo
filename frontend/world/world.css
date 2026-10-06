@@ -901,3 +901,42 @@ svg.qr{display:block;width:120px;height:120px;margin:12px auto 6px;padding:8px;b
 .bub .from{display:block;margin-top:8px;font-size:12px;color:var(--text-mute)}
 .bub .from .linkbtn{font-size:12px;padding:0}
 .home-top button.avs{background:var(--surface);border-radius:999px;padding:3px 3px 3px 11px;box-shadow:var(--shadow-soft)}
+/* ===== 0.7：漸進解鎖、第 1 天首頁、降低認知負擔 ===== */
+.shell .coach.hidden{display:none}
+.coach-ask{display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:12px 14px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow-soft);font-weight:700;font-size:14px;color:var(--brand)}
+.coach-ask .face{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--brand-fill);flex:0 0 auto}
+.coach-ask .face svg{width:20px;height:20px}
+.d1-hello{display:flex;gap:12px;align-items:flex-start;margin:8px 0 18px}
+.d1-hello .hero-av{width:56px;height:56px;flex:0 0 auto;box-shadow:0 0 0 2px var(--brand),0 6px 14px rgba(0,0,0,.12)}
+.d1-hello b{font-size:13px;color:var(--text-mute);display:block}
+.d1-hello p{font-size:19px;font-weight:700;line-height:1.45;margin:2px 0 0}
+.hero-task{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:18px;border-radius:24px;background:var(--brand-fill);color:var(--on-brand);box-shadow:0 14px 30px rgba(14,95,82,.28)}
+.hero-task .mon{width:64px;height:64px}
+.hero-task b{display:block;font-size:22px}
+.hero-task small{display:block;font-size:13px;opacity:.85;margin-top:2px}
+.hero-task .go-btn{flex:0 0 auto;padding:10px 16px;border-radius:999px;background:var(--honey);color:#13302B;font-weight:900;font-size:15px}
+.hero-task.done{background:var(--surface);color:var(--text);box-shadow:var(--shadow-soft)}
+.hero-task.done .go-btn{background:var(--bg-alt);color:var(--text)}
+.d1-progress{display:flex;align-items:center;gap:12px;margin:16px 4px}
+.d1-progress .dots{display:flex;gap:8px}
+.d1-progress .dots i{width:16px;height:16px;border-radius:50%;background:var(--bg-alt);border:2px solid var(--rule-strong)}
+.d1-progress .dots i.on{background:var(--brand-fill);border-color:var(--brand-fill)}
+.d1-progress span{font-size:14px;color:var(--text-mute);font-weight:700}
+.d1-team{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow-soft)}
+.d1-team .avs{flex:0 0 auto}
+.d1-team b{display:block;font-size:14px}.d1-team small{display:block;font-size:12px;color:var(--text-mute)}
+.demo-jump{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:22px 0 8px;padding:10px 12px;border-radius:16px;border:1.5px dashed var(--rule-strong);font-size:12px;color:var(--text-mute)}
+.demo-jump .tag{font-weight:900;color:var(--coral);letter-spacing:.08em}
+.demo-jump .grow{flex:1 1 160px}
+.demo-jump .chip{min-height:34px;padding:4px 12px;font-size:12px}
+.task.compact{padding-top:10px;padding-bottom:10px}
+.task.compact .mon{width:40px;height:40px}
+.task.compact small{font-size:12px}
+.letter.compact{padding:10px 14px;min-height:0}
+.letter.compact .play{width:40px;height:40px}
+.letter.compact small{font-size:12px}
+.feed.short .item:nth-child(n+3){display:none}
+.task.thisweek{margin-top:4px}
+.sb .clockbtn{pointer-events:none}
+.guide-badge{width:56px;height:56px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;background:var(--brand-fill);color:var(--on-brand);font-weight:900;font-size:22px;box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--honey)}
+.home-top .pill.exam{display:inline-flex;margin-top:6px;background:var(--bg-alt);color:var(--text-mute)}

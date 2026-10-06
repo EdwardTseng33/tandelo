@@ -33,6 +33,17 @@ const assert = (cond, msg) => { if (!cond) throw new Error(msg); };
 
 await p.goto(`${U}#/`, { waitUntil: 'networkidle' }); await p.evaluate(() => localStorage.clear()); await p.reload({ waitUntil: 'networkidle' }); await p.waitForTimeout(400);
 
+await step('第 1 天：首頁只有一件事，兩下就在答題', async () => {
+  assert(await p.locator('#tabs button').count() === 2, '第 1 天分頁不是兩個');
+  assert(await p.locator('.letter').count() === 0 && await p.locator('.feed').count() === 0, '第 1 天就出現信或動態');
+  assert(await p.locator('.hero-task').count() === 1, '沒有今天 3 題');
+  await click('.hero-task'); await p.waitForTimeout(300); assert((await hash()) === '#/play', '一下沒進題目');
+  assert(await p.locator('.coach-ask').count() === 1 && await p.locator('.coach:not(.hidden)').count() === 0, '小陪沒收成「卡住了？」');
+  await click('.coach-ask'); await p.waitForTimeout(150); assert(await p.locator('.coach:not(.hidden)').count() === 1, '按了卡住了沒打開小陪');
+  await click('[data-back]'); await p.waitForTimeout(300);
+  await click('[data-stage="w3"]'); await p.waitForTimeout(400);
+  assert(await p.locator('#tabs button').count() === 3, '第 3 週分頁不是三個');
+});
 await step('首頁與嚮導的信', async () => { await click('[data-act="letter"]'); await p.waitForTimeout(600); assert((await hash()) === '#/letter', '沒進到信'); await click('[data-back]'); await p.waitForTimeout(300); });
 await step('巡邏三題（變體、小陪、錄音）', async () => {
   await click('[data-go="play"]'); await p.waitForTimeout(300); assert((await hash()) === '#/play', '沒進巡邏');
